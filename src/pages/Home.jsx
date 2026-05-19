@@ -343,7 +343,7 @@ function Home() {
           {(() => {
             const q = searchQuery.trim().toLowerCase()
             const match = (keywords) => !q || keywords.some(k => k.toLowerCase().includes(q))
-            const showFunctionBooks = selectedCategory === '全部' || selectedCategory === '功能词本'
+            const showFunctionBooks = (selectedCategory === '全部' || selectedCategory === '功能词本') && !favoriteOnly
             return (<>
           {/* 错题本卡片 */}
           {showFunctionBooks && match(['错题本']) && <ErrorBookCard
