@@ -124,10 +124,10 @@ export default function TrainingCenter() {
                     进入训练
                   </span>
                   <span
-                    className="w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-200 group-hover:bg-primary group-hover:text-white"
+                    className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 group-hover:bg-primary group-hover:text-white"
                     style={
                       isDark
-                        ? { background: 'rgba(255,255,255,0.15)', color: '#fff' }
+                        ? { background: 'rgba(255,255,255,0.06)', color: '#fff', boxShadow: '0 0 10px rgba(255,255,255,0.25)' }
                         : isWarm
                           ? { background: '#EFE8DF', color: '#8a7a6b' }
                           : { background: '#f3f4f6', color: '#6b7280' }

@@ -130,7 +130,7 @@ function ArticleCard({
             <button
               type="button"
               tabIndex={-1}
-              className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/[0.06] text-content-secondary dark:text-gray-300 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors duration-200"
+              className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/[0.06] text-content-secondary dark:text-white flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-200 dark:shadow-[0_0_10px_rgba(255,255,255,0.25)] group-hover:shadow-[0_0_12px_rgba(255,255,255,0.45)]"
             >
               <ArrowRight className="w-4 h-4" />
             </button>

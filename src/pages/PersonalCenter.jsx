@@ -106,7 +106,7 @@ export default function PersonalCenter() {
   const settingsItems = [
     { label: 'AI 伙伴设置', emoji: '🤖', action: () => toast('即将上线', { description: 'AI 学习伙伴功能正在开发中' }) },
     { label: '每日目标', emoji: '🎯', action: () => setGoalModal(true) },
-    { label: '主题外观', emoji: '🎨', action: () => setThemeModal(true) },
+    { label: '模式切换', emoji: '🎨', action: () => setThemeModal(true) },
     { label: '帮助与反馈', emoji: '💬', action: () => toast('即将上线', { description: '帮助与反馈功能正在开发中' }) },
   ]
 
@@ -147,24 +147,10 @@ export default function PersonalCenter() {
       {/* Learning Data Card */}
       <button
         onClick={() => navigate('/stats')}
-        className="w-full card card-hover p-5 mb-4 text-left animate-card-enter group"
+        className="w-full card card-hover py-6 mb-4 animate-card-enter group flex items-center justify-center"
         style={{ animationDelay: '0.05s' }}
       >
-        <div className="mb-4">
-          <span className="text-sm font-semibold text-content dark:text-gray-100">学习数据</span>
-        </div>
-        <div className="grid grid-cols-3 gap-4">
-          {stats.map((stat) => (
-            <div key={stat.label} className="flex flex-col items-center">
-              <stat.Icon className="w-5 h-5 text-primary/60 mb-2" />
-              <div className="flex items-baseline gap-0.5">
-                <span className="text-xl font-bold text-content dark:text-gray-100 leading-none">{stat.value}</span>
-                {stat.unit && <span className="text-xs text-content-secondary dark:text-gray-400">{stat.unit}</span>}
-              </div>
-              <span className="text-xs text-content-tertiary dark:text-gray-500 mt-1">{stat.label}</span>
-            </div>
-          ))}
-        </div>
+        <span className="text-lg font-semibold text-content dark:text-gray-100">学习数据</span>
       </button>
 
       {/* Settings Section */}
@@ -250,7 +236,7 @@ export default function PersonalCenter() {
       </Modal>
 
       {/* Theme Modal */}
-      <Modal open={themeModal} onClose={() => setThemeModal(false)} title="主题外观">
+      <Modal open={themeModal} onClose={() => setThemeModal(false)} title="模式切换">
         <div className="grid grid-cols-2 gap-3">
           {themeOptions.map((opt) => (
             <button
