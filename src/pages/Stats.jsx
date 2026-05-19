@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
-import { Clock, BookOpen, Calendar, Keyboard, Headphones, Zap } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Clock, BookOpen, Calendar, Keyboard, Headphones, Zap, ArrowLeft } from 'lucide-react'
 import { useReadingStore } from '../modules/reading/hooks/useReadingStore'
 
 const WEEKDAY_LABEL = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
@@ -94,6 +95,7 @@ function WeeklyChart({ days }) {
 }
 
 export default function Stats() {
+  const navigate = useNavigate()
   const store = useReadingStore()
 
   const days = useMemo(() => {
@@ -123,6 +125,13 @@ export default function Stats() {
     <div className="min-h-screen animate-page-fade-in">
       <div className="max-w-5xl mx-auto px-4 md:px-8 py-8 md:py-12">
         <header className="mb-8 md:mb-10">
+          <button
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium text-content-tertiary hover:text-primary hover:bg-primary-soft transition-colors mb-3"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            返回列表
+          </button>
           <h1 className="text-3xl md:text-4xl font-bold text-content dark:text-gray-100 mb-2">学习数据</h1>
           <p className="text-content-secondary dark:text-gray-400">让每一次进步都看得见。</p>
         </header>

@@ -221,7 +221,7 @@ html, body, #root {
   }
 
   .modal-overlay {
-    @apply fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-[fadeIn_0.2s_ease-out];
+    @apply fixed inset-0 flex items-center justify-center z-50 animate-[fadeIn_0.2s_ease-out];
   }
 
   .modal-content {

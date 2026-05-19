@@ -1,13 +1,274 @@
-export default function PersonalCenter() {
+import { useState, useRef, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
+import {
+  BookMarked, BookOpen, Headphones, Target,
+  Palette, ChevronRight, Pencil, Bot, X, Camera, ChartColumn,
+} from 'lucide-react'
+import { useReadingStore } from '../modules/reading/hooks/useReadingStore'
+import { useUserConfig } from '../hooks/useUserConfig'
+import { useProfileStore } from '../hooks/useProfileStore'
+import { getErrorBookCount } from '../utils/errorBook'
+import { getReadingWordBookCount } from '../utils/readingWordBook'
+import { getCorpusWordBookCount } from '../utils/corpusWordBook'
+
+function Modal({ open, onClose, title, children }) {
+  if (!open) return null
   return (
-    <div className="min-h-[calc(100vh-3rem-3.5rem)] md:min-h-[calc(100vh-4rem-3.5rem)] flex flex-col items-center justify-center px-6 text-center">
-      <div className="w-20 h-20 rounded-full glass-card flex items-center justify-center mb-6 shadow-card-light dark:shadow-card-dark">
-        <svg className="w-10 h-10 text-primary dark:text-primary-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-        </svg>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="text-lg font-semibold text-content dark:text-gray-100">{title}</h3>
+          <button onClick={onClose} className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors">
+            <X className="w-5 h-5 text-content-tertiary" />
+          </button>
+        </div>
+        {children}
       </div>
-      <h2 className="text-title text-content dark:text-gray-100 mb-2">我的</h2>
-      <p className="text-body text-content-tertiary dark:text-gray-400">即将上线，敬请期待</p>
+    </div>
+  )
+}
+
+export default function PersonalCenter() {
+  const navigate = useNavigate()
+  const store = useReadingStore()
+  const { theme, setTheme } = useUserConfig()
+  const profile = useProfileStore()
+
+  const [editModal, setEditModal] = useState(false)
+  const [goalModal, setGoalModal] = useState(false)
+  const [themeModal, setThemeModal] = useState(false)
+  const [nicknameInput, setNicknameInput] = useState(profile.nickname)
+  const [signatureInput, setSignatureInput] = useState(profile.signature)
+  const avatarInputRef = useRef(null)
+
+  const wordCount = useMemo(() => getReadingWordBookCount() + getCorpusWordBookCount() + getErrorBookCount(), [])
+  const completedArticles = useMemo(() => store.getCompletedArticleCount(), [])
+  const listeningHours = useMemo(() => (store.getTotalListeningSeconds() / 3600).toFixed(1), [])
+
+  function handleSaveProfile() {
+    const trimmed = nicknameInput.trim()
+    if (!trimmed) return
+    profile.setNickname(trimmed)
+    profile.setSignature(signatureInput)
+    setEditModal(false)
+    toast('资料已更新')
+  }
+
+  function handleAvatarUpload(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!file.type.startsWith('image/')) {
+      toast('请选择图片文件')
+      return
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast('图片大小不能超过 2MB')
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        const size = 200
+        canvas.width = size
+        canvas.height = size
+        const ctx = canvas.getContext('2d')
+        const min = Math.min(img.width, img.height)
+        const sx = (img.width - min) / 2
+        const sy = (img.height - min) / 2
+        ctx.drawImage(img, sx, sy, min, min, 0, 0, size, size)
+        profile.setAvatar(canvas.toDataURL('image/jpeg', 0.8))
+        toast('头像已更新')
+      }
+      img.src = ev.target.result
+    }
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
+
+  const goalPresets = [10, 20, 30, 45, 60, 90, 120]
+
+  const themeOptions = [
+    { key: 'light', label: '明亮', desc: '清新简洁' },
+    { key: 'gray', label: '暗夜', desc: '沉稳深邃' },
+    { key: 'star', label: '星空', desc: '浩瀚星海' },
+    { key: 'warm', label: '暖光', desc: '温暖舒适' },
+  ]
+
+  const stats = [
+    { label: '单词', value: wordCount, unit: '', Icon: BookMarked },
+    { label: '阅读', value: completedArticles, unit: '篇', Icon: BookOpen },
+    { label: '听力', value: listeningHours, unit: 'h', Icon: Headphones },
+  ]
+
+  const settingsItems = [
+    { label: 'AI 伙伴设置', emoji: '🤖', action: () => toast('即将上线', { description: 'AI 学习伙伴功能正在开发中' }) },
+    { label: '每日目标', emoji: '🎯', action: () => setGoalModal(true) },
+    { label: '主题外观', emoji: '🎨', action: () => setThemeModal(true) },
+    { label: '帮助与反馈', emoji: '💬', action: () => toast('即将上线', { description: '帮助与反馈功能正在开发中' }) },
+  ]
+
+  return (
+    <div className="min-h-[calc(100vh-3rem-3.5rem)] md:min-h-[calc(100vh-4rem-3.5rem)] max-w-5xl mx-auto px-4 md:px-8 py-6 md:py-8 animate-page-fade-in">
+
+      {/* Profile Header */}
+      <div className="flex items-center gap-4 mb-6 animate-card-enter">
+        <div
+          onClick={() => avatarInputRef.current?.click()}
+          className="relative w-16 h-16 rounded-full bg-primary/15 text-primary flex items-center justify-center text-2xl font-bold flex-shrink-0 cursor-pointer overflow-hidden group"
+        >
+          {profile.avatar ? (
+            <img src={profile.avatar} alt="头像" className="w-full h-full object-cover" />
+          ) : (
+            profile.nickname.charAt(0)
+          )}
+          <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <Camera className="w-5 h-5 text-white" />
+          </div>
+        </div>
+        <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+        <div className="flex-1 min-w-0">
+          <h2 className="text-xl font-bold text-content dark:text-gray-100 truncate">{profile.nickname}</h2>
+          <p className="text-sm text-content-tertiary dark:text-gray-500 mt-0.5 truncate">
+            {profile.signature || '这个人很懒，什么都没写~'}
+          </p>
+        </div>
+        <button
+          onClick={() => { setNicknameInput(profile.nickname); setSignatureInput(profile.signature); setEditModal(true) }}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium text-primary bg-primary/10 hover:bg-primary/20 transition-colors"
+        >
+          <Pencil className="w-3.5 h-3.5" />
+          编辑
+        </button>
+      </div>
+
+      {/* Learning Data Card */}
+      <button
+        onClick={() => navigate('/stats')}
+        className="w-full card card-hover p-5 mb-4 text-left animate-card-enter group"
+        style={{ animationDelay: '0.05s' }}
+      >
+        <div className="mb-4">
+          <span className="text-sm font-semibold text-content dark:text-gray-100">学习数据</span>
+        </div>
+        <div className="grid grid-cols-3 gap-4">
+          {stats.map((stat) => (
+            <div key={stat.label} className="flex flex-col items-center">
+              <stat.Icon className="w-5 h-5 text-primary/60 mb-2" />
+              <div className="flex items-baseline gap-0.5">
+                <span className="text-xl font-bold text-content dark:text-gray-100 leading-none">{stat.value}</span>
+                {stat.unit && <span className="text-xs text-content-secondary dark:text-gray-400">{stat.unit}</span>}
+              </div>
+              <span className="text-xs text-content-tertiary dark:text-gray-500 mt-1">{stat.label}</span>
+            </div>
+          ))}
+        </div>
+      </button>
+
+      {/* Settings Section */}
+      <div className="animate-card-enter" style={{ animationDelay: '0.25s' }}>
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-sm font-semibold text-content dark:text-gray-100">设置</span>
+        </div>
+        <div className="bg-surface dark:bg-surface-dark rounded-2xl overflow-hidden border border-gray-100/80 dark:border-white/[0.06]">
+          {settingsItems.map((item, i, arr) => (
+            <button
+              key={item.label}
+              onClick={item.action}
+              className={`w-full flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors text-left ${i < arr.length - 1 ? 'border-b border-gray-100/60 dark:border-white/[0.04]' : ''}`}
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-lg w-6 text-center flex-shrink-0">{item.emoji}</span>
+                <span className="text-content dark:text-gray-100 text-[15px]">{item.label}</span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-content-tertiary flex-shrink-0" />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Edit Profile Modal */}
+      <Modal open={editModal} onClose={() => setEditModal(false)} title="编辑资料">
+        <div className="flex justify-center mb-5">
+          <div
+            onClick={() => avatarInputRef.current?.click()}
+            className="relative w-20 h-20 rounded-full bg-primary/15 text-primary flex items-center justify-center text-3xl font-bold cursor-pointer overflow-hidden group"
+          >
+            {profile.avatar ? (
+              <img src={profile.avatar} alt="头像" className="w-full h-full object-cover" />
+            ) : (
+              profile.nickname.charAt(0)
+            )}
+            <div className="absolute inset-0 bg-black/30 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <Camera className="w-5 h-5 text-white" />
+              <span className="text-[10px] text-white mt-0.5">更换头像</span>
+            </div>
+          </div>
+        </div>
+        <label className="block text-sm text-content-secondary dark:text-gray-400 mb-2">昵称</label>
+        <input
+          className="input-field w-full mb-4"
+          value={nicknameInput}
+          onChange={(e) => setNicknameInput(e.target.value)}
+          maxLength={20}
+          autoFocus
+        />
+        <label className="block text-sm text-content-secondary dark:text-gray-400 mb-2">个性签名</label>
+        <input
+          className="input-field w-full mb-4"
+          value={signatureInput}
+          onChange={(e) => setSignatureInput(e.target.value)}
+          maxLength={50}
+          placeholder="写点什么吧..."
+        />
+        <div className="flex gap-3 justify-end">
+          <button onClick={() => setEditModal(false)} className="btn-secondary px-4 py-2 rounded-button text-sm">取消</button>
+          <button onClick={handleSaveProfile} className="btn-primary px-4 py-2 rounded-button text-sm">保存</button>
+        </div>
+      </Modal>
+
+      {/* Daily Goal Modal */}
+      <Modal open={goalModal} onClose={() => setGoalModal(false)} title="每日目标">
+        <p className="text-sm text-content-secondary dark:text-gray-400 mb-4">选择每天的最低学习时长</p>
+        <div className="grid grid-cols-4 gap-2">
+          {goalPresets.map((mins) => (
+            <button
+              key={mins}
+              onClick={() => { profile.setDailyGoalMinutes(mins); setGoalModal(false); toast(`每日目标已设为 ${mins} 分钟`) }}
+              className={`py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                profile.dailyGoalMinutes === mins
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'bg-gray-100 dark:bg-white/[0.06] text-content dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-white/[0.1]'
+              }`}
+            >
+              {mins} 分钟
+            </button>
+          ))}
+        </div>
+      </Modal>
+
+      {/* Theme Modal */}
+      <Modal open={themeModal} onClose={() => setThemeModal(false)} title="主题外观">
+        <div className="grid grid-cols-2 gap-3">
+          {themeOptions.map((opt) => (
+            <button
+              key={opt.key}
+              onClick={() => { setTheme(opt.key); setThemeModal(false) }}
+              className={`p-4 rounded-xl text-left transition-all ${
+                theme === opt.key
+                  ? 'bg-primary/10 border-2 border-primary ring-1 ring-primary/20'
+                  : 'bg-gray-50 dark:bg-white/[0.04] border-2 border-transparent hover:bg-gray-100 dark:hover:bg-white/[0.08]'
+              }`}
+            >
+              <p className="text-sm font-semibold text-content dark:text-gray-100">{opt.label}</p>
+              <p className="text-xs text-content-tertiary dark:text-gray-500 mt-0.5">{opt.desc}</p>
+            </button>
+          ))}
+        </div>
+      </Modal>
+
     </div>
   )
 }
