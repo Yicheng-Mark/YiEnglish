@@ -1,0 +1,272 @@
+{
+  "title": "科学验证的英语学习方法权威数据",
+  "source": "认知心理学、二语习得(SLA)研究及大规模学习行为数据",
+  "last_updated": "2026-05-19",
+  "methods": [
+    {
+      "id": 1,
+      "name": "间隔重复（Spaced Repetition）",
+      "name_en": "Spaced Repetition",
+      "evidence_level": "最强",
+      "core_data": [
+        {
+          "metric": "记忆留存率提升",
+          "value": "+50%",
+          "comparison": "间隔重复 vs 集中背诵",
+          "timeframe": "1个月后",
+          "source": "Memory & Cognition, 2015"
+        },
+        {
+          "metric": "考试平均分数",
+          "value": "70%",
+          "comparison": "间隔重复组 vs 不使用工具组 61%",
+          "source": "英国莱斯特大学实验"
+        },
+        {
+          "metric": "真实学习日志训练量",
+          "value": "12,900,000条",
+          "source": "Duolingo 半衰期回归模型(HLR)"
+        },
+        {
+          "metric": "每周掌握单词量",
+          "value": "20-30个",
+          "source": "优化间隔系统实测"
+        },
+        {
+          "metric": "自发使用词汇能力",
+          "value": "+60%",
+          "comparison": "间隔重复学习者 vs 传统学习者",
+          "source": "优化间隔系统实测"
+        }
+      ],
+      "optimal_review_schedule": [
+        "20分钟",
+        "1小时",
+        "9小时",
+        "1天",
+        "3天",
+        "7天",
+        "15天"
+      ],
+      "neuroscience_basis": {
+        "institution": "北京师范大学",
+        "method": "头皮EEG",
+        "finding": "间隔学习显著增强大脑右前额叶在刺激后543-727毫秒的记忆编码电活动",
+        "correlation": "直接对应更好的长期记忆留存"
+      },
+      "best_practices": [
+        "使用Anki、SuperMemo或自研间隔重复系统",
+        "严格按算法推荐的复习节点执行",
+        "每次复习必须主动回忆，而非被动浏览"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "主动提取练习（Retrieval Practice）",
+      "name_en": "Retrieval Practice",
+      "evidence_level": "强",
+      "core_data": [
+        {
+          "metric": "记忆准确率",
+          "value": "显著高于",
+          "comparison": "阅读1次+自测3次 vs 阅读4次",
+          "timeframe": "一周后",
+          "source": "Roediger & Karpicke 经典实验"
+        },
+        {
+          "metric": "信息留存率（被动重复）",
+          "value": "约10%",
+          "source": "学习金字塔/认知心理学研究"
+        },
+        {
+          "metric": "信息留存率（主动运用）",
+          "value": "约90%",
+          "source": "学习金字塔/认知心理学研究"
+        }
+      ],
+      "mechanism": "提取练习效应：主动回忆迫使大脑从记忆中提取信息，每次提取都是一次神经连接的加固",
+      "best_practices": [
+        "学习后立即进行自我测试",
+        "使用闪卡正面写提示、背面写答案",
+        "先尝试回忆，再核对答案，错误标记重点复习"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "情境化与主题化学习",
+      "name_en": "Contextual & Thematic Learning",
+      "evidence_level": "中强",
+      "core_data": [
+        {
+          "metric": "语境词汇记忆留存率提升",
+          "value": "+50%",
+          "comparison": "真实语境学习 vs 孤立背单词",
+          "source": "词汇习得研究"
+        },
+        {
+          "metric": "主题组织回忆率提升",
+          "value": "+30%至+40%",
+          "comparison": "按主题组织 vs 随机呈现",
+          "source": "词汇习得研究"
+        }
+      ],
+      "example": {
+        "bad": "procrastinate = 拖延（孤立记忆）",
+        "good": "I always procrastinate when facing difficult tasks.（个人相关句子）"
+      },
+      "best_practices": [
+        "在句子或文章中学习新词",
+        "按主题聚合内容（如餐厅点餐、商务邮件）",
+        "建立与个人经历相关的记忆锚点"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "多感官协同输入",
+      "name_en": "Multi-sensory Learning",
+      "evidence_level": "中强",
+      "core_data": [
+        {
+          "metric": "多感官协同留存率",
+          "value": "90%",
+          "source": "学习金字塔研究"
+        },
+        {
+          "metric": "被动阅读/抄写留存率",
+          "value": "10%",
+          "source": "学习金字塔研究"
+        },
+        {
+          "metric": "效率倍数",
+          "value": "9倍",
+          "comparison": "多感官协同 vs 被动接收"
+        }
+      ],
+      "sensory_channels": [
+        {
+          "channel": "听觉",
+          "action": "听单词发音并跟读"
+        },
+        {
+          "channel": "视觉",
+          "action": "用不同颜色标记词性（名词蓝/动词红/形容词绿）"
+        },
+        {
+          "channel": "动觉",
+          "action": "对动词做相应动作（如记shrug时耸肩）"
+        },
+        {
+          "channel": "输出",
+          "action": "用新词写句子并发送给语伴或AI"
+        }
+      ],
+      "best_practices": [
+        "每个新词至少通过2种以上感官通道加工",
+        "结合发音、拼写、语义、用法四位一体学习"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "统计学习与可理解输入",
+      "name_en": "Statistical Learning & Comprehensible Input",
+      "evidence_level": "中",
+      "core_data": [
+        {
+          "metric": "大脑对统计规律敏感度",
+          "value": "极高",
+          "description": "人类天生对语音流中的转换概率等统计规律敏感",
+          "source": "NIH综述研究"
+        }
+      ],
+      "theory": "i+1理论：大量接触略高于当前水平的可理解输入，大脑会自动提取语言模式",
+      "mechanism": "婴儿正是依靠统计学习机制完成词汇分割和早期语法习得",
+      "best_practices": [
+        "精听+泛听结合，选择分级材料",
+        "阅读难度略高于当前水平的文本",
+        "避免盲目啃远超水平的难材料"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "刻意练习（Deliberate Practice）",
+      "name_en": "Deliberate Practice",
+      "evidence_level": "中强",
+      "core_data": [
+        {
+          "metric": "流利度提升",
+          "value": "显著",
+          "description": "针对流利度进行有目标、有反馈的重复训练，显著提升语言程序化和自动化水平",
+          "source": "de Jong & Perfetti (2011) 课堂实验"
+        }
+      ],
+      "key_distinction": "刻意练习不是漫无目的地看美剧，而是针对薄弱点（如第三人称单数、连读弱读）进行限时、有反馈的专项训练，直到反应自动化",
+      "best_practices": [
+        "识别个人薄弱语法点或发音点",
+        "设定明确的限时训练目标",
+        "获取即时反馈并修正",
+        "重复训练直到反应自动化"
+      ]
+    }
+  ],
+  "comparison_table": [
+    {
+      "dimension": "词汇留存（1个月后）",
+      "scientific_method": "间隔重复",
+      "inefficient_method": "集中背诵",
+      "gap": "+50%"
+    },
+    {
+      "dimension": "考试分数",
+      "scientific_method": "间隔重复 70%",
+      "inefficient_method": "不使用工具 61%",
+      "gap": "+9个百分点"
+    },
+    {
+      "dimension": "语境留存率",
+      "scientific_method": "情境学习",
+      "inefficient_method": "孤立背单词",
+      "gap": "+50%"
+    },
+    {
+      "dimension": "主题回忆率",
+      "scientific_method": "主题组织",
+      "inefficient_method": "随机呈现",
+      "gap": "+30%至+40%"
+    },
+    {
+      "dimension": "信息留存率",
+      "scientific_method": "多感官协同 90%",
+      "inefficient_method": "被动接收 10%",
+      "gap": "9倍"
+    }
+  ],
+  "minimum_effective_dose": {
+    "finding": "每天15-20分钟的科学记忆，效果优于1-2小时的机械背诵",
+    "daily_routine": [
+      {
+        "step": 1,
+        "duration": "5分钟",
+        "activity": "输入+情境",
+        "details": "在句子/文章中接触5-10个新词（主题聚合）"
+      },
+      {
+        "step": 2,
+        "duration": "5分钟",
+        "activity": "主动提取",
+        "details": "遮住释义，尝试回忆并造句（错误立即纠正）"
+      },
+      {
+        "step": 3,
+        "duration": "5分钟",
+        "activity": "间隔复习",
+        "details": "按1天/3天/7天/15天周期复习旧词"
+      },
+      {
+        "step": 4,
+        "duration": "5分钟",
+        "activity": "强制输出",
+        "details": "自由写作或口语录音，必须用到当日新词"
+      }
+    ]
+  }
+}

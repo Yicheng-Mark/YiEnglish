@@ -13,3 +13,9 @@ temp/
 tmp/
 backup/
 build/
+
+# 脚本缓存文件
+.bing-phonetics-cache.json
+.bing-variant-results.json
+.phonetics-cache.json
+.youdao-phonetics-cache.json

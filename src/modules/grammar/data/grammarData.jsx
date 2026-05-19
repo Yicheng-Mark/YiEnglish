@@ -1,3 +1,4 @@
+import { Type, Clock, FileText } from 'lucide-react'
 import grammarData from '../../../../english_grammar_system.json'
 
 export const metadata = grammarData.metadata
@@ -9,59 +10,64 @@ export const moduleConfig = [
   {
     id: 'partsOfSpeech',
     path: 'parts-of-speech',
+    step: 1,
     name: '词性',
     nameEn: 'Parts of Speech',
-    description: '10大词性类别，82个子类型',
+    description: '从单词的角色出发，建立句子的最小构件认知',
     color: 'violet',
-    bgColor: 'bg-violet-50 dark:bg-violet-500/10',
-    textColor: 'text-violet-600 dark:text-violet-400',
-    borderColor: 'border-violet-200 dark:border-violet-500/20',
-    icon: (
-      <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-        <path d="M4 7V4h16v3" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M9 20h6" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M12 4v16" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
+    textColor: 'text-violet-600 dark:text-violet-300',
+    iconBg: 'bg-violet-100/70 dark:bg-violet-500/15',
+    accentBar: 'bg-gradient-to-r from-violet-500 to-violet-400 dark:from-violet-400 dark:to-violet-300',
+    hoverBorder: 'hover:border-violet-300/70 dark:hover:border-violet-400/30',
+    glowFrom: 'from-violet-400/[0.12] dark:from-violet-400/[0.18]',
+    Icon: Type,
+    stats: [
+      { value: '10', label: '大词性类别' },
+      { value: '82', label: '细分子类型' },
+    ],
+    tags: ['名词', '动词', '形容词', '副词'],
     data: grammarData.partsOfSpeech,
   },
   {
     id: 'tenses',
     path: 'tenses',
+    step: 2,
     name: '时态',
     nameEn: 'Tenses',
-    description: '12种基本时态体系',
+    description: '掌握 12 种时态在时间轴上的精确定位与切换',
     color: 'emerald',
-    bgColor: 'bg-emerald-50 dark:bg-emerald-500/10',
-    textColor: 'text-emerald-600 dark:text-emerald-400',
-    borderColor: 'border-emerald-200 dark:border-emerald-500/20',
-    icon: (
-      <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-        <circle cx="12" cy="12" r="10" />
-        <polyline points="12 6 12 12 16 14" />
-      </svg>
-    ),
+    textColor: 'text-emerald-600 dark:text-emerald-300',
+    iconBg: 'bg-emerald-100/70 dark:bg-emerald-500/15',
+    accentBar: 'bg-gradient-to-r from-emerald-500 to-emerald-400 dark:from-emerald-400 dark:to-emerald-300',
+    hoverBorder: 'hover:border-emerald-300/70 dark:hover:border-emerald-400/30',
+    glowFrom: 'from-emerald-400/[0.12] dark:from-emerald-400/[0.18]',
+    Icon: Clock,
+    stats: [
+      { value: '12', label: '基本时态' },
+      { value: '3×4', label: '时间 × 体' },
+    ],
+    tags: ['现在', '过去', '将来', '完成进行'],
     data: grammarData.tenses,
   },
   {
     id: 'sentenceAnalysis',
     path: 'sentence-analysis',
+    step: 3,
     name: '句子精解',
     nameEn: 'Sentence Analysis',
-    description: '句子成分、句型、从句',
+    description: '从成分到从句，拆解任何复杂句的结构骨架',
     color: 'amber',
-    bgColor: 'bg-amber-50 dark:bg-amber-500/10',
-    textColor: 'text-amber-600 dark:text-amber-400',
-    borderColor: 'border-amber-200 dark:border-amber-500/20',
-    icon: (
-      <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-        <polyline points="14 2 14 8 20 8" />
-        <line x1="16" y1="13" x2="8" y2="13" />
-        <line x1="16" y1="17" x2="8" y2="17" />
-        <polyline points="10 9 9 9 8 9" />
-      </svg>
-    ),
+    textColor: 'text-amber-600 dark:text-amber-300',
+    iconBg: 'bg-amber-100/70 dark:bg-amber-500/15',
+    accentBar: 'bg-gradient-to-r from-amber-500 to-amber-400 dark:from-amber-400 dark:to-amber-300',
+    hoverBorder: 'hover:border-amber-300/70 dark:hover:border-amber-400/30',
+    glowFrom: 'from-amber-400/[0.12] dark:from-amber-400/[0.18]',
+    Icon: FileText,
+    stats: [
+      { value: '5', label: '核心板块' },
+      { value: '4+', label: '从句类型' },
+    ],
+    tags: ['成分', '句型', '从句', '特殊句式'],
     data: grammarData.sentenceAnalysis,
   },
 ]
