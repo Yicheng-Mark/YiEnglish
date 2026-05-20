@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
+import { getToken } from '../lib/auth'
+import { fetchSettings, updateSettings } from '../lib/api-settings'
 
 const DEFAULT_CONFIG = {
   soundEnabled: true,
@@ -16,7 +18,6 @@ function loadInitialTheme() {
   try {
     const saved = localStorage.getItem('lingoforge-theme');
     if (saved && VALID_THEMES.includes(saved)) return saved;
-    // 旧版兼容：把以前的 theme=dark 迁移成 star，theme=light 保持 light
     const legacy = localStorage.getItem('theme');
     if (legacy === 'dark') return 'star';
     if (legacy === 'light') return 'light';
@@ -24,6 +25,11 @@ function loadInitialTheme() {
   } catch {
     return 'light';
   }
+}
+
+function syncSettingUpdate(partial) {
+  if (!getToken()) return
+  updateSettings(partial).catch(e => console.warn('Sync settings failed:', e))
 }
 
 export function useUserConfig() {
@@ -50,12 +56,14 @@ export function useUserConfig() {
   const setTheme = useCallback((next) => {
     if (!VALID_THEMES.includes(next)) return;
     setThemeState(next);
+    syncSettingUpdate({ theme: next })
   }, []);
 
   const updateConfig = (key, value) => {
     setConfig(prev => {
       const next = { ...prev, [key]: value };
       localStorage.setItem('typingword_config', JSON.stringify(next));
+      syncSettingUpdate({ [key]: value })
       return next;
     });
   };
@@ -63,4 +71,25 @@ export function useUserConfig() {
   const toggleConfig = (key) => updateConfig(key, !config[key]);
 
   return { config, theme, setTheme, updateConfig, toggleConfig };
+}
+
+export async function syncSettingsFromServer() {
+  if (!getToken()) return
+  try {
+    const settings = await fetchSettings()
+    const config = {
+      soundEnabled: settings.soundEnabled ?? DEFAULT_CONFIG.soundEnabled,
+      showTranslation: settings.showTranslation ?? DEFAULT_CONFIG.showTranslation,
+      showPhonetic: settings.showPhonetic ?? DEFAULT_CONFIG.showPhonetic,
+      dictationMode: settings.dictationMode ?? DEFAULT_CONFIG.dictationMode,
+      wordRepeatCount: settings.wordRepeatCount ?? DEFAULT_CONFIG.wordRepeatCount,
+      autoRemoveErrorWord: settings.autoRemoveErrorWord ?? DEFAULT_CONFIG.autoRemoveErrorWord,
+    }
+    localStorage.setItem('typingword_config', JSON.stringify(config))
+    if (settings.theme && VALID_THEMES.includes(settings.theme)) {
+      localStorage.setItem('lingoforge-theme', settings.theme)
+    }
+  } catch (e) {
+    console.warn('Sync settings from server failed:', e)
+  }
 }

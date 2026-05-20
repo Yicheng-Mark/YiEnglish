@@ -1,20 +1,24 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Send, Square, Trash2 } from 'lucide-react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { ArrowLeft, Send, Square, Trash2, Bot } from 'lucide-react'
 import { createChatStream } from '../lib/chat-engine'
 import {
-  PERSONAS,
-  getPersona, setPersona as savePersona,
-  getMessages, setMessages as saveMessages, clearMessages as clearAllMessages,
+  fetchStyles, fetchChatHistory,
 } from '../lib/ai-settings'
+import { useAuth } from '../hooks/useAuth'
 import styles from '../components/AIAssistant/AICircleFloat.module.css'
 
 export default function AIChatPage() {
   const navigate = useNavigate()
-  const [messages, setMessages] = useState(() => getMessages())
+  const location = useLocation()
+  const { isAuthenticated } = useAuth()
+  const passedMessages = location.state?.messages
+  const [messages, setMessages] = useState(() =>
+    Array.isArray(passedMessages) ? passedMessages : []
+  )
   const [input, setInput] = useState('')
   const [streaming, setStreaming] = useState(false)
-  const [persona, setPersonaState] = useState(() => getPersona())
+  const [currentStyle, setCurrentStyle] = useState(null)
   const [currentReasoning, setCurrentReasoning] = useState('')
   const messagesEndRef = useRef(null)
   const abortRef = useRef(null)
@@ -23,15 +27,26 @@ export default function AIChatPage() {
   const messagesRef = useRef(messages)
   const inputRef = useRef(input)
   const streamingRef2 = useRef(streaming)
-  const personaRef = useRef(persona)
   useEffect(() => { messagesRef.current = messages }, [messages])
   useEffect(() => { inputRef.current = input }, [input])
   useEffect(() => { streamingRef2.current = streaming }, [streaming])
-  useEffect(() => { personaRef.current = persona }, [persona])
+
+  useEffect(() => {
+    fetchStyles().then(data => {
+      setCurrentStyle(data.current)
+    })
+    if (passedMessages === undefined && isAuthenticated) {
+      fetchChatHistory().then(history => {
+        setMessages(history)
+      })
+    }
+  }, [])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: streaming ? 'instant' : 'smooth' })
   }, [messages, streaming])
+
+  const displayName = currentStyle?.custom_name || currentStyle?.name || 'AI 助手'
 
   const handleSend = useCallback(() => {
     const text = inputRef.current.trim()
@@ -43,12 +58,6 @@ export default function AIChatPage() {
     setInput('')
     setStreaming(true)
     streamingRef.current = { content: '', reasoning: '' }
-
-    const personaObj = PERSONAS.find(p => p.key === personaRef.current) || PERSONAS[0]
-    const apiMessages = [
-      { role: 'system', content: personaObj.systemPrompt },
-      ...updated.map(m => ({ role: m.role, content: m.content })),
-    ]
 
     const assistantMsg = { role: 'assistant', content: '', reasoningContent: '' }
     setMessages(prev => [...prev, assistantMsg])
@@ -80,7 +89,8 @@ export default function AIChatPage() {
     }
 
     const { abort } = createChatStream({
-      messages: apiMessages,
+      messages: [{ role: 'user', content: text }],
+      styleKey: currentStyle?.style_key,
       onToken: (token) => {
         streamingRef.current.content += token
         scheduleFlush()
@@ -96,24 +106,21 @@ export default function AIChatPage() {
           content: streamingRef.current.content,
           reasoningContent: streamingRef.current.reasoning,
         }
-        const all = [...updated, final]
-        setMessages(all)
-        saveMessages(all)
+        setMessages([...updated, final])
         setStreaming(false)
         setCurrentReasoning('')
       },
       onError: (err) => {
         cancelAnimationFrame(rafId)
         const errMsg = { role: 'assistant', content: `Error: ${err.message}` }
-        const all = [...updated, errMsg]
-        setMessages(all)
+        setMessages([...updated, errMsg])
         setStreaming(false)
         setCurrentReasoning('')
       },
     })
 
     abortRef.current = abort
-  }, [])
+  }, [currentStyle])
 
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -128,19 +135,9 @@ export default function AIChatPage() {
     setCurrentReasoning('')
   }, [])
 
-  const handlePersonaChange = useCallback((key) => {
-    setPersonaState(key)
-    savePersona(key)
-    setMessages([])
-    saveMessages([])
-  }, [])
-
   const handleClearHistory = useCallback(() => {
     setMessages([])
-    clearAllMessages()
   }, [])
-
-  const personaObj = PERSONAS.find(p => p.key === persona) || PERSONAS[0]
 
   return (
     <div className={styles.fullScreenOverlay}>
@@ -148,17 +145,9 @@ export default function AIChatPage() {
         <button className={styles.iconBtn} onClick={() => navigate(-1)} title="返回">
           <ArrowLeft size={20} />
         </button>
-        <div className={styles.personaTabs}>
-          {PERSONAS.map(p => (
-            <button
-              key={p.key}
-              className={`${styles.tab} ${persona === p.key ? styles.tabActive : ''}`}
-              onClick={() => handlePersonaChange(p.key)}
-              title={p.name}
-            >
-              {p.avatar}
-            </button>
-          ))}
+        <div className={styles.headerTitle}>
+          <Bot size={22} className={styles.headerIcon} />
+          <span className={styles.headerName}>{displayName}</span>
         </div>
         <button className={styles.iconBtn} onClick={handleClearHistory} title="清空记录">
           <Trash2 size={16} />
@@ -168,20 +157,8 @@ export default function AIChatPage() {
       <div className={styles.messages}>
         {messages.length === 0 && (
           <div className={styles.welcome}>
-            <div className={styles.welcomeAvatar}>{personaObj.avatar}</div>
-            <h3>{personaObj.name}</h3>
-            <p>已就绪，开始对话吧</p>
-            <div className={styles.quickActions}>
-              <button onClick={() => setInput('帮我纠正这句英文的语法错误')}>
-                📝 语法纠正
-              </button>
-              <button onClick={() => setInput('用简单的话解释这个词的意思')}>
-                🔍 词汇讲解
-              </button>
-              <button onClick={() => setInput('模拟一段餐厅点餐的英语对话')}>
-                🎭 场景模拟
-              </button>
-            </div>
+            <div className={styles.welcomeAvatar}><Bot size={36} /></div>
+            <h3>{displayName}</h3>
           </div>
         )}
         {messages.map((msg, idx) => {
@@ -228,7 +205,7 @@ export default function AIChatPage() {
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={`和 ${personaObj.name} 对话...`}
+          placeholder={`和 ${displayName} 对话...`}
           disabled={streaming}
         />
         {streaming ? (

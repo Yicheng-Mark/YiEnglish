@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from 'react'
+import { useState, useRef, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
@@ -11,6 +11,7 @@ import { useProfileStore } from '../hooks/useProfileStore'
 import { getErrorBookCount } from '../utils/errorBook'
 import { getReadingWordBookCount } from '../utils/readingWordBook'
 import { getCorpusWordBookCount } from '../utils/corpusWordBook'
+import { fetchStyles, switchStyle, updateCustomName } from '../lib/ai-settings'
 
 function Modal({ open, onClose, title, children }) {
   if (!open) return null
@@ -38,9 +39,20 @@ export default function PersonalCenter() {
   const [editModal, setEditModal] = useState(false)
   const [goalModal, setGoalModal] = useState(false)
   const [themeModal, setThemeModal] = useState(false)
+  const [companionModal, setCompanionModal] = useState(false)
   const [nicknameInput, setNicknameInput] = useState(profile.nickname)
   const [signatureInput, setSignatureInput] = useState(profile.signature)
+  const [aiStyles, setAiStyles] = useState({ current: null, all: [] })
+  const [customNameInput, setCustomNameInput] = useState('')
+  const [editingName, setEditingName] = useState(false)
   const avatarInputRef = useRef(null)
+
+  // Load AI styles
+  useEffect(() => {
+    fetchStyles().then(data => {
+      setAiStyles({ current: data.current, all: data.all })
+    })
+  }, [])
 
   const wordCount = useMemo(() => getReadingWordBookCount() + getCorpusWordBookCount() + getErrorBookCount(), [])
   const completedArticles = useMemo(() => store.getCompletedArticleCount(), [])
@@ -104,7 +116,7 @@ export default function PersonalCenter() {
   ]
 
   const settingsItems = [
-    { label: 'AI 伙伴设置', emoji: '🤖', action: () => toast('即将上线', { description: 'AI 学习伙伴功能正在开发中' }) },
+    { label: 'AI 伙伴设置', emoji: '🤖', action: () => setCompanionModal(true) },
     { label: '每日目标', emoji: '🎯', action: () => setGoalModal(true) },
     { label: '模式切换', emoji: '🎨', action: () => setThemeModal(true) },
     { label: '帮助与反馈', emoji: '💬', action: () => toast('即将上线', { description: '帮助与反馈功能正在开发中' }) },
@@ -145,13 +157,17 @@ export default function PersonalCenter() {
       </div>
 
       {/* Learning Data Card */}
-      <button
-        onClick={() => navigate('/stats')}
-        className="w-full card card-hover py-6 mb-4 animate-card-enter group flex items-center justify-center"
+      <div
+        className="w-full card mb-4 animate-card-enter"
         style={{ animationDelay: '0.05s' }}
       >
-        <span className="text-lg font-semibold text-content dark:text-gray-100">学习数据</span>
-      </button>
+        <button
+          onClick={() => navigate('/stats')}
+          className="w-full py-6 flex items-center justify-center card-hover"
+        >
+          <span className="text-lg font-semibold text-content dark:text-gray-100">学习数据</span>
+        </button>
+      </div>
 
       {/* Settings Section */}
       <div className="animate-card-enter" style={{ animationDelay: '0.25s' }}>
@@ -250,6 +266,103 @@ export default function PersonalCenter() {
             >
               <p className="text-sm font-semibold text-content dark:text-gray-100">{opt.label}</p>
               <p className="text-xs text-content-tertiary dark:text-gray-500 mt-0.5">{opt.desc}</p>
+            </button>
+          ))}
+        </div>
+      </Modal>
+
+      {/* AI Companion Modal */}
+      <Modal open={companionModal} onClose={() => { setCompanionModal(false); setEditingName(false) }} title="AI 伙伴设置">
+        {/* Custom name section */}
+        {aiStyles.current && (
+          <div className="mb-4 p-3 rounded-xl bg-gray-50 dark:bg-white/[0.04]">
+            <p className="text-xs text-content-tertiary dark:text-gray-500 mb-2">自定义名称</p>
+            {editingName ? (
+              <div className="flex items-center gap-2">
+                <input
+                  className="input-field flex-1 text-sm"
+                  value={customNameInput}
+                  onChange={(e) => setCustomNameInput(e.target.value)}
+                  maxLength={20}
+                  autoFocus
+                  placeholder="给 TA 起个名字吧..."
+                  onKeyDown={async (e) => {
+                    if (e.key === 'Enter') {
+                      const trimmed = customNameInput.trim()
+                      if (!trimmed) return
+                      try {
+                        await updateCustomName(trimmed)
+                        setAiStyles(prev => ({ ...prev, current: { ...prev.current, custom_name: trimmed } }))
+                        toast('名称已更新')
+                        setEditingName(false)
+                      } catch (err) {
+                        toast('更新失败', { description: err.message })
+                      }
+                    }
+                    if (e.key === 'Escape') setEditingName(false)
+                  }}
+                />
+                <button
+                  onClick={async () => {
+                    const trimmed = customNameInput.trim()
+                    if (!trimmed) return
+                    try {
+                      await updateCustomName(trimmed)
+                      setAiStyles(prev => ({ ...prev, current: { ...prev.current, custom_name: trimmed } }))
+                      toast('名称已更新')
+                      setEditingName(false)
+                    } catch (err) {
+                      toast('更新失败', { description: err.message })
+                    }
+                  }}
+                  className="btn-primary px-3 py-1.5 rounded-button text-xs"
+                >确定</button>
+                <button
+                  onClick={() => setEditingName(false)}
+                  className="btn-secondary px-3 py-1.5 rounded-button text-xs"
+                >取消</button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-content dark:text-gray-100">
+                  {aiStyles.current.custom_name || '未命名'}
+                </span>
+                <button
+                  onClick={() => { setCustomNameInput(aiStyles.current.custom_name || ''); setEditingName(true) }}
+                  className="text-xs text-primary hover:underline"
+                >编辑</button>
+              </div>
+            )}
+          </div>
+        )}
+        <p className="text-sm text-content-secondary dark:text-gray-400 mb-4">选择你的 AI 学习伙伴风格</p>
+        <div className="grid grid-cols-1 gap-3">
+          {aiStyles.all.map((s) => (
+            <button
+              key={s.style_key}
+              onClick={async () => {
+                if (aiStyles.current?.style_key === s.style_key) return
+                try {
+                  await switchStyle(s.style_key)
+                  setAiStyles(prev => ({ ...prev, current: { ...s, custom_name: prev.current?.custom_name } }))
+                  toast(`已切换为 ${s.name}`)
+                } catch (err) {
+                  toast('切换失败，请重试', { description: err.message })
+                }
+              }}
+              className={`flex items-center gap-3 p-4 rounded-xl text-left transition-all ${
+                aiStyles.current?.style_key === s.style_key
+                  ? 'bg-primary/10 border-2 border-primary ring-1 ring-primary/20'
+                  : 'bg-gray-50 dark:bg-white/[0.04] border-2 border-transparent hover:bg-gray-100 dark:hover:bg-white/[0.08]'
+              }`}
+            >
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-content dark:text-gray-100">{s.name}</p>
+                <p className="text-xs text-content-tertiary dark:text-gray-500 mt-0.5">{s.description}</p>
+              </div>
+              {aiStyles.current?.style_key === s.style_key && (
+                <span className="text-xs text-primary font-medium flex-shrink-0">当前</span>
+              )}
             </button>
           ))}
         </div>

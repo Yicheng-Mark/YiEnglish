@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { getAudioContext } from '../utils/audioContext.js';
-import { addToErrorBook, removeFromErrorBook } from '../utils/errorBook.js';
+import { addToErrorBook } from '../utils/errorBook.js';
 
 // ========== 音频合成（机械键盘模拟）==========
 
@@ -117,7 +117,7 @@ function playSound(type) {
   } catch (e) {}
 }
 
-export default function useTyping(words, soundEnabled, wordRepeatCount = 1, isErrorBookMode = false, dictName = '', autoRemoveErrorWord = true) {
+export default function useTyping(words, soundEnabled, wordRepeatCount = 1, isErrorBookMode = false, dictName = '', autoRemoveErrorWord = true, onWordComplete = null, onAutoRemove = null) {
   const [wordIndex, setWordIndex] = useState(0);
   const [currentInput, setCurrentInput] = useState('');
   const [isWrong, setIsWrong] = useState(false);
@@ -132,6 +132,10 @@ export default function useTyping(words, soundEnabled, wordRepeatCount = 1, isEr
   const hasWrongInCurrentWordRef = useRef(false);
   const wordsRef = useRef(words);
   wordsRef.current = words;
+  const onWordCompleteRef = useRef(onWordComplete);
+  onWordCompleteRef.current = onWordComplete;
+  const onAutoRemoveRef = useRef(onAutoRemove);
+  onAutoRemoveRef.current = onAutoRemove;
 
   // 白噪声 buffer，首次播放时懒创建
   const noiseBufferRef = useRef(null);
@@ -187,6 +191,9 @@ export default function useTyping(words, soundEnabled, wordRepeatCount = 1, isEr
     return () => {
       timeoutsRef.current.forEach(clearTimeout);
       timeoutsRef.current = [];
+      audioCacheRef.current.forEach(audio => {
+        try { audio.pause(); audio.currentTime = 0; } catch {}
+      });
       audioCacheRef.current.clear();
     };
   }, [words]);
@@ -241,12 +248,13 @@ export default function useTyping(words, soundEnabled, wordRepeatCount = 1, isEr
       if (nextInput === target) {
         if (soundEnabled) playSound('correct');
         correctCountRef.current += target.length;
-        if (isErrorBookMode && autoRemoveErrorWord && !hasWrongInCurrentWordRef.current) {
-          removeFromErrorBook(currentWord.name);
+        if (autoRemoveErrorWord && !hasWrongInCurrentWordRef.current) {
+          onAutoRemoveRef.current?.(currentWord.name);
         }
         const completedTimes = repeatCountRef.current + 1;
         const shouldAdvance = wordRepeatCount !== 0 && completedTimes >= wordRepeatCount;
         if (shouldAdvance) {
+          onWordCompleteRef.current?.(currentWord.name);
           if (wordIndex >= words.length - 1) {
             if (soundEnabled) playSound('finish');
             setIsFinished(true);
@@ -288,7 +296,7 @@ export default function useTyping(words, soundEnabled, wordRepeatCount = 1, isEr
 
       setTimeout(() => { currentInputRef.current = ''; setCurrentInput(''); setIsWrong(false); }, 300);
     }
-  }, [currentWord, wordIndex, words, isFinished, startTime, speakWord, preloadWord, soundEnabled, wordRepeatCount, isErrorBookMode, dictName, autoRemoveErrorWord]);
+  }, [currentWord, wordIndex, words, isFinished, startTime, speakWord, preloadWord, soundEnabled, wordRepeatCount, isErrorBookMode, dictName, autoRemoveErrorWord, onAutoRemove]);
 
   const jumpTo = useCallback((index) => {
     if (index < 0 || index >= wordsRef.current.length) return;

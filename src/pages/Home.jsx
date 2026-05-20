@@ -6,6 +6,7 @@ import { buildWordIndex, searchWordIndex } from '../utils/wordIndex.js'
 import { getErrorBookCount } from '../utils/errorBook.js'
 import { getReadingWordBookCount } from '../utils/readingWordBook.js'
 import { getCorpusWordBookCount } from '../utils/corpusWordBook.js'
+import { getFavoriteWordsCount } from '../utils/favoriteWords.js'
 import { useDebounce } from '../hooks/useDebounce.js'
 import { useFavorites } from '../utils/favoriteDicts.js'
 import Hero from '../components/Hero'
@@ -58,6 +59,7 @@ function Home() {
   const [searchQuery, setSearchQuery] = useState('')
   const readingWordCount = getReadingWordBookCount()
   const corpusWordCount = getCorpusWordBookCount()
+  const favoriteWordCount = getFavoriteWordsCount()
 
   // 单词搜索:跨词库
   const [wordQuery, setWordQuery] = useState('')
@@ -408,6 +410,36 @@ function Home() {
                 {corpusWordCount > 0
                   ? `已积累 ${corpusWordCount} 个词汇`
                   : '观看语料视频，在真实语境中掌握单词'}
+              </p>
+            </div>
+          </div>}
+          {/* 收藏词本卡片 */}
+          {showFunctionBooks && match(['收藏词本']) && <div
+            onClick={() => saveScrollAndNavigate('/dict/favorite-words')}
+            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-50 p-6 cursor-pointer hover:shadow-lg hover:border-amber-300 dark:border-amber-900/40 dark:from-amber-950/30 dark:to-yellow-950/20 dark:hover:border-amber-700/60 dark:hover:shadow-amber-900/20 animate-card-enter glow-border-subtle transition-all duration-150 active:scale-[0.98]"
+          >
+            <div className="absolute top-0 left-0 w-full h-1 bg-amber-500 opacity-80" />
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-amber-900 dark:text-amber-200">收藏词本</h3>
+                  <p className="text-sm text-amber-600/80 dark:text-amber-400/70">你收藏的词汇</p>
+                </div>
+              </div>
+            </div>
+            <div className="mt-4">
+              <div className="inline-flex items-center rounded-lg bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-700 dark:bg-amber-500/15 dark:text-amber-300">
+                收藏
+              </div>
+              <p className="mt-2 text-sm text-amber-600/70 dark:text-amber-400/60">
+                {favoriteWordCount > 0
+                  ? `已收藏 ${favoriteWordCount} 个词汇`
+                  : '练习中收藏感兴趣的单词'}
               </p>
             </div>
           </div>}

@@ -3,6 +3,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { loadDictionary, getCached } from '../utils/loadDictionary.js';
 import { getMeta } from '../dictionaries/meta.js';
 import { unlockAudio } from '../utils/audioContext.js';
+import { fetchProgress, resetProgress } from '../lib/api.js';
+import { getLocalProgress } from '../utils/localProgress.js';
+import { useAuth } from '../hooks/useAuth.js';
 import ChapterSkeleton from '../components/ChapterSkeleton.jsx';
 
 const RESTORE_KEY = 'lf_wordlib_should_restore';
@@ -13,7 +16,9 @@ export default function ChapterSelect() {
   const [dict, setDict] = useState(() => getCached(dictId));
   const [loading, setLoading] = useState(() => !getCached(dictId));
   const [error, setError] = useState(null);
+  const [progress, setProgress] = useState({});
   const meta = getMeta(dictId);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     setLoading(true); setError(null);
@@ -24,6 +29,16 @@ export default function ChapterSelect() {
       setDict(data); setLoading(false);
     }).catch(err => { setError('加载失败'); setLoading(false); });
   }, [dictId]);
+
+  useEffect(() => {
+    const localData = getLocalProgress(dictId);
+    setProgress(localData);
+    if (isAuthenticated) {
+      fetchProgress(dictId).then(data => {
+        setProgress(prev => ({ ...prev, ...(data.chapters || {}) }));
+      }).catch(() => {});
+    }
+  }, [dictId, isAuthenticated]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -65,6 +80,9 @@ export default function ChapterSelect() {
 
   const chapterCount = dict.chapters?.length || 0;
   const totalWords = dict.chapters?.reduce((sum, c) => sum + (c.words?.length || 0), 0) || 0;
+  const totalDone = dict.chapters?.reduce((sum, c) => sum + (progress[c.id] || 0), 0) || 0;
+  const totalPct = totalWords > 0 ? Math.round(totalDone / totalWords * 100) : 0;
+  const isBookComplete = totalPct === 100;
 
   return (
     <div className="min-h-screen bg-background dark:bg-transparent p-6 transition-colors duration-500 animate-page-fade-in">
@@ -76,6 +94,29 @@ export default function ChapterSelect() {
 
         <div className="mb-8 glass-card rounded-card p-6 relative overflow-hidden animate-fade-in-up">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-accent to-primary opacity-60" />
+          {totalDone > 0 && (
+            <button
+              onClick={async () => {
+                if (!window.confirm(`确定要重置「${meta?.name || dict.name}」的所有学习进度吗？此操作不可撤销。`)) return
+                if (isAuthenticated) {
+                  try { await resetProgress(dictId) }
+                  catch (e) { console.warn('Server reset failed:', e) }
+                }
+                const raw = localStorage.getItem('lf_progress')
+                if (raw) {
+                  const data = JSON.parse(raw)
+                  Object.keys(data).forEach(key => {
+                    if (key.startsWith(`${dictId}:`)) delete data[key]
+                  })
+                  localStorage.setItem('lf_progress', JSON.stringify(data))
+                }
+                setProgress({})
+              }}
+              className="absolute top-4 right-4 text-xs px-2.5 py-1 rounded-md text-content-tertiary hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 border border-gray-200 dark:border-white/10 hover:border-red-200 dark:hover:border-red-800 transition-colors"
+            >
+              重置进度
+            </button>
+          )}
           <h1 className="text-3xl font-extrabold text-content dark:text-white mb-2">{meta?.name || dict.name}</h1>
           <p className="text-content-tertiary dark:text-gray-400">{meta?.description || dict.description}</p>
           <div className="flex gap-5 mt-4 text-sm">
@@ -88,6 +129,22 @@ export default function ChapterSelect() {
               <span>共 {totalWords} 词</span>
             </div>
           </div>
+          {totalWords > 0 && (
+            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-white/[0.06]">
+              <div className="flex justify-between items-center mb-2">
+                <span className={`text-xs font-medium ${isBookComplete ? 'text-green-500' : 'text-content-tertiary dark:text-gray-400'}`}>
+                  {isBookComplete ? '已全部完成' : `已学 ${totalDone} / ${totalWords} 词`}
+                </span>
+                <span className={`text-xs font-semibold ${isBookComplete ? 'text-green-500' : 'text-primary dark:text-primary-dark'}`}>{totalPct}%</span>
+              </div>
+              <div className="w-full h-1.5 bg-gray-200 dark:bg-white/[0.08] rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${isBookComplete ? 'bg-green-500' : 'bg-primary dark:bg-primary-dark'}`}
+                  style={{ width: `${totalPct}%` }}
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {chapterCount === 0 ? <div className="text-center py-16 text-content-tertiary dark:text-gray-500">暂无章节数据</div> : (
@@ -100,6 +157,28 @@ export default function ChapterSelect() {
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
                   {chapter.words?.length || 0} 词
                 </div>
+                {(() => {
+                  const total = chapter.words?.length || 0
+                  const done = progress[chapter.id] || 0
+                  const pct = total > 0 ? Math.round(done / total * 100) : 0
+                  const isComplete = pct === 100
+                  return (
+                    <div className="mt-2">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className={`text-[10px] font-medium ${isComplete ? 'text-green-500' : 'text-content-tertiary dark:text-gray-500'}`}>
+                          {isComplete ? '已完成' : `${done}/${total}`}
+                        </span>
+                        <span className={`text-[10px] font-medium ${isComplete ? 'text-green-500' : 'text-content-tertiary dark:text-gray-500'}`}>{pct}%</span>
+                      </div>
+                      <div className="w-full h-1 bg-gray-200 dark:bg-white/[0.08] rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-300 ${isComplete ? 'bg-green-500' : 'bg-primary dark:bg-primary-dark'}`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </div>
+                  )
+                })()}
               </Link>
             ))}
           </div>

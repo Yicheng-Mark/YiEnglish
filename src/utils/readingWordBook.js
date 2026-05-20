@@ -1,3 +1,6 @@
+import { getToken } from '../lib/auth'
+import { addWordToBook, removeWordFromBook, fetchWordBook, replaceWordBook } from '../lib/api-wordbooks'
+
 const STORAGE_KEY = 'lingoforge_reading_words';
 
 let dictWordMap = null;
@@ -28,7 +31,6 @@ function findWordInMap(wordName, map) {
   const key = wordName.toLowerCase();
   if (map.has(key)) return map.get(key);
 
-  // Simple stemming fallback for common inflections
   const fallbacks = [];
   if (key.endsWith('ies')) fallbacks.push(key.slice(0, -3) + 'y');
   else if (key.endsWith('es')) fallbacks.push(key.slice(0, -2));
@@ -76,6 +78,9 @@ export async function enrichReadingWordBook() {
 
   if (changed) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ words: enriched }));
+    if (getToken()) {
+      replaceWordBook('reading', enriched).catch(e => console.warn('Sync enriched reading words failed:', e))
+    }
   }
 }
 
@@ -106,6 +111,10 @@ export function addToReadingWordBook(wordInfo) {
       });
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ words }));
+
+    if (getToken()) {
+      addWordToBook('reading', wordInfo).catch(e => console.warn('Sync reading add failed:', e))
+    }
   } catch (e) {
     console.error('Failed to add to reading word book:', e);
   }
@@ -116,6 +125,10 @@ export function removeFromReadingWordBook(wordName) {
     const data = getReadingWordBook();
     const words = (data.words || []).filter((w) => w.name !== wordName);
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ words }));
+
+    if (getToken()) {
+      removeWordFromBook('reading', wordName).catch(e => console.warn('Sync reading remove failed:', e))
+    }
   } catch (e) {
     console.error('Failed to remove from reading word book:', e);
   }
@@ -168,4 +181,14 @@ export function loadReadingWordBookAsDictionary() {
     description: '语境中积累的词汇',
     chapters,
   };
+}
+
+export async function syncReadingWordBookFromServer() {
+  if (!getToken()) return
+  try {
+    const data = await fetchWordBook('reading')
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+  } catch (e) {
+    console.warn('Sync reading word book from server failed:', e)
+  }
 }

@@ -1,0 +1,36 @@
+const BASE_IDENTITY = `你是一个稳定、自然、能记住用户偏好、会根据上下文调整表达方式的智能英语学习助手。
+你不是机械问答机器人，而是有连续人格的对话伙伴。
+你需要保持一致的身份、语气和逻辑风格。
+用户正在使用一个叫 LingoForge 的英语学习应用。`
+
+/**
+ * Build the complete system prompt from layers:
+ * base identity + style prompt + user memories
+ */
+async function buildSystemPrompt(pool, { styleKey, memories, userNickname }) {
+  // 1. Fetch style prompt from DB
+  const [styleRows] = await pool.execute(
+    'SELECT system_prompt FROM style_modes WHERE style_key = ? AND is_active = 1',
+    [styleKey]
+  )
+  const stylePrompt = styleRows.length > 0
+    ? styleRows[0].system_prompt
+    : '你是一位友好的英语学习助手。'
+
+  // 2. Build memory section
+  let memorySection = ''
+  if (memories && memories.length > 0) {
+    const items = memories.map(m => `- (${m.category}) ${m.content}`).join('\n')
+    memorySection = `\n\n以下是关于这个用户的已知信息，请在回复时参考：\n${items}`
+  }
+
+  // 3. Build user context
+  let userContext = ''
+  if (userNickname) {
+    userContext = `\n\n用户昵称：${userNickname}`
+  }
+
+  return BASE_IDENTITY + '\n\n' + stylePrompt + memorySection + userContext
+}
+
+module.exports = { buildSystemPrompt }

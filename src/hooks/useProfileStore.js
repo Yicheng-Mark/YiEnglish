@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { getToken } from '../lib/auth'
+import { apiUpdateProfile, apiGetProfile } from '../lib/auth'
 
 const STORAGE_KEY = 'lingoforge_profile'
 
@@ -40,6 +42,11 @@ function persist() {
   listeners.forEach((fn) => fn())
 }
 
+function syncProfileUpdate(updates) {
+  if (!getToken()) return
+  apiUpdateProfile(updates).catch(e => console.warn('Sync profile update failed:', e))
+}
+
 export function useProfileStore() {
   const [, setTick] = useState(0)
 
@@ -61,19 +68,40 @@ export function useProfileStore() {
       if (!trimmed) return
       cache = { ...cache, nickname: trimmed }
       persist()
+      syncProfileUpdate({ nickname: trimmed })
     },
     setSignature(sig) {
       cache = { ...cache, signature: sig }
       persist()
+      syncProfileUpdate({ signature: sig })
     },
     setAvatar(dataUrl) {
       cache = { ...cache, avatar: dataUrl }
       persist()
+      syncProfileUpdate({ avatar: dataUrl })
     },
     setDailyGoalMinutes(n) {
       const clamped = Math.max(5, Math.min(300, Math.round(n)))
       cache = { ...cache, dailyGoalMinutes: clamped }
       persist()
+      syncProfileUpdate({ dailyGoalMinutes: clamped })
     },
+  }
+}
+
+export async function syncProfileFromServer() {
+  if (!getToken()) return
+  try {
+    const profile = await apiGetProfile()
+    if (!profile) return
+    cache = {
+      nickname: profile.nickname || defaultState.nickname,
+      signature: profile.signature || defaultState.signature,
+      avatar: profile.avatar || defaultState.avatar,
+      dailyGoalMinutes: profile.dailyGoalMinutes || defaultState.dailyGoalMinutes,
+    }
+    persist()
+  } catch (e) {
+    console.warn('Sync profile from server failed:', e)
   }
 }

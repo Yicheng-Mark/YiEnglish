@@ -14,27 +14,28 @@
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  border: none;
-  background: linear-gradient(135deg, #60A5FA, #2563EB);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  background: linear-gradient(135deg, #A78BFA, #7C3AED);
   cursor: grab;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   box-shadow:
-    0 0 12px rgba(59, 130, 246, 0.7),
-    0 0 30px rgba(59, 130, 246, 0.4),
-    0 0 60px rgba(59, 130, 246, 0.2),
-    0 4px 12px rgba(0,0,0,0.1);
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+    0 0 8px rgba(167, 139, 250, 0.4),
+    0 0 20px rgba(124, 58, 237, 0.25),
+    0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
   outline: none;
   -webkit-tap-highlight-color: transparent;
-  animation: floatBob 3s ease-in-out infinite;
+  animation: cuteBounce 3s ease-in-out infinite;
 }
 
-@keyframes floatBob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+@keyframes cuteBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(-8px) scale(1.03); }
+  50% { transform: translateY(-4px) scale(1); }
+  70% { transform: translateY(-10px) scale(1.02); }
 }
 
 .floatButton:active {
@@ -46,10 +47,18 @@
   opacity: 0.9;
   transform: scale(1.1);
   box-shadow:
-    0 0 18px rgba(59, 130, 246, 0.8),
-    0 0 40px rgba(59, 130, 246, 0.5),
-    0 0 80px rgba(59, 130, 246, 0.25),
-    0 4px 12px rgba(0,0,0,0.15);
+    0 0 12px rgba(167, 139, 250, 0.5),
+    0 0 28px rgba(124, 58, 237, 0.3),
+    0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.floatButton:hover {
+  transform: scale(1.08);
+  box-shadow:
+    0 0 12px rgba(167, 139, 250, 0.5),
+    0 0 28px rgba(124, 58, 237, 0.3),
+    0 0 40px rgba(124, 58, 237, 0.12),
+    0 6px 16px rgba(0, 0, 0, 0.1);
 }
 
 .floatButton.nearEdge {
@@ -66,10 +75,11 @@
 
 .floatIcon {
   color: white;
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   pointer-events: none;
   z-index: 2;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
 }
 
 /* ===== 聊天面板 ===== */
@@ -88,6 +98,7 @@
   box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.04);
   animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-origin: bottom right;
+  touch-action: none;
 }
 
 .chatPanel.panelTop {
@@ -135,35 +146,33 @@
   justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
+  cursor: grab;
 }
 
-.personaTabs {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  scrollbar-width: none;
+.panelHeader:active {
+  cursor: grabbing;
 }
-.personaTabs::-webkit-scrollbar { display: none; }
 
-.tab {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  background: var(--color-primary-soft);
-  cursor: pointer;
-  font-size: 18px;
+.headerTitle {
   display: flex;
   align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.headerIcon {
+  color: var(--color-primary);
   flex-shrink: 0;
 }
 
-.tab:hover { transform: scale(1.1); }
-.tabActive {
-  border-color: var(--color-primary);
-  background: var(--color-primary-soft);
+.headerName {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-content);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .headerActions { display: flex; gap: 4px; }
@@ -210,7 +219,10 @@
 }
 
 .welcomeAvatar {
-  font-size: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
   margin-bottom: 12px;
   animation: float 3s ease-in-out infinite;
 }

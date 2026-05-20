@@ -6,6 +6,7 @@ import { loadDictionary } from '../utils/loadDictionary.js';
 import { getErrorBook, getErrorBookCount, removeFromErrorBook } from '../utils/errorBook.js';
 import { getReadingWordBookCount, removeFromReadingWordBook } from '../utils/readingWordBook.js';
 import { getCorpusWordBookCount, removeFromCorpusWordBook } from '../utils/corpusWordBook.js';
+import { getFavoriteWordsCount, isInFavoriteWords, addToFavoriteWords, removeFromFavoriteWords } from '../utils/favoriteWords.js';
 import { getMeta } from '../dictionaries/meta.js';
 import useTyping from '../hooks/useTyping.js';
 import { useUserConfig } from '../hooks/useUserConfig.js';
@@ -18,6 +19,9 @@ import WordListPanel from '../components/WordListPanel.jsx';
 import NextWordPreview from '../components/NextWordPreview.jsx';
 import WordDisplay from '../components/WordDisplay.jsx';
 import useIsMobile from '../hooks/useIsMobile.js';
+import { useAuth } from '../hooks/useAuth.js';
+import { saveProgress } from '../lib/api.js';
+import { saveLocalProgress } from '../utils/localProgress.js';
 
 export default function Typing() {
   const { dictId, chapterId } = useParams();
@@ -41,12 +45,15 @@ export default function Typing() {
   const [viewportHeight, setViewportHeight] = useState(null);
   const touchStartRef = useRef(null);
   const suppressClickRef = useRef(false);
+  const { isAuthenticated } = useAuth();
+  const completedBufferRef = useRef([]);
 
   const isMobile = useIsMobile();
   const isErrorBookMode = dictId === 'error-book';
   const isReadingWordBookMode = dictId === 'reading-word-book';
   const isCorpusWordBookMode = dictId === 'corpus-word-book';
-  const isWordBookMode = isReadingWordBookMode || isCorpusWordBookMode;
+  const isFavoriteWordBookMode = dictId === 'favorite-words';
+  const isWordBookMode = isReadingWordBookMode || isCorpusWordBookMode || isFavoriteWordBookMode;
 
   const targetWordIndex = parseInt(searchParams.get('wordIndex')) || 0;
 
@@ -64,17 +71,46 @@ export default function Typing() {
         setWords(chapter.words);
       } else if (isErrorBookMode && (!dict.chapters || dict.chapters.length === 0)) {
         setError('错题本暂无单词');
+      } else if (isFavoriteWordBookMode && (!dict.chapters || dict.chapters.length === 0)) {
+        setError('收藏词本暂无单词');
         setWords([]);
       } else {
         setError('章节不存在或为空');
       }
       setLoading(false);
     }).catch(() => { setError('加载失败'); setLoading(false); });
-  }, [dictId, chapterId, isErrorBookMode, reloadKey]);
+  }, [dictId, chapterId, isErrorBookMode, isFavoriteWordBookMode, reloadKey]);
 
   const dictName = useMemo(() => getMeta(dictId)?.name || dictId, [dictId]);
 
-  const { currentWord, currentInput, wordIndex, stats, isFinished, handleInput, jumpTo, reset, isWrong, startTime } = useTyping(words, config.soundEnabled, config.wordRepeatCount, isErrorBookMode, dictName, config.autoRemoveErrorWord);
+  const flushServerProgress = useCallback(() => {
+    if (!isAuthenticated || isErrorBookMode || isWordBookMode) return;
+    const buffered = completedBufferRef.current.splice(0);
+    if (buffered.length === 0) return;
+    saveProgress(dictId, Number(chapterId), buffered).catch(() => {
+      completedBufferRef.current.push(...buffered);
+    });
+  }, [isAuthenticated, isErrorBookMode, isWordBookMode, dictId, chapterId]);
+
+  const handleWordComplete = useCallback((wordName) => {
+    if (isErrorBookMode || isWordBookMode) return;
+    saveLocalProgress(dictId, Number(chapterId), [wordName]);
+    if (isAuthenticated) {
+      completedBufferRef.current.push(wordName);
+      if (completedBufferRef.current.length >= 5) {
+        flushServerProgress();
+      }
+    }
+  }, [isErrorBookMode, isWordBookMode, dictId, chapterId, isAuthenticated, flushServerProgress]);
+
+  const handleAutoRemove = useCallback((wordName) => {
+    if (isErrorBookMode) removeFromErrorBook(wordName);
+    else if (isReadingWordBookMode) removeFromReadingWordBook(wordName);
+    else if (isCorpusWordBookMode) removeFromCorpusWordBook(wordName);
+    else if (isFavoriteWordBookMode) removeFromFavoriteWords(wordName);
+  }, [isErrorBookMode, isReadingWordBookMode, isCorpusWordBookMode, isFavoriteWordBookMode]);
+
+  const { currentWord, currentInput, wordIndex, stats, isFinished, handleInput, jumpTo, reset, isWrong, startTime } = useTyping(words, config.soundEnabled, config.wordRepeatCount, isErrorBookMode, dictName, config.autoRemoveErrorWord, handleWordComplete, handleAutoRemove);
   const studyStore = useReadingStore();
   const typingAccumulatedRef = useRef(0);
   const lastFlushRef = useRef(0);
@@ -93,6 +129,29 @@ export default function Typing() {
     if (!isCorpusWordBookMode) return 0;
     return getCorpusWordBookCount();
   }, [isCorpusWordBookMode, isFinished, reloadKey]);
+
+  const remainingFavoriteCount = useMemo(() => {
+    if (!isFavoriteWordBookMode) return 0;
+    return getFavoriteWordsCount();
+  }, [isFavoriteWordBookMode, isFinished, reloadKey]);
+
+  // 收藏状态同步
+  const [isCurrentWordFavorited, setIsCurrentWordFavorited] = useState(false);
+  useEffect(() => {
+    setIsCurrentWordFavorited(currentWord ? isInFavoriteWords(currentWord.name) : false);
+  }, [currentWord?.name]);
+
+  const handleToggleFavorite = useCallback((e) => {
+    e.stopPropagation();
+    if (!currentWord) return;
+    if (isInFavoriteWords(currentWord.name)) {
+      removeFromFavoriteWords(currentWord.name);
+      setIsCurrentWordFavorited(false);
+    } else {
+      addToFavoriteWords(currentWord);
+      setIsCurrentWordFavorited(true);
+    }
+  }, [currentWord]);
 
   // 加载完成后，自动跳转到 URL 参数指定的单词
   useEffect(() => {
@@ -140,6 +199,16 @@ export default function Typing() {
       }
     }
   }, [startTime, isFinished, studyStore])
+
+  // 章节完成时刷新进度到服务器
+  useEffect(() => {
+    if (isFinished) flushServerProgress();
+  }, [isFinished, flushServerProgress]);
+
+  // 组件卸载时刷新进度
+  useEffect(() => {
+    return () => flushServerProgress();
+  }, [flushServerProgress]);
 
   // 移动端：点击/触摸页面任意位置重新聚焦输入框，防止失焦后无法打字
   useEffect(() => {
@@ -226,6 +295,14 @@ export default function Typing() {
     handleInputRef.current?.('Backspace');
   }, [isFinished]);
 
+  const hasNextChapter = !isErrorBookMode && !isReadingWordBookMode && !isCorpusWordBookMode && !isFavoriteWordBookMode
+    && chapters.some(c => c.id === Number(chapterId) + 1);
+
+  const handleNextChapter = useCallback(() => {
+    const nextId = Number(chapterId) + 1;
+    navigate(`/typing/${dictId}/${nextId}`);
+  }, [navigate, dictId, chapterId]);
+
   // 桌面端：window 级别 keydown 监听，保持原有逻辑不变
   useEffect(() => {
     if (isMobile) return;
@@ -236,12 +313,25 @@ export default function Typing() {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       if (e.key === 'Tab' || e.key === 'ArrowRight') {
         e.preventDefault();
-        if (wordIndex < words.length - 1) jumpTo(wordIndex + 1);
+        if (currentWord) {
+          saveLocalProgress(dictId, Number(chapterId), [currentWord.name]);
+        }
+        if (wordIndex < words.length - 1) {
+          jumpTo(wordIndex + 1);
+        } else if (hasNextChapter) {
+          flushServerProgress();
+          navigate(`/typing/${dictId}/${Number(chapterId) + 1}`);
+        }
         return;
       }
       if (e.key === 'ArrowLeft') {
         e.preventDefault();
-        if (wordIndex > 0) jumpTo(wordIndex - 1);
+        if (wordIndex > 0) {
+          jumpTo(wordIndex - 1);
+        } else if (Number(chapterId) > 0) {
+          flushServerProgress();
+          navigate(`/typing/${dictId}/${Number(chapterId) - 1}?wordIndex=999`);
+        }
         return;
       }
       if (e.key === ' ') e.preventDefault();
@@ -250,7 +340,7 @@ export default function Typing() {
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [isMobile, isFinished, isWordListOpen, handleBackspace, handleCharacterInput, wordIndex, words.length, jumpTo]);
+  }, [isMobile, isFinished, isWordListOpen, handleBackspace, handleCharacterInput, wordIndex, words.length, jumpTo, currentWord, dictId, chapterId, hasNextChapter, flushServerProgress, navigate]);
 
   // 移动端输入处理：通过隐藏 input 代理键盘输入
   const handleInputChange = useCallback((e) => {
@@ -311,7 +401,10 @@ export default function Typing() {
       suppressClickRef.current = true;
       setTimeout(() => { suppressClickRef.current = false; }, 350);
       if (dx > 0 && wordIndex > 0) jumpTo(wordIndex - 1);
-      else if (dx < 0 && wordIndex < words.length - 1) jumpTo(wordIndex + 1);
+      else if (dx < 0 && wordIndex < words.length - 1) {
+        if (currentWord) saveLocalProgress(dictId, Number(chapterId), [currentWord.name]);
+        jumpTo(wordIndex + 1);
+      }
       return;
     }
 
@@ -322,41 +415,42 @@ export default function Typing() {
         catch { hiddenInputRef.current?.focus(); }
       }, 0);
     }
-  }, [isMobile, isFinished, wordIndex, words.length, jumpTo, keyboardActive]);
+  }, [isMobile, isFinished, wordIndex, words.length, jumpTo, keyboardActive, currentWord, dictId, chapterId]);
 
   const handleGoHome = useCallback(() => {
-    if (isErrorBookMode || isReadingWordBookMode || isCorpusWordBookMode) {
+    if (isErrorBookMode || isReadingWordBookMode || isCorpusWordBookMode || isFavoriteWordBookMode) {
       navigate('/word');
     } else {
       navigate(`/dict/${dictId}`);
     }
-  }, [navigate, dictId, isErrorBookMode, isReadingWordBookMode, isCorpusWordBookMode]);
+  }, [navigate, dictId, isErrorBookMode, isReadingWordBookMode, isCorpusWordBookMode, isFavoriteWordBookMode]);
 
-  const hasNextChapter = !isErrorBookMode && !isReadingWordBookMode && !isCorpusWordBookMode
-    && chapters.some(c => c.id === Number(chapterId) + 1);
-
-  const handleNextChapter = useCallback(() => {
-    const nextId = Number(chapterId) + 1;
-    navigate(`/typing/${dictId}/${nextId}`);
-  }, [navigate, dictId, chapterId]);
+  // 完成章节后延迟跳到下一章，让用户看到"已完成"状态
+  useEffect(() => {
+    if (!isFinished || !hasNextChapter) return;
+    flushServerProgress();
+    const timer = setTimeout(() => {
+      navigate(`/typing/${dictId}/${Number(chapterId) + 1}`);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [isFinished, hasNextChapter, navigate, dictId, chapterId, flushServerProgress]);
 
   const handleDeleteCurrentWord = useCallback(() => {
     if (!currentWord || words.length === 0) return;
     if (isErrorBookMode) {
-      if (!window.confirm(`确定将 "${currentWord.name}" 从错题本移除吗？`)) return;
       removeFromErrorBook(currentWord.name);
     } else if (isReadingWordBookMode) {
-      if (!window.confirm(`确定将 "${currentWord.name}" 从阅读词本移除吗？`)) return;
       removeFromReadingWordBook(currentWord.name);
     } else if (isCorpusWordBookMode) {
-      if (!window.confirm(`确定将 "${currentWord.name}" 从语料词本移除吗？`)) return;
       removeFromCorpusWordBook(currentWord.name);
+    } else if (isFavoriteWordBookMode) {
+      removeFromFavoriteWords(currentWord.name);
     } else {
       return;
     }
     setWords(prev => prev.filter(w => w.name !== currentWord.name));
     // words 变化后 useTyping 的 useEffect 会自动重置输入、计时器、统计等状态
-  }, [currentWord, words.length, isErrorBookMode, isReadingWordBookMode, isCorpusWordBookMode]);
+  }, [currentWord, words.length, isErrorBookMode, isReadingWordBookMode, isCorpusWordBookMode, isFavoriteWordBookMode]);
 
   const handleWordRemovedFromModal = useCallback((wordName) => {
     setWords(prev => {
@@ -386,7 +480,7 @@ export default function Typing() {
     <div className="h-[calc(100dvh-3rem)] md:h-[calc(100vh-4rem)] bg-background dark:bg-transparent flex items-center justify-center transition-colors duration-500">
       <div className="text-center">
         <div className="animate-spin w-12 h-12 border-4 border-primary dark:border-primary-dark border-t-transparent rounded-full mx-auto mb-4" />
-        <p className="text-content-tertiary dark:text-gray-400 text-sm">{isErrorBookMode ? '正在加载错题本...' : isReadingWordBookMode ? '正在加载阅读词本...' : isCorpusWordBookMode ? '正在加载语料词本...' : '正在加载章节...'}</p>
+        <p className="text-content-tertiary dark:text-gray-400 text-sm">{isErrorBookMode ? '正在加载错题本...' : isReadingWordBookMode ? '正在加载阅读词本...' : isCorpusWordBookMode ? '正在加载语料词本...' : isFavoriteWordBookMode ? '正在加载收藏词本...' : '正在加载章节...'}</p>
       </div>
     </div>
   );
@@ -400,7 +494,7 @@ export default function Typing() {
           </svg>
         </div>
         <p className="text-indigo-500 dark:text-violet-400 mb-6 font-medium">{error}</p>
-        <button onClick={() => isErrorBookMode || isWordBookMode ? navigate('/word') : navigate(`/dict/${dictId}`)} className="px-5 py-2.5 bg-primary hover:opacity-90 text-white rounded-button font-medium transition shadow-lg shadow-primary/20">返回章节列表</button>
+        <button onClick={() => isErrorBookMode || isWordBookMode ? navigate('/word') : navigate(`/dict/${dictId}`)} className="px-5 py-2.5 bg-primary hover:opacity-90 text-white rounded-button font-medium transition shadow-lg shadow-primary/20">{isFavoriteWordBookMode ? '返回词库' : '返回章节列表'}</button>
       </div>
     </div>
   );
@@ -411,12 +505,16 @@ export default function Typing() {
         ? '错题本已清空'
         : isReadingWordBookMode
         ? '阅读词本已清空'
-        : '语料词本已清空';
+        : isCorpusWordBookMode
+        ? '语料词本已清空'
+        : '收藏词本已清空';
       const emptyDesc = isErrorBookMode
         ? '所有单词都已练熟，去挑战新词库吧！'
         : isReadingWordBookMode
         ? '所有积累的词汇都已练习完毕，去阅读新文章吧！'
-        : '所有积累的词汇都已练习完毕，去刷新的语料吧！';
+        : isCorpusWordBookMode
+        ? '所有积累的词汇都已练习完毕，去刷新的语料吧！'
+        : '收藏的词汇都已练习完毕，去收藏新的单词吧！';
       return (
         <div className="h-[calc(100dvh-3rem)] md:h-[calc(100vh-4rem)] bg-background dark:bg-transparent flex items-center justify-center transition-colors duration-500">
           <div className="text-center card p-8 shadow-lg dark:shadow-black/40 mx-4">
@@ -496,20 +594,26 @@ export default function Typing() {
 
         {/* 顶部栏 */}
         <div className="min-h-12 md:h-14 shrink-0 flex items-center justify-between px-3 md:px-4 z-40">
-          <button onClick={() => (isErrorBookMode || isReadingWordBookMode || isCorpusWordBookMode) ? navigate('/word') : navigate(`/dict/${dictId}`)} className="text-content-tertiary dark:text-gray-400 hover:text-primary dark:hover:text-primary-dark flex items-center gap-2 text-sm transition-colors px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.04]">
+          <button onClick={() => (isErrorBookMode || isReadingWordBookMode || isCorpusWordBookMode || isFavoriteWordBookMode) ? navigate('/word') : navigate(`/dict/${dictId}`)} className="text-content-tertiary dark:text-gray-400 hover:text-primary dark:hover:text-primary-dark flex items-center gap-2 text-sm transition-colors px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.04]">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            <span className="hidden sm:inline">{(isErrorBookMode || isReadingWordBookMode || isCorpusWordBookMode) ? '返回词库' : '返回章节列表'}</span>
+            <span className="hidden sm:inline">{(isErrorBookMode || isReadingWordBookMode || isCorpusWordBookMode || isFavoriteWordBookMode) ? '返回词库' : '返回章节列表'}</span>
           </button>
 
           <div className="flex flex-col items-center">
             <div className="text-base font-semibold text-content dark:text-white">
-              {isErrorBookMode ? '错题本练习' : isReadingWordBookMode ? '阅读词本练习' : isCorpusWordBookMode ? '语料词本练习' : `第 ${wordIndex + 1} / ${words.length} 词`}
+              {isFinished
+                ? <span className="text-green-600 dark:text-green-400">已完成 ✓</span>
+                : isErrorBookMode ? '错题本练习' : isReadingWordBookMode ? '阅读词本练习' : isCorpusWordBookMode ? '语料词本练习' : isFavoriteWordBookMode ? '收藏词本练习' : `第 ${wordIndex + 1} / ${words.length} 词`}
             </div>
-            <div className="w-40 h-1.5 bg-gray-200 dark:bg-white/[0.08] rounded-full mt-2 overflow-hidden">
+            <div className="w-48 md:w-56 h-2 bg-gray-200 dark:bg-white/[0.08] rounded-full mt-2 overflow-hidden">
               <div
-                className="h-full bg-primary dark:bg-primary-dark rounded-full shadow-[0_0_6px_rgba(99,102,241,0.45)] dark:shadow-[0_0_8px_rgba(129,140,248,0.5)]"
+                className={`h-full rounded-full transition-all duration-300 ${
+                  isFinished
+                    ? 'bg-green-500 dark:bg-green-400 shadow-[0_0_8px_rgba(34,197,94,0.5)]'
+                    : 'bg-primary dark:bg-primary-dark shadow-[0_0_6px_rgba(99,102,241,0.45)] dark:shadow-[0_0_8px_rgba(129,140,248,0.5)]'
+                }`}
                 style={{ width: `${((wordIndex + 1) / words.length) * 100}%` }}
               />
             </div>
@@ -528,7 +632,10 @@ export default function Typing() {
             isErrorBookMode={isErrorBookMode}
             isReadingWordBookMode={isReadingWordBookMode}
             isCorpusWordBookMode={isCorpusWordBookMode}
+            isFavoriteWordBookMode={isFavoriteWordBookMode}
             onDeleteCurrentWord={handleDeleteCurrentWord}
+            onToggleFavorite={handleToggleFavorite}
+            isCurrentWordFavorited={isCurrentWordFavorited}
           />
         </div>
 
@@ -541,7 +648,6 @@ export default function Typing() {
 
         {/* 单词显示 */}
         <div className={`flex flex-col items-center px-4 min-h-0 relative ${keyboardHeight > 0 ? 'flex-1 min-h-0 justify-start pt-2' : 'flex-1 justify-center overflow-hidden'}`}>
-          {/* 移动端：覆盖单词区域的透明输入框 */}
           {/* 移动端：覆盖单词区域的透明输入框 */}
           {isMobile && (
             <input
@@ -582,7 +688,7 @@ export default function Typing() {
 
         <StatsPanel stats={stats} keyboardHeight={keyboardHeight} />
 
-        {isFinished && <ResultModal stats={stats} onRestart={reset} onGoHome={handleGoHome} onNextChapter={handleNextChapter} hasNextChapter={hasNextChapter} isErrorBookMode={isErrorBookMode} remainingErrorCount={remainingErrorCount} isReadingWordBookMode={isReadingWordBookMode} remainingReadingCount={remainingReadingCount} isCorpusWordBookMode={isCorpusWordBookMode} remainingCorpusCount={remainingCorpusCount} />}
+        {isFinished && !hasNextChapter && <ResultModal stats={stats} onRestart={reset} onGoHome={handleGoHome} onNextChapter={handleNextChapter} hasNextChapter={hasNextChapter} isErrorBookMode={isErrorBookMode} remainingErrorCount={remainingErrorCount} isReadingWordBookMode={isReadingWordBookMode} remainingReadingCount={remainingReadingCount} isCorpusWordBookMode={isCorpusWordBookMode} remainingCorpusCount={remainingCorpusCount} isFavoriteWordBookMode={isFavoriteWordBookMode} remainingFavoriteCount={remainingFavoriteCount} />}
         {showWrongBook && <WrongBookModal onClose={() => setShowWrongBook(false)} onWordRemoved={isErrorBookMode || isWordBookMode ? handleWordRemovedFromModal : undefined} />}
       </div>
     </div>

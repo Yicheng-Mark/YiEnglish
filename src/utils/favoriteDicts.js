@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'
+import { getToken } from '../lib/auth'
+import { fetchFavoriteDicts, toggleFavoriteDict } from '../lib/api-favorites'
 
 const STORAGE_KEY = 'lf_favorite_dicts'
 
@@ -37,6 +39,10 @@ export function toggleFavorite(dictId) {
     cache = [...cache, dictId]
   }
   persist()
+
+  if (getToken()) {
+    toggleFavoriteDict(dictId).catch(e => console.warn('Sync favorite dict failed:', e))
+  }
 }
 
 export function subscribe(listener) {
@@ -51,4 +57,15 @@ export function useFavorites() {
     return unsub
   }, [])
   return { favorites: getFavorites(), isFavorite, toggleFavorite }
+}
+
+export async function syncFavoriteDictsFromServer() {
+  if (!getToken()) return
+  try {
+    const data = await fetchFavoriteDicts()
+    cache = data.dicts || []
+    persist()
+  } catch (e) {
+    console.warn('Sync favorite dicts from server failed:', e)
+  }
 }

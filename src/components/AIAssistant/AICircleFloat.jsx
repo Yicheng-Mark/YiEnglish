@@ -1,37 +1,32 @@
 import { useState, useRef, useEffect, useCallback, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { MessageCircle, X, Maximize2, Send, Square, Trash2 } from 'lucide-react'
+import { Bot, X, Maximize2, Send, Square, Trash2, MessageCircle } from 'lucide-react'
 import { createChatStream } from '../../lib/chat-engine'
 import {
-  PERSONAS,
-  getPersona, setPersona as savePersona,
+  fetchStyles, fetchChatHistory,
   getPosition, setPosition as savePosition,
-  getMessages, setMessages as saveMessages, clearMessages as clearAllMessages,
 } from '../../lib/ai-settings'
+import { useAuth } from '../../hooks/useAuth'
 import styles from './AICircleFloat.module.css'
 
 /* ===== Memoized ChatContent ===== */
 const ChatContent = memo(function ChatContent({
-  messages, currentReasoning, streaming, input, persona,
-  onInputChange, onKeyDown, onSend, onStop, onPersonaChange,
+  messages, currentReasoning, streaming, input, currentStyle,
+  onInputChange, onKeyDown, onSend, onStop,
   onClearHistory, onExpand, onClose, messagesEndRef,
+  onPanelPointerDown, onPanelPointerMove, onPanelPointerUp,
 }) {
-  const personaObj = PERSONAS.find(p => p.key === persona) || PERSONAS[0]
-
+  const displayName = currentStyle?.custom_name || currentStyle?.name || 'AI 助手'
   return (
     <>
-      <div className={styles.panelHeader}>
-        <div className={styles.personaTabs}>
-          {PERSONAS.map(p => (
-            <button
-              key={p.key}
-              className={`${styles.tab} ${persona === p.key ? styles.tabActive : ''}`}
-              onClick={() => onPersonaChange(p.key)}
-              title={p.name}
-            >
-              {p.avatar}
-            </button>
-          ))}
+      <div className={styles.panelHeader}
+        onPointerDown={onPanelPointerDown}
+        onPointerMove={onPanelPointerMove}
+        onPointerUp={onPanelPointerUp}
+      >
+        <div className={styles.headerTitle}>
+          <Bot size={22} className={styles.headerIcon} />
+          <span className={styles.headerName}>{displayName}</span>
         </div>
         <div className={styles.headerActions}>
           <button className={styles.iconBtn} onClick={onClearHistory} title="清空记录">
@@ -49,20 +44,8 @@ const ChatContent = memo(function ChatContent({
       <div className={styles.messages}>
         {messages.length === 0 && (
           <div className={styles.welcome}>
-            <div className={styles.welcomeAvatar}>{personaObj.avatar}</div>
-            <h3>{personaObj.name}</h3>
-            <p>已就绪，开始对话吧</p>
-            <div className={styles.quickActions}>
-              <button onClick={() => onInputChange('帮我纠正这句英文的语法错误')}>
-                📝 语法纠正
-              </button>
-              <button onClick={() => onInputChange('用简单的话解释这个词的意思')}>
-                🔍 词汇讲解
-              </button>
-              <button onClick={() => onInputChange('模拟一段餐厅点餐的英语对话')}>
-                🎭 场景模拟
-              </button>
-            </div>
+            <div className={styles.welcomeAvatar}><Bot size={36} /></div>
+            <h3>{displayName}</h3>
           </div>
         )}
         {messages.map((msg, idx) => {
@@ -109,7 +92,7 @@ const ChatContent = memo(function ChatContent({
           value={input}
           onChange={e => onInputChange(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder={`和 ${personaObj.name} 对话...`}
+          placeholder={`和 ${displayName} 对话...`}
           disabled={streaming}
         />
         {streaming ? (
@@ -128,11 +111,12 @@ const ChatContent = memo(function ChatContent({
 
 export default function AICircleFloat() {
   const navigate = useNavigate()
+  const { isAuthenticated } = useAuth()
   const [panelOpen, setPanelOpen] = useState(false)
-  const [messages, setMessages] = useState(() => getMessages())
+  const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [streaming, setStreaming] = useState(false)
-  const [persona, setPersonaState] = useState(() => getPersona())
+  const [currentStyle, setCurrentStyle] = useState(null)
   const [position, setPosition] = useState(() => getPosition())
   const [isNearEdge, setIsNearEdge] = useState(false)
   const [isHidden, setIsHidden] = useState(false)
@@ -140,45 +124,50 @@ export default function AICircleFloat() {
   const [currentReasoning, setCurrentReasoning] = useState('')
   const hideTimerRef = useRef(null)
 
-  // Refs for drag (bypass setState during drag for smooth movement)
+  // Refs
   const positionRef = useRef(position)
   const dragRef = useRef(null)
+  const panelDragRef = useRef(null)
   const containerRef = useRef(null)
   const messagesEndRef = useRef(null)
   const abortRef = useRef(null)
   const streamingRef = useRef({ content: '', reasoning: '' })
 
-  // Keep positionRef in sync with state (for non-drag operations)
-  useEffect(() => { positionRef.current = position }, [position])
-
-  // Mutable refs for values needed in callbacks without re-creating them
   const messagesRef = useRef(messages)
   const inputRef = useRef(input)
   const streamingRef2 = useRef(streaming)
-  const personaRef = useRef(persona)
   useEffect(() => { messagesRef.current = messages }, [messages])
   useEffect(() => { inputRef.current = input }, [input])
   useEffect(() => { streamingRef2.current = streaming }, [streaming])
-  useEffect(() => { personaRef.current = persona }, [persona])
+  useEffect(() => { positionRef.current = position }, [position])
 
-  // 主题监听
-  const [theme, setTheme] = useState(() =>
-    document.documentElement.getAttribute('data-theme') || 'light'
-  )
-
+  // Load styles and chat history on mount
   useEffect(() => {
-    const read = () => setTheme(document.documentElement.getAttribute('data-theme') || 'light')
-    const observer = new MutationObserver(read)
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
-    return () => observer.disconnect()
+    fetchStyles().then(data => {
+      setCurrentStyle(data.current)
+    })
+    if (isAuthenticated) {
+      fetchChatHistory().then(history => {
+        setMessages(history)
+      })
+    }
   }, [])
 
-  // 自动滚动 — 只在 messages 变化时触发
+  // Re-fetch style when panel opens to pick up changes made elsewhere
+  useEffect(() => {
+    if (panelOpen) {
+      fetchStyles().then(data => {
+        setCurrentStyle(data.current)
+      })
+    }
+  }, [panelOpen])
+
+  // Auto-scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: streaming ? 'instant' : 'smooth' })
   }, [messages, streaming])
 
-  // 面板定位 — 自动适配视口边界
+  // Panel positioning
   const panelH = 480, panelW = 360, btnSize = 52, pad = 8
   const showBelow = position.y < panelH + 12
   const showLeft = position.x > window.innerWidth / 2
@@ -194,7 +183,7 @@ export default function AICircleFloat() {
     transformOrigin: `${showBelow ? 'top' : 'bottom'} ${showLeft ? 'right' : 'left'}`,
   }
 
-  // 磁吸边缘
+  // Snap to edge
   const snapToEdge = useCallback((x, y) => {
     const margin = 16
     const size = 52
@@ -210,7 +199,7 @@ export default function AICircleFloat() {
     return { x: nx, y: ny }
   }, [])
 
-  // 边缘隐藏
+  // Edge hide
   const scheduleHide = useCallback(() => {
     clearTimeout(hideTimerRef.current)
     hideTimerRef.current = setTimeout(() => setIsHidden(true), 2000)
@@ -236,7 +225,7 @@ export default function AICircleFloat() {
     return () => clearTimeout(hideTimerRef.current)
   }, [])
 
-  // 拖拽 — 使用 ref + 直接 DOM 操作，避免每帧 setState
+  // Drag
   const handlePointerDown = useCallback((e) => {
     cancelHide()
     e.currentTarget.setPointerCapture(e.pointerId)
@@ -261,7 +250,6 @@ export default function AICircleFloat() {
     if (dragRef.current.isDragging) {
       const nx = dragRef.current.initialX + dx
       const ny = dragRef.current.initialY + dy
-      // 直接操作 DOM，不经过 React 渲染
       positionRef.current = { x: nx, y: ny }
       if (containerRef.current) {
         containerRef.current.style.transform = `translate(${nx}px, ${ny}px)`
@@ -299,7 +287,45 @@ export default function AICircleFloat() {
     }
   }, [isNearEdge, panelOpen])
 
-  // 点击外部关闭面板
+  // Panel drag — moves the entire container (button + panel together)
+  const handlePanelPointerDown = useCallback((e) => {
+    if (e.target.closest('button')) return
+    e.currentTarget.setPointerCapture(e.pointerId)
+    cancelHide()
+    panelDragRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      initialX: positionRef.current.x,
+      initialY: positionRef.current.y,
+    }
+  }, [cancelHide])
+
+  const handlePanelPointerMove = useCallback((e) => {
+    if (!panelDragRef.current) return
+    const dx = e.clientX - panelDragRef.current.startX
+    const dy = e.clientY - panelDragRef.current.startY
+    const nx = panelDragRef.current.initialX + dx
+    const ny = panelDragRef.current.initialY + dy
+    positionRef.current = { x: nx, y: ny }
+    if (containerRef.current) {
+      containerRef.current.style.transform = `translate(${nx}px, ${ny}px)`
+    }
+  }, [])
+
+  const handlePanelPointerUp = useCallback(() => {
+    if (!panelDragRef.current) return
+    panelDragRef.current = null
+    const snapped = snapToEdge(positionRef.current.x, positionRef.current.y)
+    positionRef.current = snapped
+    setPosition(snapped)
+    savePosition(snapped)
+    const size = 52
+    if (snapped.x < 70 || snapped.x > window.innerWidth - 70 - size) {
+      scheduleHide()
+    }
+  }, [snapToEdge, scheduleHide])
+
+  // Click outside to close
   useEffect(() => {
     if (!panelOpen) return
     const handleClick = (e) => {
@@ -311,7 +337,7 @@ export default function AICircleFloat() {
     return () => document.removeEventListener('mousedown', handleClick)
   }, [panelOpen])
 
-  // 窗口缩放时重新定位
+  // Resize reposition
   useEffect(() => {
     const handleResize = () => {
       setPosition(prev => {
@@ -324,7 +350,7 @@ export default function AICircleFloat() {
     return () => window.removeEventListener('resize', handleResize)
   }, [snapToEdge])
 
-  // 发送消息
+  // Send message
   const handleSend = useCallback(() => {
     const text = inputRef.current.trim()
     if (!text || streamingRef2.current) return
@@ -335,12 +361,6 @@ export default function AICircleFloat() {
     setInput('')
     setStreaming(true)
     streamingRef.current = { content: '', reasoning: '' }
-
-    const personaObj = PERSONAS.find(p => p.key === personaRef.current) || PERSONAS[0]
-    const apiMessages = [
-      { role: 'system', content: personaObj.systemPrompt },
-      ...updated.map(m => ({ role: m.role, content: m.content })),
-    ]
 
     const assistantMsg = { role: 'assistant', content: '', reasoningContent: '' }
     setMessages(prev => [...prev, assistantMsg])
@@ -372,7 +392,8 @@ export default function AICircleFloat() {
     }
 
     const { abort } = createChatStream({
-      messages: apiMessages,
+      messages: [{ role: 'user', content: text }],
+      styleKey: currentStyle?.style_key,
       onToken: (token) => {
         streamingRef.current.content += token
         scheduleFlush()
@@ -388,24 +409,21 @@ export default function AICircleFloat() {
           content: streamingRef.current.content,
           reasoningContent: streamingRef.current.reasoning,
         }
-        const all = [...updated, final]
-        setMessages(all)
-        saveMessages(all)
+        setMessages([...updated, final])
         setStreaming(false)
         setCurrentReasoning('')
       },
       onError: (err) => {
         cancelAnimationFrame(rafId)
         const errMsg = { role: 'assistant', content: `Error: ${err.message}` }
-        const all = [...updated, errMsg]
-        setMessages(all)
+        setMessages([...updated, errMsg])
         setStreaming(false)
         setCurrentReasoning('')
       },
     })
 
     abortRef.current = abort
-  }, [])
+  }, [currentStyle])
 
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -420,16 +438,8 @@ export default function AICircleFloat() {
     setCurrentReasoning('')
   }, [])
 
-  const handlePersonaChange = useCallback((key) => {
-    setPersonaState(key)
-    savePersona(key)
-    setMessages([])
-    saveMessages([])
-  }, [])
-
   const handleClearHistory = useCallback(() => {
     setMessages([])
-    clearAllMessages()
   }, [])
 
   const handleClose = useCallback(() => {
@@ -441,9 +451,8 @@ export default function AICircleFloat() {
   }, [])
 
   const handleExpand = useCallback(() => {
-    saveMessages(messagesRef.current)
     setPanelOpen(false)
-    navigate('/ai-assistant')
+    navigate('/ai-assistant', { state: { messages: messagesRef.current } })
   }, [navigate])
 
   const hideOffset = isHidden
@@ -464,19 +473,23 @@ export default function AICircleFloat() {
         onPointerLeave={handleButtonLeave}
         aria-label="AI助手"
       >
-        <MessageCircle className={styles.floatIcon} />
+        <Bot className={styles.floatIcon} />
       </button>
 
       {panelOpen && (
         <div className={styles.chatPanel} style={panelStyle}>
           <ChatContent
             messages={messages} currentReasoning={currentReasoning}
-            streaming={streaming} input={input} persona={persona}
+            streaming={streaming} input={input}
+            currentStyle={currentStyle}
             onInputChange={handleSetInput}
             onKeyDown={handleKeyDown} onSend={handleSend}
-            onStop={handleStop} onPersonaChange={handlePersonaChange}
+            onStop={handleStop}
             onClearHistory={handleClearHistory} onExpand={handleExpand}
             onClose={handleClose} messagesEndRef={messagesEndRef}
+            onPanelPointerDown={handlePanelPointerDown}
+            onPanelPointerMove={handlePanelPointerMove}
+            onPanelPointerUp={handlePanelPointerUp}
           />
         </div>
       )}

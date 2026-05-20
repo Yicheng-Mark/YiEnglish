@@ -10,7 +10,7 @@ const REPEAT_OPTIONS = [
   { value: 0, label: '无限' },
 ];
 
-const TypingToolbar = memo(function TypingToolbar({ dictId, currentChapterId, chapters, config, toggleConfig, updateConfig, onOpenWrongBook, isErrorBookMode, isReadingWordBookMode, isCorpusWordBookMode, onDeleteCurrentWord }) {
+const TypingToolbar = memo(function TypingToolbar({ dictId, currentChapterId, chapters, config, toggleConfig, updateConfig, onOpenWrongBook, isErrorBookMode, isReadingWordBookMode, isCorpusWordBookMode, isFavoriteWordBookMode, onDeleteCurrentWord, onToggleFavorite, isCurrentWordFavorited }) {
   const navigate = useNavigate();
   const [showChapterMenu, setShowChapterMenu] = useState(false);
   const [showRepeatMenu, setShowRepeatMenu] = useState(false);
@@ -29,8 +29,8 @@ const TypingToolbar = memo(function TypingToolbar({ dictId, currentChapterId, ch
     <div className="flex flex-col md:flex-row items-center gap-1 md:gap-1">
       {/* 第一行：核心功能 */}
       <div className="flex items-center gap-1 md:gap-1">
-        {/* 错题本：自动消除开关 */}
-        {isErrorBookMode && (
+        {/* 自动消除开关 */}
+        {(isErrorBookMode || isReadingWordBookMode || isCorpusWordBookMode || isFavoriteWordBookMode) && (
           <button
             onClick={() => toggleConfig('autoRemoveErrorWord')}
             className={`${toolbarBtn} ${config.autoRemoveErrorWord ? activeBtn : 'opacity-40'}`}
@@ -61,16 +61,18 @@ const TypingToolbar = memo(function TypingToolbar({ dictId, currentChapterId, ch
           </div></>)}
         </div>
 
-        {!isErrorBookMode && !isReadingWordBookMode && !isCorpusWordBookMode && (
-          <div className="relative">
-            <button onClick={() => setShowChapterMenu(!showChapterMenu)} className={toolbarBtn} title="切换章节">
-              <svg className={iconCls} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
-              <span className="text-[11px] hidden sm:inline">章节</span>
-            </button>
-            {showChapterMenu && (<><div className="fixed inset-0 z-40" onClick={() => setShowChapterMenu(false)} /><div className="dropdown-menu w-48 max-h-64 overflow-y-auto">
-              {chapters.map((ch) => (<button key={ch.id} onClick={() => switchChapter(ch.id)} className={`dropdown-item ${ch.id === currentChapterId ? 'dropdown-item-active' : 'dropdown-item-inactive'}`}>{ch.name}</button>))}
-            </div></>)}
-          </div>
+        {!isErrorBookMode && !isReadingWordBookMode && !isCorpusWordBookMode && !isFavoriteWordBookMode && (
+          <>
+            <div className="relative">
+              <button onClick={() => setShowChapterMenu(!showChapterMenu)} className={toolbarBtn} title="切换章节">
+                <svg className={iconCls} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
+                <span className="text-[11px] hidden sm:inline">章节</span>
+              </button>
+              {showChapterMenu && (<><div className="fixed inset-0 z-40" onClick={() => setShowChapterMenu(false)} /><div className="dropdown-menu w-48 max-h-64 overflow-y-auto">
+                {chapters.map((ch) => (<button key={ch.id} onClick={() => switchChapter(ch.id)} className={`dropdown-item ${ch.id === currentChapterId ? 'dropdown-item-active' : 'dropdown-item-inactive'}`}>{ch.name}</button>))}
+              </div></>)}
+            </div>
+          </>
         )}
 
         <button onClick={() => toggleConfig('soundEnabled')} className={`${toolbarBtn} ${!config.soundEnabled ? 'opacity-40' : ''}`} title={config.soundEnabled ? '关闭音效' : '开启音效'}>
@@ -96,8 +98,15 @@ const TypingToolbar = memo(function TypingToolbar({ dictId, currentChapterId, ch
           <span className="text-[11px] hidden sm:inline">错题本</span>
         </button>
 
-        {(isErrorBookMode || isReadingWordBookMode || isCorpusWordBookMode) && onDeleteCurrentWord && (
-          <button onClick={onDeleteCurrentWord} className={toolbarBtn} title={isErrorBookMode ? '练熟了，移出错题本' : isReadingWordBookMode ? '已掌握，移出阅读词本' : '已掌握，移出语料词本'}>
+        {!isFavoriteWordBookMode && onToggleFavorite && (
+          <button onClick={onToggleFavorite} className={`${toolbarBtn} ${isCurrentWordFavorited ? '!text-amber-500 dark:!text-amber-400' : ''}`} title={isCurrentWordFavorited ? '取消收藏' : '收藏单词'}>
+            <svg className={iconCls} fill={isCurrentWordFavorited ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
+            <span className="text-[11px] hidden sm:inline">{isCurrentWordFavorited ? '已收藏' : '收藏'}</span>
+          </button>
+        )}
+
+        {(isErrorBookMode || isReadingWordBookMode || isCorpusWordBookMode || isFavoriteWordBookMode) && onDeleteCurrentWord && (
+          <button onClick={onDeleteCurrentWord} className={toolbarBtn} title={isErrorBookMode ? '练熟了，移出错题本' : isReadingWordBookMode ? '已掌握，移出阅读词本' : isCorpusWordBookMode ? '已掌握，移出语料词本' : '移出收藏词本'}>
             <Trash2 className={`${iconCls} text-red-500 hover:text-red-600`} />
             <span className="text-[11px] hidden sm:inline text-red-500">移除</span>
           </button>

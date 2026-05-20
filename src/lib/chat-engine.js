@@ -1,39 +1,40 @@
-const API_BASE = import.meta.env.VITE_DEEPSEEK_API_BASE || '/api/deepseek'
+import { getToken } from './auth'
 
-function getApiKey() {
-  return import.meta.env.VITE_DEEPSEEK_API_KEY || ''
-}
-
-export function createChatStream({ messages, onToken, onReasoning, onDone, onError }) {
-  const apiKey = getApiKey()
-  if (!apiKey) {
-    onError(new Error('未配置 API Key'))
-    return { abort: () => {} }
-  }
-
+export function createChatStream({ messages, styleKey, onToken, onReasoning, onDone, onError }) {
   const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 60000)
+  const timeout = setTimeout(() => controller.abort(), 120000)
 
-  fetch(`${API_BASE}/chat/completions`, {
+  const token = getToken()
+  const headers = {
+    'Content-Type': 'application/json',
+  }
+  if (token) headers['Authorization'] = `Bearer ${token}`
+
+  fetch('/api/chat', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-    },
+    headers,
+    credentials: 'include',
     body: JSON.stringify({
-      model: 'deepseek-chat',
-      messages,
-      stream: true,
+      messages: messages.filter(m => m.role !== 'system'),
+      styleKey,
     }),
     signal: controller.signal,
   })
     .then(async (res) => {
       clearTimeout(timeout)
+
       if (!res.ok) {
+        if (res.status === 401) {
+          onError(new Error('登录已过期，请重新登录'))
+          return
+        }
         const body = await res.text().catch(() => '')
-        if (res.status === 401) throw new Error('API Key 无效')
-        if (res.status === 429) throw new Error('请求过于频繁，请稍后再试')
-        throw new Error(`请求失败 (${res.status}): ${body.slice(0, 100)}`)
+        let errMsg = `请求失败 (${res.status})`
+        try {
+          const json = JSON.parse(body)
+          errMsg = json.error || errMsg
+        } catch { /* use default */ }
+        throw new Error(errMsg)
       }
 
       const reader = res.body.getReader()
@@ -59,6 +60,13 @@ export function createChatStream({ messages, onToken, onReasoning, onDone, onErr
 
           try {
             const json = JSON.parse(data)
+
+            // Handle error events from backend
+            if (json.error) {
+              onError(new Error(json.error))
+              return
+            }
+
             const delta = json.choices?.[0]?.delta
             if (!delta) continue
 
