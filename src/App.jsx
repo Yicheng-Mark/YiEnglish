@@ -4,6 +4,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import Layout from './components/Layout'
 import PageLoading from './components/PageLoading'
+import AICircleFloat from './components/AIAssistant/AICircleFloat'
 
 const Home = lazy(() => import('./pages/Home'))
 const ChapterSelect = lazy(() => import('./pages/ChapterSelect'))
@@ -46,6 +47,7 @@ function App() {
           </Route>
         </Routes>
       </Suspense>
+      <AICircleFloat />
     </>
   )
 }
