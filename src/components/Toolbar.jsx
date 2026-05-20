@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { ChartColumn, Lightbulb, User } from 'lucide-react'
+import { ChartColumn, Lightbulb } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 import { useUserConfig } from '../hooks/useUserConfig'
 
@@ -8,7 +8,6 @@ export default function Toolbar() {
   const location = useLocation()
   const isStats = location.pathname === '/stats'
   const isLearningMethods = location.pathname.startsWith('/learning-methods')
-  const isProfile = location.pathname === '/profile'
 
   return (
     <div className="flex items-center gap-1 md:gap-2">
@@ -37,19 +36,6 @@ export default function Toolbar() {
       >
         <ChartColumn className="w-5 h-5 md:w-[18px] md:h-[18px]" />
         <span className="text-[11px] hidden sm:inline leading-none">学习数据</span>
-      </Link>
-      <Link
-        to="/profile"
-        aria-label="个人中心"
-        title="个人中心"
-        className={`p-1 md:p-2 rounded-button transition-colors flex flex-col items-center gap-1 ${
-          isProfile
-            ? 'text-primary dark:text-primary-dark bg-primary/5 dark:bg-white/[0.05]'
-            : 'text-content-secondary dark:text-gray-400 hover:bg-primary/5 dark:hover:bg-white/[0.05]'
-        }`}
-      >
-        <User className="w-5 h-5 md:w-[18px] md:h-[18px]" />
-        <span className="text-[11px] hidden sm:inline leading-none">个人中心</span>
       </Link>
       <ThemeToggle theme={theme} setTheme={setTheme} />
     </div>

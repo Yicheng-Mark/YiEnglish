@@ -9,8 +9,9 @@ function Layout() {
   const isTyping = location.pathname.startsWith('/typing/')
   const isListeningPlayer = /^\/listening\/.+/.test(location.pathname)
   const isProfile = location.pathname === '/profile'
-  const showBottomNav = !isTyping && !isListeningPlayer
-  const showTopNav = !isListeningPlayer && !isProfile
+  const isAIChat = location.pathname === '/ai-assistant'
+  const showBottomNav = !isTyping && !isListeningPlayer && !isAIChat
+  const showTopNav = !isListeningPlayer && !isProfile && !isAIChat
 
   return (
     <div className="min-h-screen bg-background dark:bg-background-dark transition-colors duration-500 relative">

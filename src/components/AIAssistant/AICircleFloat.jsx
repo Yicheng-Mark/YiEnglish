@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback, memo } from 'react'
-import { MessageCircle, X, Maximize2, Minimize2, Send, Square, Trash2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { MessageCircle, X, Maximize2, Send, Square, Trash2 } from 'lucide-react'
 import { createChatStream } from '../../lib/chat-engine'
 import {
   PERSONAS,
@@ -11,9 +12,9 @@ import styles from './AICircleFloat.module.css'
 
 /* ===== Memoized ChatContent ===== */
 const ChatContent = memo(function ChatContent({
-  messages, currentReasoning, streaming, input, persona, isFull,
+  messages, currentReasoning, streaming, input, persona,
   onInputChange, onKeyDown, onSend, onStop, onPersonaChange,
-  onClearHistory, onToggleFull, onClose, messagesEndRef,
+  onClearHistory, onExpand, onClose, messagesEndRef,
 }) {
   const personaObj = PERSONAS.find(p => p.key === persona) || PERSONAS[0]
 
@@ -36,15 +37,9 @@ const ChatContent = memo(function ChatContent({
           <button className={styles.iconBtn} onClick={onClearHistory} title="清空记录">
             <Trash2 size={16} />
           </button>
-          {isFull ? (
-            <button className={styles.iconBtn} onClick={() => onToggleFull(false)} title="缩小">
-              <Minimize2 size={16} />
-            </button>
-          ) : (
-            <button className={styles.iconBtn} onClick={() => onToggleFull(true)} title="全屏">
-              <Maximize2 size={16} />
-            </button>
-          )}
+          <button className={styles.iconBtn} onClick={onExpand} title="新页面打开">
+            <Maximize2 size={16} />
+          </button>
           <button className={styles.iconBtn} onClick={onClose} title="关闭">
             <X size={16} />
           </button>
@@ -70,19 +65,29 @@ const ChatContent = memo(function ChatContent({
             </div>
           </div>
         )}
-        {messages.map((msg, idx) => (
-          <div key={idx} className={`${styles.message} ${styles[msg.role]}`}>
-            <div className={styles.bubble}>
-              {msg.reasoningContent && (
-                <details className={styles.thinkingBlock}>
-                  <summary>💭 思考过程</summary>
-                  <div className={styles.thinkingContent}>{msg.reasoningContent}</div>
-                </details>
-              )}
-              <div>{msg.content}</div>
+        {messages.map((msg, idx) => {
+          const isStreamingEmpty = streaming
+            && msg.role === 'assistant'
+            && !msg.content && !msg.reasoningContent
+            && idx === messages.length - 1
+          if (isStreamingEmpty) return null
+          return (
+            <div key={idx} className={`${styles.message} ${styles[msg.role]}`}>
+              <div className={styles.bubble}>
+                {msg.reasoningContent && (
+                  <details className={styles.thinkingBlock}>
+                    <summary>💭 思考过程</summary>
+                    <div className={styles.thinkingContent}>{msg.reasoningContent}</div>
+                  </details>
+                )}
+                <div>{msg.content}</div>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
+        {streaming && !currentReasoning && (
+          <div className={styles.typingIndicator}><span /><span /><span /></div>
+        )}
         {currentReasoning && (
           <div className={`${styles.message} ${styles.assistant}`}>
             <div className={styles.bubble}>
@@ -94,9 +99,6 @@ const ChatContent = memo(function ChatContent({
               </details>
             </div>
           </div>
-        )}
-        {streaming && !currentReasoning && messages[messages.length - 1]?.role !== 'assistant' && (
-          <div className={styles.typingIndicator}><span /><span /><span /></div>
         )}
         <div ref={messagesEndRef} />
       </div>
@@ -125,15 +127,18 @@ const ChatContent = memo(function ChatContent({
 })
 
 export default function AICircleFloat() {
+  const navigate = useNavigate()
   const [panelOpen, setPanelOpen] = useState(false)
-  const [fullScreen, setFullScreen] = useState(false)
   const [messages, setMessages] = useState(() => getMessages())
   const [input, setInput] = useState('')
   const [streaming, setStreaming] = useState(false)
   const [persona, setPersonaState] = useState(() => getPersona())
   const [position, setPosition] = useState(() => getPosition())
   const [isNearEdge, setIsNearEdge] = useState(false)
+  const [isHidden, setIsHidden] = useState(false)
+  const [isDraggingState, setIsDraggingState] = useState(false)
   const [currentReasoning, setCurrentReasoning] = useState('')
+  const hideTimerRef = useRef(null)
 
   // Refs for drag (bypass setState during drag for smooth movement)
   const positionRef = useRef(position)
@@ -173,8 +178,21 @@ export default function AICircleFloat() {
     messagesEndRef.current?.scrollIntoView({ behavior: streaming ? 'instant' : 'smooth' })
   }, [messages, streaming])
 
-  // 判断面板朝向
-  const isOnRight = position.x > window.innerWidth / 2
+  // 面板定位 — 自动适配视口边界
+  const panelH = 480, panelW = 360, btnSize = 52, pad = 8
+  const showBelow = position.y < panelH + 12
+  const showLeft = position.x > window.innerWidth / 2
+  let panelPx = showLeft ? position.x + btnSize - panelW : position.x
+  let panelPy = showBelow ? position.y + btnSize + 12 : position.y - panelH - 12
+  panelPx = Math.max(pad, Math.min(panelPx, window.innerWidth - panelW - pad))
+  panelPy = Math.max(pad, Math.min(panelPy, window.innerHeight - panelH - pad))
+  const panelStyle = {
+    left: panelPx - position.x,
+    top: panelPy - position.y,
+    right: 'auto',
+    bottom: 'auto',
+    transformOrigin: `${showBelow ? 'top' : 'bottom'} ${showLeft ? 'right' : 'left'}`,
+  }
 
   // 磁吸边缘
   const snapToEdge = useCallback((x, y) => {
@@ -192,9 +210,35 @@ export default function AICircleFloat() {
     return { x: nx, y: ny }
   }, [])
 
+  // 边缘隐藏
+  const scheduleHide = useCallback(() => {
+    clearTimeout(hideTimerRef.current)
+    hideTimerRef.current = setTimeout(() => setIsHidden(true), 2000)
+  }, [])
+
+  const cancelHide = useCallback(() => {
+    clearTimeout(hideTimerRef.current)
+    setIsHidden(false)
+  }, [])
+
+  useEffect(() => {
+    if (!isNearEdge) {
+      clearTimeout(hideTimerRef.current)
+      setIsHidden(false)
+    }
+  }, [isNearEdge])
+
+  useEffect(() => {
+    if (!panelOpen && isNearEdge) scheduleHide()
+  }, [panelOpen, isNearEdge, scheduleHide])
+
+  useEffect(() => {
+    return () => clearTimeout(hideTimerRef.current)
+  }, [])
+
   // 拖拽 — 使用 ref + 直接 DOM 操作，避免每帧 setState
   const handlePointerDown = useCallback((e) => {
-    if (fullScreen) return
+    cancelHide()
     e.currentTarget.setPointerCapture(e.pointerId)
     dragRef.current = {
       isDragging: false,
@@ -203,7 +247,7 @@ export default function AICircleFloat() {
       initialX: positionRef.current.x,
       initialY: positionRef.current.y,
     }
-  }, [fullScreen])
+  }, [cancelHide])
 
   const handlePointerMove = useCallback((e) => {
     if (!dragRef.current) return
@@ -211,6 +255,7 @@ export default function AICircleFloat() {
     const dy = e.clientY - dragRef.current.startY
     if (!dragRef.current.isDragging && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
       dragRef.current.isDragging = true
+      setIsDraggingState(true)
       setPanelOpen(false)
     }
     if (dragRef.current.isDragging) {
@@ -233,14 +278,30 @@ export default function AICircleFloat() {
       positionRef.current = snapped
       setPosition(snapped)
       savePosition(snapped)
+      setIsDraggingState(false)
+      const size = 52
+      if (snapped.x < 70 || snapped.x > window.innerWidth - 70 - size) {
+        scheduleHide()
+      }
     } else {
       setPanelOpen(p => !p)
     }
-  }, [snapToEdge])
+  }, [snapToEdge, scheduleHide])
+
+  const handleButtonEnter = useCallback(() => {
+    clearTimeout(hideTimerRef.current)
+    setIsHidden(false)
+  }, [])
+
+  const handleButtonLeave = useCallback(() => {
+    if (isNearEdge && !panelOpen) {
+      hideTimerRef.current = setTimeout(() => setIsHidden(true), 1500)
+    }
+  }, [isNearEdge, panelOpen])
 
   // 点击外部关闭面板
   useEffect(() => {
-    if (!panelOpen || fullScreen) return
+    if (!panelOpen) return
     const handleClick = (e) => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
         setPanelOpen(false)
@@ -248,7 +309,7 @@ export default function AICircleFloat() {
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
-  }, [panelOpen, fullScreen])
+  }, [panelOpen])
 
   // 窗口缩放时重新定位
   useEffect(() => {
@@ -373,59 +434,48 @@ export default function AICircleFloat() {
 
   const handleClose = useCallback(() => {
     setPanelOpen(false)
-    setFullScreen(false)
   }, [])
 
   const handleSetInput = useCallback((val) => {
     if (typeof val === 'string') setInput(val)
   }, [])
 
-  const handleToggleFull = useCallback((val) => {
-    setFullScreen(val)
-  }, [])
+  const handleExpand = useCallback(() => {
+    saveMessages(messagesRef.current)
+    setPanelOpen(false)
+    navigate('/ai-assistant')
+  }, [navigate])
 
-  const openPanel = panelOpen || fullScreen
+  const hideOffset = isHidden
+    ? (position.x < window.innerWidth / 2 ? -(52 - 14) : (52 - 14))
+    : 0
 
   return (
-    <div ref={containerRef} className={styles.container}
-      style={{ transform: `translate(${position.x}px, ${position.y}px)` }}>
+    <div ref={containerRef}
+      className={`${styles.container} ${!isDraggingState ? styles.smoothTransition : ''}`}
+      style={{ transform: `translate(${position.x + hideOffset}px, ${position.y}px)` }}>
 
-      {!fullScreen && (
-        <button
-          className={`${styles.floatButton} ${isNearEdge ? styles.nearEdge : ''}`}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          aria-label="AI助手"
-        >
-          <MessageCircle className={styles.floatIcon} />
-          <span className={styles.pulse} />
-        </button>
-      )}
+      <button
+        className={`${styles.floatButton} ${isNearEdge ? styles.nearEdge : ''} ${isHidden ? styles.hidden : ''}`}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerEnter={handleButtonEnter}
+        onPointerLeave={handleButtonLeave}
+        aria-label="AI助手"
+      >
+        <MessageCircle className={styles.floatIcon} />
+      </button>
 
-      {panelOpen && !fullScreen && (
-        <div className={`${styles.chatPanel} ${!isOnRight ? styles.panelLeft : ''}`}>
+      {panelOpen && (
+        <div className={styles.chatPanel} style={panelStyle}>
           <ChatContent
             messages={messages} currentReasoning={currentReasoning}
             streaming={streaming} input={input} persona={persona}
-            isFull={false} onInputChange={handleSetInput}
+            onInputChange={handleSetInput}
             onKeyDown={handleKeyDown} onSend={handleSend}
             onStop={handleStop} onPersonaChange={handlePersonaChange}
-            onClearHistory={handleClearHistory} onToggleFull={handleToggleFull}
-            onClose={handleClose} messagesEndRef={messagesEndRef}
-          />
-        </div>
-      )}
-
-      {fullScreen && (
-        <div className={styles.fullScreenOverlay}>
-          <ChatContent
-            messages={messages} currentReasoning={currentReasoning}
-            streaming={streaming} input={input} persona={persona}
-            isFull={true} onInputChange={handleSetInput}
-            onKeyDown={handleKeyDown} onSend={handleSend}
-            onStop={handleStop} onPersonaChange={handlePersonaChange}
-            onClearHistory={handleClearHistory} onToggleFull={handleToggleFull}
+            onClearHistory={handleClearHistory} onExpand={handleExpand}
             onClose={handleClose} messagesEndRef={messagesEndRef}
           />
         </div>

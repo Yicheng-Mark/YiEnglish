@@ -29,6 +29,12 @@
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
   outline: none;
   -webkit-tap-highlight-color: transparent;
+  animation: floatBob 3s ease-in-out infinite;
+}
+
+@keyframes floatBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }
 
 .floatButton:active {
@@ -50,32 +56,20 @@
   opacity: 0.85;
 }
 
+.floatButton.hidden {
+  animation: none;
+}
+
+.smoothTransition {
+  transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
 .floatIcon {
   color: white;
   width: 24px;
   height: 24px;
   pointer-events: none;
   z-index: 2;
-}
-
-.pulse {
-  position: absolute;
-  inset: -5px;
-  border-radius: 50%;
-  border: 2px solid rgba(59, 130, 246, 0.6);
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.15), transparent 70%);
-  opacity: 0;
-  animation: breathe 3s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes breathe {
-  0%, 100% { transform: scale(1); opacity: 0; }
-  50% { transform: scale(1.25); opacity: 0.5; }
-}
-
-.nearEdge .pulse {
-  animation: none;
 }
 
 /* ===== 聊天面板 ===== */
@@ -94,6 +88,16 @@
   box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.04);
   animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-origin: bottom right;
+}
+
+.chatPanel.panelTop {
+  bottom: auto;
+  top: 64px;
+  transform-origin: top right;
+}
+
+.chatPanel.panelTop.panelLeft {
+  transform-origin: top left;
 }
 
 .chatPanel.panelLeft {
@@ -443,6 +447,18 @@
 }
 
 /* ===== 全屏模式特殊样式 ===== */
+.pageHeader {
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
 .fullScreenOverlay .panelHeader {
   padding: 16px 24px;
   border-bottom: 1px solid rgba(0,0,0,0.06);

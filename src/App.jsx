@@ -15,6 +15,7 @@ const CorpusModule = lazy(() => import('./modules/corpus'))
 const TrainingCenter = lazy(() => import('./pages/TrainingCenter'))
 const PersonalCenter = lazy(() => import('./pages/PersonalCenter'))
 const LearningMethodsModule = lazy(() => import('./modules/learning-methods'))
+const AIChatPage = lazy(() => import('./pages/AIChatPage'))
 
 function App() {
   useScrollingFlag()
@@ -44,6 +45,7 @@ function App() {
             <Route path="/learning-methods/*" element={<LearningMethodsModule />} />
             <Route path="/dict/:dictId" element={<ChapterSelect />} />
             <Route path="/typing/:dictId/:chapterId" element={<Typing />} />
+            <Route path="/ai-assistant" element={<AIChatPage />} />
           </Route>
         </Routes>
       </Suspense>

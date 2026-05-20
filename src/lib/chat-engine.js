@@ -1,4 +1,4 @@
-const API_URL = 'https://api.deepseek.com/chat/completions'
+const API_BASE = import.meta.env.VITE_DEEPSEEK_API_BASE || '/api/deepseek'
 
 function getApiKey() {
   return import.meta.env.VITE_DEEPSEEK_API_KEY || ''
@@ -12,8 +12,9 @@ export function createChatStream({ messages, onToken, onReasoning, onDone, onErr
   }
 
   const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 60000)
 
-  fetch(API_URL, {
+  fetch(`${API_BASE}/chat/completions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -27,6 +28,7 @@ export function createChatStream({ messages, onToken, onReasoning, onDone, onErr
     signal: controller.signal,
   })
     .then(async (res) => {
+      clearTimeout(timeout)
       if (!res.ok) {
         const body = await res.text().catch(() => '')
         if (res.status === 401) throw new Error('API Key 无效')
@@ -75,11 +77,18 @@ export function createChatStream({ messages, onToken, onReasoning, onDone, onErr
       onDone()
     })
     .catch((err) => {
-      if (err.name === 'AbortError') return
+      clearTimeout(timeout)
+      if (err.name === 'AbortError') {
+        onError(new Error('请求超时，请检查网络后重试'))
+        return
+      }
       onError(err)
     })
 
   return {
-    abort: () => controller.abort(),
+    abort: () => {
+      clearTimeout(timeout)
+      controller.abort()
+    },
   }
 }
