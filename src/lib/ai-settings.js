@@ -34,6 +34,7 @@ export async function fetchStyles() {
         { style_key: 'teacher', name: '严肃', avatar: '👔', description: '专业、严谨' },
         { style_key: 'cute', name: '活泼', avatar: '🎉', description: '活泼、有趣' },
         { style_key: 'gentle', name: '温柔', avatar: '🌸', description: '温柔、耐心' },
+        { style_key: 'custom', name: '自定义', avatar: '✨', description: '自定义' },
       ],
     }
   }
@@ -71,6 +72,51 @@ export async function updateGender(gender) {
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))
     throw new Error(data.error || `更新失败 (${res.status})`)
+  }
+  return res.json()
+}
+
+export async function updateCustomPrompt(customPrompt) {
+  const res = await apiFetch('/api/style/custom-prompt', {
+    method: 'PATCH',
+    body: JSON.stringify({ customPrompt }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || `更新失败 (${res.status})`)
+  }
+  return res.json()
+}
+
+export async function resetStyleSettings() {
+  const res = await apiFetch('/api/style/reset', {
+    method: 'POST',
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || `重置失败 (${res.status})`)
+  }
+  return res.json()
+}
+
+export async function resetPersonality() {
+  const res = await apiFetch('/api/style/reset-personality', {
+    method: 'POST',
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || `重置失败 (${res.status})`)
+  }
+  return res.json()
+}
+
+export async function clearMemory() {
+  const res = await apiFetch('/api/chat/clear-memory', {
+    method: 'POST',
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || `清除失败 (${res.status})`)
   }
   return res.json()
 }

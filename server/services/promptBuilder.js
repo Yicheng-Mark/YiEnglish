@@ -7,7 +7,7 @@ const BASE_IDENTITY = `你是一个稳定、自然、能记住用户偏好、会
  * Build the complete system prompt from layers:
  * base identity + style prompt + user memories
  */
-async function buildSystemPrompt(pool, { styleKey, memories, userNickname, gender }) {
+async function buildSystemPrompt(pool, { styleKey, memories, userNickname, gender, customName, customPrompt }) {
   // 1. Fetch style prompt from DB
   const [styleRows] = await pool.execute(
     'SELECT system_prompt FROM style_modes WHERE style_key = ? AND is_active = 1',
@@ -16,6 +16,11 @@ async function buildSystemPrompt(pool, { styleKey, memories, userNickname, gende
   const stylePrompt = styleRows.length > 0
     ? styleRows[0].system_prompt
     : '你是一位友好的英语学习助手。'
+
+  // Only use custom_prompt when the user selected the "custom" style
+  const effectivePrompt = (styleKey === 'custom' && customPrompt && customPrompt.trim())
+    ? customPrompt.trim()
+    : stylePrompt
 
   // 2. Build memory section
   let memorySection = ''
@@ -33,8 +38,11 @@ async function buildSystemPrompt(pool, { styleKey, memories, userNickname, gende
     const genderMap = { male: '男性', female: '女性', other: '其他' }
     userContext += `\n你的性别设定：${genderMap[gender] || gender}`
   }
+  if (customName) {
+    userContext += `\n你的名字是「${customName}」。用户这样称呼你，你应当在自我介绍或被问及名字时使用这个名字。`
+  }
 
-  return BASE_IDENTITY + '\n\n' + stylePrompt + memorySection + userContext
+  return BASE_IDENTITY + '\n\n' + effectivePrompt + memorySection + userContext
 }
 
 module.exports = { buildSystemPrompt }

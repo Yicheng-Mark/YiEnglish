@@ -34,12 +34,14 @@ router.post('/', authMiddleware, async (req, res, next) => {
     )
     const userNickname = userRows.length > 0 ? userRows[0].nickname : null
 
-    // 2b. Fetch gender from style settings
-    const [genderRows] = await pool.execute(
-      'SELECT gender FROM user_style_settings WHERE user_id = ?',
+    // 2b. Fetch gender, custom_name, custom_prompt from style settings
+    const [styleSettingRows] = await pool.execute(
+      'SELECT gender, custom_name, custom_prompt FROM user_style_settings WHERE user_id = ?',
       [userId]
     )
-    const gender = genderRows.length > 0 ? genderRows[0].gender : null
+    const gender = styleSettingRows.length > 0 ? styleSettingRows[0].gender : null
+    const customName = styleSettingRows.length > 0 ? styleSettingRows[0].custom_name : null
+    const customPrompt = styleSettingRows.length > 0 ? styleSettingRows[0].custom_prompt : null
 
     // 3. Fetch long-term memories
     const [memories] = await pool.execute(
@@ -55,7 +57,7 @@ router.post('/', authMiddleware, async (req, res, next) => {
     const recentHistory = history.reverse()
 
     // 5. Build system prompt
-    const systemPrompt = await buildSystemPrompt(pool, { styleKey, memories, userNickname, gender })
+    const systemPrompt = await buildSystemPrompt(pool, { styleKey, memories, userNickname, gender, customName, customPrompt })
 
     // 6. Save user message
     const userMsg = messages[messages.length - 1]
@@ -119,6 +121,17 @@ router.get('/history', authMiddleware, async (req, res, next) => {
       [req.userId, limit]
     )
     res.json({ messages: rows.reverse() })
+  } catch (err) {
+    next(err)
+  }
+})
+
+// POST /api/chat/clear-memory — clear all conversation memory and chat history
+router.post('/clear-memory', authMiddleware, async (req, res, next) => {
+  try {
+    await pool.execute('DELETE FROM conversation_memory WHERE user_id = ?', [req.userId])
+    await pool.execute('DELETE FROM chat_messages WHERE user_id = ?', [req.userId])
+    res.json({ success: true })
   } catch (err) {
     next(err)
   }
