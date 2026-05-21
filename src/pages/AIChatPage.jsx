@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { ArrowLeft, Send, Square, Trash2, Bot } from 'lucide-react'
+import { ArrowLeft, Send, Square, Trash2, Bot, Mic } from 'lucide-react'
 import { createChatStream } from '../lib/chat-engine'
 import {
   fetchStyles, fetchChatHistory,
 } from '../lib/ai-settings'
+import { useSpeechRecognition } from '../hooks/useSpeechRecognition'
 import { useAuth } from '../hooks/useAuth'
 import styles from '../components/AIAssistant/AICircleFloat.module.css'
 
@@ -23,6 +24,9 @@ export default function AIChatPage() {
   const messagesEndRef = useRef(null)
   const abortRef = useRef(null)
   const streamingRef = useRef({ content: '', reasoning: '' })
+
+  // Speech recognition
+  const { isSupported: micSupported, isListening, transcript, startListening, stopListening } = useSpeechRecognition()
 
   const messagesRef = useRef(messages)
   const inputRef = useRef(input)
@@ -135,6 +139,22 @@ export default function AIChatPage() {
     setCurrentReasoning('')
   }, [])
 
+  // Mic toggle
+  const handleMicToggle = useCallback(() => {
+    if (isListening) {
+      stopListening()
+    } else {
+      startListening()
+    }
+  }, [isListening, startListening, stopListening])
+
+  // Sync transcript to input when speech recognition completes
+  useEffect(() => {
+    if (!isListening && transcript) {
+      setInput(transcript)
+    }
+  }, [isListening, transcript])
+
   const handleClearHistory = useCallback(() => {
     setMessages([])
   }, [])
@@ -149,9 +169,11 @@ export default function AIChatPage() {
           <Bot size={22} className={styles.headerIcon} />
           <span className={styles.headerName}>{displayName}</span>
         </div>
-        <button className={styles.iconBtn} onClick={handleClearHistory} title="清空记录">
-          <Trash2 size={16} />
-        </button>
+        <div className={styles.headerActions}>
+          <button className={styles.iconBtn} onClick={handleClearHistory} title="清空记录">
+            <Trash2 size={16} />
+          </button>
+        </div>
       </div>
 
       <div className={styles.messages}>
@@ -205,9 +227,18 @@ export default function AIChatPage() {
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={`和 ${displayName} 对话...`}
+          placeholder={isListening ? '正在聆听...' : `和 ${displayName} 对话...`}
           disabled={streaming}
         />
+        {micSupported && !streaming && (
+          <button
+            className={`${styles.micBtn} ${isListening ? styles.micBtnRecording : ''}`}
+            onClick={handleMicToggle}
+            title={isListening ? '停止录音' : '语音输入'}
+          >
+            <Mic size={16} />
+          </button>
+        )}
         {streaming ? (
           <button className={styles.sendBtn} onClick={handleStop} title="停止">
             <Square size={16} />

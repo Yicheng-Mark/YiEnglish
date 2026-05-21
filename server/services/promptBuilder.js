@@ -7,7 +7,7 @@ const BASE_IDENTITY = `你是一个稳定、自然、能记住用户偏好、会
  * Build the complete system prompt from layers:
  * base identity + style prompt + user memories
  */
-async function buildSystemPrompt(pool, { styleKey, memories, userNickname }) {
+async function buildSystemPrompt(pool, { styleKey, memories, userNickname, gender }) {
   // 1. Fetch style prompt from DB
   const [styleRows] = await pool.execute(
     'SELECT system_prompt FROM style_modes WHERE style_key = ? AND is_active = 1',
@@ -28,6 +28,10 @@ async function buildSystemPrompt(pool, { styleKey, memories, userNickname }) {
   let userContext = ''
   if (userNickname) {
     userContext = `\n\n用户昵称：${userNickname}`
+  }
+  if (gender) {
+    const genderMap = { male: '男性', female: '女性', other: '其他' }
+    userContext += `\n你的性别设定：${genderMap[gender] || gender}`
   }
 
   return BASE_IDENTITY + '\n\n' + stylePrompt + memorySection + userContext

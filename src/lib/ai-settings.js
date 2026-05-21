@@ -63,6 +63,18 @@ export async function updateCustomName(customName) {
   return res.json()
 }
 
+export async function updateGender(gender) {
+  const res = await apiFetch('/api/style/gender', {
+    method: 'PATCH',
+    body: JSON.stringify({ gender }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || `更新失败 (${res.status})`)
+  }
+  return res.json()
+}
+
 // Chat history via API
 export async function fetchChatHistory(limit = 50) {
   try {

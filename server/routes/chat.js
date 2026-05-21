@@ -34,6 +34,13 @@ router.post('/', authMiddleware, async (req, res, next) => {
     )
     const userNickname = userRows.length > 0 ? userRows[0].nickname : null
 
+    // 2b. Fetch gender from style settings
+    const [genderRows] = await pool.execute(
+      'SELECT gender FROM user_style_settings WHERE user_id = ?',
+      [userId]
+    )
+    const gender = genderRows.length > 0 ? genderRows[0].gender : null
+
     // 3. Fetch long-term memories
     const [memories] = await pool.execute(
       'SELECT category, content FROM conversation_memory WHERE user_id = ? ORDER BY created_at DESC LIMIT 20',
@@ -48,7 +55,7 @@ router.post('/', authMiddleware, async (req, res, next) => {
     const recentHistory = history.reverse()
 
     // 5. Build system prompt
-    const systemPrompt = await buildSystemPrompt(pool, { styleKey, memories, userNickname })
+    const systemPrompt = await buildSystemPrompt(pool, { styleKey, memories, userNickname, gender })
 
     // 6. Save user message
     const userMsg = messages[messages.length - 1]

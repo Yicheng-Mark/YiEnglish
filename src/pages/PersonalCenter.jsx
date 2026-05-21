@@ -3,15 +3,16 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
   BookMarked, BookOpen, Headphones, Target,
-  Palette, ChevronRight, Pencil, Bot, X, Camera, ChartColumn,
+  Palette, ChevronRight, Pencil, Bot, X, Camera, ChartColumn, LogOut,
 } from 'lucide-react'
+import { useAuth } from '../hooks/useAuth'
 import { useReadingStore } from '../modules/reading/hooks/useReadingStore'
 import { useUserConfig } from '../hooks/useUserConfig'
 import { useProfileStore } from '../hooks/useProfileStore'
 import { getErrorBookCount } from '../utils/errorBook'
 import { getReadingWordBookCount } from '../utils/readingWordBook'
 import { getCorpusWordBookCount } from '../utils/corpusWordBook'
-import { fetchStyles, switchStyle, updateCustomName } from '../lib/ai-settings'
+import { fetchStyles, switchStyle, updateCustomName, updateGender } from '../lib/ai-settings'
 
 function Modal({ open, onClose, title, children }) {
   if (!open) return null
@@ -32,6 +33,7 @@ function Modal({ open, onClose, title, children }) {
 
 export default function PersonalCenter() {
   const navigate = useNavigate()
+  const { logout } = useAuth()
   const store = useReadingStore()
   const { theme, setTheme } = useUserConfig()
   const profile = useProfileStore()
@@ -191,6 +193,17 @@ export default function PersonalCenter() {
         </div>
       </div>
 
+      {/* Logout */}
+      <div className="mt-4 animate-card-enter" style={{ animationDelay: '0.35s' }}>
+        <button
+          onClick={async () => { await logout(); navigate('/login') }}
+          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-surface dark:bg-surface-dark border border-gray-100/80 dark:border-white/[0.06] hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors text-red-500 font-medium"
+        >
+          <LogOut className="w-4 h-4" />
+          退出登录
+        </button>
+      </div>
+
       {/* Edit Profile Modal */}
       <Modal open={editModal} onClose={() => setEditModal(false)} title="编辑资料">
         <div className="flex justify-center mb-5">
@@ -333,6 +346,36 @@ export default function PersonalCenter() {
                 >编辑</button>
               </div>
             )}
+          </div>
+        )}
+        {/* Gender section */}
+        {aiStyles.current && (
+          <div className="mb-4 p-3 rounded-xl bg-gray-50 dark:bg-white/[0.04]">
+            <p className="text-xs text-content-tertiary dark:text-gray-500 mb-2">性别</p>
+            <div className="flex gap-2">
+              {[
+                { key: 'male', label: '男' },
+                { key: 'female', label: '女' },
+              ].map(g => (
+                <button
+                  key={g.key}
+                  onClick={async () => {
+                    try {
+                      await updateGender(g.key)
+                      setAiStyles(prev => ({ ...prev, current: { ...prev.current, gender: g.key } }))
+                      toast('性别已更新')
+                    } catch (err) {
+                      toast('更新失败', { description: err.message })
+                    }
+                  }}
+                  className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    aiStyles.current.gender === g.key
+                      ? 'bg-primary text-white'
+                      : 'bg-white dark:bg-white/[0.06] text-content-secondary dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.1]'
+                  }`}
+                >{g.label}</button>
+              ))}
+            </div>
           </div>
         )}
         <p className="text-sm text-content-secondary dark:text-gray-400 mb-4">选择你的 AI 学习伙伴风格</p>
