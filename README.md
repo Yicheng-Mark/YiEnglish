@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="https://www.lingoforge.fun/logo.png" width="80" alt="LingoForge Logo" />
-</p>
-
 <h1 align="center">LingoForge</h1>
 
 <p align="center">
@@ -25,21 +21,6 @@
   <img src="https://img.shields.io/badge/MySQL-8.0-orange" alt="MySQL" />
   <img src="https://img.shields.io/badge/License-MIT-green" alt="MIT License" />
 </p>
-
----
-
-## 📸 效果展示
-
-<p align="center">
-  <img src="public/screenshots/typing.png" width="45%" alt="打字背词" />
-  <img src="public/screenshots/corpus.png" width="45%" alt="视频语料" />
-</p>
-<p align="center">
-  <img src="public/screenshots/ai-assistant.png" width="45%" alt="AI 助手" />
-  <img src="public/screenshots/themes.png" width="45%" alt="四套主题" />
-</p>
-
-> 💡 截图位于 `public/screenshots/`，如图片未显示请先将截图放入该目录。
 
 ---
 
