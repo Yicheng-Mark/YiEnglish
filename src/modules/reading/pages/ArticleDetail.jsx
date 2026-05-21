@@ -333,7 +333,7 @@ export default function ArticleDetail() {
       </div>
 
       {/* 阅读区 */}
-      <article ref={contentRef} className="max-w-3xl mx-auto px-4 md:px-6 py-8 md:py-12">
+      <article ref={contentRef} className="article-content max-w-3xl mx-auto px-4 md:px-6 py-8 md:py-12">
         {/* 分类标签 */}
         <div className="mb-4">
           <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${tagClass}`}>

@@ -45,7 +45,7 @@ export const tokenizeText = (text, paraIndex, onWordClick, keyPrefix = 'plain') 
       elements.push(
         <span
           key={`${paraIndex}-${keyPrefix}-word-${index}`}
-          className="word-clickable cursor-pointer hover:underline hover:opacity-80 transition-opacity select-none"
+          className="word-clickable cursor-pointer hover:underline hover:opacity-80 transition-opacity"
           onClick={(e) => {
             e.stopPropagation()
             e.preventDefault()

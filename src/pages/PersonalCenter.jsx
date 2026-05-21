@@ -430,12 +430,12 @@ export default function PersonalCenter() {
                 rows={4}
                 value={customPromptInput}
                 onChange={(e) => setCustomPromptInput(e.target.value)}
-                maxLength={200}
+                maxLength={500}
                 placeholder="描述你希望 AI 伙伴的性格、语气和交流方式..."
                 autoFocus
               />
               <div className="flex items-center justify-between mt-2">
-                <span className="text-xs text-content-tertiary">{customPromptInput.length}/200</span>
+                <span className="text-xs text-content-tertiary">{customPromptInput.length}/500</span>
                 <div className="flex gap-2">
                   <button
                     onClick={() => { setEditingPrompt(false); setCustomPromptInput(aiStyles.current?.custom_prompt || '') }}

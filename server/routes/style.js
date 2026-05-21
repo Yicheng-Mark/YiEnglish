@@ -129,8 +129,8 @@ router.patch('/custom-prompt', authMiddleware, async (req, res, next) => {
       return res.status(400).json({ error: 'customPrompt 必须是字符串' })
     }
     const trimmed = customPrompt.trim()
-    if (trimmed.length > 200) {
-      return res.status(400).json({ error: '自定义描述不能超过200个字符' })
+    if (trimmed.length > 500) {
+      return res.status(400).json({ error: '自定义描述不能超过500个字符' })
     }
 
     const [userStyle] = await pool.execute(
