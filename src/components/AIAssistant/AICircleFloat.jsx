@@ -1,12 +1,11 @@
 import { useState, useRef, useEffect, useCallback, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Bot, X, Maximize2, Send, Square, Trash2, MessageCircle, Mic } from 'lucide-react'
+import { Bot, X, Maximize2, Send, Square, Trash2, MessageCircle } from 'lucide-react'
 import { createChatStream } from '../../lib/chat-engine'
 import {
   fetchStyles, fetchChatHistory,
   getPosition, setPosition as savePosition,
 } from '../../lib/ai-settings'
-import { useSpeechRecognition } from '../../hooks/useSpeechRecognition'
 import { useAuth } from '../../hooks/useAuth'
 import styles from './AICircleFloat.module.css'
 
@@ -16,7 +15,6 @@ const ChatContent = memo(function ChatContent({
   onInputChange, onKeyDown, onSend, onStop,
   onClearHistory, onExpand, onClose, messagesEndRef,
   onPanelPointerDown, onPanelPointerMove, onPanelPointerUp,
-  micSupported, isListening, onMicToggle,
 }) {
   const displayName = currentStyle?.custom_name || currentStyle?.name || 'AI 助手'
   return (
@@ -94,18 +92,9 @@ const ChatContent = memo(function ChatContent({
           value={input}
           onChange={e => onInputChange(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder={isListening ? '正在聆听...' : `和 ${displayName} 对话...`}
+          placeholder={`和 ${displayName} 对话...`}
           disabled={streaming}
         />
-        {micSupported && !streaming && (
-          <button
-            className={`${styles.micBtn} ${isListening ? styles.micBtnRecording : ''}`}
-            onClick={onMicToggle}
-            title={isListening ? '停止录音' : '语音输入'}
-          >
-            <Mic size={16} />
-          </button>
-        )}
         {streaming ? (
           <button className={styles.sendBtn} onClick={onStop} title="停止">
             <Square size={16} />
@@ -134,9 +123,6 @@ export default function AICircleFloat() {
   const [isDraggingState, setIsDraggingState] = useState(false)
   const [currentReasoning, setCurrentReasoning] = useState('')
   const hideTimerRef = useRef(null)
-
-  // Speech recognition
-  const { isSupported: micSupported, isListening, transcript, startListening, stopListening } = useSpeechRecognition()
 
   // Refs
   const positionRef = useRef(position)
@@ -464,22 +450,6 @@ export default function AICircleFloat() {
     if (typeof val === 'string') setInput(val)
   }, [])
 
-  // Mic toggle
-  const handleMicToggle = useCallback(() => {
-    if (isListening) {
-      stopListening()
-    } else {
-      startListening()
-    }
-  }, [isListening, startListening, stopListening])
-
-  // Sync transcript to input when speech recognition completes
-  useEffect(() => {
-    if (!isListening && transcript) {
-      setInput(transcript)
-    }
-  }, [isListening, transcript])
-
   const handleExpand = useCallback(() => {
     setPanelOpen(false)
     navigate('/ai-assistant', { state: { messages: messagesRef.current } })
@@ -520,8 +490,6 @@ export default function AICircleFloat() {
             onPanelPointerDown={handlePanelPointerDown}
             onPanelPointerMove={handlePanelPointerMove}
             onPanelPointerUp={handlePanelPointerUp}
-            micSupported={micSupported} isListening={isListening}
-            onMicToggle={handleMicToggle}
           />
         </div>
       )}
