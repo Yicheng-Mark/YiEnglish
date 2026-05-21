@@ -22,6 +22,7 @@ import useIsMobile from '../hooks/useIsMobile.js';
 import { useAuth } from '../hooks/useAuth.js';
 import { saveProgress } from '../lib/api.js';
 import { saveLocalProgress } from '../utils/localProgress.js';
+import { addWordToReview, updateReviewCard } from '../utils/reviewCards.js';
 
 export default function Typing() {
   const { dictId, chapterId } = useParams();
@@ -53,6 +54,7 @@ export default function Typing() {
   const isReadingWordBookMode = dictId === 'reading-word-book';
   const isCorpusWordBookMode = dictId === 'corpus-word-book';
   const isFavoriteWordBookMode = dictId === 'favorite-words';
+  const isReviewMode = dictId === 'review';
   const isWordBookMode = isReadingWordBookMode || isCorpusWordBookMode || isFavoriteWordBookMode;
 
   const targetWordIndex = parseInt(searchParams.get('wordIndex')) || 0;
@@ -71,6 +73,8 @@ export default function Typing() {
         setWords(chapter.words);
       } else if (isErrorBookMode && (!dict.chapters || dict.chapters.length === 0)) {
         setError('错题本暂无单词');
+      } else if (isReviewMode && (!dict.chapters || dict.chapters.length === 0)) {
+        setError('暂无待复习单词');
       } else if (isFavoriteWordBookMode && (!dict.chapters || dict.chapters.length === 0)) {
         setError('收藏词本暂无单词');
         setWords([]);
@@ -79,38 +83,45 @@ export default function Typing() {
       }
       setLoading(false);
     }).catch(() => { setError('加载失败'); setLoading(false); });
-  }, [dictId, chapterId, isErrorBookMode, isFavoriteWordBookMode, reloadKey]);
+  }, [dictId, chapterId, isErrorBookMode, isFavoriteWordBookMode, isReviewMode, reloadKey]);
 
   const dictName = useMemo(() => getMeta(dictId)?.name || dictId, [dictId]);
 
   const flushServerProgress = useCallback(() => {
-    if (!isAuthenticated || isErrorBookMode || isWordBookMode) return;
+    if (!isAuthenticated || isErrorBookMode || isWordBookMode || isReviewMode) return;
     const buffered = completedBufferRef.current.splice(0);
     if (buffered.length === 0) return;
     saveProgress(dictId, Number(chapterId), buffered).catch(() => {
       completedBufferRef.current.push(...buffered);
     });
-  }, [isAuthenticated, isErrorBookMode, isWordBookMode, dictId, chapterId]);
+  }, [isAuthenticated, isErrorBookMode, isWordBookMode, isReviewMode, dictId, chapterId]);
 
   const handleWordComplete = useCallback((wordName) => {
+    if (isReviewMode) {
+      const hadError = lastWordHadErrorRef.current;
+      updateReviewCard(wordName, hadError ? 3 : 5);
+      return;
+    }
     if (isErrorBookMode || isWordBookMode) return;
     saveLocalProgress(dictId, Number(chapterId), [wordName]);
+    addWordToReview(wordName, dictId);
     if (isAuthenticated) {
       completedBufferRef.current.push(wordName);
       if (completedBufferRef.current.length >= 5) {
         flushServerProgress();
       }
     }
-  }, [isErrorBookMode, isWordBookMode, dictId, chapterId, isAuthenticated, flushServerProgress]);
+  }, [isReviewMode, isErrorBookMode, isWordBookMode, dictId, chapterId, isAuthenticated, flushServerProgress, lastWordHadErrorRef]);
 
   const handleAutoRemove = useCallback((wordName) => {
+    if (isReviewMode) return;
     if (isErrorBookMode) removeFromErrorBook(wordName);
     else if (isReadingWordBookMode) removeFromReadingWordBook(wordName);
     else if (isCorpusWordBookMode) removeFromCorpusWordBook(wordName);
     else if (isFavoriteWordBookMode) removeFromFavoriteWords(wordName);
-  }, [isErrorBookMode, isReadingWordBookMode, isCorpusWordBookMode, isFavoriteWordBookMode]);
+  }, [isReviewMode, isErrorBookMode, isReadingWordBookMode, isCorpusWordBookMode, isFavoriteWordBookMode]);
 
-  const { currentWord, currentInput, wordIndex, stats, isFinished, handleInput, jumpTo, reset, isWrong, startTime } = useTyping(words, config.soundEnabled, config.wordRepeatCount, isErrorBookMode, dictName, config.autoRemoveErrorWord, handleWordComplete, handleAutoRemove);
+  const { currentWord, currentInput, wordIndex, stats, isFinished, handleInput, jumpTo, reset, isWrong, startTime, lastWordHadErrorRef } = useTyping(words, config.soundEnabled, config.wordRepeatCount, isErrorBookMode, dictName, config.autoRemoveErrorWord, handleWordComplete, handleAutoRemove);
   const studyStore = useReadingStore();
   const typingAccumulatedRef = useRef(0);
   const lastFlushRef = useRef(0);
@@ -295,7 +306,7 @@ export default function Typing() {
     handleInputRef.current?.('Backspace');
   }, [isFinished]);
 
-  const hasNextChapter = !isErrorBookMode && !isReadingWordBookMode && !isCorpusWordBookMode && !isFavoriteWordBookMode
+  const hasNextChapter = !isErrorBookMode && !isReadingWordBookMode && !isCorpusWordBookMode && !isFavoriteWordBookMode && !isReviewMode
     && chapters.some(c => c.id === Number(chapterId) + 1);
 
   const handleNextChapter = useCallback(() => {
@@ -418,12 +429,12 @@ export default function Typing() {
   }, [isMobile, isFinished, wordIndex, words.length, jumpTo, keyboardActive, currentWord, dictId, chapterId]);
 
   const handleGoHome = useCallback(() => {
-    if (isErrorBookMode || isReadingWordBookMode || isCorpusWordBookMode || isFavoriteWordBookMode) {
+    if (isErrorBookMode || isReadingWordBookMode || isCorpusWordBookMode || isFavoriteWordBookMode || isReviewMode) {
       navigate('/word');
     } else {
       navigate(`/dict/${dictId}`);
     }
-  }, [navigate, dictId, isErrorBookMode, isReadingWordBookMode, isCorpusWordBookMode, isFavoriteWordBookMode]);
+  }, [navigate, dictId, isErrorBookMode, isReadingWordBookMode, isCorpusWordBookMode, isFavoriteWordBookMode, isReviewMode]);
 
   // 完成章节后延迟跳到下一章，让用户看到"已完成"状态
   useEffect(() => {
@@ -437,6 +448,7 @@ export default function Typing() {
 
   const handleDeleteCurrentWord = useCallback(() => {
     if (!currentWord || words.length === 0) return;
+    if (isReviewMode) return;
     if (isErrorBookMode) {
       removeFromErrorBook(currentWord.name);
     } else if (isReadingWordBookMode) {
@@ -450,7 +462,7 @@ export default function Typing() {
     }
     setWords(prev => prev.filter(w => w.name !== currentWord.name));
     // words 变化后 useTyping 的 useEffect 会自动重置输入、计时器、统计等状态
-  }, [currentWord, words.length, isErrorBookMode, isReadingWordBookMode, isCorpusWordBookMode, isFavoriteWordBookMode]);
+  }, [currentWord, words.length, isReviewMode, isErrorBookMode, isReadingWordBookMode, isCorpusWordBookMode, isFavoriteWordBookMode]);
 
   const handleWordRemovedFromModal = useCallback((wordName) => {
     setWords(prev => {
@@ -480,7 +492,7 @@ export default function Typing() {
     <div className="h-[calc(100dvh-3rem)] md:h-[calc(100vh-4rem)] bg-background dark:bg-transparent flex items-center justify-center transition-colors duration-500">
       <div className="text-center">
         <div className="animate-spin w-12 h-12 border-4 border-primary dark:border-primary-dark border-t-transparent rounded-full mx-auto mb-4" />
-        <p className="text-content-tertiary dark:text-gray-400 text-sm">{isErrorBookMode ? '正在加载错题本...' : isReadingWordBookMode ? '正在加载阅读词本...' : isCorpusWordBookMode ? '正在加载语料词本...' : isFavoriteWordBookMode ? '正在加载收藏词本...' : '正在加载章节...'}</p>
+        <p className="text-content-tertiary dark:text-gray-400 text-sm">{isErrorBookMode ? '正在加载错题本...' : isReviewMode ? '正在加载复习计划...' : isReadingWordBookMode ? '正在加载阅读词本...' : isCorpusWordBookMode ? '正在加载语料词本...' : isFavoriteWordBookMode ? '正在加载收藏词本...' : '正在加载章节...'}</p>
       </div>
     </div>
   );
@@ -494,12 +506,28 @@ export default function Typing() {
           </svg>
         </div>
         <p className="text-indigo-500 dark:text-violet-400 mb-6 font-medium">{error}</p>
-        <button onClick={() => isErrorBookMode || isWordBookMode ? navigate('/word') : navigate(`/dict/${dictId}`)} className="px-5 py-2.5 bg-primary hover:opacity-90 text-white rounded-button font-medium transition shadow-lg shadow-primary/20">{isFavoriteWordBookMode ? '返回词库' : '返回章节列表'}</button>
+        <button onClick={() => isErrorBookMode || isWordBookMode || isReviewMode ? navigate('/word') : navigate(`/dict/${dictId}`)} className="px-5 py-2.5 bg-primary hover:opacity-90 text-white rounded-button font-medium transition shadow-lg shadow-primary/20">{isFavoriteWordBookMode || isReviewMode ? '返回词库' : '返回章节列表'}</button>
       </div>
     </div>
   );
 
   if (words.length === 0) {
+    if (isReviewMode) {
+      return (
+        <div className="h-[calc(100dvh-3rem)] md:h-[calc(100vh-4rem)] bg-background dark:bg-transparent flex items-center justify-center transition-colors duration-500">
+          <div className="text-center card p-8 shadow-lg dark:shadow-black/40 mx-4">
+            <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <p className="text-emerald-600 dark:text-emerald-400 mb-2 font-medium text-xl">复习完成</p>
+            <p className="text-content-tertiary dark:text-gray-400 mb-6">所有待复习单词已练习完毕！</p>
+            <button onClick={() => navigate('/word')} className="px-5 py-2.5 bg-primary hover:opacity-90 text-white rounded-button font-medium transition shadow-lg shadow-primary/20">返回词库</button>
+          </div>
+        </div>
+      );
+    }
     if (isErrorBookMode || isWordBookMode) {
       const emptyTitle = isErrorBookMode
         ? '错题本已清空'
@@ -594,18 +622,18 @@ export default function Typing() {
 
         {/* 顶部栏 */}
         <div className="min-h-12 md:h-14 shrink-0 flex items-center justify-between px-3 md:px-4 z-40">
-          <button onClick={() => (isErrorBookMode || isReadingWordBookMode || isCorpusWordBookMode || isFavoriteWordBookMode) ? navigate('/word') : navigate(`/dict/${dictId}`)} className="text-content-tertiary dark:text-gray-400 hover:text-primary dark:hover:text-primary-dark flex items-center gap-2 text-sm transition-colors px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.04]">
+          <button onClick={() => (isErrorBookMode || isReadingWordBookMode || isCorpusWordBookMode || isFavoriteWordBookMode || isReviewMode) ? navigate('/word') : navigate(`/dict/${dictId}`)} className="text-content-tertiary dark:text-gray-400 hover:text-primary dark:hover:text-primary-dark flex items-center gap-2 text-sm transition-colors px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.04]">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            <span className="hidden sm:inline">{(isErrorBookMode || isReadingWordBookMode || isCorpusWordBookMode || isFavoriteWordBookMode) ? '返回词库' : '返回章节列表'}</span>
+            <span className="hidden sm:inline">{(isErrorBookMode || isReadingWordBookMode || isCorpusWordBookMode || isFavoriteWordBookMode || isReviewMode) ? '返回词库' : '返回章节列表'}</span>
           </button>
 
           <div className="flex flex-col items-center">
             <div className="text-base font-semibold text-content dark:text-white">
               {isFinished
                 ? <span className="text-green-600 dark:text-green-400">已完成 ✓</span>
-                : isErrorBookMode ? '错题本练习' : isReadingWordBookMode ? '阅读词本练习' : isCorpusWordBookMode ? '语料词本练习' : isFavoriteWordBookMode ? '收藏词本练习' : `第 ${wordIndex + 1} / ${words.length} 词`}
+                : isReviewMode ? '复习练习' : isErrorBookMode ? '错题本练习' : isReadingWordBookMode ? '阅读词本练习' : isCorpusWordBookMode ? '语料词本练习' : isFavoriteWordBookMode ? '收藏词本练习' : `第 ${wordIndex + 1} / ${words.length} 词`}
             </div>
             <div className="w-48 md:w-56 h-2 bg-gray-200 dark:bg-white/[0.08] rounded-full mt-2 overflow-hidden">
               <div
@@ -688,7 +716,7 @@ export default function Typing() {
 
         <StatsPanel stats={stats} keyboardHeight={keyboardHeight} />
 
-        {isFinished && !hasNextChapter && <ResultModal stats={stats} onRestart={reset} onGoHome={handleGoHome} onNextChapter={handleNextChapter} hasNextChapter={hasNextChapter} isErrorBookMode={isErrorBookMode} remainingErrorCount={remainingErrorCount} isReadingWordBookMode={isReadingWordBookMode} remainingReadingCount={remainingReadingCount} isCorpusWordBookMode={isCorpusWordBookMode} remainingCorpusCount={remainingCorpusCount} isFavoriteWordBookMode={isFavoriteWordBookMode} remainingFavoriteCount={remainingFavoriteCount} />}
+        {isFinished && !hasNextChapter && <ResultModal stats={stats} onRestart={reset} onGoHome={handleGoHome} onNextChapter={handleNextChapter} hasNextChapter={hasNextChapter} isErrorBookMode={isErrorBookMode} remainingErrorCount={remainingErrorCount} isReadingWordBookMode={isReadingWordBookMode} remainingReadingCount={remainingReadingCount} isCorpusWordBookMode={isCorpusWordBookMode} remainingCorpusCount={remainingCorpusCount} isFavoriteWordBookMode={isFavoriteWordBookMode} remainingFavoriteCount={remainingFavoriteCount} isReviewMode={isReviewMode} />}
         {showWrongBook && <WrongBookModal onClose={() => setShowWrongBook(false)} onWordRemoved={isErrorBookMode || isWordBookMode ? handleWordRemovedFromModal : undefined} />}
       </div>
     </div>

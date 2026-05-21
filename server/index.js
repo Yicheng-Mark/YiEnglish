@@ -14,6 +14,7 @@ const wordbookRoutes = require('./routes/wordbooks')
 const favoritesRoutes = require('./routes/favorites')
 const settingsRoutes = require('./routes/settings')
 const migrateRoutes = require('./routes/migrate')
+const reviewRoutes = require('./routes/review')
 
 const app = express()
 
@@ -31,6 +32,7 @@ app.use('/api/wordbooks', wordbookRoutes)
 app.use('/api/favorites', favoritesRoutes)
 app.use('/api/settings', settingsRoutes)
 app.use('/api/migrate', migrateRoutes)
+app.use('/api/review', reviewRoutes)
 
 // Serve static frontend in production
 const distPath = path.resolve(__dirname, '../dist')

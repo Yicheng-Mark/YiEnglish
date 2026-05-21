@@ -13,6 +13,7 @@ import { syncErrorBookFromServer } from './utils/errorBook'
 import { syncReadingWordBookFromServer } from './utils/readingWordBook'
 import { syncCorpusWordBookFromServer } from './utils/corpusWordBook'
 import { syncFavoriteDictsFromServer } from './utils/favoriteDicts'
+import { syncReviewCardsFromServer } from './utils/reviewCards'
 import { syncSettingsFromServer } from './hooks/useUserConfig'
 import { syncProfileFromServer } from './hooks/useProfileStore'
 
@@ -114,6 +115,7 @@ function App() {
           syncFavoriteDictsFromServer(),
           syncSettingsFromServer(),
           syncProfileFromServer(),
+          syncReviewCardsFromServer(),
         ]).catch(err => console.warn('Data sync failed:', err))
       }
     }).catch(() => {

@@ -12,6 +12,8 @@ import { useFavorites } from '../utils/favoriteDicts.js'
 import Hero from '../components/Hero'
 import Features from '../components/Features'
 import ErrorBookCard from '../components/ErrorBookCard'
+import ReviewCard from '../components/ReviewCard'
+import { getDueReviewCount, getTotalReviewCount } from '../utils/reviewCards.js'
 
 const SCROLL_KEY = 'lf_wordlib_scroll_y'
 const RESTORE_KEY = 'lf_wordlib_should_restore'
@@ -60,6 +62,8 @@ function Home() {
   const readingWordCount = getReadingWordBookCount()
   const corpusWordCount = getCorpusWordBookCount()
   const favoriteWordCount = getFavoriteWordsCount()
+  const reviewDueCount = getDueReviewCount()
+  const reviewTotalCount = getTotalReviewCount()
 
   // 单词搜索:跨词库
   const [wordQuery, setWordQuery] = useState('')
@@ -347,6 +351,12 @@ function Home() {
             const match = (keywords) => !q || keywords.some(k => k.toLowerCase().includes(q))
             const showFunctionBooks = (selectedCategory === '全部' || selectedCategory === '功能词本') && !favoriteOnly
             return (<>
+          {/* 复习计划卡片 */}
+          {showFunctionBooks && match(['复习计划']) && <ReviewCard
+            dueCount={reviewDueCount}
+            totalCount={reviewTotalCount}
+            onClick={() => saveScrollAndNavigate('/dict/review')}
+          />}
           {/* 错题本卡片 */}
           {showFunctionBooks && match(['错题本']) && <ErrorBookCard
             count={errorBookCount}

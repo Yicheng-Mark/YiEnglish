@@ -1,6 +1,7 @@
 import { getErrorBookCount, loadErrorBookAsDictionary } from '../utils/errorBook.js';
 import { getReadingWordBookCount, loadReadingWordBookAsDictionary } from '../utils/readingWordBook.js';
 import { getCorpusWordBookCount, loadCorpusWordBookAsDictionary } from '../utils/corpusWordBook.js';
+import { getDueReviewCount, getTotalReviewCount } from '../utils/reviewCards.js';
 
 const warmColors = [
   'warm-coral',
@@ -79,6 +80,19 @@ export const getMeta = (id) => {
       totalChapters: dict.chapters?.length || 0,
       totalWords: count,
       color: 'warm-teal',
+    };
+  }
+  if (id === 'review') {
+    const dueCount = getDueReviewCount();
+    const totalCount = getTotalReviewCount();
+    return {
+      id: 'review',
+      name: '复习计划',
+      category: '功能词本',
+      description: '间隔重复复习',
+      totalChapters: Math.ceil(dueCount / 25) || 0,
+      totalWords: dueCount,
+      color: 'warm-sky',
     };
   }
   return dictionaryMeta.find((d) => d.id === id);

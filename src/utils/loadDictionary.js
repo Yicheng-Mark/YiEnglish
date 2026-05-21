@@ -2,6 +2,7 @@ import { loadErrorBookAsDictionary } from './errorBook.js';
 import { loadReadingWordBookAsDictionary, enrichReadingWordBook } from './readingWordBook.js';
 import { loadCorpusWordBookAsDictionary, enrichCorpusWordBook } from './corpusWordBook.js';
 import { loadFavoriteWordsAsDictionary } from './favoriteWords.js';
+import { loadReviewAsDictionary } from './reviewCards.js';
 
 const loaders = {
   junior: () => import('../dictionaries/junior.json'),
@@ -35,11 +36,12 @@ const loaders = {
     return { default: loadCorpusWordBookAsDictionary() };
   },
   'favorite-words': () => Promise.resolve({ default: loadFavoriteWordsAsDictionary() }),
+  'review': () => loadReviewAsDictionary().then(d => ({ default: d })),
 }
 
 const cache = new Map()
 
-const noCacheIds = new Set(['error-book', 'reading-word-book', 'corpus-word-book', 'favorite-words'])
+const noCacheIds = new Set(['error-book', 'reading-word-book', 'corpus-word-book', 'favorite-words', 'review'])
 
 const CHAPTER_SIZE = 25
 

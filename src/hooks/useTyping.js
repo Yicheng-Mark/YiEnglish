@@ -130,6 +130,7 @@ export default function useTyping(words, soundEnabled, wordRepeatCount = 1, isEr
   const repeatCountRef = useRef(0);
   const currentInputRef = useRef('');
   const hasWrongInCurrentWordRef = useRef(false);
+  const lastWordHadErrorRef = useRef(false);
   const wordsRef = useRef(words);
   wordsRef.current = words;
   const onWordCompleteRef = useRef(onWordComplete);
@@ -254,6 +255,7 @@ export default function useTyping(words, soundEnabled, wordRepeatCount = 1, isEr
         const completedTimes = repeatCountRef.current + 1;
         const shouldAdvance = wordRepeatCount !== 0 && completedTimes >= wordRepeatCount;
         if (shouldAdvance) {
+          lastWordHadErrorRef.current = hasWrongInCurrentWordRef.current;
           onWordCompleteRef.current?.(currentWord.name);
           if (wordIndex >= words.length - 1) {
             if (soundEnabled) playSound('finish');
@@ -325,5 +327,5 @@ export default function useTyping(words, soundEnabled, wordRepeatCount = 1, isEr
     }
   }, [soundEnabled, speakWord, preloadWord]);
 
-  return { currentWord, currentInput, wordIndex, stats, isFinished, isWrong, handleInput, jumpTo, reset, startTime };
+  return { currentWord, currentInput, wordIndex, stats, isFinished, isWrong, handleInput, jumpTo, reset, startTime, lastWordHadErrorRef };
 }
