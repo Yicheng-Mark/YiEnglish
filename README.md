@@ -194,14 +194,6 @@ npm run dev
 
 ---
 
-## 🤝 贡献与联系
-
-- 欢迎提交 [Issue](https://github.com/zhang12120113-creator/lingoforge/issues) 反馈 Bug 或功能建议
-- 欢迎 Fork → Branch → Pull Request 贡献代码
-- 如觉得项目有用，欢迎 Star ⭐ 关注进展
-
----
-
 ## 👤 关于作者
 
 **小月** —— 独立开发者，正在构建面向中国学习者的英语学习闭环系统。
