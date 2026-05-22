@@ -9,24 +9,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Copy files to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: 120.76.228.235
-          username: root
-          key: ${{ secrets.ALIYUN_KEY }}
-          source: "."
-          target: "/root/typing-word"
-          strip_components: 1
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.ALIYUN_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H 120.76.228.235 >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Rsync files to server
+        run: |
+          rsync -avz --delete \
+            --exclude='.env.local' \
+            --exclude='node_modules' \
+            --exclude='.git' \
+            -e "ssh -i ~/.ssh/deploy_key" \
+            ./ root@120.76.228.235:/root/typing-word/
 
       - name: Install deps and restart service
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: 120.76.228.235
-          username: root
-          key: ${{ secrets.ALIYUN_KEY }}
-          script: |
-            cd /root/typing-word
-            npm install --production
-            systemctl restart lingoforge
-            echo "阿里云部署完成"
+        run: ssh -i ~/.ssh/deploy_key root@120.76.228.235 "cd /root/typing-word && npm install --production && systemctl restart lingoforge && echo '阿里云部署完成'"
