@@ -9,26 +9,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy via SSH (rsync)
-        uses: appleboy/ssh-action@v1.0.0
+      - name: Copy files to server
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: 120.76.228.235
           username: root
           key: ${{ secrets.ALIYUN_KEY }}
-          script: |
-            mkdir -p /root/typing-word
+          source: "."
+          target: "/root/typing-word"
+          strip_components: 1
 
-      - name: Rsync files to server
-        uses: burnett01/rsync-deployments@6.0.0
-        with:
-          switches: -avzr --delete --exclude='.env.local' --exclude='node_modules' --exclude='.git'
-          path: ./
-          remote_path: /root/typing-word/
-          remote_host: 120.76.228.235
-          remote_user: root
-          remote_key: ${{ secrets.ALIYUN_KEY }}
-
-      - name: Install dependencies and restart
+      - name: Install deps and restart service
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: 120.76.228.235
