@@ -1,3 +1,5 @@
+const OSS = import.meta.env.VITE_OSS_BASE_URL || 'https://lingoforge-videos.oss-cn-shenzhen.aliyuncs.com'
+
 export const mockCorpusVideos = [
   {
     id: '1',
@@ -12,8 +14,8 @@ export const mockCorpusVideos = [
     sentenceCount: 320,
     vocabCount: 320,
     date: '2026-05-15',
-    videoUrl: 'https://lingoforge-videos.oss-cn-shenzhen.aliyuncs.com/corpus/HowICreatedOpenClaw%2CtheBreakthroughAIAgentPeterSteinbergerTED.mp4',
-    coverUrl: 'https://lingoforge-videos.oss-cn-shenzhen.aliyuncs.com/corpus/HowICreatedOpenClaw%2CtheBreakthroughAIAgentPeterSteinbergerTED.png',
+    videoUrl: `${OSS}/corpus/HowICreatedOpenClaw%2CtheBreakthroughAIAgentPeterSteinbergerTED.mp4`,
+    coverUrl: `${OSS}/corpus/HowICreatedOpenClaw%2CtheBreakthroughAIAgentPeterSteinbergerTED.png`,
     subtitleUrl: '/corpus/subtitles/001.json',
   },
   {
@@ -29,8 +31,8 @@ export const mockCorpusVideos = [
     sentenceCount: 204,
     vocabCount: 204,
     date: '2026-05-15',
-    videoUrl: 'https://lingoforge-videos.oss-cn-shenzhen.aliyuncs.com/corpus/LearnEnglishThroughMyTriptoLondon%F0%9F%87%AC%F0%9F%87%A7ComprehensibleInput.mp4',
-    coverUrl: 'https://lingoforge-videos.oss-cn-shenzhen.aliyuncs.com/corpus/LearnEnglishThroughMyTriptoLondon%F0%9F%87%AC%F0%9F%87%A7ComprehensibleInput.png',
+    videoUrl: `${OSS}/corpus/LearnEnglishThroughMyTriptoLondon%F0%9F%87%AC%F0%9F%87%A7ComprehensibleInput.mp4`,
+    coverUrl: `${OSS}/corpus/LearnEnglishThroughMyTriptoLondon%F0%9F%87%AC%F0%9F%87%A7ComprehensibleInput.png`,
     subtitleUrl: '/corpus/subtitles/002.json',
   },
   {
@@ -46,8 +48,8 @@ export const mockCorpusVideos = [
     sentenceCount: 293,
     vocabCount: 293,
     date: '2026-05-15',
-    videoUrl: 'https://lingoforge-videos.oss-cn-shenzhen.aliyuncs.com/corpus/BackpackingforthefirsttimePacking%2CPrepping%2C%26hiking%21.mp4',
-    coverUrl: 'https://lingoforge-videos.oss-cn-shenzhen.aliyuncs.com/corpus/BackpackingforthefirsttimePacking%2CPrepping%2C%26hiking%21.png',
+    videoUrl: `${OSS}/corpus/BackpackingforthefirsttimePacking%2CPrepping%2C%26hiking%21.mp4`,
+    coverUrl: `${OSS}/corpus/BackpackingforthefirsttimePacking%2CPrepping%2C%26hiking%21.png`,
     subtitleUrl: '/corpus/subtitles/003.json',
   },
   {
@@ -63,8 +65,8 @@ export const mockCorpusVideos = [
     sentenceCount: 221,
     vocabCount: 221,
     date: '2026-05-15',
-    videoUrl: 'https://lingoforge-videos.oss-cn-shenzhen.aliyuncs.com/corpus/clarechella%5Bgnarly%5D.mp4',
-    coverUrl: 'https://lingoforge-videos.oss-cn-shenzhen.aliyuncs.com/corpus/clarechella%5Bgnarly%5D.png',
+    videoUrl: `${OSS}/corpus/clarechella%5Bgnarly%5D.mp4`,
+    coverUrl: `${OSS}/corpus/clarechella%5Bgnarly%5D.png`,
     subtitleUrl: '/corpus/subtitles/004.json',
   },
   {
@@ -80,8 +82,8 @@ export const mockCorpusVideos = [
     sentenceCount: 142,
     vocabCount: 142,
     date: '2026-05-15',
-    videoUrl: 'https://lingoforge-videos.oss-cn-shenzhen.aliyuncs.com/corpus/HomebodyinNewYorkWhatIEatinaDay%28comfortfoodI%27vebeencraving%29.mp4',
-    coverUrl: 'https://lingoforge-videos.oss-cn-shenzhen.aliyuncs.com/corpus/HomebodyinNewYorkWhatIEatinaDay%28comfortfoodI%27vebeencraving%29.png',
+    videoUrl: `${OSS}/corpus/HomebodyinNewYorkWhatIEatinaDay%28comfortfoodI%27vebeencraving%29.mp4`,
+    coverUrl: `${OSS}/corpus/HomebodyinNewYorkWhatIEatinaDay%28comfortfoodI%27vebeencraving%29.png`,
     subtitleUrl: '/corpus/subtitles/005.json',
   },
   {
@@ -97,8 +99,8 @@ export const mockCorpusVideos = [
     sentenceCount: 146,
     vocabCount: 146,
     date: '2026-05-16',
-    videoUrl: 'https://lingoforge-videos.oss-cn-shenzhen.aliyuncs.com/corpus/SpringInLondon.mp4',
-    coverUrl: 'https://lingoforge-videos.oss-cn-shenzhen.aliyuncs.com/corpus/SpringInLondon.png',
+    videoUrl: `${OSS}/corpus/SpringInLondon.mp4`,
+    coverUrl: `${OSS}/corpus/SpringInLondon.png`,
     subtitleUrl: '/corpus/subtitles/006.json',
   },
 ]

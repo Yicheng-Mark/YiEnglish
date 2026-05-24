@@ -112,7 +112,8 @@ export default function AIChatPage() {
       },
       onError: (err) => {
         cancelAnimationFrame(rafId)
-        const errMsg = { role: 'assistant', content: `Error: ${err.message}` }
+        const msg = err instanceof TypeError ? '网络连接失败，请检查网络后重试' : (err.message || '请求失败')
+        const errMsg = { role: 'assistant', content: msg }
         setMessages([...updated, errMsg])
         setStreaming(false)
         setCurrentReasoning('')

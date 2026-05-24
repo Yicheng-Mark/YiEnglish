@@ -13,5 +13,6 @@ module.exports = {
   DEEPSEEK_API_BASE: process.env.DEEPSEEK_API_BASE || 'https://api.deepseek.com',
   RESEND_API_KEY: process.env.RESEND_API_KEY || '',
   FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
+  ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS || '',
   NODE_ENV: process.env.NODE_ENV || 'development',
 }

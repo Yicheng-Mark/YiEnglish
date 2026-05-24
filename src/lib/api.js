@@ -1,5 +1,7 @@
 import { getToken } from './auth'
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
+
 export async function apiFetch(path, options = {}) {
   const token = getToken()
   const headers = {
@@ -8,7 +10,7 @@ export async function apiFetch(path, options = {}) {
   }
   if (token) headers['Authorization'] = `Bearer ${token}`
 
-  const res = await fetch(path, { ...options, headers, credentials: 'include' })
+  const res = await fetch(`${API_BASE}${path}`, { ...options, headers, credentials: 'include' })
 
   if (res.status === 401) {
     if (window.location.pathname !== '/login') {

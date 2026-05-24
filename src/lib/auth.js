@@ -1,4 +1,5 @@
 const TOKEN_KEY = 'lingoforge_token'
+const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
 
 export function saveToken(token) {
   if (token) localStorage.setItem(TOKEN_KEY, token)
@@ -10,7 +11,7 @@ export function getToken() {
 }
 
 export async function apiLogin(email, password) {
-  const res = await fetch('/api/auth/login', {
+  const res = await fetch(`${API_BASE}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
@@ -23,7 +24,7 @@ export async function apiLogin(email, password) {
 }
 
 export async function apiSendCode(email, type) {
-  const res = await fetch('/api/auth/send-code', {
+  const res = await fetch(`${API_BASE}/api/auth/send-code`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
@@ -35,7 +36,7 @@ export async function apiSendCode(email, type) {
 }
 
 export async function apiRegister(email, code, password, nickname) {
-  const res = await fetch('/api/auth/register', {
+  const res = await fetch(`${API_BASE}/api/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
@@ -48,7 +49,7 @@ export async function apiRegister(email, code, password, nickname) {
 }
 
 export async function apiResetPassword(email, code, password) {
-  const res = await fetch('/api/auth/reset-password', {
+  const res = await fetch(`${API_BASE}/api/auth/reset-password`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
@@ -63,21 +64,21 @@ export async function apiGetProfile() {
   const headers = {}
   const token = getToken()
   if (token) headers['Authorization'] = `Bearer ${token}`
-  const res = await fetch('/api/auth/me', { credentials: 'include', headers })
+  const res = await fetch(`${API_BASE}/api/auth/me`, { credentials: 'include', headers })
   if (!res.ok) return null
   return res.json()
 }
 
 export async function apiLogout() {
   saveToken(null)
-  await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
+  await fetch(`${API_BASE}/api/auth/logout`, { method: 'POST', credentials: 'include' })
 }
 
 export async function apiUpdateProfile(updates) {
   const token = getToken()
   const headers = { 'Content-Type': 'application/json' }
   if (token) headers['Authorization'] = `Bearer ${token}`
-  const res = await fetch('/api/auth/profile', {
+  const res = await fetch(`${API_BASE}/api/auth/profile`, {
     method: 'PATCH',
     credentials: 'include',
     headers,
@@ -92,7 +93,7 @@ export async function apiResetLearning() {
   const token = getToken()
   const headers = { 'Content-Type': 'application/json' }
   if (token) headers['Authorization'] = `Bearer ${token}`
-  const res = await fetch('/api/auth/reset-learning', {
+  const res = await fetch(`${API_BASE}/api/auth/reset-learning`, {
     method: 'POST',
     credentials: 'include',
     headers,

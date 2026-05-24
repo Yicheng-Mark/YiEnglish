@@ -125,8 +125,7 @@ export default function PersonalCenter() {
 
   const settingsItems = [
     { label: 'AI 伙伴设置', emoji: '🤖', action: () => setCompanionModal(true) },
-    { label: '每日目标', emoji: '🎯', action: () => setGoalModal(true) },
-    { label: '模式切换', emoji: '🎨', action: () => setThemeModal(true) },
+{ label: '模式切换', emoji: '🎨', action: () => setThemeModal(true) },
     { label: '帮助与反馈', emoji: '💬', action: () => toast('即将上线', { description: '帮助与反馈功能正在开发中' }) },
   ]
 

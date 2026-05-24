@@ -1,5 +1,7 @@
 import { getToken } from './auth'
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
+
 export function createChatStream({ messages, styleKey, onToken, onReasoning, onDone, onError }) {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), 120000)
@@ -10,7 +12,7 @@ export function createChatStream({ messages, styleKey, onToken, onReasoning, onD
   }
   if (token) headers['Authorization'] = `Bearer ${token}`
 
-  fetch('/api/chat', {
+  fetch(`${API_BASE}/api/chat`, {
     method: 'POST',
     headers,
     credentials: 'include',

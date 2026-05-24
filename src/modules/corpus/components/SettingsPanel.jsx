@@ -4,10 +4,10 @@ import { useCorpusContext } from '../context/CorpusPlayerContext.jsx'
 import { useUserConfig } from '../../../hooks/useUserConfig.js'
 
 const THEME_OPTIONS = [
-  { value: 'light', label: '浅色', activeClass: 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' },
-  { value: 'gray', label: '曜黑', activeClass: 'bg-gray-200 text-gray-700 dark:bg-white dark:text-gray-900' },
+  { value: 'light', label: '明亮', activeClass: 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' },
+  { value: 'gray', label: '暗夜', activeClass: 'bg-gray-200 text-gray-700 dark:bg-white dark:text-gray-900' },
   { value: 'star', label: '星空', activeClass: 'bg-amber-100 text-amber-700 dark:bg-white dark:text-gray-900' },
-  { value: 'warm', label: '暖米', activeClass: 'bg-orange-100 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400' },
+  { value: 'warm', label: '暖光', activeClass: 'bg-orange-100 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400' },
 ]
 
 function Section({ title, children }) {

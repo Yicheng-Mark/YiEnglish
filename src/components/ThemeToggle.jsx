@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 
 const themes = [
-  { key: 'light', label: '浅色', icon: '☀️', desc: '清爽明亮', activeClass: 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' },
-  { key: 'gray',  label: '曜黑', icon: '🌑', desc: '深邃高级', activeClass: 'bg-gray-200 text-gray-700 dark:bg-white dark:text-gray-900' },
-  { key: 'star',  label: '星空', icon: '✨', desc: '沉浸星空', activeClass: 'bg-amber-100 text-amber-700 dark:bg-white dark:text-gray-900' },
-  { key: 'warm',  label: '暖米', icon: '☕', desc: '纸感温润', activeClass: 'bg-orange-100 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400' },
+  { key: 'light', label: '明亮', icon: '☀️', desc: '清新简洁', activeClass: 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' },
+  { key: 'gray',  label: '暗夜', icon: '🌙', desc: '沉稳深邃', activeClass: 'bg-gray-200 text-gray-700 dark:bg-white dark:text-gray-900' },
+  { key: 'star',  label: '星空', icon: '✨', desc: '浩瀚星海', activeClass: 'bg-amber-100 text-amber-700 dark:bg-white dark:text-gray-900' },
+  { key: 'warm',  label: '暖光', icon: '☕', desc: '温暖舒适', activeClass: 'bg-orange-100 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400' },
 ];
 
 export default function ThemeToggle({ theme, setTheme }) {

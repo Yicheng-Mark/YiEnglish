@@ -18,7 +18,10 @@ const reviewRoutes = require('./routes/review')
 
 const app = express()
 
-app.use(cors({ origin: config.FRONTEND_URL, credentials: true }))
+const corsOrigins = config.ALLOWED_ORIGINS
+  ? config.ALLOWED_ORIGINS.split(',').map(s => s.trim()).filter(Boolean)
+  : [config.FRONTEND_URL]
+app.use(cors({ origin: corsOrigins, credentials: true }))
 app.use(cookieParser())
 app.use(express.json({ limit: '1mb' }))
 

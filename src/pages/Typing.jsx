@@ -111,7 +111,7 @@ export default function Typing() {
         flushServerProgress();
       }
     }
-  }, [isReviewMode, isErrorBookMode, isWordBookMode, dictId, chapterId, isAuthenticated, flushServerProgress, lastWordHadErrorRef]);
+  }, [isReviewMode, isErrorBookMode, isWordBookMode, dictId, chapterId, isAuthenticated, flushServerProgress]);
 
   const handleAutoRemove = useCallback((wordName) => {
     if (isReviewMode) return;

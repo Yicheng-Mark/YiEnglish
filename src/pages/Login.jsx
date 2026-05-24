@@ -51,7 +51,7 @@ export default function Login() {
       await apiSendCode(email, type)
       startCountdown()
     } catch (err) {
-      setError(err.message)
+      setError(err instanceof TypeError ? '服务器暂时不可用，请稍后再试' : err.message)
     }
   }
 
@@ -64,7 +64,7 @@ export default function Login() {
       setUser(data.user)
       navigate(from, { replace: true })
     } catch (err) {
-      setError(err.message)
+      setError(err instanceof TypeError ? '服务器暂时不可用，请稍后再试' : err.message)
     } finally {
       setLoading(false)
     }
@@ -79,7 +79,7 @@ export default function Login() {
       setUser(data.user)
       navigate(from, { replace: true })
     } catch (err) {
-      setError(err.message)
+      setError(err instanceof TypeError ? '服务器暂时不可用，请稍后再试' : err.message)
     } finally {
       setLoading(false)
     }
@@ -96,7 +96,7 @@ export default function Login() {
       setPassword('')
       setCode('')
     } catch (err) {
-      setError(err.message)
+      setError(err instanceof TypeError ? '服务器暂时不可用，请稍后再试' : err.message)
     } finally {
       setLoading(false)
     }
