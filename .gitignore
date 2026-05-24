@@ -22,3 +22,4 @@ build/
 .bing-variant-results.json
 .phonetics-cache.json
 .youdao-phonetics-cache.json
+.vercel

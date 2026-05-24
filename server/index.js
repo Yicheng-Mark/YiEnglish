@@ -1,11 +1,9 @@
 const express = require('express')
 const cors = require('cors')
-const cookieParser = require('cookie-parser')
 const path = require('path')
 const config = require('./config')
 const errorHandler = require('./middleware/errorHandler')
 
-const authRoutes = require('./routes/auth')
 const chatRoutes = require('./routes/chat')
 const styleRoutes = require('./routes/style')
 const memoryRoutes = require('./routes/memory')
@@ -21,12 +19,10 @@ const app = express()
 const corsOrigins = config.ALLOWED_ORIGINS
   ? config.ALLOWED_ORIGINS.split(',').map(s => s.trim()).filter(Boolean)
   : [config.FRONTEND_URL]
-app.use(cors({ origin: corsOrigins, credentials: true }))
-app.use(cookieParser())
+app.use(cors({ origin: corsOrigins }))
 app.use(express.json({ limit: '1mb' }))
 
 // API routes
-app.use('/api/auth', authRoutes)
 app.use('/api/chat', chatRoutes)
 app.use('/api/style', styleRoutes)
 app.use('/api/memory', memoryRoutes)

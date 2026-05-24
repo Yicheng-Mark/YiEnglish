@@ -19,7 +19,6 @@ import WordListPanel from '../components/WordListPanel.jsx';
 import NextWordPreview from '../components/NextWordPreview.jsx';
 import WordDisplay from '../components/WordDisplay.jsx';
 import useIsMobile from '../hooks/useIsMobile.js';
-import { useAuth } from '../hooks/useAuth.js';
 import { saveProgress } from '../lib/api.js';
 import { saveLocalProgress } from '../utils/localProgress.js';
 import { addWordToReview, updateReviewCard } from '../utils/reviewCards.js';
@@ -46,7 +45,6 @@ export default function Typing() {
   const [viewportHeight, setViewportHeight] = useState(null);
   const touchStartRef = useRef(null);
   const suppressClickRef = useRef(false);
-  const { isAuthenticated } = useAuth();
   const completedBufferRef = useRef([]);
 
   const isMobile = useIsMobile();
@@ -88,13 +86,13 @@ export default function Typing() {
   const dictName = useMemo(() => getMeta(dictId)?.name || dictId, [dictId]);
 
   const flushServerProgress = useCallback(() => {
-    if (!isAuthenticated || isErrorBookMode || isWordBookMode || isReviewMode) return;
+    if (isErrorBookMode || isWordBookMode || isReviewMode) return;
     const buffered = completedBufferRef.current.splice(0);
     if (buffered.length === 0) return;
     saveProgress(dictId, Number(chapterId), buffered).catch(() => {
       completedBufferRef.current.push(...buffered);
     });
-  }, [isAuthenticated, isErrorBookMode, isWordBookMode, isReviewMode, dictId, chapterId]);
+  }, [isErrorBookMode, isWordBookMode, isReviewMode, dictId, chapterId]);
 
   const handleWordComplete = useCallback((wordName) => {
     if (isReviewMode) {
@@ -105,13 +103,11 @@ export default function Typing() {
     if (isErrorBookMode || isWordBookMode) return;
     saveLocalProgress(dictId, Number(chapterId), [wordName]);
     addWordToReview(wordName, dictId);
-    if (isAuthenticated) {
-      completedBufferRef.current.push(wordName);
-      if (completedBufferRef.current.length >= 5) {
-        flushServerProgress();
-      }
+    completedBufferRef.current.push(wordName);
+    if (completedBufferRef.current.length >= 5) {
+      flushServerProgress();
     }
-  }, [isReviewMode, isErrorBookMode, isWordBookMode, dictId, chapterId, isAuthenticated, flushServerProgress]);
+  }, [isReviewMode, isErrorBookMode, isWordBookMode, dictId, chapterId, flushServerProgress]);
 
   const handleAutoRemove = useCallback((wordName) => {
     if (isReviewMode) return;

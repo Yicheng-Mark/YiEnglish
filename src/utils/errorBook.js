@@ -1,4 +1,3 @@
-import { getToken } from '../lib/auth'
 import { addWordToBook, removeWordFromBook, clearWordBook, fetchWordBook } from '../lib/api-wordbooks'
 
 const STORAGE_KEY = 'typingword_wrong';
@@ -30,9 +29,7 @@ export function addToErrorBook({ word, trans, notation, dictName }) {
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ words }));
 
-    if (getToken()) {
-      addWordToBook('error', { name: word, trans, notation, dictName }).catch(e => console.warn('Sync error add failed:', e))
-    }
+    addWordToBook('error', { name: word, trans, notation, dictName }).catch(e => console.warn('Sync error add failed:', e))
   } catch (e) {
     console.error('Failed to add to error book:', e);
   }
@@ -54,9 +51,7 @@ export function removeFromErrorBook(wordName) {
     const words = (data.words || []).filter(w => w.name !== wordName);
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ words }));
 
-    if (getToken()) {
-      removeWordFromBook('error', wordName).catch(e => console.warn('Sync error remove failed:', e))
-    }
+    removeWordFromBook('error', wordName).catch(e => console.warn('Sync error remove failed:', e))
   } catch (e) {
     console.error('Failed to remove from error book:', e);
   }
@@ -65,9 +60,7 @@ export function removeFromErrorBook(wordName) {
 export function clearErrorBook() {
   localStorage.removeItem(STORAGE_KEY);
 
-  if (getToken()) {
-    clearWordBook('error').catch(e => console.warn('Sync error clear failed:', e))
-  }
+  clearWordBook('error').catch(e => console.warn('Sync error clear failed:', e))
 }
 
 export function getErrorBookCount() {
@@ -115,7 +108,6 @@ export function loadErrorBookAsDictionary() {
 }
 
 export async function syncErrorBookFromServer() {
-  if (!getToken()) return
   try {
     const data = await fetchWordBook('error')
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))

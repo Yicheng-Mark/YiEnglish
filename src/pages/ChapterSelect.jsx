@@ -5,7 +5,6 @@ import { getMeta } from '../dictionaries/meta.js';
 import { unlockAudio } from '../utils/audioContext.js';
 import { fetchProgress, resetProgress } from '../lib/api.js';
 import { getLocalProgress } from '../utils/localProgress.js';
-import { useAuth } from '../hooks/useAuth.js';
 import ChapterSkeleton from '../components/ChapterSkeleton.jsx';
 
 const RESTORE_KEY = 'lf_wordlib_should_restore';
@@ -18,7 +17,6 @@ export default function ChapterSelect() {
   const [error, setError] = useState(null);
   const [progress, setProgress] = useState({});
   const meta = getMeta(dictId);
-  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     setLoading(true); setError(null);
@@ -33,12 +31,10 @@ export default function ChapterSelect() {
   useEffect(() => {
     const localData = getLocalProgress(dictId);
     setProgress(localData);
-    if (isAuthenticated) {
-      fetchProgress(dictId).then(data => {
-        setProgress(prev => ({ ...prev, ...(data.chapters || {}) }));
-      }).catch(() => {});
-    }
-  }, [dictId, isAuthenticated]);
+    fetchProgress(dictId).then(data => {
+      setProgress(prev => ({ ...prev, ...(data.chapters || {}) }));
+    }).catch(() => {});
+  }, [dictId]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -98,10 +94,8 @@ export default function ChapterSelect() {
             <button
               onClick={async () => {
                 if (!window.confirm(`确定要重置「${meta?.name || dict.name}」的所有学习进度吗？此操作不可撤销。`)) return
-                if (isAuthenticated) {
-                  try { await resetProgress(dictId) }
-                  catch (e) { console.warn('Server reset failed:', e) }
-                }
+                try { await resetProgress(dictId) }
+                catch (e) { console.warn('Server reset failed:', e) }
                 const raw = localStorage.getItem('lf_progress')
                 if (raw) {
                   const data = JSON.parse(raw)

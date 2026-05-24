@@ -5,13 +5,11 @@ import { createChatStream } from '../lib/chat-engine'
 import {
   fetchStyles, fetchChatHistory,
 } from '../lib/ai-settings'
-import { useAuth } from '../hooks/useAuth'
 import styles from '../components/AIAssistant/AICircleFloat.module.css'
 
 export default function AIChatPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { isAuthenticated } = useAuth()
   const passedMessages = location.state?.messages
   const [messages, setMessages] = useState(() =>
     Array.isArray(passedMessages) ? passedMessages : []
@@ -35,7 +33,7 @@ export default function AIChatPage() {
     fetchStyles().then(data => {
       setCurrentStyle(data.current)
     })
-    if (passedMessages === undefined && isAuthenticated) {
+    if (passedMessages === undefined) {
       fetchChatHistory().then(history => {
         setMessages(history)
       })

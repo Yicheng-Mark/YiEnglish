@@ -1,4 +1,3 @@
-import { getToken } from '../lib/auth'
 import { apiFetchReviewCards, apiUpsertReviewCards, apiAddReviewCard } from '../lib/api-review'
 
 const STORAGE_KEY = 'lingoforge_review_cards'
@@ -54,9 +53,7 @@ export function addWordToReview(wordName, dictId) {
     }
     saveCards(data)
 
-    if (getToken()) {
-      apiAddReviewCard(wordName, dictId).catch(e => console.warn('Sync review add failed:', e))
-    }
+    apiAddReviewCard(wordName, dictId).catch(e => console.warn('Sync review add failed:', e))
   } catch (e) {
     console.error('Failed to add word to review:', e)
   }
@@ -92,9 +89,7 @@ export function updateReviewCard(wordName, quality) {
 
     saveCards(data)
 
-    if (getToken()) {
-      apiUpsertReviewCards([{ wordName, dictId: card.dictId, nextReview: card.nextReview, interval, easeFactor, repetitions, lastReviewAt: card.lastReviewAt, lastQuality: quality }]).catch(e => console.warn('Sync review update failed:', e))
-    }
+    apiUpsertReviewCards([{ wordName, dictId: card.dictId, nextReview: card.nextReview, interval, easeFactor, repetitions, lastReviewAt: card.lastReviewAt, lastQuality: quality }]).catch(e => console.warn('Sync review update failed:', e))
   } catch (e) {
     console.error('Failed to update review card:', e)
   }
@@ -165,7 +160,6 @@ export async function loadReviewAsDictionary() {
 }
 
 export async function syncReviewCardsFromServer() {
-  if (!getToken()) return
   try {
     const data = await apiFetchReviewCards()
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))

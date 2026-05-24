@@ -1,4 +1,3 @@
-import { getToken } from '../lib/auth'
 import { addWordToBook, removeWordFromBook, fetchWordBook, replaceWordBook } from '../lib/api-wordbooks'
 
 const STORAGE_KEY = 'lingoforge_reading_words';
@@ -78,9 +77,7 @@ export async function enrichReadingWordBook() {
 
   if (changed) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ words: enriched }));
-    if (getToken()) {
-      replaceWordBook('reading', enriched).catch(e => console.warn('Sync enriched reading words failed:', e))
-    }
+    replaceWordBook('reading', enriched).catch(e => console.warn('Sync enriched reading words failed:', e))
   }
 }
 
@@ -112,9 +109,7 @@ export function addToReadingWordBook(wordInfo) {
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ words }));
 
-    if (getToken()) {
-      addWordToBook('reading', wordInfo).catch(e => console.warn('Sync reading add failed:', e))
-    }
+    addWordToBook('reading', wordInfo).catch(e => console.warn('Sync reading add failed:', e))
   } catch (e) {
     console.error('Failed to add to reading word book:', e);
   }
@@ -126,9 +121,7 @@ export function removeFromReadingWordBook(wordName) {
     const words = (data.words || []).filter((w) => w.name !== wordName);
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ words }));
 
-    if (getToken()) {
-      removeWordFromBook('reading', wordName).catch(e => console.warn('Sync reading remove failed:', e))
-    }
+    removeWordFromBook('reading', wordName).catch(e => console.warn('Sync reading remove failed:', e))
   } catch (e) {
     console.error('Failed to remove from reading word book:', e);
   }
@@ -184,7 +177,6 @@ export function loadReadingWordBookAsDictionary() {
 }
 
 export async function syncReadingWordBookFromServer() {
-  if (!getToken()) return
   try {
     const data = await fetchWordBook('reading')
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))

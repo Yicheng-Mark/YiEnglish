@@ -1,4 +1,3 @@
-import { getToken } from '../lib/auth'
 import { addWordToBook, removeWordFromBook, fetchWordBook } from '../lib/api-wordbooks'
 
 const STORAGE_KEY = 'lingoforge_favorite_words';
@@ -31,9 +30,7 @@ export function addToFavoriteWords(wordInfo) {
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ words }));
 
-    if (getToken()) {
-      addWordToBook('favorite', wordInfo).catch(e => console.warn('Sync favorite add failed:', e))
-    }
+    addWordToBook('favorite', wordInfo).catch(e => console.warn('Sync favorite add failed:', e))
   } catch (e) {
     console.error('Failed to add to favorite words:', e);
   }
@@ -45,9 +42,7 @@ export function removeFromFavoriteWords(wordName) {
     const words = (data.words || []).filter((w) => w.name !== wordName);
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ words }));
 
-    if (getToken()) {
-      removeWordFromBook('favorite', wordName).catch(e => console.warn('Sync favorite remove failed:', e))
-    }
+    removeWordFromBook('favorite', wordName).catch(e => console.warn('Sync favorite remove failed:', e))
   } catch (e) {
     console.error('Failed to remove from favorite words:', e);
   }
@@ -103,7 +98,6 @@ export function loadFavoriteWordsAsDictionary() {
 }
 
 export async function syncFavoriteWordsFromServer() {
-  if (!getToken()) return
   try {
     const data = await fetchWordBook('favorite')
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))

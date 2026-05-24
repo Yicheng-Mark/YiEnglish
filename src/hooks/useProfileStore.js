@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react'
-import { getToken } from '../lib/auth'
-import { apiUpdateProfile, apiGetProfile } from '../lib/auth'
 
 const STORAGE_KEY = 'lingoforge_profile'
 
@@ -42,9 +40,8 @@ function persist() {
   listeners.forEach((fn) => fn())
 }
 
-function syncProfileUpdate(updates) {
-  if (!getToken()) return
-  apiUpdateProfile(updates).catch(e => console.warn('Sync profile update failed:', e))
+function syncProfileUpdate() {
+  // Profile is stored locally only
 }
 
 export function useProfileStore() {
@@ -90,18 +87,5 @@ export function useProfileStore() {
 }
 
 export async function syncProfileFromServer() {
-  if (!getToken()) return
-  try {
-    const profile = await apiGetProfile()
-    if (!profile) return
-    cache = {
-      nickname: profile.nickname || defaultState.nickname,
-      signature: profile.signature || defaultState.signature,
-      avatar: profile.avatar || defaultState.avatar,
-      dailyGoalMinutes: profile.dailyGoalMinutes || defaultState.dailyGoalMinutes,
-    }
-    persist()
-  } catch (e) {
-    console.warn('Sync profile from server failed:', e)
-  }
+  // Profile is stored locally only
 }

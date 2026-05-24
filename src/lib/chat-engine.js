@@ -1,21 +1,16 @@
-import { getToken } from './auth'
-
 const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
 
 export function createChatStream({ messages, styleKey, onToken, onReasoning, onDone, onError }) {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), 120000)
 
-  const token = getToken()
   const headers = {
     'Content-Type': 'application/json',
   }
-  if (token) headers['Authorization'] = `Bearer ${token}`
 
   fetch(`${API_BASE}/api/chat`, {
     method: 'POST',
     headers,
-    credentials: 'include',
     body: JSON.stringify({
       messages: messages.filter(m => m.role !== 'system'),
       styleKey,
@@ -26,10 +21,6 @@ export function createChatStream({ messages, styleKey, onToken, onReasoning, onD
       clearTimeout(timeout)
 
       if (!res.ok) {
-        if (res.status === 401) {
-          onError(new Error('登录已过期，请重新登录'))
-          return
-        }
         const body = await res.text().catch(() => '')
         let errMsg = `请求失败 (${res.status})`
         try {

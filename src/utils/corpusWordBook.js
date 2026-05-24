@@ -1,4 +1,3 @@
-import { getToken } from '../lib/auth'
 import { addWordToBook, removeWordFromBook, fetchWordBook, replaceWordBook } from '../lib/api-wordbooks'
 
 const STORAGE_KEY = 'lingoforge_corpus_words';
@@ -78,9 +77,7 @@ export async function enrichCorpusWordBook() {
 
   if (changed) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ words: enriched }));
-    if (getToken()) {
-      replaceWordBook('corpus', enriched).catch(e => console.warn('Sync enriched corpus words failed:', e))
-    }
+    replaceWordBook('corpus', enriched).catch(e => console.warn('Sync enriched corpus words failed:', e))
   }
 }
 
@@ -112,9 +109,7 @@ export function addToCorpusWordBook(wordInfo) {
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ words }));
 
-    if (getToken()) {
-      addWordToBook('corpus', wordInfo).catch(e => console.warn('Sync corpus add failed:', e))
-    }
+    addWordToBook('corpus', wordInfo).catch(e => console.warn('Sync corpus add failed:', e))
   } catch (e) {
     console.error('Failed to add to corpus word book:', e);
   }
@@ -126,9 +121,7 @@ export function removeFromCorpusWordBook(wordName) {
     const words = (data.words || []).filter((w) => w.name !== wordName);
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ words }));
 
-    if (getToken()) {
-      removeWordFromBook('corpus', wordName).catch(e => console.warn('Sync corpus remove failed:', e))
-    }
+    removeWordFromBook('corpus', wordName).catch(e => console.warn('Sync corpus remove failed:', e))
   } catch (e) {
     console.error('Failed to remove from corpus word book:', e);
   }
@@ -184,7 +177,6 @@ export function loadCorpusWordBookAsDictionary() {
 }
 
 export async function syncCorpusWordBookFromServer() {
-  if (!getToken()) return
   try {
     const data = await fetchWordBook('corpus')
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))

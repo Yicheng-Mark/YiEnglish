@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getToken } from '../lib/auth'
 import { fetchSettings, updateSettings } from '../lib/api-settings'
 
 const DEFAULT_CONFIG = {
@@ -28,7 +27,6 @@ function loadInitialTheme() {
 }
 
 function syncSettingUpdate(partial) {
-  if (!getToken()) return
   updateSettings(partial).catch(e => console.warn('Sync settings failed:', e))
 }
 
@@ -74,7 +72,6 @@ export function useUserConfig() {
 }
 
 export async function syncSettingsFromServer() {
-  if (!getToken()) return
   try {
     const settings = await fetchSettings()
     const config = {

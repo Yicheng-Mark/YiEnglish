@@ -3,9 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
   BookMarked, BookOpen, Headphones, Target,
-  Palette, ChevronRight, Pencil, Bot, X, Camera, ChartColumn, LogOut,
+  Palette, ChevronRight, Pencil, Bot, X, Camera, ChartColumn,
 } from 'lucide-react'
-import { useAuth } from '../hooks/useAuth'
 import { useReadingStore } from '../modules/reading/hooks/useReadingStore'
 import { useUserConfig } from '../hooks/useUserConfig'
 import { useProfileStore } from '../hooks/useProfileStore'
@@ -33,7 +32,6 @@ function Modal({ open, onClose, title, children }) {
 
 export default function PersonalCenter() {
   const navigate = useNavigate()
-  const { logout } = useAuth()
   const store = useReadingStore()
   const { theme, setTheme } = useUserConfig()
   const profile = useProfileStore()
@@ -196,17 +194,6 @@ export default function PersonalCenter() {
             </button>
           ))}
         </div>
-      </div>
-
-      {/* Logout */}
-      <div className="mt-4 animate-card-enter" style={{ animationDelay: '0.35s' }}>
-        <button
-          onClick={async () => { await logout(); navigate('/login') }}
-          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-surface dark:bg-surface-dark border border-gray-100/80 dark:border-white/[0.06] hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors text-red-500 font-medium"
-        >
-          <LogOut className="w-4 h-4" />
-          退出登录
-        </button>
       </div>
 
       {/* Edit Profile Modal */}

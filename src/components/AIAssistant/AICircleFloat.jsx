@@ -6,7 +6,6 @@ import {
   fetchStyles, fetchChatHistory,
   getPosition, setPosition as savePosition,
 } from '../../lib/ai-settings'
-import { useAuth } from '../../hooks/useAuth'
 import styles from './AICircleFloat.module.css'
 
 /* ===== Memoized ChatContent ===== */
@@ -111,7 +110,6 @@ const ChatContent = memo(function ChatContent({
 
 export default function AICircleFloat() {
   const navigate = useNavigate()
-  const { isAuthenticated } = useAuth()
   const [panelOpen, setPanelOpen] = useState(false)
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
@@ -146,11 +144,9 @@ export default function AICircleFloat() {
     fetchStyles().then(data => {
       setCurrentStyle(data.current)
     })
-    if (isAuthenticated) {
-      fetchChatHistory().then(history => {
-        setMessages(history)
-      })
-    }
+    fetchChatHistory().then(history => {
+      setMessages(history)
+    })
   }, [])
 
   // Re-fetch style when panel opens to pick up changes made elsewhere
