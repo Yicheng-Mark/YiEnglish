@@ -26,10 +26,13 @@ function Navigator() {
   return null
 }
 
+const AUTH_ENABLED = import.meta.env.VITE_AUTH_ENABLED !== 'false'
+
 function ProtectedRoute() {
   const { user, loading } = useAuth()
   const location = useLocation()
 
+  if (!AUTH_ENABLED) return <Outlet />
   if (loading) return <PageLoading />
   if (!user) return <Navigate to="/login" state={{ from: location }} replace />
   return <Outlet />
@@ -38,7 +41,7 @@ function ProtectedRoute() {
 function App() {
   useScrollingFlag()
   const location = useLocation()
-  const hideAI = ['/login', '/register'].includes(location.pathname)
+  const hideAI = AUTH_ENABLED && ['/login', '/register'].includes(location.pathname)
 
   return (
     <AuthProvider>
@@ -55,8 +58,8 @@ function App() {
       />
       <Suspense fallback={<PageLoading />}>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          {AUTH_ENABLED && <Route path="/login" element={<Login />} />}
+          {AUTH_ENABLED && <Route path="/register" element={<Register />} />}
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
               <Route path="/" element={<Navigate to="/word" replace />} />

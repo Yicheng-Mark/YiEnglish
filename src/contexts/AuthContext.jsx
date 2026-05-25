@@ -3,16 +3,19 @@ import { createContext, useContext, useState, useEffect, useCallback, useRef, us
 const AuthContext = createContext(null)
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
+const AUTH_ENABLED = import.meta.env.VITE_AUTH_ENABLED !== 'false'
+
+const DEFAULT_USER = { id: 1, username: 'demo', nickname: '学习者' }
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(AUTH_ENABLED ? null : DEFAULT_USER)
+  const [loading, setLoading] = useState(AUTH_ENABLED)
   const navigateRef = useRef(null)
 
-  // will be set by a helper component to get navigate function
   const setNavigator = useCallback((nav) => { navigateRef.current = nav }, [])
 
   useEffect(() => {
+    if (!AUTH_ENABLED) return
     async function checkSession() {
       try {
         const res = await fetch(`${API_BASE}/api/auth/me`, { credentials: 'include' })
@@ -30,6 +33,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   useEffect(() => {
+    if (!AUTH_ENABLED) return
     function onUnauthorized() {
       setUser(null)
       navigateRef.current?.('/login', { replace: true })
