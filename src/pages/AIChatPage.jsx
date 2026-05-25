@@ -5,6 +5,8 @@ import { createChatStream } from '../lib/chat-engine'
 import {
   fetchStyles, fetchChatHistory,
 } from '../lib/ai-settings'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import styles from '../components/AIAssistant/AICircleFloat.module.css'
 
 export default function AIChatPage() {
@@ -177,7 +179,9 @@ export default function AIChatPage() {
                     <div className={styles.thinkingContent}>{msg.reasoningContent}</div>
                   </details>
                 )}
-                <div>{msg.content}</div>
+                {msg.role === 'assistant'
+                  ? <div className={styles.markdown}><ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown></div>
+                  : <div>{msg.content}</div>}
               </div>
             </div>
           )

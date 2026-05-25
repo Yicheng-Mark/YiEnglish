@@ -18,7 +18,7 @@ function Layout() {
       <StarryBackground />
       {showTopNav && (
         <nav className="h-12 md:h-16 shrink-0 glass-card border-b border-gray-200/80 dark:border-white/[0.06] flex items-center justify-between px-4 md:px-6 sticky top-0 z-50 nav-glow transition-shadow duration-500">
-          <Link to="/word" className="text-xl font-bold text-primary dark:text-primary-dark flex items-center gap-2 transition-all duration-300 hover:opacity-90 dark:hover:drop-shadow-[0_0_8px_rgba(129,140,248,0.4)]">
+          <Link to="/word" className="text-xl font-bold italic text-primary dark:text-primary-dark flex items-center gap-2 transition-all duration-300 hover:opacity-90 dark:hover:drop-shadow-[0_0_8px_rgba(129,140,248,0.4)]">
             Nothing is impossible.
           </Link>
           <div className="flex items-center gap-2 md:gap-3">

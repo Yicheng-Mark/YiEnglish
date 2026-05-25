@@ -1,12 +1,38 @@
 import { useState, useRef, useEffect, useCallback, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Bot, X, Maximize2, Send, Square, Trash2, MessageCircle } from 'lucide-react'
+import { Bot, X, Maximize2, Send, Square, Trash2, BookOpen, MessageSquareText, GitCompare, Lightbulb } from 'lucide-react'
 import { createChatStream } from '../../lib/chat-engine'
 import {
   fetchStyles, fetchChatHistory,
   getPosition, setPosition as savePosition,
+  clearMemory,
 } from '../../lib/ai-settings'
+import { useWordContext } from '../../contexts/WordContext'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import styles from './AICircleFloat.module.css'
+
+/* ===== Quick action prompt builder ===== */
+function buildQuickActionPrompt(actionType, word) {
+  const w = word
+  const phonetic = w.usphone || w.us || w.ukphone || w.uk || ''
+  const trans = Array.isArray(w.trans) ? w.trans.join('；') : (w.trans || '')
+  const phrases = (w.phrases || []).slice(0, 3).map(p => `${p.en} — ${p.cn}`).join('\n')
+  const prompts = {
+    explain: `请详细解释单词 "${w.name}"：\n音标：/${phonetic}/\n释义：${trans}\n${phrases ? '常见搭配：\n' + phrases : ''}\n\n请从词根词缀、用法场景、同义词等方面进行全面解析。`,
+    examples: `请为单词 "${w.name}"（${trans}）造3个实用例句，涵盖不同难度和场景。每个例句附上中文翻译和语法要点。`,
+    compare: `请辨析单词 "${w.name}"（${trans}）和它容易混淆的近义词，说明它们在含义、用法、搭配上的区别，并各给一个例句。`,
+    memory: `请为单词 "${w.name}"（${trans}，音标 /${phonetic}/）提供巧妙的记忆方法，包括词根词缀分析、联想记忆或谐音记忆等技巧。`,
+  }
+  return prompts[actionType] || prompts.explain
+}
+
+const QUICK_ACTIONS = [
+  { key: 'explain', label: '解释单词', Icon: BookOpen },
+  { key: 'examples', label: '例句与用法', Icon: MessageSquareText },
+  { key: 'compare', label: '易混词辨析', Icon: GitCompare },
+  { key: 'memory', label: '记忆技巧', Icon: Lightbulb },
+]
 
 /* ===== Memoized ChatContent ===== */
 const ChatContent = memo(function ChatContent({
@@ -14,6 +40,7 @@ const ChatContent = memo(function ChatContent({
   onInputChange, onKeyDown, onSend, onStop,
   onClearHistory, onExpand, onClose, messagesEndRef,
   onPanelPointerDown, onPanelPointerMove, onPanelPointerUp,
+  currentWord, onQuickAction,
 }) {
   const displayName = currentStyle?.custom_name || currentStyle?.name || 'AI 助手'
   return (
@@ -45,6 +72,16 @@ const ChatContent = memo(function ChatContent({
           <div className={styles.welcome}>
             <div className={styles.welcomeAvatar}><Bot size={36} /></div>
             <h3>{displayName}</h3>
+            {currentWord && !streaming && (
+              <div className={styles.quickActions}>
+                {QUICK_ACTIONS.map(({ key, label, Icon }) => (
+                  <button key={key} onClick={() => onQuickAction(key)}>
+                    <Icon size={14} style={{ marginRight: 6, flexShrink: 0 }} />
+                    {label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
         {messages.map((msg, idx) => {
@@ -62,7 +99,9 @@ const ChatContent = memo(function ChatContent({
                     <div className={styles.thinkingContent}>{msg.reasoningContent}</div>
                   </details>
                 )}
-                <div>{msg.content}</div>
+                {msg.role === 'assistant'
+                  ? <div className={styles.markdown}><ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown></div>
+                  : <div>{msg.content}</div>}
               </div>
             </div>
           )
@@ -110,6 +149,7 @@ const ChatContent = memo(function ChatContent({
 
 export default function AICircleFloat() {
   const navigate = useNavigate()
+  const { currentWord } = useWordContext()
   const [panelOpen, setPanelOpen] = useState(false)
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
@@ -121,6 +161,8 @@ export default function AICircleFloat() {
   const [isDraggingState, setIsDraggingState] = useState(false)
   const [currentReasoning, setCurrentReasoning] = useState('')
   const hideTimerRef = useRef(null)
+  const prevWordRef = useRef(null)
+  const chatGenRef = useRef(0)
 
   // Refs
   const positionRef = useRef(position)
@@ -157,6 +199,26 @@ export default function AICircleFloat() {
       })
     }
   }, [panelOpen])
+
+  // 当单词切换时，清空 AI 上下文
+  useEffect(() => {
+    if (!currentWord?.name) return
+    if (prevWordRef.current === null) {
+      prevWordRef.current = currentWord.name
+      return
+    }
+    if (currentWord.name !== prevWordRef.current) {
+      prevWordRef.current = currentWord.name
+      chatGenRef.current++
+      abortRef.current?.()
+      abortRef.current = null
+      setStreaming(false)
+      setCurrentReasoning('')
+      streamingRef.current = { content: '', reasoning: '' }
+      setMessages([])
+      clearMemory().catch(() => {})
+    }
+  }, [currentWord?.name])
 
   // Auto-scroll
   useEffect(() => {
@@ -346,15 +408,14 @@ export default function AICircleFloat() {
     return () => window.removeEventListener('resize', handleResize)
   }, [snapToEdge])
 
-  // Send message
-  const handleSend = useCallback(() => {
-    const text = inputRef.current.trim()
+  // Send text to AI
+  const sendText = useCallback((text) => {
     if (!text || streamingRef2.current) return
 
+    const gen = chatGenRef.current
     const userMsg = { role: 'user', content: text }
     const updated = [...messagesRef.current, userMsg]
     setMessages(updated)
-    setInput('')
     setStreaming(true)
     streamingRef.current = { content: '', reasoning: '' }
 
@@ -365,6 +426,7 @@ export default function AICircleFloat() {
     let pending = false
 
     const flush = () => {
+      if (chatGenRef.current !== gen) return
       pending = false
       const sr = streamingRef.current
       setCurrentReasoning(sr.reasoning)
@@ -391,14 +453,17 @@ export default function AICircleFloat() {
       messages: [{ role: 'user', content: text }],
       styleKey: currentStyle?.style_key,
       onToken: (token) => {
+        if (chatGenRef.current !== gen) return
         streamingRef.current.content += token
         scheduleFlush()
       },
       onReasoning: (token) => {
+        if (chatGenRef.current !== gen) return
         streamingRef.current.reasoning += token
         scheduleFlush()
       },
       onDone: () => {
+        if (chatGenRef.current !== gen) return
         cancelAnimationFrame(rafId)
         const final = {
           role: 'assistant',
@@ -410,6 +475,7 @@ export default function AICircleFloat() {
         setCurrentReasoning('')
       },
       onError: (err) => {
+        if (chatGenRef.current !== gen) return
         cancelAnimationFrame(rafId)
         const errMsg = { role: 'assistant', content: `Error: ${err.message}` }
         setMessages([...updated, errMsg])
@@ -420,6 +486,18 @@ export default function AICircleFloat() {
 
     abortRef.current = abort
   }, [currentStyle])
+
+  const handleSend = useCallback(() => {
+    const text = inputRef.current.trim()
+    if (!text) return
+    setInput('')
+    sendText(text)
+  }, [sendText])
+
+  const handleQuickAction = useCallback((actionType) => {
+    if (!currentWord) return
+    sendText(buildQuickActionPrompt(actionType, currentWord))
+  }, [sendText, currentWord])
 
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -471,6 +549,9 @@ export default function AICircleFloat() {
       >
         <Bot className={styles.floatIcon} />
       </button>
+      {currentWord && !panelOpen && !isHidden && (
+        <div className={styles.wordBadge}>{currentWord.name}</div>
+      )}
 
       {panelOpen && (
         <div className={styles.chatPanel} style={panelStyle}>
@@ -486,6 +567,7 @@ export default function AICircleFloat() {
             onPanelPointerDown={handlePanelPointerDown}
             onPanelPointerMove={handlePanelPointerMove}
             onPanelPointerUp={handlePanelPointerUp}
+            currentWord={currentWord} onQuickAction={handleQuickAction}
           />
         </div>
       )}

@@ -6,6 +6,7 @@ import Layout from './components/Layout'
 import PageLoading from './components/PageLoading'
 import AICircleFloat from './components/AIAssistant/AICircleFloat'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { WordProvider } from './contexts/WordContext'
 
 const Home = lazy(() => import('./pages/Home'))
 const ChapterSelect = lazy(() => import('./pages/ChapterSelect'))
@@ -45,6 +46,7 @@ function App() {
 
   return (
     <AuthProvider>
+      <WordProvider>
       <Navigator />
       <Toaster
         position="top-center"
@@ -78,6 +80,7 @@ function App() {
         </Routes>
       </Suspense>
       {!hideAI && <AICircleFloat />}
+      </WordProvider>
     </AuthProvider>
   )
 }

@@ -22,6 +22,7 @@ import useIsMobile from '../hooks/useIsMobile.js';
 import { saveProgress } from '../lib/api.js';
 import { saveLocalProgress } from '../utils/localProgress.js';
 import { addWordToReview, updateReviewCard } from '../utils/reviewCards.js';
+import { useWordContext } from '../contexts/WordContext.jsx';
 
 export default function Typing() {
   const { dictId, chapterId } = useParams();
@@ -118,6 +119,8 @@ export default function Typing() {
   }, [isReviewMode, isErrorBookMode, isReadingWordBookMode, isCorpusWordBookMode, isFavoriteWordBookMode]);
 
   const { currentWord, currentInput, wordIndex, stats, isFinished, handleInput, jumpTo, reset, isWrong, startTime, lastWordHadErrorRef } = useTyping(words, config.soundEnabled, config.wordRepeatCount, isErrorBookMode, dictName, config.autoRemoveErrorWord, handleWordComplete, handleAutoRemove);
+  const { setCurrentWord } = useWordContext();
+  useEffect(() => { setCurrentWord(currentWord); return () => setCurrentWord(null) }, [currentWord, setCurrentWord]);
   const studyStore = useReadingStore();
   const typingAccumulatedRef = useRef(0);
   const lastFlushRef = useRef(0);

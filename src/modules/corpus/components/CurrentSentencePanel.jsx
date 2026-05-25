@@ -53,7 +53,9 @@ function HighlightedSentence({ text, posMap, onWordClick }) {
 }
 
 function CurrentSentencePanelInner() {
-  const { subtitles, player, posMap, wordMap, settings, handleWordClick, videoId } = useCorpusContext()
+  const { subtitles, player, posMap, wordMap, settings, handleWordClick, videoId, mode } = useCorpusContext()
+  const showEn = mode !== 'chinese' && mode !== 'translate'
+  const showZh = mode !== 'english' && mode !== 'cloze'
   const { isBookmarked, toggleBookmark } = useCorpusStore()
   const liked = videoId ? isBookmarked(videoId) : false
 
@@ -133,25 +135,31 @@ function CurrentSentencePanelInner() {
 
         {/* 英文+中文 居中区 */}
         <div className="flex-1 flex flex-col items-center justify-center gap-2 text-center">
-          {/* 整句音标 */}
-          {phonetic && (
-            <div className="text-sm md:text-[15px] text-content-tertiary dark:text-gray-400 font-mono leading-relaxed">
-              {phonetic}
-            </div>
+          {/* 整句音标 + 英文句子 */}
+          {showEn && (
+            <>
+              {phonetic && (
+                <div className="text-sm md:text-[15px] text-content-tertiary dark:text-gray-400 font-mono leading-relaxed">
+                  {phonetic}
+                </div>
+              )}
+              <div className="text-lg md:text-xl leading-relaxed text-content dark:text-gray-100">
+                <HighlightedSentence
+                  text={current.en}
+                  posMap={posMap}
+                  onWordClick={handleWordClick}
+                />
+              </div>
+            </>
           )}
 
-          {/* 英文句子（大字号，带高亮 pill） */}
-          <div className="text-lg md:text-xl leading-relaxed text-content dark:text-gray-100">
-            <HighlightedSentence
-              text={current.en}
-              posMap={posMap}
-              onWordClick={handleWordClick}
-            />
-          </div>
-
           {/* 中文翻译 */}
-          {current.zh && (
-            <div className="text-sm md:text-base text-content-tertiary dark:text-gray-400 leading-relaxed">
+          {showZh && current.zh && (
+            <div className={`leading-relaxed ${
+              showEn
+                ? 'text-sm md:text-base text-content-tertiary dark:text-gray-400'
+                : 'text-lg md:text-xl text-content dark:text-gray-100 font-semibold'
+            }`}>
               {current.zh}
             </div>
           )}

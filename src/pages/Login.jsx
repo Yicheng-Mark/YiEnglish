@@ -32,11 +32,21 @@ export default function Login() {
 
   return (
     <div className="fixed inset-0 bg-black">
-      <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="min-h-screen flex flex-col items-center justify-center px-4 pt-[10vh] pb-[10vh]">
+        <p
+          className="text-4xl md:text-5xl lg:text-6xl font-light italic tracking-[0.25em] mb-20 md:mb-28"
+          style={{
+            color: 'rgba(255,255,255,0.9)',
+            textShadow: '0 0 20px rgba(255,255,255,0.08)',
+            animation: 'titleFadeIn 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards',
+          }}
+        >
+          Nothing is impossible.
+        </p>
         <div
           className="w-full max-w-sm border border-white/20 rounded-2xl shadow-2xl p-8"
           style={{
-            animation: 'login-card-enter 0.6s ease-out',
+            animation: 'login-card-enter 0.6s ease-out 0.3s both',
             backgroundColor: 'rgba(0, 0, 0, 0.3)',
             backdropFilter: 'blur(24px)',
             WebkitBackdropFilter: 'blur(24px)',

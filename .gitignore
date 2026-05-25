@@ -23,3 +23,4 @@ build/
 .phonetics-cache.json
 .youdao-phonetics-cache.json
 .vercel
+dist-vercel-test/

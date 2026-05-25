@@ -37,7 +37,7 @@ export default function Hero() {
           />
         </h1>
 
-        <p className="text-2xl md:text-4xl text-slate-300 mb-8 font-light">
+        <p className="text-2xl md:text-4xl text-slate-300 mb-8 font-light italic">
           Nothing is impossible.
         </p>
 
