@@ -1,4 +1,4 @@
-import { useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Bookmark, BookOpen, Search, Video } from 'lucide-react'
 import {
@@ -17,6 +17,7 @@ export default function CorpusList({ scrollRef }) {
   const navigate = useNavigate()
   const store = useCorpusStore()
   const gridRef = useRef(null)
+  const isRestoring = useRef(scrollRef?.current > 0)
 
   const [categoryFilter, setCategoryFilter] = useState('全部')
   const [difficultyFilter, setDifficultyFilter] = useState('全部')
@@ -25,12 +26,16 @@ export default function CorpusList({ scrollRef }) {
   const [bookmarkOnly, setBookmarkOnly] = useState(false)
   const [corpusWordCount, setCorpusWordCount] = useState(0)
 
-  useLayoutEffect(() => {
-    if (scrollRef.current > 0) {
-      const top = scrollRef.current
+  useEffect(() => {
+    const top = scrollRef.current
+    if (top <= 0) return
+
+    const timer = setTimeout(() => {
       scrollRef.current = 0
-      window.scrollTo(0, top)
-    }
+      window.scrollTo({ top, behavior: 'instant' })
+    }, 100)
+
+    return () => clearTimeout(timer)
   }, [])
 
   useEffect(() => {
@@ -116,7 +121,7 @@ export default function CorpusList({ scrollRef }) {
   )
 
   return (
-    <div className="bg-background dark:bg-transparent p-4 md:p-6 transition-colors duration-500 animate-page-fade-in">
+    <div className={`bg-background dark:bg-transparent p-4 md:p-6 transition-colors duration-500 ${isRestoring.current ? '' : 'animate-page-fade-in'}`}>
       <div className="max-w-6xl mx-auto px-2 md:px-6 w-full">
         <div>
           <div className="mt-10 md:mt-16 mb-8 md:mb-10">

@@ -17,43 +17,31 @@ router.post('/', authMiddleware, async (req, res, next) => {
 
     const userId = req.userId
 
-    // 1. Get user's active style
+    // 1. Get user's active style + style settings in one query (merged)
+    const [[userRows], [styleSettingRows], [memories], [history]] = await Promise.all([
+      pool.execute('SELECT nickname FROM users WHERE id = ?', [userId]),
+      pool.execute(
+        'SELECT style_key, gender, custom_name, custom_prompt FROM user_style_settings WHERE user_id = ?',
+        [userId]
+      ),
+      pool.execute(
+        'SELECT category, content FROM conversation_memory WHERE user_id = ? ORDER BY created_at DESC LIMIT 20',
+        [userId]
+      ),
+      pool.execute(
+        'SELECT role, content FROM chat_messages WHERE user_id = ? ORDER BY created_at DESC LIMIT 10',
+        [userId]
+      ),
+    ])
+
     let styleKey = clientStyleKey
     if (!styleKey) {
-      const [styleRows] = await pool.execute(
-        'SELECT style_key FROM user_style_settings WHERE user_id = ?',
-        [userId]
-      )
-      styleKey = styleRows.length > 0 ? styleRows[0].style_key : 'teacher'
+      styleKey = styleSettingRows.length > 0 ? styleSettingRows[0].style_key : 'teacher'
     }
-
-    // 2. Fetch user info
-    const [userRows] = await pool.execute(
-      'SELECT nickname FROM users WHERE id = ?',
-      [userId]
-    )
     const userNickname = userRows.length > 0 ? userRows[0].nickname : null
-
-    // 2b. Fetch gender, custom_name, custom_prompt from style settings
-    const [styleSettingRows] = await pool.execute(
-      'SELECT gender, custom_name, custom_prompt FROM user_style_settings WHERE user_id = ?',
-      [userId]
-    )
     const gender = styleSettingRows.length > 0 ? styleSettingRows[0].gender : null
     const customName = styleSettingRows.length > 0 ? styleSettingRows[0].custom_name : null
     const customPrompt = styleSettingRows.length > 0 ? styleSettingRows[0].custom_prompt : null
-
-    // 3. Fetch long-term memories
-    const [memories] = await pool.execute(
-      'SELECT category, content FROM conversation_memory WHERE user_id = ? ORDER BY created_at DESC LIMIT 20',
-      [userId]
-    )
-
-    // 4. Fetch recent chat history for context (last 10 messages)
-    const [history] = await pool.execute(
-      'SELECT role, content FROM chat_messages WHERE user_id = ? ORDER BY created_at DESC LIMIT 10',
-      [userId]
-    )
     const recentHistory = history.reverse()
 
     // 5. Build system prompt
@@ -86,21 +74,16 @@ router.post('/', authMiddleware, async (req, res, next) => {
       )
     }
 
-    // 10. Extract memories from this exchange
+    // 10. Extract memories from this exchange (batch insert)
     if (userMsg.role === 'user' && fullText) {
       const newMemories = extractMemories(userMsg.content, fullText)
-      for (const mem of newMemories) {
-        // Check for similar existing memory to avoid duplicates
-        const [existing] = await pool.execute(
-          'SELECT id FROM conversation_memory WHERE user_id = ? AND category = ? AND content = ?',
-          [userId, mem.category, mem.content]
+      if (newMemories.length > 0) {
+        const placeholders = newMemories.map(() => '(?, ?, ?)').join(', ')
+        const params = newMemories.flatMap((mem) => [userId, mem.category, mem.content])
+        await pool.execute(
+          `INSERT IGNORE INTO conversation_memory (user_id, category, content) VALUES ${placeholders}`,
+          params
         )
-        if (existing.length === 0) {
-          await pool.execute(
-            'INSERT INTO conversation_memory (user_id, category, content) VALUES (?, ?, ?)',
-            [userId, mem.category, mem.content]
-          )
-        }
       }
     }
   } catch (err) {

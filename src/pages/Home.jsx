@@ -9,14 +9,59 @@ import { getCorpusWordBookCount } from '../utils/corpusWordBook.js'
 import { getFavoriteWordsCount } from '../utils/favoriteWords.js'
 import { useDebounce } from '../hooks/useDebounce.js'
 import { useFavorites } from '../utils/favoriteDicts.js'
-import Hero from '../components/Hero'
-import Features from '../components/Features'
+
 import ErrorBookCard from '../components/ErrorBookCard'
 import ReviewCard from '../components/ReviewCard'
 import { getDueReviewCount, getTotalReviewCount } from '../utils/reviewCards.js'
 
 const SCROLL_KEY = 'lf_wordlib_scroll_y'
 const RESTORE_KEY = 'lf_wordlib_should_restore'
+
+const categoryIcons = {
+  '功能词本': (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
+  ),
+  '中学英语': (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+  ),
+  '大学英语': (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+  ),
+  '英专生英语': (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+  ),
+  '留学英语': (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+  ),
+  '考研英语': (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
+  ),
+  '专业英语': (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+  ),
+}
+
+const getCategoryColor = (title) => {
+  const t = title.toLowerCase()
+  if (t.includes('中学') || t.includes('初中') || t.includes('中考') || t.includes('高中') || t.includes('高考')) return 'bg-green-500'
+  if (t.includes('大学') || t.includes('四级') || t.includes('六级')) return 'bg-orange-500'
+  if (t.includes('英专')) return 'bg-red-500'
+  if (t.includes('留学')) return 'bg-purple-500'
+  if (t.includes('考研')) return 'bg-indigo-500'
+  if (t.includes('程序员')) return 'bg-slate-500'
+  return 'bg-indigo-500'
+}
+
+const tagColors = {
+  'warm-coral': { text: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-500/10', top: 'bg-indigo-500' },
+  'warm-amber': { text: 'text-violet-600 dark:text-violet-400', bg: 'bg-violet-50 dark:bg-violet-500/10', top: 'bg-violet-500' },
+  'warm-rose': { text: 'text-slate-600 dark:text-slate-400', bg: 'bg-slate-50 dark:bg-slate-500/10', top: 'bg-slate-500' },
+  'warm-sage': { text: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-500/10', top: 'bg-emerald-500' },
+  'warm-sky': { text: 'text-sky-600 dark:text-sky-400', bg: 'bg-sky-50 dark:bg-sky-500/10', top: 'bg-sky-500' },
+  'warm-violet': { text: 'text-violet-600 dark:text-violet-400', bg: 'bg-violet-50 dark:bg-violet-500/10', top: 'bg-violet-500' },
+  'warm-slate': { text: 'text-stone-600 dark:text-stone-400', bg: 'bg-stone-50 dark:bg-stone-500/10', top: 'bg-stone-500' },
+  'warm-teal': { text: 'text-teal-600 dark:text-teal-400', bg: 'bg-teal-50 dark:bg-teal-500/10', top: 'bg-teal-500' },
+};
 
 function Home() {
   const navigate = useNavigate()
@@ -59,11 +104,11 @@ function Home() {
   }, [location.key])
 
   const [searchQuery, setSearchQuery] = useState('')
-  const readingWordCount = getReadingWordBookCount()
-  const corpusWordCount = getCorpusWordBookCount()
-  const favoriteWordCount = getFavoriteWordsCount()
-  const reviewDueCount = getDueReviewCount()
-  const reviewTotalCount = getTotalReviewCount()
+  const readingWordCount = useMemo(() => getReadingWordBookCount(), [])
+  const corpusWordCount = useMemo(() => getCorpusWordBookCount(), [])
+  const favoriteWordCount = useMemo(() => getFavoriteWordsCount(), [])
+  const reviewDueCount = useMemo(() => getDueReviewCount(), [])
+  const reviewTotalCount = useMemo(() => getTotalReviewCount(), [])
 
   // 单词搜索:跨词库
   const [wordQuery, setWordQuery] = useState('')
@@ -73,16 +118,40 @@ function Home() {
   const wordSearchRef = useRef(null)
   const debouncedWordQuery = useDebounce(wordQuery, 300)
 
-  // 浏览器空闲时再加载所有词库,避免阻塞首屏渲染
+  // 渐进式加载词库：先加载常用的，再分批加载其余
   useEffect(() => {
     let cancelled = false
-    const loadAll = async () => {
-      const loaded = await Promise.all(
-        dictionaryMeta.map((meta) => loadDictionary(meta.id).catch(() => null))
+    const PRIORITY_IDS = ['cet4', 'cet6', 'gaokao', 'postgraduate', 'ielts']
+
+    const loadBatch = async (ids) => {
+      const results = await Promise.all(
+        ids.map((id) => loadDictionary(id).catch(() => null))
       )
-      if (cancelled) return
-      setDictionaries(loaded.filter(Boolean))
+      if (cancelled) return []
+      return results.filter(Boolean)
     }
+
+    const loadAll = async () => {
+      // 第一批：优先加载常用词库
+      const priorityDicts = await loadBatch(PRIORITY_IDS)
+      if (cancelled) return
+      setDictionaries(priorityDicts)
+
+      // 后续批次：分批加载剩余词库
+      const remaining = dictionaryMeta.filter(
+        (m) => !PRIORITY_IDS.includes(m.id)
+      )
+      const BATCH_SIZE = 4
+      for (let i = 0; i < remaining.length; i += BATCH_SIZE) {
+        if (cancelled) return
+        await new Promise((r) => setTimeout(r, 300))
+        const batch = remaining.slice(i, i + BATCH_SIZE)
+        const batchResults = await loadBatch(batch.map((m) => m.id))
+        if (cancelled) return
+        setDictionaries((prev) => [...prev, ...batchResults])
+      }
+    }
+
     const ric = typeof window !== 'undefined' && window.requestIdleCallback
     let idleHandle, timeoutHandle
     if (ric) {
@@ -125,7 +194,7 @@ function Home() {
     saveScrollAndNavigate(`/typing/${item.dictId}/${item.chapterId}?wordIndex=${item.wordIndex}`)
   }
 
-  const filteredDictionaries = dictionaryMeta.filter((d) => {
+  const filteredDictionaries = useMemo(() => dictionaryMeta.filter((d) => {
     const categoryMatch = selectedCategory === '全部' || d.category === selectedCategory
     const query = searchQuery.trim().toLowerCase()
     const searchMatch = !query ||
@@ -134,61 +203,12 @@ function Home() {
       d.category.toLowerCase().includes(query)
     const favoriteMatch = !favoriteOnly || isFavorite(d.id)
     return categoryMatch && searchMatch && favoriteMatch
-  })
+  }), [selectedCategory, searchQuery, favoriteOnly, favorites, isFavorite])
 
-  // 错题本数量（从 localStorage 读取，不依赖状态变化）
-  const errorBookCount = getErrorBookCount()
-
-  const categoryIcons = {
-    '功能词本': (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
-    ),
-    '中学英语': (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-    ),
-    '大学英语': (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
-    ),
-    '英专生英语': (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-    ),
-    '留学英语': (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-    ),
-    '考研英语': (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
-    ),
-    '专业英语': (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
-    ),
-  }
-
-  const getCategoryColor = (title) => {
-    const t = title.toLowerCase()
-    if (t.includes('中学') || t.includes('初中') || t.includes('中考') || t.includes('高中') || t.includes('高考')) return 'bg-green-500'
-    if (t.includes('大学') || t.includes('四级') || t.includes('六级')) return 'bg-orange-500'
-    if (t.includes('英专')) return 'bg-red-500'
-    if (t.includes('留学')) return 'bg-purple-500'
-    if (t.includes('考研')) return 'bg-indigo-500'
-    if (t.includes('程序员')) return 'bg-slate-500'
-    return 'bg-indigo-500'
-  }
-
-  const tagColors = {
-    'warm-coral': { text: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-500/10', top: 'bg-indigo-500' },
-    'warm-amber': { text: 'text-violet-600 dark:text-violet-400', bg: 'bg-violet-50 dark:bg-violet-500/10', top: 'bg-violet-500' },
-    'warm-rose': { text: 'text-slate-600 dark:text-slate-400', bg: 'bg-slate-50 dark:bg-slate-500/10', top: 'bg-slate-500' },
-    'warm-sage': { text: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-500/10', top: 'bg-emerald-500' },
-    'warm-sky': { text: 'text-sky-600 dark:text-sky-400', bg: 'bg-sky-50 dark:bg-sky-500/10', top: 'bg-sky-500' },
-    'warm-violet': { text: 'text-violet-600 dark:text-violet-400', bg: 'bg-violet-50 dark:bg-violet-500/10', top: 'bg-violet-500' },
-    'warm-slate': { text: 'text-stone-600 dark:text-stone-400', bg: 'bg-stone-50 dark:bg-stone-500/10', top: 'bg-stone-500' },
-    'warm-teal': { text: 'text-teal-600 dark:text-teal-400', bg: 'bg-teal-50 dark:bg-teal-500/10', top: 'bg-teal-500' },
-  };
+  const errorBookCount = useMemo(() => getErrorBookCount(), [])
 
   return (
     <>
-      <div className="hidden md:block"><Hero /></div>
-      <div className="hidden md:block"><Features /></div>
       <div className="min-h-screen bg-background dark:bg-transparent p-6 transition-colors duration-500 animate-page-fade-in">
       <div className="max-w-6xl mx-auto px-6">
         <div id="wordbooks" className="mt-8 md:mt-12 mb-8">

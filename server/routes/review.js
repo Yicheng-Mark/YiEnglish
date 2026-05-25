@@ -56,11 +56,18 @@ router.post('/upsert', authMiddleware, async (req, res, next) => {
       return res.status(400).json({ error: '缺少 cards 数组' })
     }
 
-    for (const c of cards) {
-      if (!c.wordName) continue
+    const validCards = cards.filter(c => c.wordName)
+    if (validCards.length > 0) {
+      const placeholders = validCards.map(() => '(?, ?, ?, FROM_UNIXTIME(? / 1000), ?, ?, ?, FROM_UNIXTIME(? / 1000), ?)').join(', ')
+      const params = validCards.flatMap(c => [
+        req.userId, c.wordName, c.dictId || '',
+        c.nextReview,
+        c.interval, c.easeFactor, c.repetitions,
+        c.lastReviewAt, c.lastQuality,
+      ])
       await pool.execute(
         `INSERT INTO user_review_cards (user_id, word_name, dict_id, next_review, interval_days, ease_factor, repetitions, last_review_at, last_quality)
-         VALUES (?, ?, ?, FROM_UNIXTIME(? / 1000), ?, ?, ?, FROM_UNIXTIME(? / 1000), ?)
+         VALUES ${placeholders}
          ON DUPLICATE KEY UPDATE
            next_review = VALUES(next_review),
            interval_days = VALUES(interval_days),
@@ -68,12 +75,7 @@ router.post('/upsert', authMiddleware, async (req, res, next) => {
            repetitions = VALUES(repetitions),
            last_review_at = VALUES(last_review_at),
            last_quality = VALUES(last_quality)`,
-        [
-          req.userId, c.wordName, c.dictId || '',
-          c.nextReview,
-          c.interval, c.easeFactor, c.repetitions,
-          c.lastReviewAt, c.lastQuality,
-        ]
+        params
       )
     }
     res.json({ success: true })

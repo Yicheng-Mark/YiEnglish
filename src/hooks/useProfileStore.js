@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useAuth } from '../contexts/AuthContext'
 
 const STORAGE_KEY = 'lingoforge_profile'
 
@@ -40,11 +41,8 @@ function persist() {
   listeners.forEach((fn) => fn())
 }
 
-function syncProfileUpdate() {
-  // Profile is stored locally only
-}
-
 export function useProfileStore() {
+  const { user, updateProfile } = useAuth()
   const [, setTick] = useState(0)
 
   useEffect(() => {
@@ -54,6 +52,18 @@ export function useProfileStore() {
       listeners.delete(fn)
     }
   }, [])
+
+  // sync from server user data when available
+  useEffect(() => {
+    if (user) {
+      let changed = false
+      if (user.nickname && user.nickname !== cache.nickname) { cache = { ...cache, nickname: user.nickname }; changed = true }
+      if (user.signature != null && user.signature !== cache.signature) { cache = { ...cache, signature: user.signature }; changed = true }
+      if (user.avatar && user.avatar !== cache.avatar) { cache = { ...cache, avatar: user.avatar }; changed = true }
+      if (user.dailyGoalMinutes && user.dailyGoalMinutes !== cache.dailyGoalMinutes) { cache = { ...cache, dailyGoalMinutes: user.dailyGoalMinutes }; changed = true }
+      if (changed) persist()
+    }
+  }, [user])
 
   return {
     nickname: cache.nickname,
@@ -65,27 +75,27 @@ export function useProfileStore() {
       if (!trimmed) return
       cache = { ...cache, nickname: trimmed }
       persist()
-      syncProfileUpdate({ nickname: trimmed })
+      updateProfile({ nickname: trimmed }).catch(() => {})
     },
     setSignature(sig) {
       cache = { ...cache, signature: sig }
       persist()
-      syncProfileUpdate({ signature: sig })
+      updateProfile({ signature: sig }).catch(() => {})
     },
     setAvatar(dataUrl) {
       cache = { ...cache, avatar: dataUrl }
       persist()
-      syncProfileUpdate({ avatar: dataUrl })
+      updateProfile({ avatar: dataUrl }).catch(() => {})
     },
     setDailyGoalMinutes(n) {
       const clamped = Math.max(5, Math.min(300, Math.round(n)))
       cache = { ...cache, dailyGoalMinutes: clamped }
       persist()
-      syncProfileUpdate({ dailyGoalMinutes: clamped })
+      updateProfile({ dailyGoalMinutes: clamped }).catch(() => {})
     },
   }
 }
 
 export async function syncProfileFromServer() {
-  // Profile is stored locally only
+  // Profile sync is now handled by AuthContext
 }

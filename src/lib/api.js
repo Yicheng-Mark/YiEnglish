@@ -1,12 +1,61 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
 
+let isRefreshing = false
+let refreshSubscribers = []
+
+function onRefreshed(success) {
+  refreshSubscribers.forEach(cb => cb(success))
+  refreshSubscribers = []
+}
+
+async function silentRefresh() {
+  if (isRefreshing) {
+    return new Promise(resolve => refreshSubscribers.push(resolve))
+  }
+  isRefreshing = true
+  try {
+    const res = await fetch(`${API_BASE}/api/auth/refresh`, {
+      method: 'POST',
+      credentials: 'include',
+    })
+    const ok = res.ok
+    onRefreshed(ok)
+    return ok
+  } catch {
+    onRefreshed(false)
+    return false
+  } finally {
+    isRefreshing = false
+  }
+}
+
 export async function apiFetch(path, options = {}) {
-  const headers = {
-    'Content-Type': 'application/json',
-    ...(options.headers || {}),
+  const headers = { ...(options.headers || {}) }
+  if (options.body) {
+    headers['Content-Type'] = 'application/json'
   }
 
-  const res = await fetch(`${API_BASE}${path}`, { ...options, headers })
+  const res = await fetch(`${API_BASE}${path}`, {
+    ...options,
+    headers,
+    credentials: 'include',
+  })
+
+  if (res.status === 401) {
+    const data = await res.json().catch(() => ({}))
+    if (data.code === 'TOKEN_EXPIRED') {
+      const refreshed = await silentRefresh()
+      if (refreshed) {
+        return fetch(`${API_BASE}${path}`, {
+          ...options,
+          headers,
+          credentials: 'include',
+        })
+      }
+    }
+    window.dispatchEvent(new CustomEvent('auth:unauthorized'))
+    throw new Error(data.error || '请先登录')
+  }
 
   return res
 }

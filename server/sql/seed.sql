@@ -1,7 +1,7 @@
 USE lingoforge;
 
 INSERT INTO assistant_profile (name, description) VALUES
-('LingoForge AI', '英语学习AI助手，支持多种风格模式');
+('AI 助手', '英语学习AI助手，支持多种风格模式');
 
 INSERT INTO style_modes (style_key, name, avatar, system_prompt, description, sort_order) VALUES
 (

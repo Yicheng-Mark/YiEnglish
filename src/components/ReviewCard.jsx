@@ -44,7 +44,7 @@ export default function ReviewCard({ dueCount, totalCount, onClick }) {
           {dueCount > 0
             ? `${dueCount} 个单词待复习（共 ${totalCount} 个）`
             : totalCount > 0
-            ? `共 ${totalCount} 个单词在复习计划中`
+            ? '今日复习已完成 ✓'
             : '开始练习后会自动加入复习'}
         </p>
       </div>

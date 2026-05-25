@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { BookOpen, Keyboard } from 'lucide-react'
-import { useReadingStore } from '../modules/reading/hooks/useReadingStore'
+import { getReadingStoreActions } from '../modules/reading/hooks/useReadingStore'
 
 const items = [
   {
@@ -26,15 +26,6 @@ const items = [
     ),
   },
   {
-    to: '/training',
-    label: '训练中心',
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-      </svg>
-    ),
-  },
-  {
     to: '/profile',
     label: '我的',
     icon: (
@@ -55,9 +46,6 @@ function getModuleFromPath(pathname) {
   if (pathname === '/listening' || pathname.startsWith('/listening/')) {
     return 'listening'
   }
-  if (pathname === '/training' || pathname.startsWith('/training/')) {
-    return 'training'
-  }
   if (pathname.startsWith('/reading/grammar')) {
     return 'reading'
   }
@@ -66,7 +54,7 @@ function getModuleFromPath(pathname) {
 
 export default function BottomNav() {
   const location = useLocation()
-  const store = useReadingStore()
+  const storeActions = getReadingStoreActions()
 
   useEffect(() => {
     const module = getModuleFromPath(location.pathname)
@@ -74,10 +62,9 @@ export default function BottomNav() {
 
     const tick = () => {
       if (document.visibilityState === 'hidden') return
-      if (module === 'typing') store.addTypingSeconds(1)
-      else if (module === 'reading') store.addReadingSeconds(1)
-      else if (module === 'listening') store.addListeningSeconds(1)
-      else if (module === 'training') store.addTrainingSeconds(1)
+      if (module === 'typing') storeActions.addTypingSeconds(1)
+      else if (module === 'reading') storeActions.addReadingSeconds(1)
+      else if (module === 'listening') storeActions.addListeningSeconds(1)
     }
 
     const interval = setInterval(tick, 1000)

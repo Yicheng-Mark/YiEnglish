@@ -12,4 +12,12 @@ module.exports = {
   FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
   ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS || '',
   NODE_ENV: process.env.NODE_ENV || 'development',
+  JWT_SECRET: process.env.JWT_SECRET,
+  JWT_ACCESS_EXPIRES: process.env.JWT_ACCESS_EXPIRES || '15m',
+  JWT_REFRESH_EXPIRES: process.env.JWT_REFRESH_EXPIRES || '7d',
+  BCRYPT_ROUNDS: parseInt(process.env.BCRYPT_ROUNDS, 10) || 12,
+  LOGIN_RATE_LIMIT_WINDOW: 15 * 60 * 1000,
+  LOGIN_RATE_LIMIT_MAX: 5,
+  REGISTER_RATE_LIMIT_WINDOW: 60 * 60 * 1000,
+  REGISTER_RATE_LIMIT_MAX: 3,
 }

@@ -102,17 +102,10 @@ router.patch('/gender', authMiddleware, async (req, res, next) => {
       return res.status(400).json({ error: '性别值无效' })
     }
 
-    const [userStyle] = await pool.execute(
-      'SELECT style_key FROM user_style_settings WHERE user_id = ?',
-      [req.userId]
-    )
-    if (userStyle.length === 0) {
-      return res.status(400).json({ error: '请先选择一个 AI 伙伴' })
-    }
-
     await pool.execute(
-      'UPDATE user_style_settings SET gender = ? WHERE user_id = ?',
-      [gender, req.userId]
+      `INSERT INTO user_style_settings (user_id, style_key, gender) VALUES (?, 'teacher', ?)
+       ON DUPLICATE KEY UPDATE gender = VALUES(gender)`,
+      [req.userId, gender]
     )
 
     res.json({ gender })

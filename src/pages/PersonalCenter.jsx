@@ -8,6 +8,7 @@ import {
 import { useReadingStore } from '../modules/reading/hooks/useReadingStore'
 import { useUserConfig } from '../hooks/useUserConfig'
 import { useProfileStore } from '../hooks/useProfileStore'
+import { useAuth } from '../contexts/AuthContext'
 import { getErrorBookCount } from '../utils/errorBook'
 import { getReadingWordBookCount } from '../utils/readingWordBook'
 import { getCorpusWordBookCount } from '../utils/corpusWordBook'
@@ -35,6 +36,7 @@ export default function PersonalCenter() {
   const store = useReadingStore()
   const { theme, setTheme } = useUserConfig()
   const profile = useProfileStore()
+  const { logout } = useAuth()
 
   const [editModal, setEditModal] = useState(false)
   const [goalModal, setGoalModal] = useState(false)
@@ -194,6 +196,16 @@ export default function PersonalCenter() {
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Logout */}
+      <div className="mt-4 animate-card-enter" style={{ animationDelay: '0.3s' }}>
+        <button
+          onClick={logout}
+          className="w-full py-3.5 rounded-2xl text-red-500 font-medium text-[15px] bg-surface dark:bg-surface-dark border border-gray-100/80 dark:border-white/[0.06] hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+        >
+          退出登录
+        </button>
       </div>
 
       {/* Edit Profile Modal */}

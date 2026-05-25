@@ -33,6 +33,7 @@ async function streamChatToRes(apiMessages, res) {
         stream: true,
         messages: apiMessages,
       }),
+      signal: AbortSignal.timeout(30000),
     })
 
     if (!response.ok) {

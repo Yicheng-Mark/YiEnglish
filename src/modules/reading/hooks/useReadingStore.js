@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 
 const STORAGE_KEY = 'lingoforge_reading'
 
+const defaultFilters = { category: '全部', year: '全部', search: '', bookmarkOnly: false }
+
 const defaultState = {
   readProgress: {},
   lastReadAt: {},
@@ -9,7 +11,7 @@ const defaultState = {
   dailyReadingSeconds: {},
   dailyTypingSeconds: {},
   dailyListeningSeconds: {},
-  dailyTrainingSeconds: {},
+  filters: { ...defaultFilters },
 }
 
 function todayKey() {
@@ -33,7 +35,7 @@ function loadFromStorage() {
       dailyReadingSeconds: parsed.dailyReadingSeconds && typeof parsed.dailyReadingSeconds === 'object' ? parsed.dailyReadingSeconds : {},
       dailyTypingSeconds: parsed.dailyTypingSeconds && typeof parsed.dailyTypingSeconds === 'object' ? parsed.dailyTypingSeconds : {},
       dailyListeningSeconds: parsed.dailyListeningSeconds && typeof parsed.dailyListeningSeconds === 'object' ? parsed.dailyListeningSeconds : {},
-      dailyTrainingSeconds: parsed.dailyTrainingSeconds && typeof parsed.dailyTrainingSeconds === 'object' ? parsed.dailyTrainingSeconds : {},
+      filters: parsed.filters && typeof parsed.filters === 'object' ? { ...defaultFilters, ...parsed.filters } : { ...defaultFilters },
     }
   } catch {
     return { ...defaultState }
@@ -55,6 +57,14 @@ function persist() {
   listeners.forEach((fn) => fn())
 }
 
+export function getReadingStoreActions() {
+  return {
+    addTypingSeconds(sec) { addTypingSeconds(sec) },
+    addReadingSeconds(sec) { addReadingSeconds(sec) },
+    addListeningSeconds(sec) { addListeningSeconds(sec) },
+  }
+}
+
 export function useReadingStore() {
   const [, setTick] = useState(0)
 
@@ -73,7 +83,7 @@ export function useReadingStore() {
     dailyReadingSeconds: cache.dailyReadingSeconds,
     dailyTypingSeconds: cache.dailyTypingSeconds,
     dailyListeningSeconds: cache.dailyListeningSeconds,
-    dailyTrainingSeconds: cache.dailyTrainingSeconds,
+    filters: cache.filters,
     getProgress(id) {
       return cache.readProgress[id] || 0
     },
@@ -112,6 +122,10 @@ export function useReadingStore() {
       }
       persist()
     },
+    setFilters(partial) {
+      cache = { ...cache, filters: { ...cache.filters, ...partial } }
+      persist()
+    },
     addReadingSeconds(seconds) {
       const sec = Math.floor(seconds)
       if (!Number.isFinite(sec) || sec < 1) return
@@ -132,9 +146,6 @@ export function useReadingStore() {
     getDailyListeningSeconds(dateKey) {
       return cache.dailyListeningSeconds[dateKey] || 0
     },
-    getDailyTrainingSeconds(dateKey) {
-      return cache.dailyTrainingSeconds[dateKey] || 0
-    },
     getTotalReadingSeconds() {
       return Object.values(cache.dailyReadingSeconds).reduce((sum, n) => sum + (n || 0), 0)
     },
@@ -144,15 +155,11 @@ export function useReadingStore() {
     getTotalListeningSeconds() {
       return Object.values(cache.dailyListeningSeconds).reduce((sum, n) => sum + (n || 0), 0)
     },
-    getTotalTrainingSeconds() {
-      return Object.values(cache.dailyTrainingSeconds).reduce((sum, n) => sum + (n || 0), 0)
-    },
     getTotalStudySeconds() {
       return (
         Object.values(cache.dailyReadingSeconds).reduce((sum, n) => sum + (n || 0), 0) +
         Object.values(cache.dailyTypingSeconds).reduce((sum, n) => sum + (n || 0), 0) +
-        Object.values(cache.dailyListeningSeconds).reduce((sum, n) => sum + (n || 0), 0) +
-        Object.values(cache.dailyTrainingSeconds).reduce((sum, n) => sum + (n || 0), 0)
+        Object.values(cache.dailyListeningSeconds).reduce((sum, n) => sum + (n || 0), 0)
       )
     },
     addTypingSeconds(seconds) {
@@ -174,17 +181,6 @@ export function useReadingStore() {
       cache = {
         ...cache,
         dailyListeningSeconds: { ...cache.dailyListeningSeconds, [key]: prev + sec },
-      }
-      persist()
-    },
-    addTrainingSeconds(seconds) {
-      const sec = Math.floor(seconds)
-      if (!Number.isFinite(sec) || sec < 1) return
-      const key = todayKey()
-      const prev = cache.dailyTrainingSeconds[key] || 0
-      cache = {
-        ...cache,
-        dailyTrainingSeconds: { ...cache.dailyTrainingSeconds, [key]: prev + sec },
       }
       persist()
     },

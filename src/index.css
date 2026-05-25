@@ -1183,3 +1183,25 @@ body[data-scrolling="true"] .glow-border-subtle:hover {
   padding-top: 20px;
 }
 
+/* 登录页动画 */
+@keyframes login-card-enter {
+  from { opacity: 0; transform: translateY(30px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 登录/注册页透明输入框 + 覆盖 Chrome autofill */
+.fixed input[type="text"],
+.fixed input[type="password"] {
+  background-color: transparent !important;
+  color: white !important;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.01) inset !important;
+  -webkit-text-fill-color: white !important;
+  caret-color: white;
+  transition: background-color 5000s ease-in-out 0s;
+}
+

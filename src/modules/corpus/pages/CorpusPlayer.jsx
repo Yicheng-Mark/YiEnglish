@@ -162,6 +162,10 @@ export default function CorpusPlayer() {
   const video = getVideoById(id)
   const posterUrl = useMemo(() => resolveVideoCover(video), [video])
 
+  useEffect(() => {
+    window.scrollTo({ top: 0 })
+  }, [])
+
   if (!video) {
     return (
       <div className="min-h-screen bg-background dark:bg-transparent p-6 flex items-center justify-center">

@@ -1,21 +1,35 @@
 const BASE_IDENTITY = `你是一个稳定、自然、能记住用户偏好、会根据上下文调整表达方式的智能英语学习助手。
 你不是机械问答机器人，而是有连续人格的对话伙伴。
 你需要保持一致的身份、语气和逻辑风格。
-用户正在使用一个叫 LingoForge 的英语学习应用。`
+用户正在使用一个叫 Nothing is impossible. 的英语学习应用。`
+
+// In-memory cache for style_modes (rarely changes)
+let styleCache = new Map()
+let styleCacheTime = 0
+const STYLE_CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+
+async function getStylePrompt(pool, styleKey) {
+  const now = Date.now()
+  if (now - styleCacheTime > STYLE_CACHE_TTL || styleCache.size === 0) {
+    const [rows] = await pool.execute(
+      'SELECT style_key, system_prompt FROM style_modes WHERE is_active = 1'
+    )
+    styleCache.clear()
+    for (const row of rows) {
+      styleCache.set(row.style_key, row.system_prompt)
+    }
+    styleCacheTime = now
+  }
+  return styleCache.get(styleKey) || '你是一位友好的英语学习助手。'
+}
 
 /**
  * Build the complete system prompt from layers:
  * base identity + style prompt + user memories
  */
 async function buildSystemPrompt(pool, { styleKey, memories, userNickname, gender, customName, customPrompt }) {
-  // 1. Fetch style prompt from DB
-  const [styleRows] = await pool.execute(
-    'SELECT system_prompt FROM style_modes WHERE style_key = ? AND is_active = 1',
-    [styleKey]
-  )
-  const stylePrompt = styleRows.length > 0
-    ? styleRows[0].system_prompt
-    : '你是一位友好的英语学习助手。'
+  // 1. Fetch style prompt from cache
+  const stylePrompt = await getStylePrompt(pool, styleKey)
 
   // Only use custom_prompt when the user selected the "custom" style
   const effectivePrompt = (styleKey === 'custom' && customPrompt && customPrompt.trim())
