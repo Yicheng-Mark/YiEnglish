@@ -1,11 +1,9 @@
 import { memo, useMemo } from 'react'
-import { Heart, Mic, PenLine } from 'lucide-react'
 import { useCorpusContext } from '../context/CorpusPlayerContext.jsx'
-import { tokenizeEnglish, getPosColor } from '../utils/wordColorMap.js'
+import { tokenizeEnglish, POS_LABEL, getPosHighlightColor } from '../utils/wordColorMap.js'
 import { buildPhonetic } from '../utils/buildPhonetic.js'
-import { useCorpusStore } from '../hooks/useCorpusStore.js'
 
-function HighlightedSentence({ text, posMap, onWordClick }) {
+function HighlightedSentence({ text, posMap, onWordClick, posHighlight = true }) {
   if (!text) return null
   const tokens = tokenizeEnglish(text)
   return (
@@ -15,10 +13,10 @@ function HighlightedSentence({ text, posMap, onWordClick }) {
           return <span key={`s-${i}`}>{tok.raw}</span>
         }
         const pos = posMap?.get(tok.lower) || 'unknown'
-        const color = getPosColor(pos)
+        const color = getPosHighlightColor(pos)
         const isKnown = posMap?.has(tok.lower)
 
-        if (!isKnown) {
+        if (!isKnown || !posHighlight || !color) {
           return (
             <span
               key={`s-${i}`}
@@ -36,13 +34,13 @@ function HighlightedSentence({ text, posMap, onWordClick }) {
         return (
           <span
             key={`s-${i}`}
-            className="corpus-pos-pill cursor-pointer select-none"
-            style={{ '--corpus-pos-color': color }}
+            className="pos-highlight cursor-pointer select-none"
+            style={{ backgroundColor: color }}
             onClick={(e) => {
               e.stopPropagation()
               if (onWordClick) onWordClick(tok.lower, e.target.getBoundingClientRect(), e.target)
             }}
-            title={pos}
+            title={POS_LABEL[pos] || pos}
           >
             {tok.raw}
           </span>
@@ -53,11 +51,9 @@ function HighlightedSentence({ text, posMap, onWordClick }) {
 }
 
 function CurrentSentencePanelInner() {
-  const { subtitles, player, posMap, wordMap, settings, handleWordClick, videoId, mode } = useCorpusContext()
+  const { subtitles, player, posMap, wordMap, settings, handleWordClick, mode } = useCorpusContext()
   const showEn = mode !== 'chinese' && mode !== 'translate'
   const showZh = mode !== 'english' && mode !== 'cloze'
-  const { isBookmarked, toggleBookmark } = useCorpusStore()
-  const liked = videoId ? isBookmarked(videoId) : false
 
   const current = useMemo(() => {
     if (!subtitles?.length || !player.activeId) return null
@@ -100,36 +96,6 @@ function CurrentSentencePanelInner() {
             <span className="tabular-nums">
               {player.cueIndex || 0} / {player.cueTotal || 0}
             </span>
-            <button
-              type="button"
-              onClick={() => videoId && toggleBookmark(videoId)}
-              className="flex items-center hover:text-rose-500 transition-colors"
-              title={liked ? '取消收藏' : '收藏'}
-              aria-label={liked ? '取消收藏' : '收藏'}
-            >
-              <Heart
-                className={`w-4 h-4 ${liked ? 'fill-rose-500 text-rose-500' : ''}`}
-              />
-            </button>
-            <button
-              type="button"
-              className="flex items-center gap-1 hover:text-primary transition-colors"
-              title="切换到听写"
-            >
-              <PenLine className="w-3.5 h-3.5" />
-              <span>切换到听写</span>
-            </button>
-          </div>
-          <div className="flex items-center gap-1">
-            <span>录音:</span>
-            <button
-              type="button"
-              className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-gray-100/60 dark:hover:bg-white/[0.06] hover:text-primary transition-colors"
-              title="录音"
-              aria-label="录音"
-            >
-              <Mic className="w-3.5 h-3.5" />
-            </button>
           </div>
         </div>
 
@@ -148,6 +114,7 @@ function CurrentSentencePanelInner() {
                   text={current.en}
                   posMap={posMap}
                   onWordClick={handleWordClick}
+                  posHighlight={settings?.posHighlight}
                 />
               </div>
             </>

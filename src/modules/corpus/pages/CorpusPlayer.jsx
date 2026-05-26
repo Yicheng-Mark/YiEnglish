@@ -14,6 +14,8 @@ import PlayerControls from '../components/PlayerControls'
 import SettingsPanel from '../components/SettingsPanel'
 import CurrentSentencePanel from '../components/CurrentSentencePanel'
 import WordPopup from '../../../components/WordPopup.jsx'
+import useIsMobile from '../../../hooks/useIsMobile.js'
+import MobileCorpusPlayer from '../components/mobile/MobileCorpusPlayer.jsx'
 
 function SettingsLauncher() {
   const [open, setOpen] = useState(false)
@@ -35,9 +37,11 @@ function SettingsLauncher() {
 function CorpusPlayerInner({ video, posterUrl, onBack }) {
   const { player, popup, closePopup, saveWord, removeWord, loadError } =
     useCorpusContext()
+  const isMobile = useIsMobile()
 
-  // 键盘快捷键
+  // 键盘快捷键（仅桌面端）
   useEffect(() => {
+    if (isMobile) return
     function onKey(e) {
       const tag = e.target?.tagName
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
@@ -62,7 +66,12 @@ function CorpusPlayerInner({ video, posterUrl, onBack }) {
     }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [player])
+  }, [player, isMobile])
+
+  // 移动端：独立布局
+  if (isMobile) {
+    return <MobileCorpusPlayer video={video} posterUrl={posterUrl} onBack={onBack} />
+  }
 
   return (
     <div className="h-[100dvh] flex flex-col overflow-hidden bg-background dark:bg-[#0f0f13] transition-colors duration-500 animate-page-fade-in">

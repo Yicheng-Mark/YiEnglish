@@ -127,6 +127,7 @@ export default function DictationMode() {
                     paraKey={`dt-${sub.id}`}
                     posMap={posMap}
                     onWordClick={handleWordClick}
+                    showColor={settings?.posHighlight}
                   />
                 </div>
               )
@@ -190,6 +191,7 @@ export default function DictationMode() {
                           paraKey={`dt-orig-${sub.id}`}
                           posMap={posMap}
                           onWordClick={handleWordClick}
+                          showColor={settings?.posHighlight}
                         />
                       </div>
                     )}

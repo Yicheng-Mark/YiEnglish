@@ -550,6 +550,21 @@ body[data-scrolling="true"] .glow-border-subtle:hover {
   --color-accent-soft: rgba(196, 181, 253, 0.14);
 }
 
+/* Mobile corpus player — gray theme overrides */
+[data-theme="gray"] {
+  --mobile-bg: #0b1120;
+  --mobile-card-bg: #151e32;
+  --mobile-card-shadow: rgba(0,0,0,0.4);
+  --mobile-text: #f1f5f9;
+  --mobile-text-secondary: #94a3b8;
+  --mobile-border: #1e293b;
+  --mobile-primary: #818cf8;
+  --mobile-bottom-bg: #0f172a;
+  --mobile-control-text: #64748b;
+  --mobile-icon-color: #94a3b8;
+  --mobile-recording-bg: #172554;
+}
+
 /* 全局背景：径向微弱渐晕 → 不再是单色铺板 */
 [data-theme="gray"] body {
   background:
@@ -946,6 +961,25 @@ body[data-scrolling="true"] .glow-border-subtle:hover {
   --word-interjection: #f59e0b;  /* amber-500  叹词 */
   --word-phrase: #ec4899;        /* 短语 = 动词色 */
   --word-default: #64748b;       /* slate-500  其他 */
+
+  /* Mobile corpus player — light theme */
+  --mobile-bg: #f2f2f7;
+  --mobile-card-bg: #ffffff;
+  --mobile-card-shadow: rgba(0,0,0,0.06);
+  --mobile-text: #1c1c1e;
+  --mobile-text-secondary: #8e8e93;
+  --mobile-border: #e5e5ea;
+  --mobile-primary: #5856d6;
+  --mobile-bottom-bg: #ffffff;
+  --mobile-control-text: #8e8e93;
+  --mobile-icon-color: #8e8e93;
+  --mobile-recording-bg: #eef6ff;
+  --pos-noun: #007aff;
+  --pos-verb: #ff3b30;
+  --pos-adj: #34c759;
+  --pos-adv: #ff9500;
+  --pos-phrase-bg: rgba(52,199,89,0.12);
+  --pos-phrase-text: #2ea043;
 }
 
 .dark {
@@ -959,6 +993,25 @@ body[data-scrolling="true"] .glow-border-subtle:hover {
   --word-interjection: #fcd34d;  /* amber-300 */
   --word-phrase: #f472b6;
   --word-default: #94a3b8;       /* slate-400 */
+
+  /* Mobile corpus player — dark theme (gray/star) */
+  --mobile-bg: #0b1120;
+  --mobile-card-bg: #151e32;
+  --mobile-card-shadow: rgba(0,0,0,0.4);
+  --mobile-text: #f1f5f9;
+  --mobile-text-secondary: #94a3b8;
+  --mobile-border: #1e293b;
+  --mobile-primary: #818cf8;
+  --mobile-bottom-bg: #0f172a;
+  --mobile-control-text: #64748b;
+  --mobile-icon-color: #94a3b8;
+  --mobile-recording-bg: #172554;
+  --pos-noun: #60a5fa;
+  --pos-verb: #f87171;
+  --pos-adj: #4ade80;
+  --pos-adv: #fbbf24;
+  --pos-phrase-bg: rgba(74,222,128,0.15);
+  --pos-phrase-text: #4ade80;
 }
 
 [data-theme="warm"] {
@@ -972,6 +1025,25 @@ body[data-scrolling="true"] .glow-border-subtle:hover {
   --word-interjection: #b45309;
   --word-phrase: #c2185b;
   --word-default: #5a5a5a;
+
+  /* Mobile corpus player — warm theme */
+  --mobile-bg: #faf7f2;
+  --mobile-card-bg: #ffffff;
+  --mobile-card-shadow: rgba(139,69,19,0.04);
+  --mobile-text: #3d2b1f;
+  --mobile-text-secondary: #8c7b6b;
+  --mobile-border: #e8dfd4;
+  --mobile-primary: #d97706;
+  --mobile-bottom-bg: #ffffff;
+  --mobile-control-text: #8c7b6b;
+  --mobile-icon-color: #8c7b6b;
+  --mobile-recording-bg: #fff3e0;
+  --pos-noun: #8b5cf6;
+  --pos-verb: #ef4444;
+  --pos-adj: #10b981;
+  --pos-adv: #f59e0b;
+  --pos-phrase-bg: rgba(16,185,129,0.1);
+  --pos-phrase-text: #059669;
 }
 
 /* 词性着色 token —— 套在已有 word-clickable 上 */
@@ -1208,5 +1280,50 @@ input:-webkit-autofill:focus {
   -webkit-text-fill-color: white !important;
   caret-color: white;
   transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Mobile corpus progress bar */
+.mobile-progress-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(to right,
+    var(--mobile-primary, var(--color-primary)) 0%,
+    var(--mobile-primary, var(--color-primary)) var(--progress-pct, 0%),
+    var(--mobile-border, var(--color-primary-soft)) var(--progress-pct, 0%),
+    var(--mobile-border, var(--color-primary-soft)) 100%
+  );
+  outline: none;
+}
+.mobile-progress-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--mobile-primary, var(--color-primary));
+  cursor: pointer;
+  border: none;
+}
+.mobile-progress-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--mobile-primary, var(--color-primary));
+  cursor: pointer;
+  border: none;
+}
+
+/* Mobile corpus player utility reset */
+.mobile-corpus-reset {
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Mobile subtitle panel: override h-full to allow natural height */
+.mobile-subtitle-panel > div {
+  height: auto !important;
+  max-height: 50vh;
 }
 

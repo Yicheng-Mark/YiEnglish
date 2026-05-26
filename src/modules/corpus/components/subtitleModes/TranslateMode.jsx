@@ -6,7 +6,7 @@ import { useAutoScrollList } from '../../hooks/useAutoScrollList.js'
 import { ColorizedText } from '../ColorizedToken.jsx'
 
 export default function TranslateMode() {
-  const { subtitles, player, posMap, handleWordClick } = useCorpusContext()
+  const { subtitles, player, posMap, handleWordClick, settings } = useCorpusContext()
   const { setItemRef, containerProps } = useAutoScrollList(player.activeId)
   const [revealed, setRevealed] = useState(() => new Set())
 
@@ -86,6 +86,7 @@ export default function TranslateMode() {
                   paraKey={`tr-${sub.id}`}
                   posMap={posMap}
                   onWordClick={handleWordClick}
+                  showColor={settings?.posHighlight}
                 />
               </div>
             ) : null}

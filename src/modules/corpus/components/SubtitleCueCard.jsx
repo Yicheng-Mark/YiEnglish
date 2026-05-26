@@ -1,9 +1,9 @@
 import { memo } from 'react'
-import { Play, Copy, Heart, Pencil, Mic } from 'lucide-react'
+import { Play, Copy } from 'lucide-react'
 import { formatTime } from '../../../utils/formatTime.js'
-import { tokenizeEnglish, getPosColor } from '../utils/wordColorMap.js'
+import { tokenizeEnglish, POS_LABEL, getPosHighlightColor } from '../utils/wordColorMap.js'
 
-function CueTextWithPills({ text, posMap, onWordClick }) {
+function CueTextWithPills({ text, posMap, onWordClick, posHighlight = true }) {
   if (!text) return null
   const tokens = tokenizeEnglish(text)
   return (
@@ -13,10 +13,10 @@ function CueTextWithPills({ text, posMap, onWordClick }) {
           return <span key={`c-${i}`}>{tok.raw}</span>
         }
         const pos = posMap?.get(tok.lower) || 'unknown'
-        const color = getPosColor(pos)
+        const color = getPosHighlightColor(pos)
         const isKnown = posMap?.has(tok.lower)
 
-        if (!isKnown) {
+        if (!isKnown || !posHighlight || !color) {
           return (
             <span
               key={`c-${i}`}
@@ -34,13 +34,13 @@ function CueTextWithPills({ text, posMap, onWordClick }) {
         return (
           <span
             key={`c-${i}`}
-            className="corpus-pos-pill cursor-pointer select-none"
-            style={{ '--corpus-pos-color': color }}
+            className="pos-highlight cursor-pointer select-none"
+            style={{ backgroundColor: color }}
             onClick={(e) => {
               e.stopPropagation()
               if (onWordClick) onWordClick(tok.lower, e.target.getBoundingClientRect(), e.target)
             }}
-            title={pos}
+            title={POS_LABEL[pos] || pos}
           >
             {tok.raw}
           </span>
@@ -50,7 +50,7 @@ function CueTextWithPills({ text, posMap, onWordClick }) {
   )
 }
 
-function CueActions({ onPlay, onCopy, onLike, onEdit, onRecord }) {
+function CueActions({ onPlay, onCopy }) {
   const cls =
     'w-7 h-7 flex items-center justify-center rounded-full text-content-tertiary dark:text-gray-500 hover:text-primary hover:bg-primary-soft transition-colors'
   return (
@@ -71,30 +71,6 @@ function CueActions({ onPlay, onCopy, onLike, onEdit, onRecord }) {
       >
         <Copy className="w-3.5 h-3.5" />
       </button>
-      <button
-        type="button"
-        onClick={(e) => { e.stopPropagation(); if (onLike) onLike() }}
-        className={cls}
-        title="收藏"
-      >
-        <Heart className="w-3.5 h-3.5" />
-      </button>
-      <button
-        type="button"
-        onClick={(e) => { e.stopPropagation(); if (onEdit) onEdit() }}
-        className={cls}
-        title="编辑"
-      >
-        <Pencil className="w-3.5 h-3.5" />
-      </button>
-      <button
-        type="button"
-        onClick={(e) => { e.stopPropagation(); if (onRecord) onRecord() }}
-        className={cls}
-        title="录音"
-      >
-        <Mic className="w-3.5 h-3.5" />
-      </button>
     </div>
   )
 }
@@ -108,6 +84,7 @@ function SubtitleCueCardInner({
   onClick,
   onWordClick,
   onPlay,
+  posHighlight = true,
 }) {
   const handleCopy = () => {
     const text = `${subtitle.en}\n${subtitle.zh || ''}`
@@ -146,6 +123,7 @@ function SubtitleCueCardInner({
             text={subtitle.en}
             posMap={posMap}
             onWordClick={onWordClick}
+            posHighlight={posHighlight}
           />
         </div>
       )}

@@ -12,6 +12,38 @@ export const POS_VAR = {
   unknown: '--word-default',
 }
 
+// 词性 → 中文标签（用于 tooltip）
+export const POS_LABEL = {
+  verb: '动词',
+  noun: '名词',
+  adjective: '形容词',
+  adverb: '副词',
+  preposition: '介词',
+  conjunction: '连词',
+  pronoun: '代词',
+  interjection: '叹词',
+  phrase: '短语',
+  unknown: '',
+}
+
+// 词性 → 颜色标记配色（参考 TEco Lab，rgba 带透明度直接用于 inline backgroundColor）
+export const POS_HIGHLIGHT_COLOR = {
+  verb: 'rgba(255, 107, 157, 0.35)',
+  phrase: 'rgba(255, 107, 157, 0.35)',
+  noun: 'rgba(78, 205, 196, 0.35)',
+  adjective: 'rgba(69, 183, 209, 0.35)',
+  adverb: 'rgba(69, 183, 209, 0.35)',
+  preposition: 'rgba(150, 206, 180, 0.35)',
+  conjunction: 'rgba(255, 234, 167, 0.45)',
+  pronoun: 'rgba(255, 234, 167, 0.45)',
+  interjection: 'rgba(255, 234, 167, 0.45)',
+  unknown: '',
+}
+
+export function getPosHighlightColor(pos) {
+  return POS_HIGHLIGHT_COLOR[pos] || ''
+}
+
 // CSS 变量表达式（用于 inline style）
 export function getPosColor(pos) {
   const key = pos && POS_VAR[pos] ? pos : 'unknown'
@@ -32,10 +64,31 @@ const POS_PATTERNS = [
   { re: /\[\s*phr(?:ase)?\.?\s*\]/i, pos: 'phrase' },
 ]
 
+// 行内缩写词性标注（无方括号）：匹配以 POS 缩写开头的字符串
+// 顺序关键：vt./vi. 在 v. 前，adj. 在 a. 前
+const INLINE_POS_PATTERNS = [
+  { re: /^\s*v[ti]\s*[.\/&]/i, pos: 'verb' },
+  { re: /^\s*v\s*[.\/&]/i, pos: 'verb' },
+  { re: /^\s*n\s*[.\/&]/i, pos: 'noun' },
+  { re: /^\s*adj\s*[.\/&]/i, pos: 'adjective' },
+  { re: /^\s*a\s*[.\/&]/i, pos: 'adjective' },
+  { re: /^\s*adv\s*[.\/&]/i, pos: 'adverb' },
+  { re: /^\s*ad\s*[.\/&]/i, pos: 'adverb' },
+  { re: /^\s*prep\s*[.\/&]/i, pos: 'preposition' },
+  { re: /^\s*conj\s*[.\/&]/i, pos: 'conjunction' },
+  { re: /^\s*pron\s*[.\/&]/i, pos: 'pronoun' },
+  { re: /^\s*int\s*[.\/&]/i, pos: 'interjection' },
+]
+
 export function parsePosFromTrans(trans) {
-  if (!Array.isArray(trans) || trans.length === 0) return 'unknown'
-  const first = String(trans[0] || '')
+  let entries = trans
+  if (typeof trans === 'string') entries = [trans]
+  if (!Array.isArray(entries) || entries.length === 0) return 'unknown'
+  const first = String(entries[0] || '')
   for (const { re, pos } of POS_PATTERNS) {
+    if (re.test(first)) return pos
+  }
+  for (const { re, pos } of INLINE_POS_PATTERNS) {
     if (re.test(first)) return pos
   }
   return 'unknown'

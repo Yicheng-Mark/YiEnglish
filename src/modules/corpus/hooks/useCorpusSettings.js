@@ -9,6 +9,7 @@ const DEFAULTS = {
   showPhonetic: true,         // 单词卡是否显示音标
   showNotes: true,            // 字幕笔记
   dictationFollowMode: 'dictation', // 听写 vs 跟读: 'dictation' | 'follow'
+  posHighlight: true,         // 词性颜色标记
 }
 
 function load() {

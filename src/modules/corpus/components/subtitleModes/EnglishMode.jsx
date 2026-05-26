@@ -4,7 +4,7 @@ import { useAutoScrollList } from '../../hooks/useAutoScrollList.js'
 import { ColorizedText } from '../ColorizedToken.jsx'
 
 export default function EnglishMode() {
-  const { subtitles, player, posMap, handleWordClick } = useCorpusContext()
+  const { subtitles, player, posMap, handleWordClick, settings } = useCorpusContext()
   const { setItemRef, containerProps } = useAutoScrollList(player.activeId)
 
   if (!subtitles?.length) return null
@@ -42,6 +42,7 @@ export default function EnglishMode() {
                   paraKey={`en-${sub.id}`}
                   posMap={posMap}
                   onWordClick={handleWordClick}
+                  showColor={settings?.posHighlight}
                 />
               </div>
             )}

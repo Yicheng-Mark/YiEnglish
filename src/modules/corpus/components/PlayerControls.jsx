@@ -11,6 +11,7 @@ import {
   Hourglass,
   Video,
   VideoOff,
+  Palette,
 } from 'lucide-react'
 import { useCorpusContext } from '../context/CorpusPlayerContext.jsx'
 
@@ -442,6 +443,15 @@ export default function PlayerControls() {
       >
         <PauseCircle className="w-4 h-4" />
       </LabeledBtn>
+      <LabeledBtn
+        active={settings.posHighlight}
+        onClick={() => toggleSetting('posHighlight')}
+        label="颜色标记"
+      >
+        <Palette className="w-4 h-4" />
+      </LabeledBtn>
     </div>
   )
 }
+
+export { RateMenu, LoopCountMenu, IntervalMenu }

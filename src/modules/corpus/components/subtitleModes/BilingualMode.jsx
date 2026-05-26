@@ -36,6 +36,7 @@ export default function BilingualMode() {
               onClick={() => player.jumpToCue(sub.id)}
               onWordClick={handleWordClick}
               onPlay={() => player.jumpToCue(sub.id)}
+              posHighlight={settings?.posHighlight}
             />
           </div>
         )

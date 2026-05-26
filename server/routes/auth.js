@@ -22,7 +22,7 @@ function cookieOptions(path, maxAge) {
   }
 }
 
-const ACCESS_COOKIE_OPTS = cookieOptions('/api', 15 * 60 * 1000)
+const ACCESS_COOKIE_OPTS = cookieOptions('/api', 3 * 24 * 60 * 60 * 1000)
 const REFRESH_COOKIE_OPTS = cookieOptions('/api/auth/refresh', 7 * 24 * 60 * 60 * 1000)
 
 function signAccessToken(userId) {

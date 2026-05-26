@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react'
+import { apiFetch } from '../lib/api'
 
 const AuthContext = createContext(null)
 
@@ -18,8 +19,18 @@ export function AuthProvider({ children }) {
     if (!AUTH_ENABLED) return
     async function checkSession() {
       try {
-        const res = await fetch(`${API_BASE}/api/auth/me`, { credentials: 'include' })
-        if (res.ok) {
+        let res = await fetch(`${API_BASE}/api/auth/me`, { credentials: 'include' })
+        if (res.status === 401) {
+          const refreshRes = await fetch(`${API_BASE}/api/auth/refresh`, {
+            method: 'POST',
+            credentials: 'include',
+          })
+          if (refreshRes.ok) {
+            const data = await refreshRes.json()
+            setUser(data.user)
+            return
+          }
+        } else if (res.ok) {
           const data = await res.json()
           setUser(data.user)
         }
@@ -83,10 +94,8 @@ export function AuthProvider({ children }) {
   }, [])
 
   const updateProfile = useCallback(async (fields) => {
-    const res = await fetch(`${API_BASE}/api/auth/profile`, {
+    const res = await apiFetch('/api/auth/profile', {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
       body: JSON.stringify(fields),
     })
     const data = await res.json()
@@ -96,10 +105,8 @@ export function AuthProvider({ children }) {
   }, [])
 
   const changePassword = useCallback(async (currentPassword, newPassword) => {
-    const res = await fetch(`${API_BASE}/api/auth/change-password`, {
+    const res = await apiFetch('/api/auth/change-password', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
       body: JSON.stringify({ currentPassword, newPassword }),
     })
     const data = await res.json()

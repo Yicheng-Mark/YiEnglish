@@ -24,3 +24,7 @@ build/
 .youdao-phonetics-cache.json
 .vercel
 dist-vercel-test/
+
+# 调试截图和测试结果
+screenshot_*.png
+test-results/

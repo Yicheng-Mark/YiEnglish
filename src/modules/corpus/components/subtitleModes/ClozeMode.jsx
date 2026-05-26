@@ -6,7 +6,7 @@ import { ColorizedText } from '../ColorizedToken.jsx'
 import { pickClozeIndices, tokenizeEnglish } from '../../utils/wordColorMap.js'
 
 export default function ClozeMode() {
-  const { subtitles, player, posMap, handleWordClick } = useCorpusContext()
+  const { subtitles, player, posMap, handleWordClick, settings } = useCorpusContext()
   const { setItemRef, containerProps } = useAutoScrollList(player.activeId)
 
   // 每条字幕预先算出 clozeIndices（确定性 seed by sub.id）
@@ -58,6 +58,7 @@ export default function ClozeMode() {
                   posMap={posMap}
                   onWordClick={handleWordClick}
                   clozeIndices={indices}
+                  showColor={settings?.posHighlight}
                 />
               </div>
             )}
