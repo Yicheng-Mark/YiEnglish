@@ -1327,3 +1327,75 @@ input:-webkit-autofill:focus {
   max-height: 50vh;
 }
 
+/* ── Mobile corpus: fixed control bar ── */
+.mobile-control-fixed {
+  position: fixed;
+  bottom: 48px;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background-color: var(--mobile-bottom-bg);
+  border-top: 1px solid var(--mobile-border);
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+}
+
+/* ── Mobile corpus: fixed bottom nav ── */
+.mobile-nav-fixed {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background-color: var(--mobile-card-bg);
+  border-top: 1px solid var(--mobile-border);
+  box-shadow: 0 -1px 6px rgba(0,0,0,0.04);
+}
+
+/* ── Mobile corpus: card swipe animations ── */
+@keyframes mobile-slide-in-right {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes mobile-slide-in-left {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.mobile-slide-in-right {
+  animation: mobile-slide-in-right 250ms ease-out;
+}
+.mobile-slide-in-left {
+  animation: mobile-slide-in-left 250ms ease-out;
+}
+
+/* ── Mobile corpus: focus mode ── */
+.mobile-focus-active .mobile-video-section {
+  height: 0 !important;
+  min-height: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden;
+  transition: height 300ms ease-out, min-height 300ms ease-out;
+}
+.mobile-focus-active .mobile-play-modes {
+  display: none;
+}
+
+/* ── Mobile corpus: answer reveal bg (light green) ── */
+:root {
+  --mobile-answer-bg: #f0fdf4;
+  --mobile-answer-border: #bbf7d0;
+  --mobile-focus-card-bg: rgba(88,86,214,0.06);
+  --mobile-primary-soft: rgba(88,86,214,0.08);
+}
+.dark {
+  --mobile-answer-bg: rgba(34,197,94,0.08);
+  --mobile-answer-border: rgba(34,197,94,0.2);
+  --mobile-focus-card-bg: rgba(129,140,248,0.08);
+  --mobile-primary-soft: rgba(129,140,248,0.12);
+}
+[data-theme="warm"] {
+  --mobile-answer-bg: #fff3e0;
+  --mobile-answer-border: #ffe0b2;
+  --mobile-focus-card-bg: rgba(217,119,6,0.06);
+  --mobile-primary-soft: rgba(217,119,6,0.08);
+}
+
