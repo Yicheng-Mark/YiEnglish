@@ -124,13 +124,13 @@ export default function CorpusList({ scrollRef }) {
     <div className={`bg-background dark:bg-transparent p-4 md:p-6 transition-colors duration-500 ${isRestoring.current ? '' : 'animate-page-fade-in'}`}>
       <div className="max-w-6xl mx-auto px-2 md:px-6 w-full">
         <div>
-          <div className="mt-10 md:mt-16 mb-8 md:mb-10">
+          <div className="mt-6 md:mt-16 mb-6 md:mb-10">
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
               <div className="text-left">
                 <h1 className="text-display gradient-text mb-3 tracking-tight text-glow-primary">
                   语料中心
                 </h1>
-                <p className="text-content-tertiary text-body max-w-xl leading-relaxed">
+                <p className="text-content-tertiary text-body max-w-xl leading-relaxed line-clamp-2 md:line-clamp-none">
                   精选演讲与短视频，逐句字幕跟读、单句循环、变速练习,在真实语境中磨炼听说能力。
                 </p>
                 <div className="mt-3 flex items-center gap-3 text-sm text-content-tertiary dark:text-gray-500">

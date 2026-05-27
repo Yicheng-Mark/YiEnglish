@@ -58,7 +58,7 @@ export default function MobileCorpusPlayer({ video, onBack }) {
   return (
     <div
       ref={containerRef}
-      className={`mobile-corpus-reset flex flex-col overflow-hidden transition-colors duration-500 ${
+      className={`mobile-corpus-reset w-full max-w-full flex flex-col overflow-hidden transition-colors duration-500 ${
         focusMode ? 'mobile-focus-active' : ''
       }`}
       style={{

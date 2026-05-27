@@ -59,7 +59,7 @@ function VideoCard({ video, isBookmarked = false, onClick, onToggleBookmark }) {
   return (
     <div
       onClick={() => onClick?.(video.id)}
-      className="group card card-hover relative overflow-hidden cursor-pointer glow-border-subtle active:scale-[0.98] transition-transform duration-150 flex flex-col bg-white dark:bg-white/[0.03] rounded-xl shadow-sm h-[480px]"
+      className="group card card-hover relative overflow-hidden cursor-pointer glow-border-subtle active:scale-[0.98] transition-transform duration-150 flex flex-col bg-white dark:bg-white/[0.03] rounded-xl shadow-sm h-auto max-h-[480px] md:h-[480px]"
     >
       {/* 收藏按钮 */}
       <button

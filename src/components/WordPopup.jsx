@@ -135,7 +135,7 @@ export default function WordPopup({
   const { name, usphone, ukphone, trans } = wordData
   const parsed = parseTrans(trans)
 
-  const popupWidth = 360
+  const popupWidth = Math.min(360, window.innerWidth - 32)
   const gap = 12
   const padding = 16
   const bottomNavHeight = 64 // 底部固定导航栏高度 h-14=56，留一点余量

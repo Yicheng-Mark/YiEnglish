@@ -306,7 +306,7 @@ function MobileSentenceCardsInner({ focusMode }) {
               ) : showEn && sub.en ? (
                 <p
                   className="text-sm leading-snug mt-1"
-                  style={{ color: isActive ? 'var(--mobile-primary)' : 'var(--mobile-text-secondary)' }}
+                  style={{ color: isActive ? 'var(--mobile-primary)' : 'var(--mobile-text-secondary)', wordBreak: 'break-word', overflowWrap: 'anywhere' }}
                 >
                   <ColorizedText
                     text={sub.en}
@@ -478,8 +478,8 @@ function MobileSentenceCardsInner({ focusMode }) {
             >
               {showEn && phoneticArr && phoneticArr[idx] && (
                 <p
-                  className={`font-mono ${isActive ? 'text-xs mb-0.5' : 'text-[10px] mb-0.5'}`}
-                  style={{ color: 'var(--mobile-text-secondary)' }}
+                  className={`font-mono break-all ${isActive ? 'text-xs mb-0.5' : 'text-[10px] mb-0.5'}`}
+                  style={{ color: 'var(--mobile-text-secondary)', wordBreak: 'break-word', overflowWrap: 'anywhere' }}
                 >
                   {phoneticArr[idx]}
                 </p>
@@ -487,7 +487,7 @@ function MobileSentenceCardsInner({ focusMode }) {
               {showEn && sub.en && (
                 <p
                   className={`leading-[1.7] ${isActive ? 'font-semibold text-base' : 'text-sm'}`}
-                  style={{ color: 'var(--mobile-text)' }}
+                  style={{ color: 'var(--mobile-text)', wordBreak: 'break-word', overflowWrap: 'anywhere' }}
                 >
                   {mode === 'cloze' ? (
                     <ClozeText
@@ -511,7 +511,7 @@ function MobileSentenceCardsInner({ focusMode }) {
               {showZh && sub.zh && (
                 <p
                   className={`leading-[1.6] ${isActive ? 'text-sm mt-1' : 'text-xs mt-0.5'}`}
-                  style={{ color: 'var(--mobile-text-secondary)' }}
+                  style={{ color: 'var(--mobile-text-secondary)', wordBreak: 'break-word' }}
                 >
                   {sub.zh}
                 </p>
