@@ -12,7 +12,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { getErrorBookCount } from '../utils/errorBook'
 import { getReadingWordBookCount } from '../utils/readingWordBook'
 import { getCorpusWordBookCount } from '../utils/corpusWordBook'
-import { fetchStyles, switchStyle, updateCustomName, updateGender, updateCustomPrompt, resetStyleSettings, resetPersonality, clearMemory } from '../lib/ai-settings'
+import { fetchStyles, switchStyle, updateCustomName, updateGender, updateCustomPrompt, resetStyleSettings, resetPersonality, clearMemory, isAIAssistantHidden, setAIAssistantHidden } from '../lib/ai-settings'
 
 function Modal({ open, onClose, title, children }) {
   if (!open) return null
@@ -52,6 +52,7 @@ export default function PersonalCenter() {
   const [showResetConfirm, setShowResetConfirm] = useState(false)
   const [showResetPersonalityConfirm, setShowResetPersonalityConfirm] = useState(false)
   const [showClearMemoryConfirm, setShowClearMemoryConfirm] = useState(false)
+  const [aiAssistantHidden, setAiAssistantHiddenState] = useState(isAIAssistantHidden)
   const avatarInputRef = useRef(null)
 
   // Load AI styles
@@ -290,6 +291,28 @@ export default function PersonalCenter() {
 
       {/* AI Companion Modal */}
       <Modal open={companionModal} onClose={() => { setCompanionModal(false); setEditingName(false); setEditingPrompt(false); setShowResetConfirm(false); setShowResetPersonalityConfirm(false); setShowClearMemoryConfirm(false) }} title="AI 伙伴设置">
+        {/* Show/hide AI assistant toggle */}
+        <div className="mb-4 p-3 rounded-xl bg-gray-50 dark:bg-white/[0.04]">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-content dark:text-gray-100">显示 AI 助手</p>
+              <p className="text-xs text-content-tertiary dark:text-gray-500 mt-0.5">隐藏后浮球将不再显示</p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={!aiAssistantHidden}
+                onChange={() => {
+                  const next = !aiAssistantHidden
+                  setAiAssistantHiddenState(next)
+                  setAIAssistantHidden(next)
+                }}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-5 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
+        </div>
         {/* Custom name section */}
         {aiStyles.current && (
           <div className="mb-4 p-3 rounded-xl bg-gray-50 dark:bg-white/[0.04]">

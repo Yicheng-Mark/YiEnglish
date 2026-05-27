@@ -1,3 +1,4 @@
+/** SHARED — Desktop + Mobile 共用，勿加平台特定逻辑 */
 import { memo, useState, useCallback } from 'react'
 import { getPosColor, tokenizeEnglish } from '../utils/wordColorMap.js'
 import { getWordRect } from '../../../utils/wordTokenize.jsx'

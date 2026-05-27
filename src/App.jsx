@@ -1,4 +1,4 @@
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useState, useEffect } from 'react'
 import { useScrollingFlag } from './hooks/useScrollingFlag'
 import { Routes, Route, Navigate, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { Toaster } from 'sonner'
@@ -7,6 +7,7 @@ import PageLoading from './components/PageLoading'
 import AICircleFloat from './components/AIAssistant/AICircleFloat'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { WordProvider } from './contexts/WordContext'
+import { isAIAssistantHidden } from './lib/ai-settings'
 
 const Home = lazy(() => import('./pages/Home'))
 const ChapterSelect = lazy(() => import('./pages/ChapterSelect'))
@@ -42,7 +43,14 @@ function ProtectedRoute() {
 function App() {
   useScrollingFlag()
   const location = useLocation()
-  const hideAI = AUTH_ENABLED && ['/login', '/register'].includes(location.pathname)
+  const [aiHidden, setAiHidden] = useState(isAIAssistantHidden)
+  const hideAI = (AUTH_ENABLED && ['/login', '/register'].includes(location.pathname)) || aiHidden
+
+  useEffect(() => {
+    const handler = () => setAiHidden(isAIAssistantHidden())
+    window.addEventListener('ai-visibility-change', handler)
+    return () => window.removeEventListener('ai-visibility-change', handler)
+  }, [])
 
   return (
     <AuthProvider>

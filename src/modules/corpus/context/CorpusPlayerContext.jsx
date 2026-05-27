@@ -73,6 +73,11 @@ const MODES = ['bilingual', 'english', 'chinese', 'dictation', 'cloze', 'reading
 
 export function CorpusPlayerProvider({ video, children }) {
   const videoRef = useRef(null)
+  const [videoEl, setVideoEl] = useState(null)
+  const videoCallbackRef = useCallback((el) => {
+    videoRef.current = el
+    setVideoEl(el)
+  }, [])
   const [mode, setMode] = useState('bilingual')
   const [subtitles, setSubtitles] = useState([])
   const [loadError, setLoadError] = useState(null)
@@ -82,7 +87,7 @@ export function CorpusPlayerProvider({ video, children }) {
   const activeTokenRef = useRef(null)
 
   const { settings, updateSetting, toggleSetting } = useCorpusSettings()
-  const player = useCorpusPlayer({ videoRef, subtitles })
+  const player = useCorpusPlayer({ videoRef, subtitles, videoEl })
 
   // 加载字幕
   useEffect(() => {
@@ -190,6 +195,7 @@ export function CorpusPlayerProvider({ video, children }) {
       modes: MODES,
       // 视频元素
       videoRef,
+      videoCallbackRef,
       videoId: video?.id,
       video,
       // 字幕

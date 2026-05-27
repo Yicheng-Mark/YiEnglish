@@ -57,7 +57,7 @@ export default function VocabCardMode() {
         <div className="flex-1 min-h-0 overflow-y-auto py-2">
           {filtered.map((item, idx) => {
             const meaning = getFirstMeaning(item.wordData?.trans)
-            const phonetic = item.wordData?.usphone || item.wordData?.ukphone || ''
+            const phonetic = item.wordData?.usphone || item.wordData?.us || item.wordData?.ukphone || item.wordData?.uk || ''
             return (
               <button
                 key={item.word}

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-export function useCorpusPlayer({ videoRef, subtitles }) {
+export function useCorpusPlayer({ videoRef, subtitles, videoEl }) {
   const [activeId, setActiveId] = useState(null)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
@@ -38,6 +38,15 @@ export function useCorpusPlayer({ videoRef, subtitles }) {
   useEffect(() => { hideSubtitleRightRef.current = hideSubtitleRight }, [hideSubtitleRight])
   useEffect(() => { hideSubtitleBottomRef.current = hideSubtitleBottom }, [hideSubtitleBottom])
 
+  // 退出全屏时解锁横屏
+  useEffect(() => {
+    const onFsChange = () => {
+      if (!document.fullscreenElement) screen.orientation?.unlock?.()
+    }
+    document.addEventListener('fullscreenchange', onFsChange)
+    return () => document.removeEventListener('fullscreenchange', onFsChange)
+  }, [])
+
   const clearIntervalTimer = useCallback(() => {
     if (intervalTimerRef.current) {
       clearTimeout(intervalTimerRef.current)
@@ -68,13 +77,21 @@ export function useCorpusPlayer({ videoRef, subtitles }) {
         const prevCue = prevId != null ? cues.find((c) => c.id === prevId) : null
         if (prevCue) {
           // pauseAfterCue
-          if (pauseAfterCueRef.current && lastPausedCueRef.current !== prevCue.id) {
-            lastPausedCueRef.current = prevCue.id
-            v.pause()
-            activeIdRef.current = nextId
-            setActiveId(nextId)
-            loopsRemainingRef.current = loopCountRef.current > 0 ? loopCountRef.current - 1 : 0
-            return
+          if (pauseAfterCueRef.current) {
+            // 已对该句暂停过且视频仍在暂停 → 阻止跳转
+            if (v.paused && lastPausedCueRef.current === prevCue.id) {
+              return
+            }
+            // 首次到达该句末尾 → 暂停
+            if (lastPausedCueRef.current !== prevCue.id) {
+              lastPausedCueRef.current = prevCue.id
+              v.pause()
+              activeIdRef.current = prevId
+              setActiveId(prevId)
+              loopsRemainingRef.current = loopCountRef.current > 0 ? loopCountRef.current - 1 : 0
+              return
+            }
+            // 用户已恢复播放（v.paused === false）→ 放行，进入正常切换
           }
 
           // intervalGap
@@ -192,7 +209,7 @@ export function useCorpusPlayer({ videoRef, subtitles }) {
         intervalTimerRef.current = null
       }
     }
-  }, [videoRef])
+  }, [videoRef, videoEl])
 
   const play = useCallback(() => {
     videoRef.current?.play()
@@ -293,14 +310,16 @@ export function useCorpusPlayer({ videoRef, subtitles }) {
     setHideSubtitleBottom(next)
   }, [])
 
-  const requestFullscreen = useCallback(() => {
+  const requestFullscreen = useCallback(async () => {
     const v = videoRef.current
     if (!v) return
-    const target = v.parentElement || v
+    const target = v.parentElement
+    if (!target) return
     if (document.fullscreenElement) {
-      document.exitFullscreen?.()
+      await document.exitFullscreen?.()
     } else {
-      target.requestFullscreen?.()
+      await target.requestFullscreen?.() || await target.webkitRequestFullscreen?.()
+      screen.orientation?.lock?.('landscape').catch(() => {})
     }
   }, [videoRef])
 

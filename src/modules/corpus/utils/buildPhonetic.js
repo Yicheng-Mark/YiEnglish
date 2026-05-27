@@ -16,7 +16,7 @@ export function buildPhonetic(text, wordMap, { variant = 'us' } = {}) {
       continue
     }
     const w = wordMap.get(tok.lower)
-    const ipa = stripSlashes(w && (variant === 'uk' ? w.ukphone : w.usphone))
+    const ipa = stripSlashes(w && (variant === 'uk' ? (w.ukphone || w.uk) : (w.usphone || w.us)))
     parts.push(ipa || tok.lower)
   }
   const joined = parts.join('').replace(/\s+/g, ' ').trim()

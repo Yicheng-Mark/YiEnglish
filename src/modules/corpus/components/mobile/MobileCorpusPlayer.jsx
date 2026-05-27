@@ -1,28 +1,27 @@
 import { useRef, useState, useCallback, useEffect } from 'react'
-import { ArrowLeft, Play, Pause } from 'lucide-react'
 import { useCorpusContext } from '../../context/CorpusPlayerContext.jsx'
 import MobileSentenceCards from './MobileSentenceCard.jsx'
 import MobileBottomControls from './MobileBottomControls.jsx'
+import './mobile-corpus.css'
 import MobileVideoCover from './MobileVideoCover.jsx'
 import WordPopup from '../../../../components/WordPopup.jsx'
 
-const PLAY_MODES = [
+const DISPLAY_MODES = [
   { id: 'bilingual', label: '双语' },
-  { id: 'dictation', label: '听写' },
-  { id: 'translate', label: '中译英' },
-  { id: 'vocab', label: '词卡' },
+  { id: 'english',   label: '英语' },
+  { id: 'chinese',   label: '中文' },
+  { id: 'reading',   label: '阅读' },
+  { id: 'cloze',     label: '挖空' },
 ]
 
-const DISPLAY_MODES = [
-  { id: 'english', label: '英语' },
-  { id: 'chinese', label: '中文' },
-  { id: 'reading', label: '阅读' },
-  { id: 'cloze', label: '挖空' },
+const FIXED_TABS = [
+  { id: 'dictation', label: '听写' },
+  { id: 'translate', label: '中译英' },
+  { id: 'vocab',     label: '词卡' },
 ]
 
 export default function MobileCorpusPlayer({ video, onBack }) {
   const { player, mode, setMode, popup, closePopup, saveWord, removeWord } = useCorpusContext()
-  const [displayMode, setDisplayMode] = useState('reading')
   const [focusMode, setFocusMode] = useState(false)
 
   // Virtual keyboard handling
@@ -44,7 +43,16 @@ export default function MobileCorpusPlayer({ video, onBack }) {
 
   const toggleFocus = useCallback(() => setFocusMode((v) => !v), [])
 
-  const needsInput = mode === 'dictation' || mode === 'translate'
+  const isDisplayMode = DISPLAY_MODES.some((m) => m.id === mode)
+  const currentDisplay = DISPLAY_MODES.find((m) => m.id === mode) || DISPLAY_MODES[0]
+
+  const cycleDisplayMode = useCallback(() => {
+    const idx = DISPLAY_MODES.findIndex((m) => m.id === mode)
+    const next = DISPLAY_MODES[(idx + 1) % DISPLAY_MODES.length]
+    setMode(next.id)
+  }, [mode, setMode])
+
+  const needsInput = mode === 'dictation'
   const hideFixedBars = keyboardHeight > 0 && needsInput
 
   return (
@@ -59,42 +67,9 @@ export default function MobileCorpusPlayer({ video, onBack }) {
       }}
     >
       {/* 1. Video section (hidden in focus mode via CSS) */}
-      <MobileVideoCover />
+      <MobileVideoCover onBack={onBack} />
 
-      {/* 2. Header: back | title | play/pause */}
-      <div
-        className="shrink-0 flex items-center h-11 px-3 gap-2"
-        style={{
-          backgroundColor: 'var(--mobile-card-bg)',
-          borderBottom: '1px solid var(--mobile-border)',
-        }}
-      >
-        <button
-          onClick={onBack}
-          className="w-9 h-9 flex items-center justify-center rounded-full active:opacity-70 transition-opacity shrink-0"
-          style={{ color: 'var(--mobile-icon-color)' }}
-          aria-label="返回"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <span
-          className="flex-1 text-sm font-medium truncate text-center"
-          style={{ color: 'var(--mobile-text)' }}
-        >
-          {video.title}
-        </span>
-        <button
-          type="button"
-          onClick={player.toggle}
-          className="w-9 h-9 flex items-center justify-center rounded-full active:opacity-70 transition-opacity shrink-0"
-          style={{ color: 'var(--mobile-icon-color)' }}
-          aria-label={player.isPlaying ? '暂停' : '播放'}
-        >
-          {player.isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-        </button>
-      </div>
-
-      {/* 3. PlayMode tabs: horizontal scrollable pills (hidden in focus mode via CSS) */}
+      {/* 2. PlayMode tabs (hidden in focus mode via CSS) */}
       <div
         className="mobile-play-modes shrink-0 px-3 py-2"
         style={{
@@ -102,89 +77,42 @@ export default function MobileCorpusPlayer({ video, onBack }) {
           borderBottom: '1px solid var(--mobile-border)',
         }}
       >
-        <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-          <style>{`.scrollbar-hide::-webkit-scrollbar{display:none}`}</style>
-          {PLAY_MODES.map((t) => {
-            const active = mode === t.id
-            return (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setMode(t.id)}
-                className="shrink-0 px-3 py-1 rounded-full text-sm whitespace-nowrap transition-all duration-200 min-h-[32px]"
-                style={{
-                  backgroundColor: active ? 'var(--mobile-primary)' : 'transparent',
-                  color: active ? '#fff' : 'var(--mobile-text-secondary)',
-                  fontWeight: active ? 600 : 400,
-                  minWidth: 44,
-                }}
-              >
-                {t.label}
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* 4. Content area — scrollable, with bottom padding for fixed bars */}
-      <div
-        className="flex-1 min-h-0 overflow-y-auto px-4 py-3 flex flex-col gap-3"
-        style={{
-          paddingBottom: hideFixedBars ? 24 : 'calc(56px + 48px + env(safe-area-inset-bottom, 0px) + 16px)',
-          overscrollBehaviorY: 'contain',
-          WebkitOverflowScrolling: 'touch',
-          scrollbarWidth: 'none',
-        }}
-      >
-        <style>{`div[style*="overscrollBehaviorY"]::-webkit-scrollbar{display:none}`}</style>
-        <MobileSentenceCards displayMode={displayMode} focusMode={focusMode} />
-      </div>
-
-      {/* 5. Bottom controls — fixed */}
-      {!hideFixedBars && (
-        <MobileBottomControls focusMode={focusMode} onToggleFocus={toggleFocus} />
-      )}
-
-      {/* 6. Bottom nav (DisplayMode) — fixed */}
-      {!hideFixedBars && (
         <div
-          className="mobile-nav-fixed shrink-0 flex items-center justify-around px-4"
-          style={{
-            height: 48,
-            paddingTop: 4,
-            paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 4px)',
-          }}
+          className="flex items-center justify-around overflow-x-auto"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {DISPLAY_MODES.map((t) => {
-            const active = displayMode === t.id
-            return (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setDisplayMode(t.id)}
-                className="flex flex-col items-center gap-0.5 min-w-[44px] min-h-[40px] justify-center active:scale-95 transition-transform"
-                style={{
-                  color: active ? 'var(--mobile-primary)' : 'var(--mobile-text-secondary)',
-                  position: 'relative',
-                }}
-              >
-                {/* Active indicator dot */}
-                {active && (
-                  <span
-                    className="absolute -top-1 w-6 h-[3px] rounded-b-sm"
-                    style={{ backgroundColor: 'var(--mobile-primary)' }}
-                  />
-                )}
-                <span
-                  className="text-xs whitespace-nowrap"
-                  style={{ fontWeight: active ? 600 : 400 }}
+          <style>{`.mobile-play-modes::-webkit-scrollbar{display:none}`}</style>
+            {/* Cycling display mode pill */}
+            <button
+              type="button"
+              onClick={cycleDisplayMode}
+              className={`mode-pill shrink-0 ${isDisplayMode ? 'mode-pill-active' : 'mode-pill-default'}`}
+            >
+              {currentDisplay.label} <span style={{ fontSize: 10, marginLeft: 2 }}>▾</span>
+            </button>
+            {/* Fixed mode pills */}
+            {FIXED_TABS.map((t) => {
+              const active = mode === t.id
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setMode(t.id)}
+                  className={`mode-pill shrink-0 ${active ? 'mode-pill-active' : 'mode-pill-default'}`}
                 >
                   {t.label}
-                </span>
-              </button>
-            )
-          })}
+                </button>
+              )
+            })}
         </div>
+      </div>
+
+      {/* 3. Content area — fills remaining space, SentenceCards handles its own scrolling */}
+      <MobileSentenceCards focusMode={focusMode} />
+
+      {/* 4. Bottom controls — fixed (two rows) */}
+      {!hideFixedBars && (
+        <MobileBottomControls focusMode={focusMode} onToggleFocus={toggleFocus} />
       )}
 
       {/* Word popup overlay */}

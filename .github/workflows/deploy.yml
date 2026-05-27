@@ -37,4 +37,4 @@ jobs:
             ./ root@120.76.228.235:/home/lingoforge/
 
       - name: Install deps and restart service
-        run: ssh -i ~/.ssh/deploy_key root@120.76.228.235 "cd /home/lingoforge && npm install --production && systemctl restart lingoforge && echo '阿里云部署完成'"
+        run: ssh -i ~/.ssh/deploy_key root@120.76.228.235 "cd /home/lingoforge && npm install --production && pm2 restart lingoforge || pm2 start deploy/ecosystem.config.js && pm2 save && echo '阿里云部署完成'"

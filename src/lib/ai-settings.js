@@ -3,6 +3,7 @@ import { apiFetch } from './api'
 // Floating button position (local UI state, stays in localStorage)
 const STORAGE_KEYS = {
   position: 'lingoforge_ai_position',
+  hidden: 'lingoforge_ai_hidden',
 }
 
 export function getPosition() {
@@ -15,6 +16,15 @@ export function getPosition() {
 
 export function setPosition(pos) {
   localStorage.setItem(STORAGE_KEYS.position, JSON.stringify(pos))
+}
+
+export function isAIAssistantHidden() {
+  return localStorage.getItem(STORAGE_KEYS.hidden) !== 'false'
+}
+
+export function setAIAssistantHidden(hidden) {
+  localStorage.setItem(STORAGE_KEYS.hidden, hidden ? 'true' : 'false')
+  window.dispatchEvent(new Event('ai-visibility-change'))
 }
 
 // Style/persona management via API

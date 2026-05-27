@@ -1,0 +1,241 @@
+/* ═══════════════════════════════════════════════
+   Mobile Corpus Player — CSS Variables & Rules
+   ═══════════════════════════════════════════════ */
+
+/* ── Light theme (default) — 清爽冷蓝白色调 ── */
+:root {
+  --mobile-bg: #f8fafc;
+  --mobile-card-bg: #ffffff;
+  --mobile-card-shadow: rgba(0,0,0,0.04);
+  --mobile-text: #1e293b;
+  --mobile-text-secondary: #64748b;
+  --mobile-border: #e2e8f0;
+  --mobile-primary: #6366f1;
+  --mobile-bottom-bg: #ffffff;
+  --mobile-control-text: #64748b;
+  --mobile-icon-color: #64748b;
+  --mobile-recording-bg: #eef2ff;
+  --mobile-answer-bg: #eef2ff;
+  --mobile-answer-border: #c7d2fe;
+  --mobile-focus-card-bg: rgba(99,102,241,0.06);
+  --mobile-primary-soft: rgba(99,102,241,0.08);
+}
+
+/* ── Dark theme ── */
+.dark {
+  --mobile-bg: #0b1120;
+  --mobile-card-bg: #151e32;
+  --mobile-card-shadow: rgba(0,0,0,0.4);
+  --mobile-text: #f1f5f9;
+  --mobile-text-secondary: #94a3b8;
+  --mobile-border: #1e293b;
+  --mobile-primary: #f59e0b;
+  --mobile-bottom-bg: #0f172a;
+  --mobile-control-text: #64748b;
+  --mobile-icon-color: #94a3b8;
+  --mobile-recording-bg: #172554;
+  --mobile-answer-bg: rgba(245,158,11,0.08);
+  --mobile-answer-border: rgba(245,158,11,0.2);
+  --mobile-focus-card-bg: rgba(245,158,11,0.08);
+  --mobile-primary-soft: rgba(245,158,11,0.12);
+}
+
+/* ── Gray theme ── */
+[data-theme="gray"] {
+  --mobile-bg: #0b1120;
+  --mobile-card-bg: #151e32;
+  --mobile-card-shadow: rgba(0,0,0,0.4);
+  --mobile-text: #f1f5f9;
+  --mobile-text-secondary: #94a3b8;
+  --mobile-border: #1e293b;
+  --mobile-primary: #f59e0b;
+  --mobile-bottom-bg: #0f172a;
+  --mobile-control-text: #64748b;
+  --mobile-icon-color: #94a3b8;
+  --mobile-recording-bg: #172554;
+  --mobile-answer-bg: rgba(245,158,11,0.08);
+  --mobile-answer-border: rgba(245,158,11,0.2);
+  --mobile-focus-card-bg: rgba(245,158,11,0.08);
+  --mobile-primary-soft: rgba(245,158,11,0.12);
+}
+
+/* ── Warm theme ── */
+[data-theme="warm"] {
+  --mobile-bg: #faf7f2;
+  --mobile-card-bg: #ffffff;
+  --mobile-card-shadow: rgba(139,69,19,0.04);
+  --mobile-text: #3d2b1f;
+  --mobile-text-secondary: #8c7b6b;
+  --mobile-border: #e8dfd4;
+  --mobile-primary: #d97706;
+  --mobile-bottom-bg: #ffffff;
+  --mobile-control-text: #8c7b6b;
+  --mobile-icon-color: #8c7b6b;
+  --mobile-recording-bg: #fff3e0;
+  --mobile-answer-bg: #fff3e0;
+  --mobile-answer-border: #ffe0b2;
+  --mobile-focus-card-bg: rgba(217,119,6,0.06);
+  --mobile-primary-soft: rgba(217,119,6,0.08);
+}
+
+/* ── Mobile corpus progress bar ── */
+.mobile-progress-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  margin: 10px 0;
+  border-radius: 2px;
+  background: linear-gradient(to right,
+    var(--mobile-primary, var(--color-primary)) 0%,
+    var(--mobile-primary, var(--color-primary)) var(--progress-pct, 0%),
+    var(--mobile-border, var(--color-primary-soft)) var(--progress-pct, 0%),
+    var(--mobile-border, var(--color-primary-soft)) 100%
+  );
+  outline: none;
+  touch-action: none;
+}
+.mobile-progress-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--mobile-primary, var(--color-primary));
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 0 6px rgba(217,119,6,0.12);
+}
+.mobile-progress-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--mobile-primary, var(--color-primary));
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 0 6px rgba(217,119,6,0.12);
+}
+
+/* ── Mobile corpus player utility reset ── */
+.mobile-corpus-reset {
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* ── Mobile subtitle panel: override h-full to allow natural height ── */
+.mobile-subtitle-panel > div {
+  height: auto !important;
+  max-height: 50vh;
+}
+
+/* ── Mobile corpus: fixed control bar ── */
+.mobile-control-fixed {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background-color: var(--mobile-bottom-bg);
+  border-top: 1px solid var(--mobile-border);
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+}
+
+/* ── Mobile corpus: card swipe animations ── */
+@keyframes mobile-slide-in-right {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes mobile-slide-in-left {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.mobile-slide-in-right {
+  animation: mobile-slide-in-right 250ms ease-out;
+}
+.mobile-slide-in-left {
+  animation: mobile-slide-in-left 250ms ease-out;
+}
+
+/* ── Mobile corpus: focus mode ── */
+.mobile-focus-active .mobile-video-section {
+  height: 0 !important;
+  min-height: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden;
+  transition: height 300ms ease-out, min-height 300ms ease-out;
+}
+.mobile-focus-active .mobile-play-modes {
+  display: none;
+}
+
+/* ── Mobile subtitle list item ── */
+.mobile-sub-item {
+  padding: 10px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 150ms, opacity 150ms;
+}
+.mobile-sub-item:active {
+  opacity: 0.7;
+}
+.mobile-sub-item-active {
+  background-color: var(--mobile-card-bg);
+  box-shadow: 0 1px 4px var(--mobile-card-shadow);
+}
+.mobile-sub-item-inactive {
+  opacity: 0.45;
+}
+
+/* ── Mobile play-mode tabs ── */
+.mobile-play-modes .mode-pill {
+  min-height: 34px;
+  padding: 5px 14px;
+  border-radius: 17px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 200ms;
+  white-space: nowrap;
+  border: none;
+  outline: none;
+}
+.mobile-play-modes .mode-pill-active {
+  background-color: var(--mobile-primary);
+  color: #fff;
+  font-weight: 600;
+}
+.mobile-play-modes .mode-pill-default {
+  background-color: transparent;
+  color: var(--mobile-text-secondary);
+}
+
+/* ── Mobile video section ── */
+.mobile-video-section video {
+  background: #000;
+}
+
+/* ── Fullscreen: rotate 90° into landscape ── */
+.mobile-video-section:fullscreen,
+.mobile-video-section:-webkit-full-screen {
+  width: 100vh !important;
+  height: 100vw !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(90deg);
+  transform-origin: center center;
+}
+.mobile-video-section:fullscreen video,
+.mobile-video-section:-webkit-full-screen video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ── Tap feedback fade-out ── */
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
+}
