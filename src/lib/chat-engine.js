@@ -16,6 +16,7 @@ export function createChatStream({ messages, styleKey, onToken, onReasoning, onD
       styleKey,
     }),
     signal: controller.signal,
+    credentials: 'include',
   })
     .then(async (res) => {
       clearTimeout(timeout)

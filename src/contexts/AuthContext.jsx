@@ -82,6 +82,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   const logout = useCallback(async () => {
+    setUser(null)
     try {
       await fetch(`${API_BASE}/api/auth/logout`, {
         method: 'POST',
@@ -90,7 +91,6 @@ export function AuthProvider({ children }) {
     } catch {
       // ignore
     }
-    setUser(null)
   }, [])
 
   const updateProfile = useCallback(async (fields) => {
