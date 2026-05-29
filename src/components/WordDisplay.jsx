@@ -24,6 +24,8 @@ const WordDisplay = memo(function WordDisplay({ word, currentInput, isWrong }) {
           className = 'text-primary dark:text-primary-dark dark:drop-shadow-[0_0_8px_rgba(99,102,241,0.6)]';
         } else if (isError) {
           className = 'text-violet-500 dark:text-violet-400 dark:drop-shadow-[0_0_6px_rgba(139,92,246,0.4)]';
+        } else if (i === currentInput.length) {
+          className = 'text-primary dark:text-primary-dark';
         } else {
           className = 'text-gray-300 dark:text-gray-600';
         }

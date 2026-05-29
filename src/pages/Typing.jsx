@@ -707,7 +707,11 @@ export default function Typing() {
 
             {currentWord?.trans && showTranslation && (
               <div className={`text-content-tertiary dark:text-gray-400 leading-relaxed md:leading-normal max-w-full md:max-w-2xl shrink-0 ${keyboardHeight > 0 ? 'text-xs' : 'text-sm md:text-2xl'}`}>
-                {Array.isArray(currentWord.trans) ? currentWord.trans.join('；') : currentWord.trans}
+                {(Array.isArray(currentWord.trans) ? currentWord.trans.join('；') : currentWord.trans).split(/(\[[^\]]+\])/g).map((part, i) =>
+                  /^\[.+\]$/.test(part)
+                    ? <span key={i} className="text-primary dark:text-primary-dark font-medium">{part}</span>
+                    : part
+                )}
               </div>
             )}
           </div>
