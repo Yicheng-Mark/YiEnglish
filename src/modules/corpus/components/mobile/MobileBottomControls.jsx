@@ -18,6 +18,7 @@ import { useCorpusContext } from '../../context/CorpusPlayerContext.jsx'
 import { formatTime } from '../../../../utils/formatTime.js'
 
 const RATES = [0.5, 0.75, 1, 1.25, 1.5, 2]
+const LOOP_CYCLE = [1, 2, 3, 4, 5, -1]
 const INTERVAL_CYCLE = [0, 3, 5, 8]
 
 function ControlBtn({ onClick, label, ariaLabel, active, children }) {
@@ -54,6 +55,12 @@ export default function MobileBottomControls({ focusMode, onToggleFocus }) {
   const [showSpeedMenu, setShowSpeedMenu] = useState(false)
 
   const max = duration > 0 ? duration : 0
+
+  const cycleLoop = () => {
+    const idx = LOOP_CYCLE.indexOf(loopCount)
+    const next = LOOP_CYCLE[(idx + 1) % LOOP_CYCLE.length]
+    player.setLoopCount(next)
+  }
 
   const cycleInterval = () => {
     const idx = INTERVAL_CYCLE.indexOf(intervalGap)
@@ -121,7 +128,7 @@ export default function MobileBottomControls({ focusMode, onToggleFocus }) {
           </ControlBtn>
 
           <ControlBtn
-            onClick={player.toggleLoop}
+            onClick={cycleLoop}
             label={loopCount !== 0 ? (loopCount === -1 ? '∞' : `×${loopCount}`) : '循环'}
             active={loopCount !== 0}
           >
@@ -223,6 +230,7 @@ export default function MobileBottomControls({ focusMode, onToggleFocus }) {
           </div>
         </>
       )}
+
     </>
   )
 }

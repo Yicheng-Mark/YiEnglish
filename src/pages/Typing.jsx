@@ -696,7 +696,7 @@ export default function Typing() {
           )}
           <div className={`flex flex-col items-center text-center ${keyboardHeight > 0 ? 'gap-0.5' : 'gap-2 md:gap-10'}`}>
             {showPhonetic && (currentWord?.usphone || currentWord?.us || currentWord?.ukphone || currentWord?.uk) && (
-              <div className={`text-content-tertiary dark:text-gray-500 font-mono tracking-wide shrink-0 ${keyboardHeight > 0 ? 'text-lg mb-0' : 'text-xl md:text-5xl mb-1 md:mb-4'}`}>
+              <div className={`text-gray-300 dark:text-gray-600 font-mono tracking-wide shrink-0 ${keyboardHeight > 0 ? 'text-lg mb-0' : 'text-xl md:text-5xl mb-1 md:mb-4'}`}>
                 /{currentWord.usphone || currentWord.us || currentWord.ukphone || currentWord.uk}/
               </div>
             )}
@@ -709,7 +709,7 @@ export default function Typing() {
               <div className={`text-content-tertiary dark:text-gray-400 leading-relaxed md:leading-normal max-w-full md:max-w-2xl shrink-0 ${keyboardHeight > 0 ? 'text-xs' : 'text-sm md:text-2xl'}`}>
                 {(Array.isArray(currentWord.trans) ? currentWord.trans.join('；') : currentWord.trans).split(/(\[[^\]]+\])/g).map((part, i) =>
                   /^\[.+\]$/.test(part)
-                    ? <span key={i} className="text-primary dark:text-primary-dark font-medium">{part}</span>
+                    ? <span key={i} className="text-content-tertiary dark:text-gray-500">{part}</span>
                     : part
                 )}
               </div>
