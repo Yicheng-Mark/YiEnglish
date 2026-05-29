@@ -22,6 +22,23 @@ const AIChatPage = lazy(() => import('./pages/AIChatPage'))
 const Login = lazy(() => import('./pages/Login'))
 const Register = lazy(() => import('./pages/Register'))
 
+// 预加载底部导航对应的模块 chunk，避免切换时闪"加载中"
+const moduleLoaders = [
+  () => import('./pages/Home'),
+  () => import('./modules/reading'),
+  () => import('./modules/corpus'),
+  () => import('./pages/PersonalCenter'),
+]
+let preloaded = false
+function preloadModules() {
+  if (preloaded) return
+  preloaded = true
+  // 等主线程空闲后再预加载，不影响首屏
+  requestIdleCallback
+    ? requestIdleCallback(() => moduleLoaders.forEach(fn => fn()))
+    : setTimeout(() => moduleLoaders.forEach(fn => fn()), 200)
+}
+
 function Navigator() {
   const navigate = useNavigate()
   const { setNavigator } = useAuth()
@@ -44,6 +61,7 @@ function ProtectedRoute() {
 function App() {
   useScrollingFlag()
   const location = useLocation()
+  useEffect(preloadModules, [])
   const [aiHidden, setAiHidden] = useState(isAIAssistantHidden)
   const hideAI = (AUTH_ENABLED && ['/login', '/register'].includes(location.pathname)) || aiHidden
 
