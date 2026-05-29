@@ -230,14 +230,14 @@ function MobileSentenceCardsInner({ focusMode }) {
 
     return (
       <div
-        className="flex-1 min-h-0 overflow-y-auto px-4 py-3"
+        className="flex-1 min-h-0 overflow-y-auto px-4 py-3 flex flex-col"
         style={{ overscrollBehaviorY: 'contain', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
         <div
-          className="rounded-2xl p-5"
+          className="rounded-2xl p-5 my-auto"
           style={{
             backgroundColor: 'var(--mobile-card-bg)',
             boxShadow: '0 2px 12px var(--mobile-card-shadow)',
