@@ -10,6 +10,7 @@ import { WordProvider } from './contexts/WordContext'
 import { isAIAssistantHidden } from './lib/ai-settings'
 
 const Home = lazy(() => import('./pages/Home'))
+const WordBooks = lazy(() => import('./pages/WordBooks'))
 const ChapterSelect = lazy(() => import('./pages/ChapterSelect'))
 const Typing = lazy(() => import('./pages/Typing'))
 const Stats = lazy(() => import('./pages/Stats'))
@@ -74,6 +75,7 @@ function App() {
             <Route element={<Layout />}>
               <Route path="/" element={<Navigate to="/word" replace />} />
               <Route path="/word" element={<Home />} />
+              <Route path="/wordbooks" element={<WordBooks />} />
               <Route path="/read/*" element={<ReadingModule />} />
               <Route path="/reading/*" element={<ReadingModule />} />
               <Route path="/listening/*" element={<CorpusModule />} />

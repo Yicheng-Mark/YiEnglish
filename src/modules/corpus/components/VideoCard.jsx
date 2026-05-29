@@ -99,6 +99,11 @@ function VideoCard({ video, isBookmarked = false, onClick, onToggleBookmark }) {
         <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded text-xs bg-black/70 text-white">
           {formatTime(video.durationSec)}
         </div>
+        {video.speaker && (
+          <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded text-xs bg-black/70 text-white/90">
+            @{video.speaker}
+          </div>
+        )}
       </div>
 
       {/* 卡片正文 */}

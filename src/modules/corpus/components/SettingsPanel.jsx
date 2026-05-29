@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { X } from 'lucide-react'
+import { X, ExternalLink, Link2 } from 'lucide-react'
 import { useCorpusContext } from '../context/CorpusPlayerContext.jsx'
 import { useUserConfig } from '../../../hooks/useUserConfig.js'
 
@@ -78,7 +78,7 @@ function Segmented({ options, value, onChange }) {
 }
 
 export default function SettingsPanel({ open, onClose }) {
-  const { settings, toggleSetting } = useCorpusContext()
+  const { settings, toggleSetting, video } = useCorpusContext()
   const { theme, setTheme } = useUserConfig()
 
   useEffect(() => {
@@ -115,12 +115,32 @@ export default function SettingsPanel({ open, onClose }) {
 
         <div className="flex-1 min-h-0 overflow-y-auto">
           {/* 一组开关 */}
-          <Section title="播放偏好">
+          <Section>
             <ToggleRow
               label="视频循环"
               value={settings.videoLoop}
               onChange={() => toggleSetting('videoLoop')}
             />
+            {/* 视频来源 */}
+            <a
+              href={video?.youtubeUrl || undefined}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => {
+                if (!video?.youtubeUrl) e.preventDefault()
+              }}
+              className={`flex items-center justify-between py-2 ${
+                video?.youtubeUrl
+                  ? 'text-content dark:text-gray-200 cursor-pointer'
+                  : 'text-content-tertiary dark:text-gray-500 cursor-not-allowed pointer-events-none'
+              }`}
+            >
+              <span className="flex items-center gap-2 text-sm">
+                <Link2 className="w-4 h-4" />
+                视频来源
+              </span>
+              <ExternalLink className="w-3.5 h-3.5 text-content-tertiary dark:text-gray-500" />
+            </a>
           </Section>
 
           {/* 主题 */}

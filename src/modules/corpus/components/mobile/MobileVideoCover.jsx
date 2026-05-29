@@ -1,11 +1,13 @@
 import { useCallback, useRef, useState } from 'react'
-import { Play, Pause, ArrowLeft } from 'lucide-react'
+import { Play, Pause, ArrowLeft, Settings } from 'lucide-react'
 import { useCorpusContext } from '../../context/CorpusPlayerContext.jsx'
+import SettingsPanel from '../SettingsPanel.jsx'
 
 export default function MobileVideoCover({ onBack }) {
   const { videoRef, video, player, videoCallbackRef } = useCorpusContext()
   const [hasPlayed, setHasPlayed] = useState(false)
   const [tapIcon, setTapIcon] = useState(null) // 'play' | 'pause' | null
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const tapTimerRef = useRef(null)
 
   const showTapIcon = useCallback((icon) => {
@@ -106,6 +108,18 @@ export default function MobileVideoCover({ onBack }) {
           <ArrowLeft className="w-4 h-4 text-white" />
         </button>
       )}
+
+      {/* Settings button — top-right */}
+      <button
+        type="button"
+        data-action="settings"
+        onClick={() => setSettingsOpen(true)}
+        className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center z-10"
+        aria-label="设置"
+      >
+        <Settings className="w-4 h-4 text-white" />
+      </button>
+      <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} />
 
       {/* Bottom gradient with title */}
       <div className="absolute bottom-0 left-0 right-0 px-4 pt-5 pb-3 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none">

@@ -10,7 +10,6 @@ const DISPLAY_MODES = [
   { id: 'bilingual', label: '双语' },
   { id: 'english',   label: '英语' },
   { id: 'chinese',   label: '中文' },
-  { id: 'reading',   label: '阅读' },
   { id: 'cloze',     label: '挖空' },
 ]
 

@@ -69,7 +69,7 @@ async function ensureDictLoaded() {
 
 const CorpusPlayerContext = createContext(null)
 
-const MODES = ['bilingual', 'english', 'chinese', 'dictation', 'cloze', 'reading', 'translate', 'vocab']
+const MODES = ['bilingual', 'english', 'chinese', 'dictation', 'cloze', 'translate', 'vocab']
 
 export function CorpusPlayerProvider({ video, children }) {
   const videoRef = useRef(null)

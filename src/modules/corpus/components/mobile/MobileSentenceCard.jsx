@@ -137,8 +137,15 @@ function MobileSentenceCardsInner({ focusMode }) {
     return subtitles.map((s) => buildPhonetic(s.en, wordMap))
   }, [subtitles, wordMap, settings?.showPhonetic])
 
+  // 记住最后一个有效 activeId，防止间隙期间高亮跳回第一句
+  const lastActiveIdRef = useRef(null)
+  useEffect(() => {
+    if (player.activeId != null) lastActiveIdRef.current = player.activeId
+  }, [player.activeId])
+  const effectiveActiveId = player.activeId ?? lastActiveIdRef.current
+
   // Auto-scroll to active subtitle
-  const { setItemRef, containerProps } = useAutoScrollList(player.activeId, [subtitles])
+  const { setItemRef, containerProps } = useAutoScrollList(effectiveActiveId, [subtitles], { scrollAlign: 'start' })
 
   // Swipe gesture state
   const [touchState, setTouchState] = useState({ startX: 0, tracking: false, delta: 0 })
@@ -169,11 +176,11 @@ function MobileSentenceCardsInner({ focusMode }) {
   // For dictation mode: show single card with current subtitle
   const currentSub = useMemo(() => {
     if (!subtitles?.length) return null
-    if (player.activeId) {
-      return subtitles.find((s) => s.id === player.activeId) || subtitles[0]
+    if (effectiveActiveId) {
+      return subtitles.find((s) => s.id === effectiveActiveId) || subtitles[0]
     }
     return subtitles[0]
-  }, [subtitles, player.activeId])
+  }, [subtitles, effectiveActiveId])
 
   // Translate mode: revealed sentences state
   const [trRevealed, setTrRevealed] = useState(() => new Set())
@@ -272,8 +279,8 @@ function MobileSentenceCardsInner({ focusMode }) {
         onTouchEnd={handleTouchEnd}
       >
         {subtitles.map((sub) => {
-          const isActive = player.activeId
-            ? sub.id === player.activeId
+          const isActive = effectiveActiveId
+            ? sub.id === effectiveActiveId
             : sub.id === subtitles[0]?.id
           const showEn = trRevealed.has(sub.id)
 
@@ -429,7 +436,7 @@ function MobileSentenceCardsInner({ focusMode }) {
     )
   }
 
-  // Bilingual / reading mode: scrollable list of all subtitles
+  // Bilingual mode: scrollable list of all subtitles
   if (!subtitles?.length) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -465,8 +472,8 @@ function MobileSentenceCardsInner({ focusMode }) {
       {/* Subtitle list */}
       <div className="px-3 py-1">
         {subtitles.map((sub, idx) => {
-          const isActive = player.activeId
-            ? sub.id === player.activeId
+          const isActive = effectiveActiveId
+            ? sub.id === effectiveActiveId
             : sub.id === subtitles[0]?.id
 
           return (

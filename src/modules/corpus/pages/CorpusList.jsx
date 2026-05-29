@@ -147,10 +147,10 @@ export default function CorpusList({ scrollRef }) {
               </div>
 
               {/* 筛选栏 */}
-              <div className="flex flex-wrap items-center gap-2 md:gap-3">
+              <div className="grid grid-cols-2 md:flex md:flex-wrap items-center gap-2 md:gap-3">
                 <button
                   onClick={handleNavigateWordBook}
-                  className="flex items-center gap-2 px-4 py-2 glass-card rounded-button text-sm font-medium text-content-secondary dark:text-gray-300 hover:border-primary/40 transition-colors cursor-pointer"
+                  className="flex items-center justify-center w-full md:w-auto gap-2 px-4 py-2 glass-card rounded-button text-sm font-medium text-content-secondary dark:text-gray-300 hover:border-primary/40 transition-colors cursor-pointer"
                 >
                   <BookOpen className="w-4 h-4" />
                   <span>语料词本</span>
@@ -160,21 +160,9 @@ export default function CorpusList({ scrollRef }) {
                     </span>
                   )}
                 </button>
-                <Dropdown
-                  label="全部分类"
-                  value={categoryFilter}
-                  options={categories}
-                  onChange={handleCategoryChange}
-                />
-                <Dropdown
-                  label="全部难度"
-                  value={difficultyFilter}
-                  options={difficultyOptions}
-                  onChange={handleDifficultyChange}
-                />
                 <button
                   onClick={handleBookmarkOnlyToggle}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-button text-sm font-medium transition-colors cursor-pointer ${
+                  className={`flex items-center justify-center w-full md:w-auto gap-2 px-4 py-2 rounded-button text-sm font-medium transition-colors cursor-pointer ${
                     bookmarkOnly
                       ? 'bg-primary text-white shadow-sm'
                       : 'glass-card text-content-secondary dark:text-gray-300 hover:border-primary/40'
@@ -188,6 +176,20 @@ export default function CorpusList({ scrollRef }) {
                   />
                   <span>{bookmarkOnly ? '已收藏' : '只看收藏'}</span>
                 </button>
+                <Dropdown
+                  label="全部难度"
+                  value={difficultyFilter}
+                  options={difficultyOptions}
+                  onChange={handleDifficultyChange}
+                  className="md:w-auto"
+                />
+                <Dropdown
+                  label="全部分类"
+                  value={categoryFilter}
+                  options={categories}
+                  onChange={handleCategoryChange}
+                  className="md:w-auto"
+                />
               </div>
             </div>
           </div>

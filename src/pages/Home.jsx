@@ -9,6 +9,7 @@ import { getCorpusWordBookCount } from '../utils/corpusWordBook.js'
 import { getFavoriteWordsCount } from '../utils/favoriteWords.js'
 import { useDebounce } from '../hooks/useDebounce.js'
 import { useFavorites } from '../utils/favoriteDicts.js'
+import useIsMobile from '../hooks/useIsMobile.js'
 
 import ErrorBookCard from '../components/ErrorBookCard'
 import ReviewCard from '../components/ReviewCard'
@@ -77,6 +78,7 @@ function Home() {
   const [favoriteOnly, setFavoriteOnly] = useState(false)
   const dropdownRef = useRef(null)
   const { favorites, isFavorite, toggleFavorite } = useFavorites()
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -371,6 +373,40 @@ function Home() {
             const match = (keywords) => !q || keywords.some(k => k.toLowerCase().includes(q))
             const showFunctionBooks = (selectedCategory === '全部' || selectedCategory === '功能词本') && !favoriteOnly
             return (<>
+          {/* 功能词本：移动端显示 banner 入口，桌面端显示独立卡片 */}
+          {isMobile ? (
+            showFunctionBooks && match(['功能词本']) && (
+              <div
+                onClick={() => saveScrollAndNavigate('/wordbooks')}
+                className="group relative flex items-center justify-between overflow-hidden rounded-2xl border-2 border-indigo-200 bg-gradient-to-r from-indigo-50 via-violet-50 to-purple-50 p-5 cursor-pointer hover:shadow-lg hover:border-indigo-300 dark:border-indigo-900/40 dark:from-indigo-950/30 dark:via-violet-950/20 dark:to-purple-950/20 dark:hover:border-indigo-700/60 dark:hover:shadow-indigo-900/20 animate-card-enter glow-border-subtle transition-all duration-150 active:scale-[0.98]"
+              >
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-violet-500 to-amber-500 opacity-80" />
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-400">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-indigo-900 dark:text-indigo-200">功能词本</h3>
+                    <p className="text-sm text-indigo-600/70 dark:text-indigo-400/60">
+                      复习计划 · 错题本 · 阅读词本 · 语料词本 · 收藏词本
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {reviewDueCount > 0 && (
+                    <span className="flex h-6 min-w-[1.5rem] items-center justify-center rounded-full bg-emerald-500 px-2 text-xs font-bold text-white shadow-sm">
+                      {reviewDueCount}
+                    </span>
+                  )}
+                  <svg className="w-5 h-5 text-indigo-400 dark:text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </div>
+            )
+          ) : (<>
           {/* 复习计划卡片 */}
           {showFunctionBooks && match(['复习计划']) && <ReviewCard
             dueCount={reviewDueCount}
@@ -473,6 +509,7 @@ function Home() {
               </p>
             </div>
           </div>}
+          </>)}
           {filteredDictionaries.map((dict, index) => {
             const colors = tagColors[dict.color] || tagColors['warm-coral'];
             return (
