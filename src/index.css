@@ -500,16 +500,6 @@ body[data-scrolling="true"] .glow-border-subtle:hover {
   }
 }
 
-/* 语料播放页视口高度锁定（100vh 降级，100dvh 首选） */
-.corpus-vh {
-  height: 100vh;
-}
-@supports (height: 100dvh) {
-  .corpus-vh {
-    height: 100dvh;
-  }
-}
-
 /* 移动端打字页时间栏紧凑模式样式 */
 @media (max-width: 767px) {
   .stats-compact {
