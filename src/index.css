@@ -515,19 +515,19 @@ body[data-scrolling="true"] .glow-border-subtle:hover {
       height: 100dvh !important;
     }
   }
-  /* 左栏瘦身：gap p-4→p-3, gap-3→gap-2 */
+  /* 左栏改为 grid：视频 1fr / 控件 auto / 字幕 1fr → 1:1 均分 */
   .corpus-tablet-wrapper .flex-\[45\] {
+    display: grid !important;
+    grid-template-rows: 1fr auto 1fr;
     gap: 0.5rem !important;
     padding: 0.75rem !important;
   }
-  /* 视频高度上限 38vh，防止挤掉下方单句面板 */
+  /* 视频填满 grid cell，移除 16:9 锁定 */
   .corpus-tablet-wrapper .aspect-video {
-    max-height: 38vh !important;
+    aspect-ratio: unset !important;
+    max-height: none !important;
     flex-shrink: 1 !important;
-  }
-  /* 单句面板最小高度缩小 */
-  .corpus-tablet-wrapper .min-h-\[120px\] {
-    min-height: 80px !important;
+    height: 100% !important;
   }
 }
 
