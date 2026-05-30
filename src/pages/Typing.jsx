@@ -321,7 +321,7 @@ export default function Typing() {
       if (isFinished) return;
       if (e.isComposing) return;
       if (isWordListOpen) return;
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if ((e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') && e.target !== hiddenInputRef.current) return;
       if (e.key === 'Tab' || e.key === 'ArrowRight') {
         e.preventDefault();
         if (currentWord) {
@@ -349,30 +349,20 @@ export default function Typing() {
       if (e.key === 'Backspace') { e.preventDefault(); handleBackspace(); return; }
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) { e.preventDefault(); handleCharacterInput(e.key); }
     };
-    const onCompositionStart = () => { isComposingRef.current = true; };
-    const onCompositionEnd = (e) => {
-      isComposingRef.current = false;
-      const data = e.data;
-      if (data && /^[a-zA-Z]+$/.test(data)) {
-        for (const ch of data) {
-          handleCharacterInput(ch);
-        }
-      }
-    };
     window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('compositionstart', onCompositionStart);
-    window.addEventListener('compositionend', onCompositionEnd);
-    return () => {
-      window.removeEventListener('keydown', onKeyDown);
-      window.removeEventListener('compositionstart', onCompositionStart);
-      window.removeEventListener('compositionend', onCompositionEnd);
-    };
+    return () => window.removeEventListener('keydown', onKeyDown);
   }, [isMobile, isFinished, isWordListOpen, handleBackspace, handleCharacterInput, wordIndex, words.length, jumpTo, currentWord, dictId, chapterId, hasNextChapter, flushServerProgress, navigate]);
 
-  // 移动端输入处理：通过隐藏 input 代理键盘输入
+  // 输入处理：通过隐藏 input 代理键盘输入
   const handleInputChange = useCallback((e) => {
     if (isFinished) return;
     if (isComposingRef.current) return;
+    // 桌面端：keydown 负责处理输入，onChange 只清空残留
+    if (!isMobile) {
+      inputValueRef.current = '';
+      setInputValue('');
+      return;
+    }
     const newVal = e.target.value;
     const oldVal = inputValueRef.current;
 
@@ -385,7 +375,7 @@ export default function Typing() {
 
     inputValueRef.current = newVal;
     setInputValue(newVal);
-  }, [isFinished, handleCharacterInput, handleBackspace]);
+  }, [isFinished, isMobile, handleCharacterInput, handleBackspace]);
 
   const handleInputBlur = useCallback(() => {
     if (isMobile) {
@@ -693,37 +683,38 @@ export default function Typing() {
 
         {/* 单词显示 */}
         <div className={`flex flex-col items-center px-4 min-h-0 relative ${keyboardHeight > 0 ? 'flex-1 min-h-0 justify-start pt-2' : 'flex-1 justify-center overflow-hidden'}`}>
-          {/* 移动端：覆盖单词区域的透明输入框 */}
-          {isMobile && (
-            <input
-              ref={hiddenInputRef}
-              type="text"
-              value={inputValue}
-              onChange={handleInputChange}
-              onCompositionStart={() => { isComposingRef.current = true; }}
-              onCompositionEnd={(e) => {
-                isComposingRef.current = false;
-                const data = e.data;
-                if (data && /^[a-zA-Z]+$/.test(data)) {
-                  for (const ch of data) {
-                    handleCharacterInput(ch);
-                  }
+          {/* 隐藏输入框：桌面端接收 IME 事件，移动端代理键盘输入 */}
+          <input
+            ref={hiddenInputRef}
+            type="text"
+            value={inputValue}
+            onChange={handleInputChange}
+            onCompositionStart={() => { isComposingRef.current = true; }}
+            onCompositionEnd={(e) => {
+              const data = e.data;
+              if (data && /^[a-zA-Z]+$/.test(data)) {
+                for (const ch of data) {
+                  handleCharacterInput(ch);
                 }
-                inputValueRef.current = '';
-                setInputValue('');
-              }}
-              onBlur={handleInputBlur}
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              spellCheck="false"
-              className={`absolute inset-0 w-full h-full opacity-0 z-50 ${keyboardActive ? 'cursor-text' : 'pointer-events-none'}`}
-              style={{
-                fontSize: '16px',
-                caretColor: 'transparent',
-              }}
-            />
-          )}
+              }
+              inputValueRef.current = '';
+              setInputValue('');
+              setTimeout(() => { isComposingRef.current = false; }, 50);
+            }}
+            onBlur={handleInputBlur}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck="false"
+            className={isMobile
+              ? `absolute inset-0 w-full h-full opacity-0 z-50 ${keyboardActive ? 'cursor-text' : 'pointer-events-none'}`
+              : 'fixed opacity-0 w-px h-px top-0 left-0 pointer-events-none'
+            }
+            style={{
+              fontSize: '16px',
+              caretColor: 'transparent',
+            }}
+          />
           <div className={`flex flex-col items-center text-center ${keyboardHeight > 0 ? 'gap-0.5' : 'gap-2 md:gap-10'}`}>
             {showPhonetic && (currentWord?.usphone || currentWord?.us || currentWord?.ukphone || currentWord?.uk) && (
               <div className={`text-gray-300 dark:text-gray-600 font-mono tracking-wide shrink-0 ${keyboardHeight > 0 ? 'text-lg mb-0' : 'text-xl md:text-5xl mb-1 md:mb-4'}`}>
