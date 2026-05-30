@@ -42,6 +42,7 @@ export default function PersonalCenter() {
   const [goalModal, setGoalModal] = useState(false)
   const [themeModal, setThemeModal] = useState(false)
   const [companionModal, setCompanionModal] = useState(false)
+  const [helpModal, setHelpModal] = useState(false)
   const [nicknameInput, setNicknameInput] = useState(profile.nickname)
   const [signatureInput, setSignatureInput] = useState(profile.signature)
   const [aiStyles, setAiStyles] = useState({ current: null, all: [] })
@@ -127,7 +128,7 @@ export default function PersonalCenter() {
   const settingsItems = [
     { label: 'AI 伙伴设置', emoji: '🤖', action: () => setCompanionModal(true) },
 { label: '模式切换', emoji: '🎨', action: () => setThemeModal(true) },
-    { label: '帮助与反馈', emoji: '💬', action: () => toast('即将上线', { description: '帮助与反馈功能正在开发中' }) },
+    { label: '帮助与反馈', emoji: '💬', action: () => setHelpModal(true) },
   ]
 
   return (
@@ -560,6 +561,40 @@ export default function PersonalCenter() {
               className="text-xs text-red-400 hover:text-red-500 transition-colors w-fit"
             >清除记忆</button>
           )}
+        </div>
+      </Modal>
+
+      {/* Help & Feedback Modal */}
+      <Modal open={helpModal} onClose={() => setHelpModal(false)} title="帮助与反馈">
+        <div className="space-y-2">
+          <a
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-white/[0.04] hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-lg">📖</span>
+              <span className="text-sm font-medium text-content dark:text-gray-100">使用方法</span>
+            </div>
+            <ChevronRight className="w-4 h-4 text-content-tertiary" />
+          </a>
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText('warriorzyc172@qq.com')
+              toast('邮箱已复制', { description: 'warriorzyc172@qq.com' })
+            }}
+            className="w-full flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-white/[0.04] hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-colors text-left"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-lg">📧</span>
+              <div>
+                <p className="text-sm font-medium text-content dark:text-gray-100">反馈问题</p>
+                <p className="text-xs text-content-tertiary dark:text-gray-500 mt-0.5">warriorzyc172@qq.com</p>
+              </div>
+            </div>
+            <span className="text-xs text-primary font-medium">复制邮箱</span>
+          </button>
         </div>
       </Modal>
 
