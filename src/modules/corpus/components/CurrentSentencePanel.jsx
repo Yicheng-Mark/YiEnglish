@@ -70,7 +70,7 @@ function CurrentSentencePanelInner() {
       <button
         type="button"
         onClick={player.toggleHideSubtitleBottom}
-        className="flex-1 min-h-[120px] rounded-2xl bg-surface dark:bg-white/[0.03] border border-gray-200/70 dark:border-white/[0.06] shadow-sm flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors"
+        className="flex-1 min-h-[80px] rounded-2xl bg-surface dark:bg-white/[0.03] border border-gray-200/70 dark:border-white/[0.06] shadow-sm flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors"
       >
         <span className="text-sm text-content-secondary dark:text-gray-300">已隐藏字幕</span>
         <span className="text-xs text-content-tertiary dark:text-gray-500 mt-1">点击显示</span>
@@ -80,7 +80,7 @@ function CurrentSentencePanelInner() {
 
   if (!current) {
     return (
-      <div className="flex-1 min-h-[120px] rounded-2xl bg-surface/50 dark:bg-white/[0.03] border border-gray-200/70 dark:border-white/[0.06] flex items-center justify-center">
+      <div className="flex-1 min-h-[80px] rounded-2xl bg-surface/50 dark:bg-white/[0.03] border border-gray-200/70 dark:border-white/[0.06] flex items-center justify-center">
         <span className="text-sm text-content-tertiary dark:text-gray-500">等待播放...</span>
       </div>
     )
@@ -89,7 +89,7 @@ function CurrentSentencePanelInner() {
   return (
     <div className="flex-1 flex flex-col min-h-0">
       {/* 主卡片 */}
-      <div className="flex-1 min-h-[120px] rounded-2xl bg-surface dark:bg-white/[0.03] border border-gray-200/70 dark:border-white/[0.06] shadow-sm p-4 md:p-5 flex flex-col gap-3">
+      <div className="flex-1 min-h-[80px] rounded-2xl bg-surface dark:bg-white/[0.03] border border-gray-200/70 dark:border-white/[0.06] shadow-sm p-4 md:p-5 flex flex-col gap-3">
         {/* 顶部信息栏 */}
         <div className="flex items-center justify-between text-xs text-content-tertiary dark:text-gray-400">
           <div className="flex items-center gap-3">

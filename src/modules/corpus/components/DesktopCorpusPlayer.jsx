@@ -59,7 +59,10 @@ export default function DesktopCorpusPlayer({ video, posterUrl, onBack }) {
   }, [player])
 
   return (
-    <div className="h-[100dvh] flex flex-col overflow-hidden bg-background dark:bg-[#0f0f13] transition-colors duration-500 animate-page-fade-in">
+    <div
+      className="corpus-vh flex flex-col overflow-hidden bg-background dark:bg-[#0f0f13] transition-colors duration-500 animate-page-fade-in"
+      style={{ position: 'fixed', inset: 0 }}
+    >
       {/* 顶栏 */}
       <div className="shrink-0 bg-white dark:bg-[#0f0f13] border-b border-gray-200/70 dark:border-white/[0.06]">
         <div className="w-full px-6 h-16 flex items-center gap-4">
@@ -105,8 +108,10 @@ export default function DesktopCorpusPlayer({ video, posterUrl, onBack }) {
       {/* 主体 */}
       <div className="flex-1 min-h-0 w-full flex">
         {/* 左侧 ~45%：视频 + 控制栏 + 当前句子 */}
-        <div className="flex flex-[45] min-w-0 min-h-0 flex-col gap-3 p-4 border-r border-gray-200/70 dark:border-white/[0.06]">
-          <VideoPlayer src={video.videoUrl} poster={posterUrl} />
+        <div className="flex flex-[45] min-w-0 min-h-0 flex-col gap-2 p-3 border-r border-gray-200/70 dark:border-white/[0.06]">
+          <div className="shrink-0 min-h-0 max-h-[38vh] w-full">
+            <VideoPlayer src={video.videoUrl} poster={posterUrl} />
+          </div>
           <PlayerControls />
           <CurrentSentencePanel />
         </div>
