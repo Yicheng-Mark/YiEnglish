@@ -319,7 +319,8 @@ export default function Typing() {
     if (isMobile) return;
     const onKeyDown = (e) => {
       if (isFinished) return;
-      if (e.isComposing) return;
+      if (isComposingRef.current) return;
+      if (e.key === 'Process') return;
       if (isWordListOpen) return;
       if ((e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') && e.target !== hiddenInputRef.current) return;
       if (e.key === 'Tab' || e.key === 'ArrowRight') {
@@ -359,6 +360,14 @@ export default function Typing() {
     if (isComposingRef.current) return;
     // 桌面端：keydown 负责处理输入，onChange 只清空残留
     if (!isMobile) {
+      if (!isComposingRef.current) {
+        const newVal = e.target.value;
+        if (newVal && /^[a-zA-Z]+$/.test(newVal)) {
+          for (const ch of newVal) {
+            handleCharacterInput(ch);
+          }
+        }
+      }
       inputValueRef.current = '';
       setInputValue('');
       return;
