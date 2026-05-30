@@ -48,6 +48,7 @@ export default function Typing() {
   const suppressClickRef = useRef(false);
   const completedBufferRef = useRef([]);
   const isComposingRef = useRef(false);
+  const blurTimerRef = useRef(null);
 
   const isMobile = useIsMobile();
   const isErrorBookMode = dictId === 'error-book';
@@ -357,15 +358,13 @@ export default function Typing() {
   // 输入处理：通过隐藏 input 代理键盘输入
   const handleInputChange = useCallback((e) => {
     if (isFinished) return;
-    // 用 inputType 精确区分 IME 拼音合成 vs 直接英文输入
-    // insertCompositionText = 拼音合成中，阻断
-    // insertText = 直接英文输入，放行
-    // Android 软键盘的 isComposing 对所有输入都为 true，不可靠
-    if (e.nativeEvent?.inputType === 'insertCompositionText') return;
-    // compositionend 后 50ms 内阻断，防止与 compositionend 重复处理
-    if (isComposingRef.current) return;
     // 桌面端：keydown 负责处理输入，onChange 处理 IME 插入的英文字符
     if (!isMobile) {
+      if (isComposingRef.current) {
+        inputValueRef.current = '';
+        setInputValue('');
+        return;
+      }
       const newVal = e.target.value;
       if (newVal && /^[a-zA-Z]+$/.test(newVal)) {
         for (const ch of newVal) {
@@ -376,6 +375,9 @@ export default function Typing() {
       setInputValue('');
       return;
     }
+    // 移动端：不做任何合成状态检查，直接处理所有输入
+    // Android 软键盘的 isComposing/inputType===insertCompositionText 对所有输入都为 true
+    // 拼音合成期间的字母会在 compositionend 中通过 isComposingRef 回退处理
     const newVal = e.target.value;
     const oldVal = inputValueRef.current;
 
@@ -392,10 +394,14 @@ export default function Typing() {
 
   const handleInputBlur = useCallback(() => {
     if (isMobile) {
-      // 只有真正收起键盘（无新焦点）时才进入滑动模式，而非点击按钮导致失焦
-      if (!document.activeElement || document.activeElement === document.body) {
-        setKeyboardActive(false);
-      }
+      // 延迟检查：键盘弹出动画期间可能短暂 blur 再 refocus，
+      // 避免误将 keyboardActive 设为 false 导致 pointer-events-none 生效
+      clearTimeout(blurTimerRef.current);
+      blurTimerRef.current = setTimeout(() => {
+        if (!document.activeElement || document.activeElement === document.body) {
+          setKeyboardActive(false);
+        }
+      }, 300);
       return;
     }
     setTimeout(() => {
@@ -720,7 +726,7 @@ export default function Typing() {
             autoCapitalize="off"
             spellCheck="false"
             className={isMobile
-              ? `absolute inset-0 w-full h-full opacity-0 z-50 ${keyboardActive ? 'cursor-text' : 'pointer-events-none'}`
+              ? 'absolute inset-0 w-full h-full opacity-0 z-50'
               : 'fixed opacity-0 w-px h-px top-0 left-0 pointer-events-none'
             }
             style={{
