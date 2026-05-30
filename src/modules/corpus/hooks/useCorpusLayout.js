@@ -16,7 +16,13 @@ function detectCorpusLayout() {
 
   // screen.width/height 不随旋转变化，用于区分手机/平板
   const screenShortSide = Math.min(screen.width, screen.height)
-  if (screenShortSide < 768) return 'mobile'
+  if (screenShortSide < 768) {
+    // 小屏设备可能是手机或小平板
+    // 横屏且屏幕长边 >= 1000 CSS px → 视为平板，用桌面布局
+    const screenLongSide = Math.max(screen.width, screen.height)
+    if (window.innerWidth > window.innerHeight && screenLongSide >= 1000) return 'desktop'
+    return 'mobile'
+  }
 
   // 平板：横屏→桌面端布局，竖屏→移动端布局
   return window.innerWidth > window.innerHeight ? 'desktop' : 'mobile'
