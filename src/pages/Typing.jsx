@@ -357,15 +357,16 @@ export default function Typing() {
   // 输入处理：通过隐藏 input 代理键盘输入
   const handleInputChange = useCallback((e) => {
     if (isFinished) return;
-    if (isComposingRef.current) return;
-    // 桌面端：keydown 负责处理输入，onChange 只清空残留
+    // 用浏览器原生合成状态替代手动 ref 追踪
+    // 某些移动键盘会触发 compositionstart 但不触发 compositionend，
+    // 导致 isComposingRef 卡死为 true，所有输入被阻断
+    if (e.nativeEvent?.isComposing) return;
+    // 桌面端：keydown 负责处理输入，onChange 处理 IME 插入的英文字符
     if (!isMobile) {
-      if (!isComposingRef.current) {
-        const newVal = e.target.value;
-        if (newVal && /^[a-zA-Z]+$/.test(newVal)) {
-          for (const ch of newVal) {
-            handleCharacterInput(ch);
-          }
+      const newVal = e.target.value;
+      if (newVal && /^[a-zA-Z]+$/.test(newVal)) {
+        for (const ch of newVal) {
+          handleCharacterInput(ch);
         }
       }
       inputValueRef.current = '';
