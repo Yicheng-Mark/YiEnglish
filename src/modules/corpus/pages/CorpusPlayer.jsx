@@ -42,7 +42,9 @@ export default function CorpusPlayer() {
       {isMobile ? (
         <MobileCorpusPlayer video={video} posterUrl={posterUrl} onBack={() => navigate('/listening')} />
       ) : (
-        <DesktopCorpusPlayer video={video} posterUrl={posterUrl} onBack={() => navigate('/listening')} />
+        <div className="corpus-tablet-wrapper">
+          <DesktopCorpusPlayer video={video} posterUrl={posterUrl} onBack={() => navigate('/listening')} />
+        </div>
       )}
     </CorpusPlayerProvider>
   )

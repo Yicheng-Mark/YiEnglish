@@ -500,6 +500,37 @@ body[data-scrolling="true"] .glow-border-subtle:hover {
   }
 }
 
+/* ── 平板横屏语料播放页比例调整（仅触摸设备，桌面端不受影响） ── */
+@media (orientation: landscape) and (max-height: 800px) and (pointer: coarse) {
+  .corpus-tablet-wrapper {
+    position: fixed !important;
+    inset: 0;
+    z-index: 40;
+  }
+  .corpus-tablet-wrapper > div {
+    height: 100vh !important;
+  }
+  @supports (height: 100dvh) {
+    .corpus-tablet-wrapper > div {
+      height: 100dvh !important;
+    }
+  }
+  /* 左栏瘦身：gap p-4→p-3, gap-3→gap-2 */
+  .corpus-tablet-wrapper .flex-\[45\] {
+    gap: 0.5rem !important;
+    padding: 0.75rem !important;
+  }
+  /* 视频高度上限 38vh，防止挤掉下方单句面板 */
+  .corpus-tablet-wrapper .aspect-video {
+    max-height: 38vh !important;
+    flex-shrink: 1 !important;
+  }
+  /* 单句面板最小高度缩小 */
+  .corpus-tablet-wrapper .min-h-\[120px\] {
+    min-height: 80px !important;
+  }
+}
+
 /* 移动端打字页时间栏紧凑模式样式 */
 @media (max-width: 767px) {
   .stats-compact {
