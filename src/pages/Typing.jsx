@@ -357,10 +357,13 @@ export default function Typing() {
   // 输入处理：通过隐藏 input 代理键盘输入
   const handleInputChange = useCallback((e) => {
     if (isFinished) return;
-    // 用浏览器原生合成状态替代手动 ref 追踪
-    // 某些移动键盘会触发 compositionstart 但不触发 compositionend，
-    // 导致 isComposingRef 卡死为 true，所有输入被阻断
-    if (e.nativeEvent?.isComposing) return;
+    // 用 inputType 精确区分 IME 拼音合成 vs 直接英文输入
+    // insertCompositionText = 拼音合成中，阻断
+    // insertText = 直接英文输入，放行
+    // Android 软键盘的 isComposing 对所有输入都为 true，不可靠
+    if (e.nativeEvent?.inputType === 'insertCompositionText') return;
+    // compositionend 后 50ms 内阻断，防止与 compositionend 重复处理
+    if (isComposingRef.current) return;
     // 桌面端：keydown 负责处理输入，onChange 处理 IME 插入的英文字符
     if (!isMobile) {
       const newVal = e.target.value;
