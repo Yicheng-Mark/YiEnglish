@@ -14,7 +14,7 @@ function Layout() {
   const showTopNav = !isListeningPlayer && !isProfile && !isAIChat
 
   return (
-    <div className="min-h-screen bg-background dark:bg-background-dark transition-colors duration-500 relative">
+    <div className={`${isListeningPlayer ? 'h-dvh overflow-hidden' : 'min-h-screen'} bg-background dark:bg-background-dark transition-colors duration-500 relative`}>
       <StarryBackground />
       {showTopNav && (
         <nav className="h-12 md:h-16 shrink-0 glass-card border-b border-gray-200/80 dark:border-white/[0.06] flex items-center justify-between px-4 md:px-6 sticky top-0 z-50 nav-glow transition-shadow duration-500">
@@ -34,7 +34,7 @@ function Layout() {
           </div>
         </nav>
       )}
-      <div className={`relative ${showBottomNav ? 'pb-24' : ''}`}>
+      <div className={`relative ${showBottomNav ? 'pb-24' : ''} ${isListeningPlayer ? 'h-full' : ''}`}>
         <Outlet />
       </div>
       {showBottomNav && <BottomNav />}
