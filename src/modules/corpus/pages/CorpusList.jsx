@@ -8,6 +8,7 @@ import {
 } from '../data/mockCorpusVideos'
 import { DIFFICULTY_LABELS, getDifficultyLabel } from '../utils/difficulty'
 import { useCorpusStore } from '../hooks/useCorpusStore'
+import useCorpusLayout from '../hooks/useCorpusLayout'
 import { getCorpusWordBookCount } from '../../../utils/corpusWordBook.js'
 import VideoCard from '../components/VideoCard'
 import Dropdown from '../../../components/Dropdown'
@@ -16,6 +17,7 @@ import { VirtualGrid } from '../../../components/virtual/VirtualGrid'
 export default function CorpusList({ scrollRef }) {
   const navigate = useNavigate()
   const store = useCorpusStore()
+  const isMobile = useCorpusLayout()
   const gridRef = useRef(null)
   const isRestoring = useRef(scrollRef?.current > 0)
 
@@ -121,16 +123,16 @@ export default function CorpusList({ scrollRef }) {
   )
 
   return (
-    <div className={`bg-background dark:bg-transparent p-4 md:p-6 transition-colors duration-500 ${isRestoring.current ? '' : 'animate-page-fade-in'}`}>
-      <div className="max-w-6xl mx-auto px-2 md:px-6 w-full">
+    <div className={`bg-background dark:bg-transparent ${isMobile ? 'p-4' : 'p-6'} transition-colors duration-500 ${isRestoring.current ? '' : 'animate-page-fade-in'}`}>
+      <div className={`max-w-6xl mx-auto ${isMobile ? 'px-2' : 'px-6'} w-full`}>
         <div>
-          <div className="mt-6 md:mt-16 mb-6 md:mb-10">
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+          <div className={`${isMobile ? 'mt-6' : 'mt-16'} ${isMobile ? 'mb-6' : 'mb-10'}`}>
+            <div className={`flex ${isMobile ? 'flex-col' : 'flex-row items-end justify-between'} gap-6`}>
               <div className="text-left">
                 <h1 className="text-display gradient-text mb-3 tracking-tight text-glow-primary">
                   语料中心
                 </h1>
-                <p className="text-content-tertiary text-body max-w-xl leading-relaxed line-clamp-2 md:line-clamp-none">
+                <p className={`text-content-tertiary text-body max-w-xl leading-relaxed ${isMobile ? 'line-clamp-2' : 'line-clamp-none'}`}>
                   精选演讲与短视频，逐句字幕跟读、单句循环、变速练习,在真实语境中磨炼听说能力。
                 </p>
                 <div className="mt-3 flex items-center gap-3 text-sm text-content-tertiary dark:text-gray-500">
@@ -147,10 +149,10 @@ export default function CorpusList({ scrollRef }) {
               </div>
 
               {/* 筛选栏 */}
-              <div className="grid grid-cols-2 md:flex md:flex-wrap items-center gap-2 md:gap-3">
+              <div className={`${isMobile ? 'grid grid-cols-2' : 'flex flex-wrap'} items-center ${isMobile ? 'gap-2' : 'gap-3'}`}>
                 <button
                   onClick={handleNavigateWordBook}
-                  className="flex items-center justify-center w-full md:w-auto gap-2 px-4 py-2 glass-card rounded-button text-sm font-medium text-content-secondary dark:text-gray-300 hover:border-primary/40 transition-colors cursor-pointer"
+                  className={`flex items-center justify-center ${isMobile ? 'w-full' : 'w-auto'} gap-2 px-4 py-2 glass-card rounded-button text-sm font-medium text-content-secondary dark:text-gray-300 hover:border-primary/40 transition-colors cursor-pointer`}
                 >
                   <BookOpen className="w-4 h-4" />
                   <span>语料词本</span>
@@ -162,7 +164,7 @@ export default function CorpusList({ scrollRef }) {
                 </button>
                 <button
                   onClick={handleBookmarkOnlyToggle}
-                  className={`flex items-center justify-center w-full md:w-auto gap-2 px-4 py-2 rounded-button text-sm font-medium transition-colors cursor-pointer ${
+                  className={`flex items-center justify-center ${isMobile ? 'w-full' : 'w-auto'} gap-2 px-4 py-2 rounded-button text-sm font-medium transition-colors cursor-pointer ${
                     bookmarkOnly
                       ? 'bg-primary text-white shadow-sm'
                       : 'glass-card text-content-secondary dark:text-gray-300 hover:border-primary/40'
@@ -181,14 +183,14 @@ export default function CorpusList({ scrollRef }) {
                   value={difficultyFilter}
                   options={difficultyOptions}
                   onChange={handleDifficultyChange}
-                  className="md:w-auto"
+                  className={isMobile ? "" : "w-auto"}
                 />
                 <Dropdown
                   label="全部分类"
                   value={categoryFilter}
                   options={categories}
                   onChange={handleCategoryChange}
-                  className="md:w-auto"
+                  className={isMobile ? "" : "w-auto"}
                 />
               </div>
             </div>
