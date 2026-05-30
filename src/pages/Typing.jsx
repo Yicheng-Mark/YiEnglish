@@ -47,6 +47,7 @@ export default function Typing() {
   const touchStartRef = useRef(null);
   const suppressClickRef = useRef(false);
   const completedBufferRef = useRef([]);
+  const isComposingRef = useRef(false);
 
   const isMobile = useIsMobile();
   const isErrorBookMode = dictId === 'error-book';
@@ -348,13 +349,30 @@ export default function Typing() {
       if (e.key === 'Backspace') { e.preventDefault(); handleBackspace(); return; }
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) { e.preventDefault(); handleCharacterInput(e.key); }
     };
+    const onCompositionStart = () => { isComposingRef.current = true; };
+    const onCompositionEnd = (e) => {
+      isComposingRef.current = false;
+      const data = e.data;
+      if (data && /^[a-zA-Z]+$/.test(data)) {
+        for (const ch of data) {
+          handleCharacterInput(ch);
+        }
+      }
+    };
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    window.addEventListener('compositionstart', onCompositionStart);
+    window.addEventListener('compositionend', onCompositionEnd);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('compositionstart', onCompositionStart);
+      window.removeEventListener('compositionend', onCompositionEnd);
+    };
   }, [isMobile, isFinished, isWordListOpen, handleBackspace, handleCharacterInput, wordIndex, words.length, jumpTo, currentWord, dictId, chapterId, hasNextChapter, flushServerProgress, navigate]);
 
   // 移动端输入处理：通过隐藏 input 代理键盘输入
   const handleInputChange = useCallback((e) => {
     if (isFinished) return;
+    if (isComposingRef.current) return;
     const newVal = e.target.value;
     const oldVal = inputValueRef.current;
 
@@ -682,6 +700,18 @@ export default function Typing() {
               type="text"
               value={inputValue}
               onChange={handleInputChange}
+              onCompositionStart={() => { isComposingRef.current = true; }}
+              onCompositionEnd={(e) => {
+                isComposingRef.current = false;
+                const data = e.data;
+                if (data && /^[a-zA-Z]+$/.test(data)) {
+                  for (const ch of data) {
+                    handleCharacterInput(ch);
+                  }
+                }
+                inputValueRef.current = '';
+                setInputValue('');
+              }}
               onBlur={handleInputBlur}
               autoComplete="off"
               autoCorrect="off"
