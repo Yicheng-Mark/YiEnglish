@@ -142,7 +142,9 @@ export default function WordPopup({
 
   if (!wordData || !rect) return null
 
-  const { name, usphone, ukphone, trans } = wordData
+  const usphone = wordData.usphone || wordData.us
+  const ukphone = wordData.ukphone || wordData.uk
+  const { name, trans } = wordData
   const parsed = parseTrans(trans)
 
   const popupWidth = Math.min(360, window.innerWidth - 32)
