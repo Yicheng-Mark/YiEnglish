@@ -13,6 +13,7 @@ import {
   isInCorpusWordBook,
   removeFromCorpusWordBook,
 } from '../../../utils/corpusWordBook.js'
+import { findWordInMap } from '../../../utils/readingWordBook.js'
 import { useCorpusPlayer } from '../hooks/useCorpusPlayer.js'
 import { useCorpusSettings } from '../hooks/useCorpusSettings.js'
 import { useWordExtractor } from '../hooks/useWordExtractor.js'
@@ -149,7 +150,7 @@ export function CorpusPlayerProvider({ video, children }) {
         tokenEl.classList.add('word-token-active')
         activeTokenRef.current = tokenEl
       }
-      const wordData = wordMap?.get(cleanWord) || {
+      const wordData = (wordMap && findWordInMap(cleanWord, wordMap)) || {
         name: cleanWord,
         usphone: '',
         ukphone: '',

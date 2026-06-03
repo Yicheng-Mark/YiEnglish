@@ -90,7 +90,7 @@ const WORD_BOOKS = [
     title: '语料词本',
     description: '从语料字幕中积累词汇',
     route: '/dict/corpus-word-book',
-    tag: '语料中心',
+    tag: '语料',
     colors: {
       border: 'border-cyan-200 dark:border-cyan-900/40',
       bg: 'from-cyan-50 to-sky-50 dark:from-cyan-950/30 dark:to-sky-950/20',

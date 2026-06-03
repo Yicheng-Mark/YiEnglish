@@ -26,6 +26,8 @@ const loaders = {
   automotive: () => import('../dictionaries/automotive.json'),
   chef: () => import('../dictionaries/chef.json'),
   electrician: () => import('../dictionaries/electrician.json'),
+  marine_engineering: () => import('../dictionaries/marine_engineering.json'),
+  foreign_trade: () => import('../dictionaries/foreign_trade.json'),
   'error-book': () => Promise.resolve({ default: loadErrorBookAsDictionary() }),
   'reading-word-book': async () => {
     await enrichReadingWordBook();

@@ -119,6 +119,11 @@ function ClozeText({ text, paraKey, posMap, onWordClick, showColor }) {
 }
 
 function getFirstMeaning(trans) {
+  if (!trans) return ''
+  if (typeof trans === 'string') {
+    const first = trans.split(';')[0].trim()
+    return first.replace(/^\s*\[[^\]]+\]\s*/, '').trim()
+  }
   if (!Array.isArray(trans) || trans.length === 0) return ''
   return String(trans[0] || '').replace(/^\s*\[[^\]]+\]\s*/, '').trim()
 }

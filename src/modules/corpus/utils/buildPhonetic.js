@@ -1,4 +1,5 @@
 import { tokenizeEnglish } from './wordColorMap.js'
+import { findWordInMap } from '../../../utils/readingWordBook.js'
 
 function stripSlashes(s) {
   if (!s) return s
@@ -15,7 +16,7 @@ export function buildPhonetic(text, wordMap, { variant = 'us' } = {}) {
       parts.push(tok.raw)
       continue
     }
-    const w = wordMap.get(tok.lower)
+    const w = findWordInMap(tok.lower, wordMap)
     const ipa = stripSlashes(w && (variant === 'uk' ? (w.ukphone || w.uk) : (w.usphone || w.us)))
     parts.push(ipa || tok.lower)
   }

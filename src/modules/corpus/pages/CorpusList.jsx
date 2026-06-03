@@ -130,7 +130,7 @@ export default function CorpusList({ scrollRef }) {
             <div className={`flex ${isMobile ? 'flex-col' : 'flex-row items-end justify-between'} gap-6`}>
               <div className="text-left">
                 <h1 className="text-display gradient-text mb-3 tracking-tight text-glow-primary">
-                  语料中心
+                  语料
                 </h1>
                 <p className={`text-content-tertiary text-body max-w-xl leading-relaxed ${isMobile ? 'line-clamp-2' : 'line-clamp-none'}`}>
                   精选演讲与短视频，逐句字幕跟读、单句循环、变速练习,在真实语境中磨炼听说能力。

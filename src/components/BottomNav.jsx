@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { BookOpen, Keyboard } from 'lucide-react'
+import { BookOpen, Keyboard, Target } from 'lucide-react'
 import { getReadingStoreActions } from '../modules/reading/hooks/useReadingStore'
 
 const items = [
@@ -16,7 +16,7 @@ const items = [
   },
   {
     to: '/listening',
-    label: '语料中心',
+    label: '语料',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <rect x="2" y="3" width="20" height="14" rx="2" ry="2" strokeWidth={2} />
@@ -24,6 +24,11 @@ const items = [
         <line x1="12" y1="17" x2="12" y2="21" strokeWidth={2} />
       </svg>
     ),
+  },
+  {
+    to: '/training',
+    label: '训练',
+    icon: <Target className="w-5 h-5" />,
   },
   {
     to: '/profile',
@@ -45,6 +50,9 @@ function getModuleFromPath(pathname) {
   }
   if (pathname === '/listening' || pathname.startsWith('/listening/')) {
     return 'listening'
+  }
+  if (pathname === '/training' || pathname.startsWith('/training/')) {
+    return 'training'
   }
   if (pathname.startsWith('/reading/grammar')) {
     return 'reading'

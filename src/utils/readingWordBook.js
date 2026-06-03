@@ -26,7 +26,7 @@ async function buildDictWordMap() {
   return dictWordMap;
 }
 
-function findWordInMap(wordName, map) {
+export function findWordInMap(wordName, map) {
   const key = wordName.toLowerCase();
   if (map.has(key)) return map.get(key);
 

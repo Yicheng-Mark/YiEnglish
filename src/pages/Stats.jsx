@@ -169,7 +169,7 @@ export default function Stats() {
             Icon={Clock}
           />
           <StatsCard
-            label="单词练习"
+            label="单词"
             value={totalTypingMinutes}
             unit="m"
             Icon={Keyboard}
@@ -181,7 +181,7 @@ export default function Stats() {
             Icon={BookOpen}
           />
           <StatsCard
-            label="语料中心"
+            label="语料"
             value={totalListeningMinutes}
             unit="m"
             Icon={Headphones}

@@ -30,7 +30,7 @@ export default function CorpusPlayer() {
             onClick={() => navigate('/listening')}
             className="px-4 py-2 rounded-button bg-primary text-white text-sm hover:opacity-90 transition-opacity"
           >
-            返回语料中心
+            返回语料
           </button>
         </div>
       </div>

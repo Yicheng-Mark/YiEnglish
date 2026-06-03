@@ -470,7 +470,7 @@ function Home() {
             </div>
             <div className="mt-4">
               <div className="inline-flex items-center rounded-lg bg-cyan-100 px-2.5 py-1 text-xs font-medium text-cyan-700 dark:bg-cyan-500/15 dark:text-cyan-300">
-                语料中心
+                语料
               </div>
               <p className="mt-2 text-sm text-cyan-600/70 dark:text-cyan-400/60">
                 {corpusWordCount > 0

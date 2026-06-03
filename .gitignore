@@ -26,6 +26,9 @@ build/
 .vercel
 dist-vercel-test/
 
+# 本地工具脚本（与项目无关）
+format_bp.py
+
 # 调试截图和测试结果
 screenshot_*.png
 test-results/

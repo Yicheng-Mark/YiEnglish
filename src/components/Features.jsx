@@ -30,7 +30,7 @@ const features = [
   },
   {
     icon: Monitor,
-    title: '语料中心',
+    title: '语料',
     desc: '视频语料，沉浸学习',
     path: '/listening',
     bg: 'bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/30',

@@ -518,7 +518,7 @@ body[data-scrolling="true"] .glow-border-subtle:hover {
   /* 左栏改为 grid：视频 1fr / 控件 auto / 字幕 1fr → 1:1 均分 */
   .corpus-tablet-wrapper .flex-\[45\] {
     display: grid !important;
-    grid-template-rows: 1fr auto 1fr;
+    grid-template-rows: 1.25fr auto 1fr;
     gap: 0.5rem !important;
     padding: 0.75rem !important;
   }
@@ -976,7 +976,7 @@ body[data-scrolling="true"] .glow-border-subtle:hover {
 }
 
 /* ============================================== */
-/*  Corpus / 语料中心：词性着色 + Cloze + 动态字幕   */
+/*  Corpus / 语料：词性着色 + Cloze + 动态字幕   */
 /*  - 词性颜色变量按主题分别定义                     */
 /*  - .dark 覆盖 gray + star（两者都有 dark 类）     */
 /*  - [data-theme="warm"] 单独覆盖                  */

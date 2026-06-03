@@ -92,6 +92,16 @@ function fallbackSpeak(text) {
 }
 
 function parseTrans(trans) {
+  if (!trans) return []
+  // 字符串格式："[n,v] 锻炼" 或 "[n] 锻炼; [v] 练习"
+  if (typeof trans === 'string') {
+    const items = trans.split(';').map(s => s.trim()).filter(Boolean)
+    return items.map((t) => {
+      const match = t.match(/^\s*\[([^\]]+)\]\s*(.*)$/)
+      if (match) return { pos: match[1].trim(), meaning: match[2].trim() }
+      return { pos: '', meaning: t }
+    })
+  }
   if (!Array.isArray(trans)) return []
   return trans.map((t) => {
     const match = t.match(/^\s*\[([^\]]+)\]\s*(.*)$/)

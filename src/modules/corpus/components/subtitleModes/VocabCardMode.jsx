@@ -6,9 +6,14 @@ import { VOCAB_FILTER_KEYS, VOCAB_FILTER_GROUPS } from '../../utils/wordColorMap
 import { getWordRect } from '../../../../utils/wordTokenize.jsx'
 
 function getFirstMeaning(trans) {
+  if (!trans) return ''
+  // 字符串格式：取第一个分号前的释义
+  if (typeof trans === 'string') {
+    const first = trans.split(';')[0].trim()
+    return first.replace(/^\s*\[[^\]]+\]\s*/, '').trim()
+  }
   if (!Array.isArray(trans) || trans.length === 0) return ''
   const first = String(trans[0] || '')
-  // 去掉前缀 [pos]
   return first.replace(/^\s*\[[^\]]+\]\s*/, '').trim()
 }
 

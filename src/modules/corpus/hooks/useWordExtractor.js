@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { DICT_PRIORITY, STOP_WORDS } from '../utils/wordColorMap.js'
+import { findWordInMap } from '../../../utils/readingWordBook.js'
 
 const PRIORITY_INDEX = (() => {
   const m = new Map()
@@ -39,7 +40,7 @@ export function useWordExtractor({ subtitles, wordMap, dictSourcesMap }) {
         const w = m[0].toLowerCase().replace(/[^a-z'-]/g, '')
         if (!w || w.length < 3) continue
         if (STOP_WORDS.has(w)) continue
-        if (!wordMap.has(w)) continue
+        if (!findWordInMap(w, wordMap)) continue
         if (!seen.has(w)) {
           const dictIds = dictSourcesMap?.get(w) ?? new Set()
           seen.set(w, { firstIndex: s, dictIds })
@@ -51,7 +52,7 @@ export function useWordExtractor({ subtitles, wordMap, dictSourcesMap }) {
     for (const [word, info] of seen.entries()) {
       out.push({
         word,
-        wordData: wordMap.get(word) || { name: word, trans: [] },
+        wordData: findWordInMap(word, wordMap) || { name: word, trans: [] },
         dictIds: info.dictIds,
         primaryDictId: pickPrimaryDict(info.dictIds),
         firstIndex: info.firstIndex,

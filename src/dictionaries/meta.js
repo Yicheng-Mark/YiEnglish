@@ -37,7 +37,9 @@ export const dictionaryMeta = [
   { id: 'business', name: '商务英语', category: '专业英语', description: '基于BEC官方词汇的商务场景核心词汇', totalWords: 66, color: warmColors[0] },
   { id: 'automotive', name: '汽修英语', category: '专业英语', description: '汽车维修专业英语词汇，涵盖发动机、传动系统、底盘、制动系统、电气系统等核心词汇', totalWords: 66, color: warmColors[1] },
   { id: 'chef', name: '厨师英语', category: '专业英语', description: '烹饪与厨师专业英语词汇，涵盖厨房职位、烹饪技法、工具设备、食材调料等核心词汇', totalWords: 70, color: warmColors[2] },
-  { id: 'electrician', name: '电工英语', category: '专业英语', description: '电气工程与电工专业英语词汇，涵盖基础电气概念、电气元件、电路术语、电力设备等核心词汇', totalWords: 70, color: warmColors[3] }
+  { id: 'electrician', name: '电工英语', category: '专业英语', description: '电气工程与电工专业英语词汇，涵盖基础电气概念、电气元件、电路术语、电力设备等核心词汇', totalWords: 70, color: warmColors[3] },
+  { id: 'marine_engineering', name: '轮机英语', category: '专业英语', description: '船舶轮机工程专业英语词汇，涵盖主机辅机、推进系统、管系阀件、电气设备、维护保养等核心词汇', totalWords: 59, color: warmColors[4] },
+  { id: 'foreign_trade', name: '外贸英语', category: '专业英语', description: '国际贸易实务专业英语词汇，涵盖贸易术语、支付方式、运输单证、海关报关、商务谈判等核心词汇', totalWords: 66, color: warmColors[5] }
 ].map(d => ({ ...d, totalChapters: Math.ceil(d.totalWords / CHAPTER_SIZE) }));
 
 export const categories = ['功能词本', '中学英语', '大学英语', '英专生英语', '留学英语', '考研英语', '专业英语'];
