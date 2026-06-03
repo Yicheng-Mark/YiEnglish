@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { Keyboard, BookOpen, Monitor, Target } from 'lucide-react'
+import { Keyboard, BookOpen, Monitor } from 'lucide-react'
 
 const features = [
   {
@@ -41,19 +41,6 @@ const features = [
     hoverBorder: 'hover:border-amber-400/60 dark:hover:border-amber-400/40',
     glow: 'group-hover:shadow-amber-200/60 dark:group-hover:shadow-amber-500/20',
   },
-  {
-    icon: Target,
-    title: '训练中心',
-    desc: '专项训练，全面提升',
-    path: '/training',
-    bg: 'bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-950/40 dark:to-pink-950/30',
-    color: 'text-rose-600 dark:text-rose-400',
-    iconBg: 'bg-rose-100 dark:bg-rose-500/20',
-    accent: 'from-rose-500 to-pink-500',
-    border: 'border-rose-200/50 dark:border-rose-500/20',
-    hoverBorder: 'hover:border-rose-400/60 dark:hover:border-rose-400/40',
-    glow: 'group-hover:shadow-rose-200/60 dark:group-hover:shadow-rose-500/20',
-  },
 ]
 
 function scrollToWordbooks() {
@@ -79,7 +66,7 @@ export default function Features() {
   return (
     <section className="w-full py-12 px-4 bg-slate-50 dark:bg-slate-950/50 transition-colors">
       <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
           {features.map((f, i) => {
             const Icon = f.icon
             return (

@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { ArrowRight, Bookmark, Volume2 } from 'lucide-react'
+import { ArrowRight, Bookmark } from 'lucide-react'
 import { formatLastRead } from '../hooks/useReadingStore'
 
 const CATEGORY_TAG = {
@@ -11,18 +11,6 @@ const CATEGORY_TAG = {
   '社会': 'bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-300',
   '环境': 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300',
   '经济': 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300',
-}
-
-const LEVEL_TAG = {
-  cet4: 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-300',
-  gaokao: 'bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-300',
-  cet6: 'bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-300',
-}
-
-const LEVEL_LABEL = {
-  cet4: 'CET-4',
-  gaokao: '高考',
-  cet6: 'CET-6',
 }
 
 const DEFAULT_TAG = 'bg-gray-100 text-gray-600 dark:bg-white/[0.06] dark:text-gray-300'
@@ -38,7 +26,6 @@ function ArticleCard({
   const tagClass = CATEGORY_TAG[article.category] || DEFAULT_TAG
   const dateLabel = formatLastRead(lastReadAt)
   const hasRead = readPercent > 0
-  const isListening = article.type === 'listening'
 
   return (
     <div
@@ -73,17 +60,6 @@ function ArticleCard({
               <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${tagClass}`}>
                 {article.category}
               </span>
-              {article.level && (
-                <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${LEVEL_TAG[article.level] || DEFAULT_TAG}`}>
-                  {LEVEL_LABEL[article.level] || article.level}
-                </span>
-              )}
-              {isListening && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300">
-                  <Volume2 className="w-3 h-3" />
-                  听力
-                </span>
-              )}
             </div>
           </div>
         </div>

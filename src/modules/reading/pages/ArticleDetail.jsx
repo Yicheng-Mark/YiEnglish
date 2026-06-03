@@ -360,10 +360,6 @@ export default function ArticleDetail() {
           </div>
           <div className="flex items-center gap-1.5">
             <FileText className="w-3.5 h-3.5" />
-            <span>{article.type === 'listening' ? '听力' : '阅读'}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <FileText className="w-3.5 h-3.5" />
             <span>{article.wordCount} 词</span>
           </div>
         </div>
