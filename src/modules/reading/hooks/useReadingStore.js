@@ -57,11 +57,48 @@ function persist() {
   listeners.forEach((fn) => fn())
 }
 
+// Module-level helper functions for time tracking
+function _addTypingSeconds(seconds) {
+  const sec = Math.floor(seconds)
+  if (!Number.isFinite(sec) || sec < 1) return
+  const key = todayKey()
+  const prev = cache.dailyTypingSeconds[key] || 0
+  cache = {
+    ...cache,
+    dailyTypingSeconds: { ...cache.dailyTypingSeconds, [key]: prev + sec },
+  }
+  persist()
+}
+
+function _addReadingSeconds(seconds) {
+  const sec = Math.floor(seconds)
+  if (!Number.isFinite(sec) || sec < 1) return
+  const key = todayKey()
+  const prev = cache.dailyReadingSeconds[key] || 0
+  cache = {
+    ...cache,
+    dailyReadingSeconds: { ...cache.dailyReadingSeconds, [key]: prev + sec },
+  }
+  persist()
+}
+
+function _addListeningSeconds(seconds) {
+  const sec = Math.floor(seconds)
+  if (!Number.isFinite(sec) || sec < 1) return
+  const key = todayKey()
+  const prev = cache.dailyListeningSeconds[key] || 0
+  cache = {
+    ...cache,
+    dailyListeningSeconds: { ...cache.dailyListeningSeconds, [key]: prev + sec },
+  }
+  persist()
+}
+
 export function getReadingStoreActions() {
   return {
-    addTypingSeconds(sec) { addTypingSeconds(sec) },
-    addReadingSeconds(sec) { addReadingSeconds(sec) },
-    addListeningSeconds(sec) { addListeningSeconds(sec) },
+    addTypingSeconds: _addTypingSeconds,
+    addReadingSeconds: _addReadingSeconds,
+    addListeningSeconds: _addListeningSeconds,
   }
 }
 
@@ -126,17 +163,7 @@ export function useReadingStore() {
       cache = { ...cache, filters: { ...cache.filters, ...partial } }
       persist()
     },
-    addReadingSeconds(seconds) {
-      const sec = Math.floor(seconds)
-      if (!Number.isFinite(sec) || sec < 1) return
-      const key = todayKey()
-      const prev = cache.dailyReadingSeconds[key] || 0
-      cache = {
-        ...cache,
-        dailyReadingSeconds: { ...cache.dailyReadingSeconds, [key]: prev + sec },
-      }
-      persist()
-    },
+    addReadingSeconds: _addReadingSeconds,
     getDailySeconds(dateKey) {
       return cache.dailyReadingSeconds[dateKey] || 0
     },
@@ -162,28 +189,8 @@ export function useReadingStore() {
         Object.values(cache.dailyListeningSeconds).reduce((sum, n) => sum + (n || 0), 0)
       )
     },
-    addTypingSeconds(seconds) {
-      const sec = Math.floor(seconds)
-      if (!Number.isFinite(sec) || sec < 1) return
-      const key = todayKey()
-      const prev = cache.dailyTypingSeconds[key] || 0
-      cache = {
-        ...cache,
-        dailyTypingSeconds: { ...cache.dailyTypingSeconds, [key]: prev + sec },
-      }
-      persist()
-    },
-    addListeningSeconds(seconds) {
-      const sec = Math.floor(seconds)
-      if (!Number.isFinite(sec) || sec < 1) return
-      const key = todayKey()
-      const prev = cache.dailyListeningSeconds[key] || 0
-      cache = {
-        ...cache,
-        dailyListeningSeconds: { ...cache.dailyListeningSeconds, [key]: prev + sec },
-      }
-      persist()
-    },
+    addTypingSeconds: _addTypingSeconds,
+    addListeningSeconds: _addListeningSeconds,
     getCompletedArticleCount() {
       return Object.values(cache.readProgress).filter((p) => p >= 100).length
     },

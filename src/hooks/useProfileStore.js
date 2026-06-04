@@ -8,6 +8,7 @@ const defaultState = {
   signature: '',
   avatar: '',
   dailyGoalMinutes: 30,
+  dailyWordGoal: 20,
 }
 
 function loadFromStorage() {
@@ -21,6 +22,7 @@ function loadFromStorage() {
       signature: typeof parsed.signature === 'string' ? parsed.signature : defaultState.signature,
       avatar: typeof parsed.avatar === 'string' ? parsed.avatar : defaultState.avatar,
       dailyGoalMinutes: typeof parsed.dailyGoalMinutes === 'number' ? parsed.dailyGoalMinutes : defaultState.dailyGoalMinutes,
+      dailyWordGoal: typeof parsed.dailyWordGoal === 'number' ? parsed.dailyWordGoal : defaultState.dailyWordGoal,
     }
   } catch {
     return { ...defaultState }
@@ -61,6 +63,7 @@ export function useProfileStore() {
       if (user.signature != null && user.signature !== cache.signature) { cache = { ...cache, signature: user.signature }; changed = true }
       if (user.avatar && user.avatar !== cache.avatar) { cache = { ...cache, avatar: user.avatar }; changed = true }
       if (user.dailyGoalMinutes && user.dailyGoalMinutes !== cache.dailyGoalMinutes) { cache = { ...cache, dailyGoalMinutes: user.dailyGoalMinutes }; changed = true }
+      if (user.dailyWordGoal && user.dailyWordGoal !== cache.dailyWordGoal) { cache = { ...cache, dailyWordGoal: user.dailyWordGoal }; changed = true }
       if (changed) persist()
     }
   }, [user])
@@ -70,6 +73,7 @@ export function useProfileStore() {
     signature: cache.signature,
     avatar: cache.avatar,
     dailyGoalMinutes: cache.dailyGoalMinutes,
+    dailyWordGoal: cache.dailyWordGoal,
     setNickname(name) {
       const trimmed = name.trim()
       if (!trimmed) return
@@ -92,6 +96,12 @@ export function useProfileStore() {
       cache = { ...cache, dailyGoalMinutes: clamped }
       persist()
       updateProfile({ dailyGoalMinutes: clamped }).catch(() => {})
+    },
+    setDailyWordGoal(n) {
+      const clamped = Math.max(5, Math.min(200, Math.round(n)))
+      cache = { ...cache, dailyWordGoal: clamped }
+      persist()
+      updateProfile({ dailyWordGoal: clamped }).catch(() => {})
     },
   }
 }

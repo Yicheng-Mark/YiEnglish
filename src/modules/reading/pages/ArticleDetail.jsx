@@ -9,8 +9,8 @@ import {
   addToReadingWordBook,
   isInReadingWordBook,
   removeFromReadingWordBook,
-  findWordInMap,
 } from '../../../utils/readingWordBook.js'
+import { findWordInMap } from '../../../utils/wordLookup.js'
 import {
   tokenizeText,
 } from '../../../utils/wordTokenize.jsx'

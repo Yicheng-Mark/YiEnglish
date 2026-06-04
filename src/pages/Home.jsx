@@ -411,16 +411,16 @@ function Home() {
           {showFunctionBooks && match(['复习计划']) && <ReviewCard
             dueCount={reviewDueCount}
             totalCount={reviewTotalCount}
-            onClick={() => saveScrollAndNavigate('/dict/review')}
+            onClick={() => saveScrollAndNavigate('/review/setup/review')}
           />}
           {/* 错题本卡片 */}
           {showFunctionBooks && match(['错题本']) && <ErrorBookCard
             count={errorBookCount}
-            onClick={() => saveScrollAndNavigate('/dict/error-book')}
+            onClick={() => saveScrollAndNavigate('/review/setup/error-book')}
           />}
           {/* 阅读词本卡片 */}
           {showFunctionBooks && match(['阅读词本']) && <div
-            onClick={() => saveScrollAndNavigate('/dict/reading-word-book')}
+            onClick={() => saveScrollAndNavigate('/review/setup/reading-word-book')}
             className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-purple-50 p-6 cursor-pointer hover:shadow-lg hover:border-violet-300 dark:border-violet-900/40 dark:from-violet-950/30 dark:to-purple-950/20 dark:hover:border-violet-700/60 dark:hover:shadow-violet-900/20 animate-card-enter glow-border-subtle transition-all duration-150 active:scale-[0.98]"
           >
             <div className="absolute top-0 left-0 w-full h-1 bg-violet-500 opacity-80" />
@@ -450,7 +450,7 @@ function Home() {
           </div>}
           {/* 语料词本卡片 */}
           {showFunctionBooks && match(['语料词本']) && <div
-            onClick={() => saveScrollAndNavigate('/dict/corpus-word-book')}
+            onClick={() => saveScrollAndNavigate('/review/setup/corpus-word-book')}
             className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border-2 border-cyan-200 bg-gradient-to-br from-cyan-50 to-sky-50 p-6 cursor-pointer hover:shadow-lg hover:border-cyan-300 dark:border-cyan-900/40 dark:from-cyan-950/30 dark:to-sky-950/20 dark:hover:border-cyan-700/60 dark:hover:shadow-cyan-900/20 animate-card-enter glow-border-subtle transition-all duration-150 active:scale-[0.98]"
           >
             <div className="absolute top-0 left-0 w-full h-1 bg-cyan-500 opacity-80" />
@@ -481,7 +481,7 @@ function Home() {
           </div>}
           {/* 收藏词本卡片 */}
           {showFunctionBooks && match(['收藏词本']) && <div
-            onClick={() => saveScrollAndNavigate('/dict/favorite-words')}
+            onClick={() => saveScrollAndNavigate('/review/setup/favorite-words')}
             className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-50 p-6 cursor-pointer hover:shadow-lg hover:border-amber-300 dark:border-amber-900/40 dark:from-amber-950/30 dark:to-yellow-950/20 dark:hover:border-amber-700/60 dark:hover:shadow-amber-900/20 animate-card-enter glow-border-subtle transition-all duration-150 active:scale-[0.98]"
           >
             <div className="absolute top-0 left-0 w-full h-1 bg-amber-500 opacity-80" />

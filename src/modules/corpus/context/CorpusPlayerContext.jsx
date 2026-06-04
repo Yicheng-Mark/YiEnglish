@@ -13,7 +13,7 @@ import {
   isInCorpusWordBook,
   removeFromCorpusWordBook,
 } from '../../../utils/corpusWordBook.js'
-import { findWordInMap } from '../../../utils/readingWordBook.js'
+import { findWordInMap } from '../../../utils/wordLookup.js'
 import { useCorpusPlayer } from '../hooks/useCorpusPlayer.js'
 import { useCorpusSettings } from '../hooks/useCorpusSettings.js'
 import { useWordExtractor } from '../hooks/useWordExtractor.js'

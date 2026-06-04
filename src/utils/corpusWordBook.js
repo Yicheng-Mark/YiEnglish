@@ -1,13 +1,32 @@
 import { addWordToBook, removeWordFromBook, fetchWordBook, replaceWordBook } from '../lib/api-wordbooks'
+import { idbPut, idbDelete, idbClear, idbBulkPut } from './idb.js'
+import { findWordInMap } from './wordLookup.js'
 
 const STORAGE_KEY = 'lingoforge_corpus_words';
+
+// 内存缓存：words 数组
+let _cache = null;
+
+function isMigrated() {
+  return localStorage.getItem(STORAGE_KEY + '_migrated') === '1';
+}
+
+function ensureCache() {
+  if (_cache !== null) return;
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    _cache = saved ? JSON.parse(saved).words || [] : [];
+  } catch {
+    _cache = [];
+  }
+}
 
 let dictWordMap = null;
 
 async function buildDictWordMap() {
   if (dictWordMap) return dictWordMap;
   dictWordMap = new Map();
-  const dictIds = ['junior', 'zhongkao', 'senior', 'gaokao', 'cet4', 'cet4freq', 'cet6', 'cet6freq', 'tem4', 'tem8', 'ielts', 'toefl', 'sat', 'postgraduate', 'programmer'];
+  const dictIds = ['junior', 'zhongkao', 'senior', 'gaokao', 'cet4', 'cet4freq', 'cet6', 'cet6freq', 'tem4', 'tem8', 'ielts', 'toefl', 'sat', 'postgraduate', 'postgraduateCore', 'programmer'];
   for (const id of dictIds) {
     try {
       const mod = await import(`../dictionaries/${id}.json`);
@@ -24,27 +43,6 @@ async function buildDictWordMap() {
     }
   }
   return dictWordMap;
-}
-
-function findWordInMap(wordName, map) {
-  const key = wordName.toLowerCase();
-  if (map.has(key)) return map.get(key);
-
-  const fallbacks = [];
-  if (key.endsWith('ies')) fallbacks.push(key.slice(0, -3) + 'y');
-  else if (key.endsWith('es')) fallbacks.push(key.slice(0, -2));
-  else if (key.endsWith('s')) fallbacks.push(key.slice(0, -1));
-
-  if (key.endsWith('ied')) fallbacks.push(key.slice(0, -3) + 'y');
-  else if (key.endsWith('ed')) fallbacks.push(key.slice(0, -2), key.slice(0, -1));
-
-  if (key.endsWith('ying')) fallbacks.push(key.slice(0, -3) + 'ie');
-  else if (key.endsWith('ing')) fallbacks.push(key.slice(0, -3), key.slice(0, -3) + 'e');
-
-  for (const fb of fallbacks) {
-    if (map.has(fb)) return map.get(fb);
-  }
-  return null;
 }
 
 export async function enrichCorpusWordBook() {
@@ -76,12 +74,20 @@ export async function enrichCorpusWordBook() {
   });
 
   if (changed) {
+    if (isMigrated()) {
+      _cache = enriched;
+      idbBulkPut('corpusWords', enriched).catch(e => console.warn('[IDB] corpusWords bulkPut failed:', e));
+    }
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ words: enriched }));
     replaceWordBook('corpus', enriched).catch(e => console.warn('Sync enriched corpus words failed:', e))
   }
 }
 
 export function getCorpusWordBook() {
+  if (isMigrated()) {
+    ensureCache();
+    return { words: _cache };
+  }
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     return saved ? JSON.parse(saved) : { words: [] };
@@ -92,22 +98,40 @@ export function getCorpusWordBook() {
 
 export function addToCorpusWordBook(wordInfo) {
   try {
-    const data = getCorpusWordBook();
-    const words = data.words || [];
-    const existingIndex = words.findIndex((w) => w.name === wordInfo.name);
-    if (existingIndex !== -1) {
-      words[existingIndex] = {
-        ...words[existingIndex],
-        ...wordInfo,
-        addTime: words[existingIndex].addTime || Date.now(),
-      };
+    if (isMigrated()) {
+      ensureCache();
+      const existingIndex = _cache.findIndex((w) => w.name === wordInfo.name);
+      if (existingIndex !== -1) {
+        _cache[existingIndex] = {
+          ..._cache[existingIndex],
+          ...wordInfo,
+          addTime: _cache[existingIndex].addTime || Date.now(),
+        };
+        idbPut('corpusWords', _cache[existingIndex]).catch(e => console.warn('[IDB] corpusWords put failed:', e));
+      } else {
+        const entry = { ...wordInfo, addTime: Date.now() };
+        _cache.unshift(entry);
+        idbPut('corpusWords', entry).catch(e => console.warn('[IDB] corpusWords put failed:', e));
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ words: _cache }));
     } else {
-      words.unshift({
-        ...wordInfo,
-        addTime: Date.now(),
-      });
+      const data = getCorpusWordBook();
+      const words = data.words || [];
+      const existingIndex = words.findIndex((w) => w.name === wordInfo.name);
+      if (existingIndex !== -1) {
+        words[existingIndex] = {
+          ...words[existingIndex],
+          ...wordInfo,
+          addTime: words[existingIndex].addTime || Date.now(),
+        };
+      } else {
+        words.unshift({
+          ...wordInfo,
+          addTime: Date.now(),
+        });
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ words }));
     }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ words }));
 
     addWordToBook('corpus', wordInfo).catch(e => console.warn('Sync corpus add failed:', e))
   } catch (e) {
@@ -117,9 +141,16 @@ export function addToCorpusWordBook(wordInfo) {
 
 export function removeFromCorpusWordBook(wordName) {
   try {
-    const data = getCorpusWordBook();
-    const words = (data.words || []).filter((w) => w.name !== wordName);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ words }));
+    if (isMigrated()) {
+      ensureCache();
+      _cache = _cache.filter((w) => w.name !== wordName);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ words: _cache }));
+      idbDelete('corpusWords', wordName).catch(e => console.warn('[IDB] corpusWords delete failed:', e));
+    } else {
+      const data = getCorpusWordBook();
+      const words = (data.words || []).filter((w) => w.name !== wordName);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ words }));
+    }
 
     removeWordFromBook('corpus', wordName).catch(e => console.warn('Sync corpus remove failed:', e))
   } catch (e) {
@@ -179,6 +210,11 @@ export function loadCorpusWordBookAsDictionary() {
 export async function syncCorpusWordBookFromServer() {
   try {
     const data = await fetchWordBook('corpus')
+    if (isMigrated()) {
+      _cache = data.words || [];
+      await idbClear('corpusWords');
+      await idbBulkPut('corpusWords', _cache);
+    }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
   } catch (e) {
     console.warn('Sync corpus word book from server failed:', e)

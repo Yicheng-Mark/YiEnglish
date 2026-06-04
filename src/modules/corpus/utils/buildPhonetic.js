@@ -1,5 +1,5 @@
 import { tokenizeEnglish } from './wordColorMap.js'
-import { findWordInMap } from '../../../utils/readingWordBook.js'
+import { findWordInMap } from '../../../utils/wordLookup.js'
 
 function stripSlashes(s) {
   if (!s) return s

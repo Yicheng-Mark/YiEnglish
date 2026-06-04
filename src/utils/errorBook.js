@@ -1,33 +1,76 @@
 import { addWordToBook, removeWordFromBook, clearWordBook, fetchWordBook } from '../lib/api-wordbooks'
+import { idbPut, idbDelete, idbClear, idbBulkPut } from './idb.js'
 
 const STORAGE_KEY = 'typingword_wrong';
 
-export function addToErrorBook({ word, trans, notation, dictName }) {
+// 内存缓存：迁移后同步读走的路径
+let _cache = null;
+
+function isMigrated() {
+  return localStorage.getItem(STORAGE_KEY + '_migrated') === '1';
+}
+
+/** 从 localStorage 加载缓存（迁移后 localStorage 数据仍保留，可做 bootstrap） */
+function ensureCache() {
+  if (_cache !== null) return;
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    const data = saved ? JSON.parse(saved) : { words: [] };
-    const words = data.words || [];
+    _cache = saved ? JSON.parse(saved).words || [] : [];
+  } catch {
+    _cache = [];
+  }
+}
 
-    const existingIndex = words.findIndex(w => w.name === word);
-    if (existingIndex !== -1) {
-      words[existingIndex].wrongCount = (words[existingIndex].wrongCount || 1) + 1;
-      words[existingIndex].trans = Array.isArray(trans) ? trans : (trans ? trans.split('; ') : []);
-      words[existingIndex].notation = notation || words[existingIndex].notation;
-      words[existingIndex].dictName = dictName || words[existingIndex].dictName;
-      words[existingIndex].lastWrongTime = Date.now();
+export function addToErrorBook({ word, trans, notation, dictName }) {
+  try {
+    if (isMigrated()) {
+      ensureCache();
+      const existingIndex = _cache.findIndex(w => w.name === word);
+      if (existingIndex !== -1) {
+        _cache[existingIndex].wrongCount = (_cache[existingIndex].wrongCount || 1) + 1;
+        _cache[existingIndex].trans = Array.isArray(trans) ? trans : (trans ? trans.split('; ') : []);
+        _cache[existingIndex].notation = notation || _cache[existingIndex].notation;
+        _cache[existingIndex].dictName = dictName || _cache[existingIndex].dictName;
+        _cache[existingIndex].lastWrongTime = Date.now();
+      } else {
+        _cache.unshift({
+          name: word,
+          trans: Array.isArray(trans) ? trans : (trans ? trans.split('; ') : []),
+          notation: notation || '',
+          dictName: dictName || '',
+          wrongCount: 1,
+          addTime: Date.now(),
+          lastWrongTime: Date.now(),
+        });
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ words: _cache }));
+      idbPut('errorBook', existingIndex !== -1 ? _cache[existingIndex] : _cache[0]).catch(e => console.warn('[IDB] errorBook put failed:', e));
     } else {
-      words.unshift({
-        name: word,
-        trans: Array.isArray(trans) ? trans : (trans ? trans.split('; ') : []),
-        notation: notation || '',
-        dictName: dictName || '',
-        wrongCount: 1,
-        addTime: Date.now(),
-        lastWrongTime: Date.now(),
-      });
-    }
+      const saved = localStorage.getItem(STORAGE_KEY);
+      const data = saved ? JSON.parse(saved) : { words: [] };
+      const words = data.words || [];
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ words }));
+      const existingIndex = words.findIndex(w => w.name === word);
+      if (existingIndex !== -1) {
+        words[existingIndex].wrongCount = (words[existingIndex].wrongCount || 1) + 1;
+        words[existingIndex].trans = Array.isArray(trans) ? trans : (trans ? trans.split('; ') : []);
+        words[existingIndex].notation = notation || words[existingIndex].notation;
+        words[existingIndex].dictName = dictName || words[existingIndex].dictName;
+        words[existingIndex].lastWrongTime = Date.now();
+      } else {
+        words.unshift({
+          name: word,
+          trans: Array.isArray(trans) ? trans : (trans ? trans.split('; ') : []),
+          notation: notation || '',
+          dictName: dictName || '',
+          wrongCount: 1,
+          addTime: Date.now(),
+          lastWrongTime: Date.now(),
+        });
+      }
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ words }));
+    }
 
     addWordToBook('error', { name: word, trans, notation, dictName }).catch(e => console.warn('Sync error add failed:', e))
   } catch (e) {
@@ -36,6 +79,10 @@ export function addToErrorBook({ word, trans, notation, dictName }) {
 }
 
 export function getErrorBook() {
+  if (isMigrated()) {
+    ensureCache();
+    return { words: _cache };
+  }
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     return saved ? JSON.parse(saved) : { words: [] };
@@ -46,10 +93,17 @@ export function getErrorBook() {
 
 export function removeFromErrorBook(wordName) {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    const data = saved ? JSON.parse(saved) : { words: [] };
-    const words = (data.words || []).filter(w => w.name !== wordName);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ words }));
+    if (isMigrated()) {
+      ensureCache();
+      _cache = _cache.filter(w => w.name !== wordName);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ words: _cache }));
+      idbDelete('errorBook', wordName).catch(e => console.warn('[IDB] errorBook delete failed:', e));
+    } else {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      const data = saved ? JSON.parse(saved) : { words: [] };
+      const words = (data.words || []).filter(w => w.name !== wordName);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ words }));
+    }
 
     removeWordFromBook('error', wordName).catch(e => console.warn('Sync error remove failed:', e))
   } catch (e) {
@@ -58,7 +112,13 @@ export function removeFromErrorBook(wordName) {
 }
 
 export function clearErrorBook() {
-  localStorage.removeItem(STORAGE_KEY);
+  if (isMigrated()) {
+    _cache = [];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ words: [] }));
+    idbClear('errorBook').catch(e => console.warn('[IDB] errorBook clear failed:', e));
+  } else {
+    localStorage.removeItem(STORAGE_KEY);
+  }
 
   clearWordBook('error').catch(e => console.warn('Sync error clear failed:', e))
 }
@@ -110,6 +170,11 @@ export function loadErrorBookAsDictionary() {
 export async function syncErrorBookFromServer() {
   try {
     const data = await fetchWordBook('error')
+    if (isMigrated()) {
+      _cache = data.words || [];
+      await idbClear('errorBook');
+      await idbBulkPut('errorBook', _cache);
+    }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
   } catch (e) {
     console.warn('Sync error book from server failed:', e)

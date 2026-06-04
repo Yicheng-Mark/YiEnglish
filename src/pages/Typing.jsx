@@ -23,6 +23,7 @@ import { saveProgress } from '../lib/api.js';
 import { saveLocalProgress } from '../utils/localProgress.js';
 import { addWordToReview, updateReviewCard } from '../utils/reviewCards.js';
 import { useWordContext } from '../contexts/WordContext.jsx';
+import useErrorTracking from '../hooks/useErrorTracking.js';
 
 export default function Typing() {
   const { dictId, chapterId } = useParams();
@@ -61,6 +62,7 @@ export default function Typing() {
   const targetWordIndex = parseInt(searchParams.get('wordIndex')) || 0;
 
   const { config, toggleConfig, updateConfig, theme, setTheme } = useUserConfig();
+  const { onError: onErrorTracking } = useErrorTracking();
 
   useEffect(() => {
     setLoading(true); setError(null); hasJumpedRef.current = false;
@@ -120,7 +122,7 @@ export default function Typing() {
     else if (isFavoriteWordBookMode) removeFromFavoriteWords(wordName);
   }, [isReviewMode, isErrorBookMode, isReadingWordBookMode, isCorpusWordBookMode, isFavoriteWordBookMode]);
 
-  const { currentWord, currentInput, wordIndex, stats, isFinished, handleInput, jumpTo, reset, isWrong, startTime, lastWordHadErrorRef } = useTyping(words, config.soundEnabled, config.wordRepeatCount, isErrorBookMode, dictName, config.autoRemoveErrorWord, handleWordComplete, handleAutoRemove);
+  const { currentWord, currentInput, wordIndex, stats, isFinished, handleInput, jumpTo, reset, isWrong, startTime, lastWordHadErrorRef } = useTyping(words, config.soundEnabled, config.wordRepeatCount, isErrorBookMode, dictName, config.autoRemoveErrorWord, handleWordComplete, handleAutoRemove, onErrorTracking);
   const { setCurrentWord } = useWordContext();
   useEffect(() => { setCurrentWord(currentWord); return () => setCurrentWord(null) }, [currentWord, setCurrentWord]);
   const studyStore = useReadingStore();
@@ -243,7 +245,7 @@ export default function Typing() {
 
   // 页面加载/章节切换后自动聚焦隐藏输入框并清空残留
   useEffect(() => {
-    if (words.length > 0 && hiddenInputRef.current) {
+    if (!loading && words.length > 0 && hiddenInputRef.current) {
       setTimeout(() => {
         if (isMobile && !keyboardActiveRef.current) return;
         if (isMobile) {
@@ -256,7 +258,7 @@ export default function Typing() {
         setInputValue('');
       }, 300);
     }
-  }, [words, isMobile]);
+  }, [loading, isMobile]);
 
   // 同步 keyboardActive 到 ref，避免 setTimeout 闭包 stale
   useEffect(() => { keyboardActiveRef.current = keyboardActive; }, [keyboardActive]);
@@ -320,8 +322,12 @@ export default function Typing() {
     if (isMobile) return;
     const onKeyDown = (e) => {
       if (isFinished) return;
-      if (isComposingRef.current) return;
+      // Windows IME 发送 Process 键，跳过（字符通过 compositionEnd 或 onChange 到达）
       if (e.key === 'Process') return;
+      // Edge bug: 中文 IME 英文模式下 compositionEnd 不触发，isComposingRef 卡在 true。
+      // 用原生 e.isComposing 检测：如果浏览器认为合成已结束，立即重置 ref
+      if (!e.isComposing) isComposingRef.current = false;
+      if (isComposingRef.current) return;
       if (isWordListOpen) return;
       if ((e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') && e.target !== hiddenInputRef.current) return;
       if (e.key === 'Tab' || e.key === 'ArrowRight') {
@@ -360,9 +366,13 @@ export default function Typing() {
     if (isFinished) return;
     // 桌面端：keydown 负责处理输入，onChange 处理 IME 插入的英文字符
     if (!isMobile) {
-      if (isComposingRef.current) {
-        inputValueRef.current = '';
-        setInputValue('');
+      // Edge/Windows IME bug: compositionEnd 可能不触发，但 input 事件仍会到达。
+      // 用 inputType 区分：insertCompositionText = 拼音合成中（跳过），insertText = 已提交（处理）
+      const inputType = e.nativeEvent?.inputType;
+      if (inputType === 'insertCompositionText') {
+        // 中文模式拼音合成中，记录但不处理
+        inputValueRef.current = e.target.value;
+        setInputValue(e.target.value);
         return;
       }
       const newVal = e.target.value;
@@ -373,6 +383,7 @@ export default function Typing() {
       }
       inputValueRef.current = '';
       setInputValue('');
+      isComposingRef.current = false;
       return;
     }
     // 移动端：不做任何合成状态检查，直接处理所有输入
@@ -589,7 +600,7 @@ export default function Typing() {
 
   return (
     <div
-      className="h-[var(--vv-height,calc(100dvh-3rem))] md:h-[calc(100vh-4rem)] flex bg-background dark:bg-transparent transition-colors duration-500 animate-page-fade-in overflow-hidden"
+      className="h-[var(--vv-height,calc(100dvh-3rem))] md:h-[calc(100vh-4rem)] flex bg-background dark:bg-transparent transition-colors duration-500 overflow-hidden"
       style={
         isMobile && viewportHeight
           ? { '--vv-height': `calc(${viewportHeight}px - 3rem)` }
@@ -742,7 +753,7 @@ export default function Typing() {
             )}
 
             <div className="shrink-0">
-              <WordDisplay key={wordIndex} word={currentWord} currentInput={currentInput} isWrong={isWrong} />
+              <WordDisplay key={currentWord?.name} word={currentWord} currentInput={currentInput} isWrong={isWrong} />
             </div>
 
             {currentWord?.trans && showTranslation && (

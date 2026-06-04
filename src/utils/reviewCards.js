@@ -1,8 +1,44 @@
 import { apiFetchReviewCards, apiUpsertReviewCards, apiAddReviewCard } from '../lib/api-review'
+import { idbPut, idbClear, idbBulkPut } from './idb.js'
 
 const STORAGE_KEY = 'lingoforge_review_cards'
 const DAY_MS = 24 * 60 * 60 * 1000
 const CHAPTER_SIZE = 25
+
+// 内存缓存：{ [wordName]: cardObj }
+let _cache = null;
+
+function isMigrated() {
+  return localStorage.getItem(STORAGE_KEY + '_migrated') === '1';
+}
+
+function ensureCache() {
+  if (_cache !== null) return;
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    const data = saved ? JSON.parse(saved) : { cards: {} };
+    _cache = data.cards || {};
+  } catch {
+    _cache = {};
+  }
+}
+
+function getCards() {
+  if (isMigrated()) {
+    ensureCache();
+    return { cards: _cache };
+  }
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : { cards: {} };
+  } catch {
+    return { cards: {} };
+  }
+}
+
+function saveCards(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+}
 
 let dictWordMap = null
 
@@ -24,24 +60,9 @@ async function buildDictWordMap() {
   return dictWordMap
 }
 
-function getCards() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY)
-    return saved ? JSON.parse(saved) : { cards: {} }
-  } catch {
-    return { cards: {} }
-  }
-}
-
-function saveCards(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
-}
-
 export function addWordToReview(wordName, dictId) {
   try {
-    const data = getCards()
-    if (data.cards[wordName]) return
-    data.cards[wordName] = {
+    const card = {
       wordName,
       dictId,
       nextReview: Date.now() + DAY_MS,
@@ -51,7 +72,19 @@ export function addWordToReview(wordName, dictId) {
       lastReviewAt: null,
       lastQuality: null,
     }
-    saveCards(data)
+
+    if (isMigrated()) {
+      ensureCache();
+      if (_cache[wordName]) return;
+      _cache[wordName] = card;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ cards: _cache }));
+      idbPut('reviewCards', card).catch(e => console.warn('[IDB] reviewCards put failed:', e));
+    } else {
+      const data = getCards();
+      if (data.cards[wordName]) return;
+      data.cards[wordName] = card;
+      saveCards(data);
+    }
 
     apiAddReviewCard(wordName, dictId).catch(e => console.warn('Sync review add failed:', e))
   } catch (e) {
@@ -61,11 +94,11 @@ export function addWordToReview(wordName, dictId) {
 
 export function updateReviewCard(wordName, quality) {
   try {
-    const data = getCards()
-    const card = data.cards[wordName]
-    if (!card) return
+    const data = getCards();
+    const card = data.cards[wordName];
+    if (!card) return;
 
-    let { interval, easeFactor, repetitions } = card
+    let { interval, easeFactor, repetitions } = card;
 
     if (quality >= 3) {
       repetitions += 1
@@ -87,11 +120,36 @@ export function updateReviewCard(wordName, quality) {
     card.lastQuality = quality
     card.nextReview = Date.now() + interval * DAY_MS
 
-    saveCards(data)
+    if (isMigrated()) {
+      // _cache already updated (card is a reference from _cache)
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ cards: _cache }));
+      idbPut('reviewCards', card).catch(e => console.warn('[IDB] reviewCards put failed:', e));
+    } else {
+      saveCards(data);
+    }
 
     apiUpsertReviewCards([{ wordName, dictId: card.dictId, nextReview: card.nextReview, interval, easeFactor, repetitions, lastReviewAt: card.lastReviewAt, lastQuality: quality }]).catch(e => console.warn('Sync review update failed:', e))
   } catch (e) {
     console.error('Failed to update review card:', e)
+  }
+}
+
+export function removeFromReviewCards(wordName) {
+  try {
+    if (isMigrated()) {
+      ensureCache();
+      if (!_cache[wordName]) return;
+      delete _cache[wordName];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ cards: _cache }));
+      idbDelete('reviewCards', wordName).catch(e => console.warn('[IDB] reviewCards delete failed:', e));
+    } else {
+      const data = getCards();
+      if (!data.cards[wordName]) return;
+      delete data.cards[wordName];
+      saveCards(data);
+    }
+  } catch (e) {
+    console.error('Failed to remove review card:', e);
   }
 }
 
@@ -162,6 +220,13 @@ export async function loadReviewAsDictionary() {
 export async function syncReviewCardsFromServer() {
   try {
     const data = await apiFetchReviewCards()
+    if (isMigrated()) {
+      // 服务器返回 { cards: { [name]: card } }
+      _cache = data.cards || {};
+      const items = Object.values(_cache);
+      await idbClear('reviewCards');
+      await idbBulkPut('reviewCards', items);
+    }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
   } catch (e) {
     console.warn('Sync review cards from server failed:', e)

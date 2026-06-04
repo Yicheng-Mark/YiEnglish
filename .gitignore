@@ -33,3 +33,4 @@ format_bp.py
 screenshot_*.png
 test-results/
 reports/
+verify-screenshots/

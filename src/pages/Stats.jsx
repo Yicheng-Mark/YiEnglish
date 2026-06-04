@@ -2,7 +2,10 @@ import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Clock, BookOpen, Calendar, Keyboard, Headphones, ArrowLeft } from 'lucide-react'
 import { useReadingStore } from '../modules/reading/hooks/useReadingStore'
+import { useProfileStore } from '../hooks/useProfileStore'
+import { calculateStreak } from '../utils/streak'
 import StudyCalendar from '../components/StudyCalendar'
+import StreakCard from '../components/StreakCard'
 
 const WEEKDAY_LABEL = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
 
@@ -123,6 +126,16 @@ function WeeklyChart({ days }) {
 export default function Stats() {
   const navigate = useNavigate()
   const store = useReadingStore()
+  const { dailyGoalMinutes } = useProfileStore()
+
+  const streak = useMemo(() => {
+    const merged = {}
+    const addMap = (map) => { for (const [k, v] of Object.entries(map)) merged[k] = (merged[k] || 0) + v }
+    addMap(store.dailyReadingSeconds)
+    addMap(store.dailyTypingSeconds)
+    addMap(store.dailyListeningSeconds)
+    return calculateStreak(merged, dailyGoalMinutes)
+  }, [store.dailyReadingSeconds, store.dailyTypingSeconds, store.dailyListeningSeconds, dailyGoalMinutes])
 
   const days = useMemo(() => {
     const today = new Date()
@@ -161,6 +174,9 @@ export default function Stats() {
           <p className="text-content-secondary dark:text-gray-400">让每一次进步都看得见。</p>
         </header>
 
+        {/* Streak 打卡 */}
+        <StreakCard streak={streak} />
+
         <div className="grid grid-cols-2 gap-4 md:gap-5 mb-6 md:mb-8">
           <StatsCard
             label="累计学习"
@@ -189,7 +205,9 @@ export default function Stats() {
         </div>
 
         <StudyCalendar store={store} />
-        <WeeklyChart days={days} />
+        <div className="mt-6 md:mt-8">
+          <WeeklyChart days={days} />
+        </div>
       </div>
     </div>
   )

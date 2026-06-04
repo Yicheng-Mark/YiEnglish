@@ -1,10 +1,37 @@
 const express = require('express')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
+const fs = require('fs')
 const path = require('path')
 const config = require('./config')
+const pool = require('./db')
 const errorHandler = require('./middleware/errorHandler')
 const { cleanupStaleAttempts } = require('./middleware/rateLimit')
+
+// 自动执行所有 migrate_*.sql（CREATE TABLE IF NOT EXISTS，幂等）
+async function runMigrations() {
+  const sqlDir = path.join(__dirname, 'sql')
+  const files = fs.readdirSync(sqlDir)
+    .filter(f => f.startsWith('migrate_') && f.endsWith('.sql'))
+    .sort()
+  for (const file of files) {
+    const sql = fs.readFileSync(path.join(sqlDir, file), 'utf8')
+    const statements = sql
+      .split(';')
+      .map(s => s.trim().split('\n').filter(line => !line.trim().startsWith('--')).join('\n').trim())
+      .filter(s => s && !s.startsWith('USE '))
+    for (const stmt of statements) {
+      try {
+        await pool.query(stmt)
+      } catch (err) {
+        // ALTER TABLE ADD COLUMN 在旧 MySQL 不支持 IF NOT EXISTS，忽略重复列
+        if (err.code === 'ER_DUP_FIELDNAME') continue
+        console.warn(`[Migration] ${file}: ${err.message}`)
+      }
+    }
+    console.log(`[Migration] ${file} applied`)
+  }
+}
 
 if (!config.JWT_SECRET) {
   console.error('FATAL: JWT_SECRET is not set. Refusing to start.')
@@ -54,6 +81,9 @@ app.use(errorHandler)
 
 app.listen(config.PORT, () => {
   console.log(`Server running on http://localhost:${config.PORT}`)
+
+  // 启动时自动执行数据库迁移（CREATE TABLE IF NOT EXISTS，幂等安全）
+  runMigrations().catch(err => console.error('[Migration] Failed:', err.message))
 
   // cleanup stale login attempts every 6 hours
   setInterval(cleanupStaleAttempts, 6 * 60 * 60 * 1000)

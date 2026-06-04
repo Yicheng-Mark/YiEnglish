@@ -10,7 +10,7 @@ function Layout() {
   const isListeningPlayer = /^\/listening\/.+/.test(location.pathname)
   const isProfile = location.pathname === '/profile'
   const isAIChat = location.pathname === '/ai-assistant'
-  const showBottomNav = !isTyping && !isListeningPlayer && !isAIChat
+  const showBottomNav = !isTyping && !isListeningPlayer && !isAIChat && !location.pathname.startsWith('/review/quiz/')
   const showTopNav = !isListeningPlayer && !isProfile && !isAIChat
 
   return (

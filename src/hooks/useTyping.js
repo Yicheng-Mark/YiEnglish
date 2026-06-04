@@ -117,7 +117,7 @@ function playSound(type) {
   } catch (e) {}
 }
 
-export default function useTyping(words, soundEnabled, wordRepeatCount = 1, isErrorBookMode = false, dictName = '', autoRemoveErrorWord = true, onWordComplete = null, onAutoRemove = null) {
+export default function useTyping(words, soundEnabled, wordRepeatCount = 1, isErrorBookMode = false, dictName = '', autoRemoveErrorWord = true, onWordComplete = null, onAutoRemove = null, onError = null) {
   const [wordIndex, setWordIndex] = useState(0);
   const [currentInput, setCurrentInput] = useState('');
   const [isWrong, setIsWrong] = useState(false);
@@ -131,12 +131,17 @@ export default function useTyping(words, soundEnabled, wordRepeatCount = 1, isEr
   const currentInputRef = useRef('');
   const hasWrongInCurrentWordRef = useRef(false);
   const lastWordHadErrorRef = useRef(false);
+  const wordIndexRef = useRef(0);
   const wordsRef = useRef(words);
   wordsRef.current = words;
+  const prevWordsRef = useRef(words);
+  wordIndexRef.current = wordIndex;
   const onWordCompleteRef = useRef(onWordComplete);
   onWordCompleteRef.current = onWordComplete;
   const onAutoRemoveRef = useRef(onAutoRemove);
   onAutoRemoveRef.current = onAutoRemove;
+  const onErrorRef = useRef(onError);
+  onErrorRef.current = onError;
 
   // 白噪声 buffer，首次播放时懒创建
   const noiseBufferRef = useRef(null);
@@ -175,20 +180,53 @@ export default function useTyping(words, soundEnabled, wordRepeatCount = 1, isEr
     audio.play().catch(() => {});
   }, [soundEnabled, getOrCreateAudio]);
 
-  // words 变化时重置状态
+  // words 变化时处理状态：区分"单词移除"和"新词库加载"
   useEffect(() => {
-    setWordIndex(0);
-    setCurrentInput('');
-    currentInputRef.current = '';
-    setIsWrong(false);
-    setIsFinished(false);
-    setStartTime(null);
-    setStats({ time: 0, inputCount: 0, correctCount: 0, wpm: 0, accuracy: 0 });
-    inputCountRef.current = 0;
-    correctCountRef.current = 0;
-    repeatCountRef.current = 0;
-    hasWrongInCurrentWordRef.current = false;
-    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+    const prev = prevWordsRef.current;
+    const prevLen = prev.length;
+    const newLen = words.length;
+
+    if (newLen < prevLen && prevLen > 0) {
+      // 单词被移除：智能调整 wordIndex，保留统计数据
+      const removedIdx = prev.findIndex((w, i) => !words[i] || w.name !== words[i].name);
+      if (removedIdx !== -1) {
+        if (removedIdx < wordIndexRef.current) {
+          // 被移除的词在当前词之前，index 需要前移
+          setWordIndex(prev => Math.max(0, prev - 1));
+        } else if (removedIdx === wordIndexRef.current) {
+          // 当前词被移除，保持 index（此时该位置已是下一个词）
+          setWordIndex(Math.min(wordIndexRef.current, Math.max(0, newLen - 1)));
+        }
+        // removedIdx > wordIndex: 无需调整
+      }
+      // 清空输入状态，但保留统计
+      setCurrentInput('');
+      currentInputRef.current = '';
+      setIsWrong(false);
+      repeatCountRef.current = 0;
+      hasWrongInCurrentWordRef.current = false;
+
+      if (newLen === 0) {
+        setIsFinished(true);
+      }
+    } else {
+      // 新词库加载：完整重置
+      setWordIndex(0);
+      setCurrentInput('');
+      currentInputRef.current = '';
+      setIsWrong(false);
+      setIsFinished(false);
+      setStartTime(null);
+      setStats({ time: 0, inputCount: 0, correctCount: 0, wpm: 0, accuracy: 0 });
+      inputCountRef.current = 0;
+      correctCountRef.current = 0;
+      repeatCountRef.current = 0;
+      hasWrongInCurrentWordRef.current = false;
+      if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+    }
+
+    prevWordsRef.current = words;
+
     return () => {
       timeoutsRef.current.forEach(clearTimeout);
       timeoutsRef.current = [];
@@ -221,7 +259,8 @@ export default function useTyping(words, soundEnabled, wordRepeatCount = 1, isEr
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [startTime, isFinished]);
 
-  const currentWord = words[wordIndex] || null;
+  const safeIndex = words.length > 0 ? Math.min(wordIndex, words.length - 1) : 0;
+  const currentWord = words[safeIndex] || null;
 
   const handleInput = useCallback((key) => {
     if (isFinished || !currentWord) return;
@@ -286,6 +325,11 @@ export default function useTyping(words, soundEnabled, wordRepeatCount = 1, isEr
       setCurrentInput(nextInput);
       setIsWrong(true);
       hasWrongInCurrentWordRef.current = true;
+
+      if (onErrorRef.current) {
+        const letterIndex = currentInputRef.current.length - 1;
+        onErrorRef.current(currentWord, currentWord.name[letterIndex], key, letterIndex);
+      }
 
       if (!isErrorBookMode && currentWord) {
         addToErrorBook({

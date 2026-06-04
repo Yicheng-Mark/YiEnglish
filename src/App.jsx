@@ -8,6 +8,7 @@ import AICircleFloat from './components/AIAssistant/AICircleFloat'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { WordProvider } from './contexts/WordContext'
 import { isAIAssistantHidden } from './lib/ai-settings'
+import { migrateFromLocalStorage } from './utils/idb.js'
 
 const Home = lazy(() => import('./pages/Home'))
 const WordBooks = lazy(() => import('./pages/WordBooks'))
@@ -19,6 +20,8 @@ const CorpusModule = lazy(() => import('./modules/corpus'))
 const PersonalCenter = lazy(() => import('./pages/PersonalCenter'))
 const LearningMethodsModule = lazy(() => import('./modules/learning-methods'))
 const AIChatPage = lazy(() => import('./pages/AIChatPage'))
+const ReviewSetup = lazy(() => import('./pages/ReviewSetup'))
+const ReviewQuiz = lazy(() => import('./pages/ReviewQuiz'))
 const Login = lazy(() => import('./pages/Login'))
 const Register = lazy(() => import('./pages/Register'))
 
@@ -62,6 +65,12 @@ function App() {
   useScrollingFlag()
   const location = useLocation()
   useEffect(preloadModules, [])
+  useEffect(() => {
+    // 空闲时执行 localStorage → IndexedDB 迁移
+    if (requestIdleCallback) {
+      requestIdleCallback(() => migrateFromLocalStorage().catch(console.warn))
+    }
+  }, [])
   const [aiHidden, setAiHidden] = useState(isAIAssistantHidden)
   const hideAI = (AUTH_ENABLED && ['/login', '/register'].includes(location.pathname)) || aiHidden
 
@@ -102,6 +111,8 @@ function App() {
               <Route path="/learning-methods/*" element={<LearningMethodsModule />} />
               <Route path="/dict/:dictId" element={<ChapterSelect />} />
               <Route path="/typing/:dictId/:chapterId" element={<Typing />} />
+              <Route path="/review/setup/:bookId" element={<ReviewSetup />} />
+              <Route path="/review/quiz/:bookId" element={<ReviewQuiz />} />
               <Route path="/ai-assistant" element={<AIChatPage />} />
             </Route>
           </Route>

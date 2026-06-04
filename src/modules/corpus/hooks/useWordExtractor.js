@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { DICT_PRIORITY, STOP_WORDS } from '../utils/wordColorMap.js'
-import { findWordInMap } from '../../../utils/readingWordBook.js'
+import { findWordInMap } from '../../../utils/wordLookup.js'
 
 const PRIORITY_INDEX = (() => {
   const m = new Map()

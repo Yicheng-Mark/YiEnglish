@@ -11,7 +11,7 @@ const WORD_BOOKS = [
     id: 'review',
     title: '复习计划',
     description: 'SM-2 间隔重复，智能巩固记忆',
-    route: '/dict/review',
+    route: '/review/setup/review',
     tag: 'SM-2 智能复习',
     colors: {
       border: 'border-emerald-200 dark:border-emerald-900/40',
@@ -37,7 +37,7 @@ const WORD_BOOKS = [
     id: 'error-book',
     title: '错题本',
     description: '练习中的错题自动收录',
-    route: '/dict/error-book',
+    route: '/review/setup/error-book',
     tag: '我的错题',
     colors: {
       border: 'border-red-200 dark:border-red-900/40',
@@ -63,7 +63,7 @@ const WORD_BOOKS = [
     id: 'reading-word-book',
     title: '阅读词本',
     description: '在阅读语境中积累词汇',
-    route: '/dict/reading-word-book',
+    route: '/review/setup/reading-word-book',
     tag: '阅读',
     colors: {
       border: 'border-violet-200 dark:border-violet-900/40',
@@ -89,7 +89,7 @@ const WORD_BOOKS = [
     id: 'corpus-word-book',
     title: '语料词本',
     description: '从语料字幕中积累词汇',
-    route: '/dict/corpus-word-book',
+    route: '/review/setup/corpus-word-book',
     tag: '语料',
     colors: {
       border: 'border-cyan-200 dark:border-cyan-900/40',
@@ -116,7 +116,7 @@ const WORD_BOOKS = [
     id: 'favorite-words',
     title: '收藏词本',
     description: '你收藏的词汇',
-    route: '/dict/favorite-words',
+    route: '/review/setup/favorite-words',
     tag: '收藏',
     colors: {
       border: 'border-amber-200 dark:border-amber-900/40',
