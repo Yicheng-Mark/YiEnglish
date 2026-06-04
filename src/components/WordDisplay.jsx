@@ -4,6 +4,18 @@ const WordDisplay = memo(function WordDisplay({ word, currentInput, isWrong }) {
   const chars = useMemo(() => word?.name?.split('') || [], [word?.name]);
   const prevLenRef = useRef(0);
 
+  // 根据单词长度动态调整字体大小和间距，避免长单词被截断
+  const sizeClass = useMemo(() => {
+    const len = word?.name?.length || 0;
+    if (len >= 16) {
+      return 'text-[clamp(1.25rem,5vw,2.5rem)] md:text-6xl tracking-[0.08em] gap-0.5 md:gap-1';
+    }
+    if (len >= 11) {
+      return 'text-[clamp(1.5rem,6vw,3.5rem)] md:text-7xl tracking-[0.1em] gap-1 md:gap-2';
+    }
+    return 'text-[clamp(2rem,8vw,4rem)] md:text-9xl tracking-[0.15em] gap-1.5 md:gap-4';
+  }, [word?.name]);
+
   // 单词切换时重置 prevLenRef，避免上一个单词的输入长度污染新单词
   useEffect(() => {
     prevLenRef.current = 0;
@@ -14,7 +26,7 @@ const WordDisplay = memo(function WordDisplay({ word, currentInput, isWrong }) {
   prevLenRef.current = currentInput.length;
 
   return (
-    <div className={`text-[clamp(2rem,8vw,4rem)] md:text-9xl font-mono tracking-[0.15em] flex gap-1.5 md:gap-4 justify-center select-none shrink-0 ${isWrong ? 'animate-shake' : ''}`}>
+    <div className={`${sizeClass} font-mono flex justify-center select-none shrink-0 ${isWrong ? 'animate-shake' : ''}`}>
       {chars.map((char, i) => {
         let className;
         const isCorrect = i < currentInput.length && currentInput[i] === char;
