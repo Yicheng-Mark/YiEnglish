@@ -10,7 +10,7 @@ import {
   CheckCircle2,
   Clock,
 } from 'lucide-react'
-import methodData from '../../../../english_learning_methods_data.json'
+import methodData from '../../../data/english_learning_methods_data.json'
 
 const evidenceColors = {
   '最强': {

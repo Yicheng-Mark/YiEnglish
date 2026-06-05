@@ -1,5 +1,5 @@
 import { Type, Clock, FileText } from 'lucide-react'
-import grammarData from '../../../../english_grammar_system.json'
+import grammarData from '../../../data/english_grammar_system.json'
 
 export const metadata = grammarData.metadata
 export const partsOfSpeech = grammarData.partsOfSpeech
