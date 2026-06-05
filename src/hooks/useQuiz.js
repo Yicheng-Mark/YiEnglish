@@ -1,14 +1,17 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { getAudioContext, unlockAudio } from '../utils/audioContext.js'
+import { getAudioContext } from '../utils/audioContext.js'
 import { parsePosFromTrans } from '../modules/corpus/utils/wordColorMap.js'
 
 // ========== 百词斩风格答题音效 ==========
 
 function playQuizSound(type) {
-  const audioCtx = getAudioContext()
-  if (!audioCtx) return
   try {
-    const ctx = audioCtx
+    let ctx = getAudioContext()
+    if (!ctx || ctx.state === 'suspended') {
+      // 在用户手势中同步创建 AudioContext（移动端/平板必须在手势中创建）
+      ctx = new (window.AudioContext || window.webkitAudioContext)()
+      if (ctx.state === 'suspended') ctx.resume()
+    }
     const now = ctx.currentTime
 
     if (type === 'correct') {
@@ -285,7 +288,7 @@ export default function useQuiz(words, options = {}) {
   const stateRef = useRef({ questions, currentIndex, score, selectedOption, isFinished })
   stateRef.current = { questions, currentIndex, score, selectedOption, isFinished }
 
-  const handleAnswer = useCallback(async (index) => {
+  const handleAnswer = useCallback((index) => {
     const s = stateRef.current
     if (s.selectedOption !== null || s.isFinished) return // 已答过或已结束
 
@@ -296,8 +299,6 @@ export default function useQuiz(words, options = {}) {
 
     setSelectedOption(index)
     setIsCorrect(correct)
-
-    await unlockAudio() // 确保在用户手势（点击选项）中解锁 AudioContext
 
     if (correct) {
       setScore(prev => prev + 1)

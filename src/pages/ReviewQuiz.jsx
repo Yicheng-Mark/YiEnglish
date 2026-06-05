@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { loadDictionary } from '../utils/loadDictionary'
-import { unlockAudio } from '../utils/audioContext.js'
 import { removeFromErrorBook } from '../utils/errorBook'
 import { removeFromFavoriteWords } from '../utils/favoriteWords'
 import { removeFromReadingWordBook } from '../utils/readingWordBook'
@@ -24,10 +23,6 @@ function ReviewQuiz() {
   const [searchParams] = useSearchParams()
   const [allWords, setAllWords] = useState([])
   const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    unlockAudio()
-  }, [])
 
   useEffect(() => {
     loadDictionary(bookId).then(data => {
