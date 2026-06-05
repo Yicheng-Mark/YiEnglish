@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react'
+import useIsMobile from '../hooks/useIsMobile.js'
 
 const ABCD = ['A', 'B', 'C', 'D']
 
@@ -11,6 +12,7 @@ function getOptionStyle(index, selected, isCorrect, correctIndex) {
 
 function QuizCard({ question, onAnswer, selectedOption, isCorrect }) {
   const audioRef = useRef(null)
+  const isMobile = useIsMobile()
 
   const playAudio = useCallback(() => {
     if (!question?.stem?.name) return
@@ -25,12 +27,12 @@ function QuizCard({ question, onAnswer, selectedOption, isCorrect }) {
     audio.play().catch(() => {})
   }, [question?.stem?.name])
 
-  // listening 题型进入时自动播放
+  // listening 题型进入时自动播放（移动端/平板跳过，需用户手动点击播放）
   useEffect(() => {
-    if (question?.type === 'listening') {
+    if (question?.type === 'listening' && !isMobile) {
       playAudio()
     }
-  }, [question, playAudio])
+  }, [question, playAudio, isMobile])
 
   if (!question) return null
 

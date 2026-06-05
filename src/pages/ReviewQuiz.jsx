@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { loadDictionary } from '../utils/loadDictionary'
+import { unlockAudio } from '../utils/audioContext.js'
 import { removeFromErrorBook } from '../utils/errorBook'
 import { removeFromFavoriteWords } from '../utils/favoriteWords'
 import { removeFromReadingWordBook } from '../utils/readingWordBook'
@@ -23,6 +24,16 @@ function ReviewQuiz() {
   const [searchParams] = useSearchParams()
   const [allWords, setAllWords] = useState([])
   const [loading, setLoading] = useState(true)
+
+  // 首次点击时解锁 AudioContext（移动端/平板必须在用户手势中创建）
+  useEffect(() => {
+    const onFirstClick = () => {
+      unlockAudio()
+      document.removeEventListener('click', onFirstClick)
+    }
+    document.addEventListener('click', onFirstClick)
+    return () => document.removeEventListener('click', onFirstClick)
+  }, [])
 
   useEffect(() => {
     loadDictionary(bookId).then(data => {

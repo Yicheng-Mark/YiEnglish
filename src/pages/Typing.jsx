@@ -39,7 +39,6 @@ export default function Typing() {
   const hiddenInputRef = useRef(null);
   const handleInputRef = useRef(null);
   const hasJumpedRef = useRef(false);
-  const [inputValue, setInputValue] = useState('');
   const inputValueRef = useRef('');
   const [keyboardActive, setKeyboardActive] = useState(true);
   const keyboardActiveRef = useRef(true);
@@ -49,6 +48,7 @@ export default function Typing() {
   const suppressClickRef = useRef(false);
   const completedBufferRef = useRef([]);
   const isComposingRef = useRef(false);
+  const justCommittedRef = useRef(false); // IME 刚完成提交，等待 onChange 隔离
   const blurTimerRef = useRef(null);
 
   const isMobile = useIsMobile();
@@ -255,7 +255,7 @@ export default function Typing() {
           hiddenInputRef.current?.focus();
         }
         inputValueRef.current = '';
-        setInputValue('');
+        if (hiddenInputRef.current) hiddenInputRef.current.value = '';
       }, 300);
     }
   }, [loading, isMobile]);
@@ -322,8 +322,13 @@ export default function Typing() {
     if (isMobile) return;
     const onKeyDown = (e) => {
       if (isFinished) return;
+      // 安全重置：防止从 IME 切换到直接英文输入时标记残留
+      justCommittedRef.current = false;
       // Windows IME 发送 Process 键，跳过（字符通过 compositionEnd 或 onChange 到达）
       if (e.key === 'Process') return;
+      // macOS 中文 IME 的 keydown 中 e.key 为实际字母而非 Process，但 e.isComposing 为 true
+      // 优先检查浏览器原生 isComposing，避免 preventDefault 取消 IME 合成
+      if (e.isComposing || e.nativeEvent?.isComposing) return;
       // Edge bug: 中文 IME 英文模式下 compositionEnd 不触发，isComposingRef 卡在 true。
       // 用原生 e.isComposing 检测：如果浏览器认为合成已结束，立即重置 ref
       if (!e.isComposing) isComposingRef.current = false;
@@ -362,46 +367,60 @@ export default function Typing() {
   }, [isMobile, isFinished, isWordListOpen, handleBackspace, handleCharacterInput, wordIndex, words.length, jumpTo, currentWord, dictId, chapterId, hasNextChapter, flushServerProgress, navigate]);
 
   // 输入处理：通过隐藏 input 代理键盘输入
+  // 不清空 input 值（部分浏览器/IME 下清空不生效），改为智能 diff：
+  // - 追加（拼音增长）：处理新增后缀
+  // - 替换（中文字符→新拼音）：处理整个新值
   const handleInputChange = useCallback((e) => {
     if (isFinished) return;
-    // 桌面端：keydown 负责处理输入，onChange 处理 IME 插入的英文字符
-    if (!isMobile) {
-      // Edge/Windows IME bug: compositionEnd 可能不触发，但 input 事件仍会到达。
-      // 用 inputType 区分：insertCompositionText = 拼音合成中（跳过），insertText = 已提交（处理）
-      const inputType = e.nativeEvent?.inputType;
-      if (inputType === 'insertCompositionText') {
-        // 中文模式拼音合成中，记录但不处理
-        inputValueRef.current = e.target.value;
-        setInputValue(e.target.value);
-        return;
-      }
-      const newVal = e.target.value;
-      if (newVal && /^[a-zA-Z]+$/.test(newVal)) {
-        for (const ch of newVal) {
-          handleCharacterInput(ch);
-        }
-      }
-      inputValueRef.current = '';
-      setInputValue('');
-      isComposingRef.current = false;
-      return;
-    }
-    // 移动端：不做任何合成状态检查，直接处理所有输入
-    // Android 软键盘的 isComposing/inputType===insertCompositionText 对所有输入都为 true
-    // 拼音合成期间的字母会在 compositionend 中通过 isComposingRef 回退处理
+    const inputType = e.nativeEvent?.inputType;
     const newVal = e.target.value;
     const oldVal = inputValueRef.current;
 
-    if (newVal.length > oldVal.length) {
-      const char = newVal.slice(oldVal.length);
-      handleCharacterInput(char);
-    } else if (newVal.length < oldVal.length) {
-      handleBackspace();
+    // 检测是否在 IME 合成中（拼音输入）
+    const isComposing = inputType === 'insertCompositionText' || isComposingRef.current;
+
+    // IME 提交隔离：compositionEnd 已触发，此 onChange 携带的是中文提交字符
+    // 跳过所有 diff 逻辑，重置输入值，防止触发虚假退格
+    if (justCommittedRef.current) {
+      justCommittedRef.current = false;
+      inputValueRef.current = '';
+      if (hiddenInputRef.current) hiddenInputRef.current.value = '';
+      return;
+    }
+
+    if (newVal.startsWith(oldVal) && newVal.length > oldVal.length) {
+      // 追加模式：拼音在增长，提取新增后缀中的英文字母
+      // 使用 replace 而非整体正则，避免 IME 残留中文字符导致整批字母被丢弃
+      const newChars = newVal.slice(oldVal.length);
+      const asciiChars = newChars.replace(/[^a-zA-Z]/g, '');
+      if (asciiChars) {
+        for (const ch of asciiChars) {
+          handleCharacterInput(ch);
+        }
+      }
+    } else if (newVal !== oldVal && /^[a-zA-Z]+$/.test(newVal) && !/^[a-zA-Z]+$/.test(oldVal)) {
+      // 替换模式：中文字符被新拼音替换（如 "个" → "l"）
+      // 此时 newVal 全是英文字母，oldVal 含非英文字符，处理整个 newVal
+      for (const ch of newVal) {
+        handleCharacterInput(ch);
+      }
+    } else if (newVal.length < oldVal.length && !isComposing) {
+      // 仅当 newVal 是 oldVal 的前缀时才视为退格
+      // IME 提交（拼音→中文字符）产生完全不同的字符串，不满足前缀关系
+      if (oldVal.startsWith(newVal)) {
+        handleBackspace();
+      }
     }
 
     inputValueRef.current = newVal;
-    setInputValue(newVal);
-  }, [isFinished, isMobile, handleCharacterInput, handleBackspace]);
+
+    // 非 ASCII 污染清理：如果追踪值含中文字符（IME 残留），重置输入
+    // 不在合成中才清理，避免干扰正在进行的输入法组合
+    if (!/^[\x00-\x7F]*$/.test(inputValueRef.current) && !isComposingRef.current) {
+      inputValueRef.current = '';
+      if (hiddenInputRef.current) hiddenInputRef.current.value = '';
+    }
+  }, [isFinished, handleCharacterInput, handleBackspace]);
 
   const handleInputBlur = useCallback(() => {
     if (isMobile) {
@@ -717,9 +736,11 @@ export default function Typing() {
           <input
             ref={hiddenInputRef}
             type="text"
-            value={inputValue}
             onChange={handleInputChange}
-            onCompositionStart={() => { isComposingRef.current = true; }}
+            onCompositionStart={() => {
+              isComposingRef.current = true;
+              justCommittedRef.current = false; // 清除过期的提交标记
+            }}
             onCompositionEnd={(e) => {
               const data = e.data;
               if (data && /^[a-zA-Z]+$/.test(data)) {
@@ -727,9 +748,10 @@ export default function Typing() {
                   handleCharacterInput(ch);
                 }
               }
-              inputValueRef.current = '';
-              setInputValue('');
-              setTimeout(() => { isComposingRef.current = false; }, 50);
+              // 不清空 input 值，避免浏览器/IME 拒绝清空导致 diff 失败
+              // 让 onChange 自然追踪值变化
+              isComposingRef.current = false;
+              justCommittedRef.current = true; // 标记提交完成，等待 onChange 隔离
             }}
             onBlur={handleInputBlur}
             autoComplete="off"

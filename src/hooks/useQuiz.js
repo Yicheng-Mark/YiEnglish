@@ -4,14 +4,13 @@ import { parsePosFromTrans } from '../modules/corpus/utils/wordColorMap.js'
 
 // ========== 百词斩风格答题音效 ==========
 
-function playQuizSound(type) {
+async function playQuizSound(type) {
   try {
     let ctx = getAudioContext()
-    if (!ctx || ctx.state === 'suspended') {
-      // 在用户手势中同步创建 AudioContext（移动端/平板必须在手势中创建）
+    if (!ctx) {
       ctx = new (window.AudioContext || window.webkitAudioContext)()
-      if (ctx.state === 'suspended') ctx.resume()
     }
+    if (ctx.state === 'suspended') await ctx.resume()
     const now = ctx.currentTime
 
     if (type === 'correct') {
