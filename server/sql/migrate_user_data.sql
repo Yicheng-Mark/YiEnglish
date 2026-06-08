@@ -59,4 +59,4 @@ CREATE TABLE IF NOT EXISTS user_settings (
 ) ENGINE=InnoDB;
 
 -- 4. users 表增加 signature 字段
-ALTER TABLE users ADD COLUMN IF NOT EXISTS signature VARCHAR(200) DEFAULT NULL AFTER avatar_url;
+-- （已由 migrate_auth_v3.sql 通过 INFORMATION_SCHEMA + PREPARE 模式处理，此处无需重复）

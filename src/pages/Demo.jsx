@@ -1,28 +1,25 @@
 import { useState } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { toast } from 'sonner'
 
-export default function Login() {
-  const { login } = useAuth()
+export default function Demo() {
+  const { redeemDemoCode } = useAuth()
   const navigate = useNavigate()
-  const location = useLocation()
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const [code, setCode] = useState('')
   const [loading, setLoading] = useState(false)
-
-  const from = location.state?.from?.pathname || '/'
 
   async function handleSubmit(e) {
     e.preventDefault()
-    if (!username.trim() || !password) {
-      toast.error('请输入用户名和密码')
+    if (!code.trim()) {
+      toast.error('请输入体验码')
       return
     }
     setLoading(true)
     try {
-      await login(username.trim(), password)
-      navigate(from, { replace: true })
+      await redeemDemoCode(code.trim())
+      toast.success('欢迎使用 LingoForge！')
+      navigate('/demo/home', { replace: true })
     } catch (err) {
       toast.error(err.message)
     } finally {
@@ -52,27 +49,19 @@ export default function Login() {
             WebkitBackdropFilter: 'blur(24px)',
           }}
         >
-          <h1 className="text-2xl font-bold text-white text-center mb-8">登录</h1>
+          <h1 className="text-2xl font-bold text-white text-center mb-8">体验 LingoForge</h1>
+          <p className="text-sm text-white/50 text-center mb-6">
+            输入体验码，免费试用 1 小时
+          </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <input
                 type="text"
-                value={username}
-                onChange={e => setUsername(e.target.value)}
-                placeholder="用户名"
-                autoComplete="username"
-                className="w-full border-b border-white/30 py-3 px-1 outline-none focus:border-white transition-colors text-sm"
-                style={{ backgroundColor: 'transparent', color: 'white' }}
-              />
-            </div>
-            <div>
-              <input
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="密码"
-                autoComplete="current-password"
+                value={code}
+                onChange={e => setCode(e.target.value)}
+                placeholder="体验码"
+                autoComplete="off"
                 className="w-full border-b border-white/30 py-3 px-1 outline-none focus:border-white transition-colors text-sm"
                 style={{ backgroundColor: 'transparent', color: 'white' }}
               />
@@ -83,22 +72,24 @@ export default function Login() {
               disabled={loading}
               className="w-full py-3 rounded-xl bg-white/90 text-gray-800 font-medium hover:bg-white disabled:opacity-50 transition-colors mt-2"
             >
-              {loading ? '登录中...' : '登录'}
+              {loading ? '验证中...' : '开始体验'}
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-white/60">
-            还没有账号？
-            <Link to="/register" className="text-white hover:underline ml-1">
-              注册
-            </Link>
-          </p>
-          <p className="mt-2 text-center text-sm text-white/60">
-            想先体验一下？
-            <Link to="/demo" className="text-white hover:underline ml-1">
-              输入体验码
-            </Link>
-          </p>
+          <div className="mt-6 text-center space-y-2">
+            <p className="text-sm text-white/60">
+              已有账号？
+              <Link to="/login" className="text-white hover:underline ml-1">
+                登录
+              </Link>
+            </p>
+            <p className="text-sm text-white/60">
+              还没有账号？
+              <Link to="/register" className="text-white hover:underline ml-1">
+                注册
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
 

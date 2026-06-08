@@ -25,8 +25,10 @@ function cookieOptions(path, maxAge) {
 const ACCESS_COOKIE_OPTS = cookieOptions('/api', 3 * 24 * 60 * 60 * 1000)
 const REFRESH_COOKIE_OPTS = cookieOptions('/api/auth/refresh', 7 * 24 * 60 * 60 * 1000)
 
-function signAccessToken(userId) {
-  return jwt.sign({ userId }, config.JWT_SECRET, { expiresIn: config.JWT_ACCESS_EXPIRES })
+function signAccessToken(userId, isGuest = false) {
+  const payload = { userId }
+  if (isGuest) payload.isGuest = true
+  return jwt.sign(payload, config.JWT_SECRET, { expiresIn: config.JWT_ACCESS_EXPIRES })
 }
 
 function signRefreshToken() {
@@ -51,8 +53,8 @@ function validatePassword(v) {
   return /[a-zA-Z]/.test(v) && /\d/.test(v)
 }
 
-async function issueTokens(res, userId) {
-  const accessToken = signAccessToken(userId)
+async function issueTokens(res, userId, isGuest = false) {
+  const accessToken = signAccessToken(userId, isGuest)
   const refreshToken = signRefreshToken()
   const tokenHash = hashToken(refreshToken)
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
@@ -184,10 +186,8 @@ router.post('/refresh', async (req, res, next) => {
     // rotation: delete used token
     await pool.execute('DELETE FROM refresh_tokens WHERE id = ?', [stored.id])
 
-    await issueTokens(res, stored.user_id)
-
     const [userRows] = await pool.execute(
-      'SELECT id, username, nickname FROM users WHERE id = ?',
+      'SELECT id, username, nickname, is_guest FROM users WHERE id = ?',
       [stored.user_id]
     )
 
@@ -196,9 +196,23 @@ router.post('/refresh', async (req, res, next) => {
       return res.status(401).json({ error: '请先登录' })
     }
 
-    res.json({
-      user: { id: userRows[0].id, username: userRows[0].username, nickname: userRows[0].nickname },
-    })
+    const isGuest = !!userRows[0].is_guest
+    await issueTokens(res, stored.user_id, isGuest)
+
+    const userObj = { id: userRows[0].id, username: userRows[0].username, nickname: userRows[0].nickname }
+    if (isGuest) {
+      userObj.isTrial = true
+      // 查询试用到期时间
+      const [trialRows] = await pool.execute(
+        'SELECT expires_at FROM trial_activations WHERE user_id = ?',
+        [stored.user_id]
+      )
+      if (trialRows.length > 0 && trialRows[0].expires_at) {
+        userObj.trialExpiresAt = new Date(trialRows[0].expires_at).toISOString()
+      }
+    }
+
+    res.json({ user: userObj })
   } catch (err) {
     next(err)
   }
@@ -223,23 +237,30 @@ router.post('/logout', async (req, res, next) => {
 router.get('/me', authMiddleware, async (req, res, next) => {
   try {
     const [rows] = await pool.execute(
-      'SELECT id, username, nickname, avatar_url, daily_goal_minutes, signature FROM users WHERE id = ?',
+      `SELECT u.id, u.username, u.nickname, u.avatar_url, u.daily_goal_minutes, u.signature, u.is_guest,
+              t.expires_at AS trial_expires_at
+       FROM users u
+       LEFT JOIN trial_activations t ON t.user_id = u.id
+       WHERE u.id = ?`,
       [req.userId]
     )
     if (rows.length === 0) {
       return res.status(404).json({ error: '用户不存在' })
     }
     const u = rows[0]
-    res.json({
-      user: {
-        id: u.id,
-        username: u.username,
-        nickname: u.nickname,
-        avatar: u.avatar_url,
-        dailyGoalMinutes: u.daily_goal_minutes,
-        signature: u.signature,
-      },
-    })
+    const userObj = {
+      id: u.id,
+      username: u.username,
+      nickname: u.nickname,
+      avatar: u.avatar_url,
+      dailyGoalMinutes: u.daily_goal_minutes,
+      signature: u.signature,
+    }
+    if (u.is_guest) {
+      userObj.isTrial = true
+      userObj.trialExpiresAt = u.trial_expires_at ? new Date(u.trial_expires_at).toISOString() : null
+    }
+    res.json({ user: userObj })
   } catch (err) {
     next(err)
   }

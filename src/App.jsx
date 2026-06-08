@@ -24,6 +24,12 @@ const ReviewSetup = lazy(() => import('./pages/ReviewSetup'))
 const ReviewQuiz = lazy(() => import('./pages/ReviewQuiz'))
 const Login = lazy(() => import('./pages/Login'))
 const Register = lazy(() => import('./pages/Register'))
+const Demo = lazy(() => import('./pages/Demo'))
+const DemoLayout = lazy(() => import('./pages/demo/DemoLayout'))
+const DemoWord = lazy(() => import('./pages/demo/DemoWord'))
+const DemoReading = lazy(() => import('./pages/demo/DemoReading'))
+const DemoCorpus = lazy(() => import('./pages/demo/DemoCorpus'))
+const DemoProfile = lazy(() => import('./pages/demo/DemoProfile'))
 
 // 预加载底部导航对应的模块 chunk，避免切换时闪"加载中"
 const moduleLoaders = [
@@ -72,7 +78,7 @@ function App() {
     }
   }, [])
   const [aiHidden, setAiHidden] = useState(isAIAssistantHidden)
-  const hideAI = (AUTH_ENABLED && ['/login', '/register'].includes(location.pathname)) || aiHidden
+  const hideAI = (AUTH_ENABLED && ['/login', '/register', '/demo'].includes(location.pathname)) || location.pathname.startsWith('/demo/') || aiHidden
 
   useEffect(() => {
     const handler = () => setAiHidden(isAIAssistantHidden())
@@ -98,7 +104,20 @@ function App() {
         <Routes>
           {AUTH_ENABLED && <Route path="/login" element={<Login />} />}
           {AUTH_ENABLED && <Route path="/register" element={<Register />} />}
+          {/* Demo 路由（体验码输入 + demo 应用） */}
+          {AUTH_ENABLED && (
+            <Route path="/demo">
+              <Route index element={<Demo />} />
+              <Route element={<DemoLayout />}>
+                <Route path="home" element={<DemoWord />} />
+                <Route path="reading" element={<DemoReading />} />
+                <Route path="corpus" element={<DemoCorpus />} />
+                <Route path="profile" element={<DemoProfile />} />
+              </Route>
+            </Route>
+          )}
           <Route element={<ProtectedRoute />}>
+            {/* 主应用路由 */}
             <Route element={<Layout />}>
               <Route path="/" element={<Navigate to="/word" replace />} />
               <Route path="/word" element={<Home />} />

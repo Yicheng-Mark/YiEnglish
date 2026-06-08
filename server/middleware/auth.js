@@ -9,6 +9,7 @@ function authMiddleware(req, res, next) {
   try {
     const decoded = jwt.verify(token, config.JWT_SECRET)
     req.userId = decoded.userId
+    req.isGuest = decoded.isGuest || false
     next()
   } catch (err) {
     if (err.name === 'TokenExpiredError') {

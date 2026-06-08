@@ -113,6 +113,12 @@ export default function Register() {
               登录
             </Link>
           </p>
+          <p className="mt-2 text-center text-sm text-white/60">
+            想先体验一下？
+            <Link to="/demo" className="text-white hover:underline ml-1">
+              输入体验码
+            </Link>
+          </p>
         </div>
       </div>
     </div>

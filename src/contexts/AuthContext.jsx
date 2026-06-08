@@ -113,9 +113,35 @@ export function AuthProvider({ children }) {
     if (!res.ok) throw new Error(data.error || '修改密码失败')
   }, [])
 
+  const redeemDemoCode = useCallback(async (code) => {
+    const res = await fetch(`${API_BASE}/api/demo/redeem`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ code }),
+    })
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error || '体验码无效')
+    setUser(data.user)
+    return data.user
+  }, [])
+
+  const upgradeAccount = useCallback(async (username, password, nickname) => {
+    const body = { username, password }
+    if (nickname) body.nickname = nickname
+    const res = await apiFetch('/api/demo/upgrade', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error || '升级失败')
+    setUser(data.user)
+    return data.user
+  }, [])
+
   const value = useMemo(() => ({
-    user, loading, login, register, logout, updateProfile, changePassword, setNavigator
-  }), [user, loading, login, register, logout, updateProfile, changePassword, setNavigator])
+    user, loading, login, register, logout, updateProfile, changePassword, redeemDemoCode, upgradeAccount, setNavigator
+  }), [user, loading, login, register, logout, updateProfile, changePassword, redeemDemoCode, upgradeAccount, setNavigator])
 
   return (
     <AuthContext.Provider value={value}>
