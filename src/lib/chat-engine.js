@@ -26,7 +26,17 @@ export function createChatStream({ messages, styleKey, onToken, onReasoning, onD
         try {
           const json = JSON.parse(body)
           errMsg = json.error || errMsg
-        } catch { /* use default */ }
+          if (res.status === 429) {
+            const err = new Error(errMsg)
+            err.isRateLimit = true
+            err.used = json.used
+            err.limit = json.limit
+            throw err
+          }
+        } catch (e) {
+          if (e.isRateLimit) throw e
+          /* use default */
+        }
         throw new Error(errMsg)
       }
 

@@ -7,6 +7,36 @@ const { extractMemories } = require('../services/memoryExtractor')
 
 const router = Router()
 
+const DAILY_CHAT_LIMIT = 10
+
+// Helper: get today's usage from independent counter table
+async function getTodayUsage(pool, userId) {
+  const [[row]] = await pool.execute(
+    'SELECT count FROM ai_usage WHERE user_id = ? AND date = CURDATE()',
+    [userId]
+  )
+  const used = row?.count || 0
+  return { used, limit: DAILY_CHAT_LIMIT, remaining: Math.max(0, DAILY_CHAT_LIMIT - used) }
+}
+
+// Helper: increment today's usage counter
+async function incrementUsage(pool, userId) {
+  await pool.execute(
+    'INSERT INTO ai_usage (user_id, date, count) VALUES (?, CURDATE(), 1) ON DUPLICATE KEY UPDATE count = count + 1',
+    [userId]
+  )
+}
+
+// GET /api/chat/usage — get daily usage
+router.get('/usage', authMiddleware, async (req, res, next) => {
+  try {
+    const usage = await getTodayUsage(pool, req.userId)
+    res.json(usage)
+  } catch (err) {
+    next(err)
+  }
+})
+
 // POST /api/chat — SSE streaming chat
 router.post('/', authMiddleware, async (req, res, next) => {
   try {
@@ -16,6 +46,12 @@ router.post('/', authMiddleware, async (req, res, next) => {
     }
 
     const userId = req.userId
+
+    // Daily limit check
+    const usage = await getTodayUsage(pool, userId)
+    if (usage.used >= DAILY_CHAT_LIMIT) {
+      return res.status(429).json({ error: `今日AI助手对话次数已达上限（${DAILY_CHAT_LIMIT}次），明天再来吧！`, limit: DAILY_CHAT_LIMIT, used: usage.used })
+    }
 
     // 1. Get user's active style + style settings in one query (merged)
     const [[userRows], [styleSettingRows], [memories], [history]] = await Promise.all([
@@ -65,6 +101,9 @@ router.post('/', authMiddleware, async (req, res, next) => {
 
     // 8. Stream response
     const { fullText, reasoningText } = await streamChatToRes(apiMessages, res)
+
+    // Increment usage counter only after successful AI response
+    await incrementUsage(pool, userId)
 
     // 9. Save assistant message
     if (fullText) {

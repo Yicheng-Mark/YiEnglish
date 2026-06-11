@@ -384,6 +384,14 @@
   border-top: 1px solid rgba(0,0,0,0.06);
   display: flex;
   gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.usageHint {
+  font-size: 11px;
+  color: rgba(0,0,0,0.35);
+  white-space: nowrap;
   flex-shrink: 0;
 }
 
@@ -495,6 +503,10 @@
 :global(.dark) .input {
   border-color: rgba(255,255,255,0.1);
   background: rgba(255,255,255,0.05);
+}
+
+:global(.dark) .usageHint {
+  color: rgba(255,255,255,0.3);
 }
 
 :global(.dark) .quickActions button {

@@ -141,3 +141,13 @@ export async function fetchChatHistory(limit = 50) {
     return []
   }
 }
+
+// Daily chat usage
+export async function fetchChatUsage() {
+  try {
+    const res = await apiFetch('/api/chat/usage')
+    return await res.json() // { used, limit, remaining }
+  } catch {
+    return { used: 0, limit: 0, remaining: 0 }
+  }
+}

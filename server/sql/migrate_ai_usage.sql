@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS ai_usage (
+  id         BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id    BIGINT UNSIGNED NOT NULL,
+  date       DATE NOT NULL,
+  count      INT UNSIGNED NOT NULL DEFAULT 1,
+  UNIQUE KEY uk_user_date (user_id, date),
+  CONSTRAINT fk_ai_usage_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB

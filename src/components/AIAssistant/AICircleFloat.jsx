@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Bot, X, Maximize2, Send, Square, Trash2, BookOpen, MessageSquareText, GitCompare, Lightbulb } from 'lucide-react'
 import { createChatStream } from '../../lib/chat-engine'
 import {
-  fetchStyles, fetchChatHistory,
+  fetchStyles, fetchChatHistory, fetchChatUsage,
   getPosition, setPosition as savePosition,
   clearMemory,
 } from '../../lib/ai-settings'
@@ -36,7 +36,7 @@ const QUICK_ACTIONS = [
 
 /* ===== Memoized ChatContent ===== */
 const ChatContent = memo(function ChatContent({
-  messages, currentReasoning, streaming, input, currentStyle,
+  messages, currentReasoning, streaming, input, currentStyle, usage,
   onInputChange, onKeyDown, onSend, onStop,
   onClearHistory, onExpand, onClose, messagesEndRef,
   onPanelPointerDown, onPanelPointerMove, onPanelPointerUp,
@@ -130,18 +130,19 @@ const ChatContent = memo(function ChatContent({
           value={input}
           onChange={e => onInputChange(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder={`和 ${displayName} 对话...`}
-          disabled={streaming}
+          placeholder={usage.remaining > 0 ? `和 ${displayName} 对话...` : '今日对话次数已用完'}
+          disabled={streaming || usage.remaining <= 0}
         />
         {streaming ? (
           <button className={styles.sendBtn} onClick={onStop} title="停止">
             <Square size={16} />
           </button>
         ) : (
-          <button className={styles.sendBtn} onClick={onSend} disabled={!input.trim()} title="发送">
+          <button className={styles.sendBtn} onClick={onSend} disabled={!input.trim() || usage.remaining <= 0} title="发送">
             <Send size={16} />
           </button>
         )}
+        <span className={styles.usageHint}>剩余 {usage.remaining}/{usage.limit} 次</span>
       </div>
     </>
   )
@@ -160,6 +161,7 @@ export default function AICircleFloat() {
   const [isHidden, setIsHidden] = useState(false)
   const [isDraggingState, setIsDraggingState] = useState(false)
   const [currentReasoning, setCurrentReasoning] = useState('')
+  const [usage, setUsage] = useState({ used: 0, limit: 10, remaining: 10 })
   const hideTimerRef = useRef(null)
   const prevWordRef = useRef(null)
   const chatGenRef = useRef(0)
@@ -176,9 +178,11 @@ export default function AICircleFloat() {
   const messagesRef = useRef(messages)
   const inputRef = useRef(input)
   const streamingRef2 = useRef(streaming)
+  const usageRef = useRef(usage)
   useEffect(() => { messagesRef.current = messages }, [messages])
   useEffect(() => { inputRef.current = input }, [input])
   useEffect(() => { streamingRef2.current = streaming }, [streaming])
+  useEffect(() => { usageRef.current = usage }, [usage])
   useEffect(() => { positionRef.current = position }, [position])
 
   // Load styles and chat history on mount
@@ -189,6 +193,7 @@ export default function AICircleFloat() {
     fetchChatHistory().then(history => {
       setMessages(history)
     })
+    fetchChatUsage().then(setUsage)
   }, [])
 
   // Re-fetch style when panel opens to pick up changes made elsewhere
@@ -197,6 +202,7 @@ export default function AICircleFloat() {
       fetchStyles().then(data => {
         setCurrentStyle(data.current)
       })
+      fetchChatUsage().then(setUsage)
     }
   }, [panelOpen])
 
@@ -411,6 +417,11 @@ export default function AICircleFloat() {
   // Send text to AI
   const sendText = useCallback((text) => {
     if (!text || streamingRef2.current) return
+    if (usageRef.current.remaining <= 0) return
+
+    // Optimistic decrement — update ref immediately to prevent race conditions
+    usageRef.current = { ...usageRef.current, used: usageRef.current.used + 1, remaining: Math.max(0, usageRef.current.remaining - 1) }
+    setUsage({ ...usageRef.current })
 
     const gen = chatGenRef.current
     const userMsg = { role: 'user', content: text }
@@ -481,6 +492,7 @@ export default function AICircleFloat() {
         setMessages([...updated, errMsg])
         setStreaming(false)
         setCurrentReasoning('')
+        if (err.isRateLimit) fetchChatUsage().then(setUsage)
       },
     })
 
@@ -558,7 +570,7 @@ export default function AICircleFloat() {
           <ChatContent
             messages={messages} currentReasoning={currentReasoning}
             streaming={streaming} input={input}
-            currentStyle={currentStyle}
+            currentStyle={currentStyle} usage={usage}
             onInputChange={handleSetInput}
             onKeyDown={handleKeyDown} onSend={handleSend}
             onStop={handleStop}

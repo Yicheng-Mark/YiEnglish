@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { ArrowLeft, Send, Square, Trash2, Bot } from 'lucide-react'
 import { createChatStream } from '../lib/chat-engine'
 import {
-  fetchStyles, fetchChatHistory,
+  fetchStyles, fetchChatHistory, fetchChatUsage,
 } from '../lib/ai-settings'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -20,6 +20,7 @@ export default function AIChatPage() {
   const [streaming, setStreaming] = useState(false)
   const [currentStyle, setCurrentStyle] = useState(null)
   const [currentReasoning, setCurrentReasoning] = useState('')
+  const [usage, setUsage] = useState({ used: 0, limit: 10, remaining: 10 })
   const messagesEndRef = useRef(null)
   const abortRef = useRef(null)
   const streamingRef = useRef({ content: '', reasoning: '' })
@@ -27,14 +28,17 @@ export default function AIChatPage() {
   const messagesRef = useRef(messages)
   const inputRef = useRef(input)
   const streamingRef2 = useRef(streaming)
+  const usageRef = useRef(usage)
   useEffect(() => { messagesRef.current = messages }, [messages])
   useEffect(() => { inputRef.current = input }, [input])
   useEffect(() => { streamingRef2.current = streaming }, [streaming])
+  useEffect(() => { usageRef.current = usage }, [usage])
 
   useEffect(() => {
     fetchStyles().then(data => {
       setCurrentStyle(data.current)
     })
+    fetchChatUsage().then(setUsage)
     if (passedMessages === undefined) {
       fetchChatHistory().then(history => {
         setMessages(history)
@@ -51,6 +55,11 @@ export default function AIChatPage() {
   const handleSend = useCallback(() => {
     const text = inputRef.current.trim()
     if (!text || streamingRef2.current) return
+    if (usageRef.current.remaining <= 0) return
+
+    // Optimistic decrement — update ref immediately to prevent race conditions
+    usageRef.current = { ...usageRef.current, used: usageRef.current.used + 1, remaining: Math.max(0, usageRef.current.remaining - 1) }
+    setUsage({ ...usageRef.current })
 
     const userMsg = { role: 'user', content: text }
     const updated = [...messagesRef.current, userMsg]
@@ -117,6 +126,7 @@ export default function AIChatPage() {
         setMessages([...updated, errMsg])
         setStreaming(false)
         setCurrentReasoning('')
+        if (err.isRateLimit) fetchChatUsage().then(setUsage)
       },
     })
 
@@ -210,18 +220,19 @@ export default function AIChatPage() {
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={`和 ${displayName} 对话...`}
-          disabled={streaming}
+          placeholder={usage.remaining > 0 ? `和 ${displayName} 对话...` : '今日对话次数已用完'}
+          disabled={streaming || usage.remaining <= 0}
         />
         {streaming ? (
           <button className={styles.sendBtn} onClick={handleStop} title="停止">
             <Square size={16} />
           </button>
         ) : (
-          <button className={styles.sendBtn} onClick={handleSend} disabled={!input.trim()} title="发送">
+          <button className={styles.sendBtn} onClick={handleSend} disabled={!input.trim() || usage.remaining <= 0} title="发送">
             <Send size={16} />
           </button>
         )}
+        <span className={styles.usageHint}>剩余 {usage.remaining}/{usage.limit} 次</span>
       </div>
     </div>
   )
