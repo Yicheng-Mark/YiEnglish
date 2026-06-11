@@ -1,0 +1,1395 @@
+[
+  {
+    "start": 0.0,
+    "end": 4.48,
+    "en": "you've ever planned something big and then done absolutely nothing about it,",
+    "zh": "如果你曾经计划过一件大事，结果却完全没有行动，",
+    "id": 1
+  },
+  {
+    "start": 4.5,
+    "end": 6.04,
+    "en": "it is not because you're lazy.",
+    "zh": "那并不是因为你懒。",
+    "id": 2
+  },
+  {
+    "start": 6.34,
+    "end": 10.0,
+    "en": "There's literally a neurological cycle happening in your brain.",
+    "zh": "你的大脑里真的正在发生一个神经循环。",
+    "id": 3
+  },
+  {
+    "start": 10.0,
+    "end": 11.86,
+    "en": "that prevents you from pursuing your dreams.",
+    "zh": "它会阻止你去追求自己的梦想。",
+    "id": 4
+  },
+  {
+    "start": 11.86,
+    "end": 15.98,
+    "en": "and in this video I'll explain how it works and how to fix it.",
+    "zh": "在这个视频里，我会解释它是怎么运作的，以及该如何修复它。",
+    "id": 5
+  },
+  {
+    "start": 16.28,
+    "end": 20.76,
+    "en": "My name is Olga, I study cognitive science and computation at the University of Pennsylvania.",
+    "zh": "我叫 Olga，我在宾夕法尼亚大学学习认知科学与计算。",
+    "id": 6
+  },
+  {
+    "start": 20.76,
+    "end": 24.9,
+    "en": "and after the last four years of studying how the human mind works.",
+    "zh": "在过去四年里，我一直在研究人类心智是如何运作的。",
+    "id": 7
+  },
+  {
+    "start": 24.9,
+    "end": 29.64,
+    "en": "I think this is probably most fascinating and most useful thing I learned about.",
+    "zh": "我觉得这大概是我学到的最有趣、也最有用的东西。",
+    "id": 8
+  },
+  {
+    "start": 30.54,
+    "end": 36.26,
+    "en": "So procrastination researcher Tim Pychyl has spent decades studying why people don't do the things.",
+    "zh": "所以，拖延症研究者 Tim Pychyl 花了几十年研究为什么人们不去做那些事情。",
+    "id": 9
+  },
+  {
+    "start": 36.26,
+    "end": 38.0,
+    "en": "that they promised themselves to do.",
+    "zh": "也就是他们曾经承诺自己要做的事情。",
+    "id": 10
+  },
+  {
+    "start": 38.0,
+    "end": 43.52,
+    "en": "and he found that procrastination is not a time management problem.",
+    "zh": "他发现，拖延并不是一个时间管理问题。",
+    "id": 11
+  },
+  {
+    "start": 43.96,
+    "end": 46.96,
+    "en": "procrastination is an emotion regulation problem.",
+    "zh": "拖延是一个情绪调节问题。",
+    "id": 12
+  },
+  {
+    "start": 46.96,
+    "end": 48.28,
+    "en": "and here's what it means.",
+    "zh": "这句话的意思是这样的。",
+    "id": 13
+  },
+  {
+    "start": 48.36,
+    "end": 50.36,
+    "en": "When you have something important to do.",
+    "zh": "当你有一件重要的事情要做时。",
+    "id": 14
+  },
+  {
+    "start": 50.36,
+    "end": 56.28,
+    "en": "like starting a creative project or submitting an application or doing a workout or an assignment.",
+    "zh": "比如开始一个创意项目、提交一份申请、锻炼，或者完成一项作业。",
+    "id": 15
+  },
+  {
+    "start": 56.28,
+    "end": 62.12,
+    "en": "and you think about actually doing it, that's when your brain generates a negative emotion.",
+    "zh": "当你想到自己真的要去做它时，你的大脑就会产生一种负面情绪。",
+    "id": 16
+  },
+  {
+    "start": 62.36,
+    "end": 65.82,
+    "en": "It can be self-doubt, overwhelm, anxiety.",
+    "zh": "它可能是自我怀疑、压力过大，或者焦虑。",
+    "id": 17
+  },
+  {
+    "start": 66.34,
+    "end": 68.72,
+    "en": "you might have fear that the result is not going to be good enough.",
+    "zh": "你可能会害怕结果不够好。",
+    "id": 18
+  },
+  {
+    "start": 68.72,
+    "end": 72.5,
+    "en": "and your brain does not like negative emotions, so it escapes.",
+    "zh": "而你的大脑不喜欢负面情绪，所以它会逃避。",
+    "id": 19
+  },
+  {
+    "start": 72.94,
+    "end": 75.86,
+    "en": "You start cleaning your room, you reorganize your desk.",
+    "zh": "你开始打扫房间，重新整理书桌。",
+    "id": 20
+  },
+  {
+    "start": 76.02,
+    "end": 77.7,
+    "en": "you pick up your phone, you start scrolling.",
+    "zh": "你拿起手机，开始刷起来。",
+    "id": 21
+  },
+  {
+    "start": 77.7,
+    "end": 81.94,
+    "en": "and suddenly that negative feeling of dread goes away.",
+    "zh": "突然之间，那种恐惧和压力的负面感觉就消失了。",
+    "id": 22
+  },
+  {
+    "start": 81.94,
+    "end": 83.32,
+    "en": "and you feel relief.",
+    "zh": "然后你感到松了一口气。",
+    "id": 23
+  },
+  {
+    "start": 83.32,
+    "end": 85.1,
+    "en": "and here's an interesting part.",
+    "zh": "有意思的地方来了。",
+    "id": 24
+  },
+  {
+    "start": 85.68,
+    "end": 87.98,
+    "en": "That relief in itself is a reward.",
+    "zh": "这种松一口气的感觉本身就是一种奖励。",
+    "id": 25
+  },
+  {
+    "start": 87.98,
+    "end": 91.58,
+    "en": "and in psychology behaviors that get rewarded get repeated.",
+    "zh": "在心理学中，获得奖励的行为会被重复。",
+    "id": 26
+  },
+  {
+    "start": 91.8,
+    "end": 95.2,
+    "en": "so your brain learns if I avoid a difficult task.",
+    "zh": "所以你的大脑会学到：如果我逃避一项困难的任务。",
+    "id": 27
+  },
+  {
+    "start": 95.2,
+    "end": 97.96,
+    "en": "that's when I'm going to get that short-term feeling of relief.",
+    "zh": "我就会获得那种短暂的轻松感。",
+    "id": 28
+  },
+  {
+    "start": 97.96,
+    "end": 99.18,
+    "en": "which is something positive.",
+    "zh": "而这是一种积极的感受。",
+    "id": 29
+  },
+  {
+    "start": 99.18,
+    "end": 103.56,
+    "en": "and it starts doing it automatically every time you're faced with something difficult.",
+    "zh": "于是每当你面对困难的事情时，它就会开始自动这样做。",
+    "id": 30
+  },
+  {
+    "start": 103.56,
+    "end": 106.58,
+    "en": "and your brain creates something called an avoidance loop.",
+    "zh": "你的大脑会制造出一种叫作逃避循环的东西。",
+    "id": 31
+  },
+  {
+    "start": 106.58,
+    "end": 110.5,
+    "en": "where you're faced with a difficult task, it triggers a negative emotion.",
+    "zh": "也就是当你面对一项困难任务时，它会触发负面情绪。",
+    "id": 32
+  },
+  {
+    "start": 110.8,
+    "end": 112.4,
+    "en": "then you don't do that task.",
+    "zh": "然后你不去做那项任务。",
+    "id": 33
+  },
+  {
+    "start": 112.4,
+    "end": 113.62,
+    "en": "so you feel relief.",
+    "zh": "于是你感到轻松。",
+    "id": 34
+  },
+  {
+    "start": 113.62,
+    "end": 118.76,
+    "en": "and next time you're faced with something difficult you again default to avoidance.",
+    "zh": "下次你再面对困难的事情时，你又会默认选择逃避。",
+    "id": 35
+  },
+  {
+    "start": 118.76,
+    "end": 120.2,
+    "en": "because that's what triggers relief.",
+    "zh": "因为逃避会触发轻松感。",
+    "id": 36
+  },
+  {
+    "start": 120.2,
+    "end": 121.88,
+    "en": "and here's what's happening in your brain.",
+    "zh": "而这就是你大脑里正在发生的事情。",
+    "id": 37
+  },
+  {
+    "start": 122.3,
+    "end": 124.26,
+    "en": "Every time you're faced with a hard task.",
+    "zh": "每当你面对一项困难任务时。",
+    "id": 38
+  },
+  {
+    "start": 124.26,
+    "end": 127.54,
+    "en": "there are two systems that are competing for control.",
+    "zh": "有两个系统在争夺控制权。",
+    "id": 39
+  },
+  {
+    "start": 127.54,
+    "end": 131.2,
+    "en": "and the first is your amygdala which is your brain's alarm system.",
+    "zh": "第一个是你的杏仁核，也就是大脑的警报系统。",
+    "id": 40
+  },
+  {
+    "start": 131.28,
+    "end": 135.06,
+    "en": "It is essentially responsible for detecting threats in the environment.",
+    "zh": "它本质上负责探测环境中的威胁。",
+    "id": 41
+  },
+  {
+    "start": 135.06,
+    "end": 139.34,
+    "en": "and if a task is seeming overwhelming or scary to you.",
+    "zh": "如果一项任务让你觉得压力很大，或者很可怕。",
+    "id": 42
+  },
+  {
+    "start": 139.34,
+    "end": 142.36,
+    "en": "it essentially treats that task as a threat.",
+    "zh": "它基本上就会把这项任务当成一种威胁。",
+    "id": 43
+  },
+  {
+    "start": 142.36,
+    "end": 145.24,
+    "en": "so it tells you don't do this run.",
+    "zh": "于是它会告诉你：不要做这个，快跑。",
+    "id": 44
+  },
+  {
+    "start": 145.24,
+    "end": 147.56,
+    "en": "this is dangerous you have to avoid this.",
+    "zh": "这很危险，你必须避开它。",
+    "id": 45
+  },
+  {
+    "start": 147.56,
+    "end": 149.72,
+    "en": "and the second is the part of your brain.",
+    "zh": "第二个是你大脑中的另一个部分。",
+    "id": 46
+  },
+  {
+    "start": 149.72,
+    "end": 151.72,
+    "en": "that actually makes you act.",
+    "zh": "它是真正让你采取行动的部分。",
+    "id": 47
+  },
+  {
+    "start": 151.72,
+    "end": 155.48,
+    "en": "and neuroscientists call it the dorsal anterior cingulate cortex.",
+    "zh": "神经科学家把它叫作背侧前扣带皮层。",
+    "id": 48
+  },
+  {
+    "start": 155.48,
+    "end": 159.08,
+    "en": "essentially it takes the fear signal from the amygdala.",
+    "zh": "本质上，它会接收来自杏仁核的恐惧信号。",
+    "id": 49
+  },
+  {
+    "start": 159.08,
+    "end": 161.14,
+    "en": "if needed it shuts it down.",
+    "zh": "如果有必要，它会把这个信号压下去。",
+    "id": 50
+  },
+  {
+    "start": 161.14,
+    "end": 165.1,
+    "en": "and then it actually pushes you to do the things that you're supposed to be doing.",
+    "zh": "然后它会真正推动你去做那些你本该做的事情。",
+    "id": 51
+  },
+  {
+    "start": 165.1,
+    "end": 167.86,
+    "en": "and when you procrastinate your amygdala is winning.",
+    "zh": "而当你拖延时，是你的杏仁核赢了。",
+    "id": 52
+  },
+  {
+    "start": 167.86,
+    "end": 170.16,
+    "en": "which is called an amygdala hijack.",
+    "zh": "这叫作杏仁核劫持。",
+    "id": 53
+  },
+  {
+    "start": 170.16,
+    "end": 174.92,
+    "en": "where essentially your emotional brain overrides your irrational brain.",
+    "zh": "本质上就是你的情绪大脑压过了你的非理性大脑。",
+    "id": 54
+  },
+  {
+    "start": 174.92,
+    "end": 176.48,
+    "en": "and you flee from the task.",
+    "zh": "然后你从任务面前逃走了。",
+    "id": 55
+  },
+  {
+    "start": 176.48,
+    "end": 180.18,
+    "en": "and here's why it gets worse if you don't address it.",
+    "zh": "这也是为什么如果你不处理它，情况会变得更糟。",
+    "id": 56
+  },
+  {
+    "start": 180.18,
+    "end": 182.7,
+    "en": "every time you're going through the avoidance loop.",
+    "zh": "每当你经历一次逃避循环时。",
+    "id": 57
+  },
+  {
+    "start": 182.7,
+    "end": 184.5,
+    "en": "you feel dread towards the task.",
+    "zh": "你会对任务感到恐惧。",
+    "id": 58
+  },
+  {
+    "start": 184.5,
+    "end": 186.54,
+    "en": "you avoid it you feel relief.",
+    "zh": "你逃避它，然后你感到轻松。",
+    "id": 59
+  },
+  {
+    "start": 186.54,
+    "end": 188.58,
+    "en": "every time you go through this avoidance loop.",
+    "zh": "每当你经历一次这样的逃避循环。",
+    "id": 60
+  },
+  {
+    "start": 188.58,
+    "end": 193.2,
+    "en": "you are physically strengthening the neural pathway for procrastination.",
+    "zh": "你都在从生理上强化拖延的神经通路。",
+    "id": 61
+  },
+  {
+    "start": 193.2,
+    "end": 196.62,
+    "en": "because as we all know what you repeat you become.",
+    "zh": "因为我们都知道，你反复做什么，你就会变成什么样。",
+    "id": 62
+  },
+  {
+    "start": 196.62,
+    "end": 199.48,
+    "en": "so the procrastination circuit gets faster.",
+    "zh": "所以拖延回路会变得更快。",
+    "id": 63
+  },
+  {
+    "start": 199.48,
+    "end": 202.06,
+    "en": "it becomes more of a default behavior for you.",
+    "zh": "它会越来越成为你的默认行为。",
+    "id": 64
+  },
+  {
+    "start": 202.06,
+    "end": 204.22,
+    "en": "and your discipline circuit weakens.",
+    "zh": "而你的自律回路会变弱。",
+    "id": 65
+  },
+  {
+    "start": 204.22,
+    "end": 206.36,
+    "en": "like a muscle that you stopped using.",
+    "zh": "就像一块你停止使用的肌肉。",
+    "id": 66
+  },
+  {
+    "start": 206.36,
+    "end": 210.6,
+    "en": "so if your brain is training itself to avoid and procrastinate.",
+    "zh": "所以，如果你的大脑正在训练自己去逃避和拖延。",
+    "id": 67
+  },
+  {
+    "start": 210.6,
+    "end": 213.76,
+    "en": "could you theoretically train it to do the complete opposite.",
+    "zh": "那理论上你能不能训练它做完全相反的事情呢？",
+    "id": 68
+  },
+  {
+    "start": 213.76,
+    "end": 219.46,
+    "en": "well Tim Pychyl spent 20 years of his career trying to answer that question.",
+    "zh": "Tim Pychyl 花了职业生涯中的 20 年试图回答这个问题。",
+    "id": 69
+  },
+  {
+    "start": 219.46,
+    "end": 223.38,
+    "en": "well the answer is embarrassingly simple.",
+    "zh": "答案简单到有点让人尴尬。",
+    "id": 70
+  },
+  {
+    "start": 223.38,
+    "end": 227.94,
+    "en": "and the answer is you have to just start.",
+    "zh": "答案就是：你必须直接开始。",
+    "id": 71
+  },
+  {
+    "start": 227.94,
+    "end": 231.02,
+    "en": "just start that's it.",
+    "zh": "直接开始，就这样。",
+    "id": 72
+  },
+  {
+    "start": 231.02,
+    "end": 232.44,
+    "en": "no need to finish it.",
+    "zh": "不需要把它完成。",
+    "id": 73
+  },
+  {
+    "start": 232.44,
+    "end": 233.5,
+    "en": "no need to perform well.",
+    "zh": "不需要表现得很好。",
+    "id": 74
+  },
+  {
+    "start": 233.5,
+    "end": 236.64,
+    "en": "we just have to start the task for five to ten minutes.",
+    "zh": "我们只需要开始做这项任务五到十分钟。",
+    "id": 75
+  },
+  {
+    "start": 236.64,
+    "end": 238.9,
+    "en": "and not think about the outcome.",
+    "zh": "不要去想结果。",
+    "id": 76
+  },
+  {
+    "start": 238.9,
+    "end": 242.4,
+    "en": "essentially you have to learn to interrupt the avoidance loop.",
+    "zh": "本质上，你必须学会打断逃避循环。",
+    "id": 77
+  },
+  {
+    "start": 242.4,
+    "end": 243.84,
+    "en": "and here's how you do it.",
+    "zh": "方法是这样的。",
+    "id": 78
+  },
+  {
+    "start": 243.84,
+    "end": 246.6,
+    "en": "step number one is to catch it and name it.",
+    "zh": "第一步，是捕捉到它，并说出它的名字。",
+    "id": 79
+  },
+  {
+    "start": 246.6,
+    "end": 248.56,
+    "en": "and when you notice yourself procrastinating.",
+    "zh": "当你注意到自己正在拖延时。",
+    "id": 80
+  },
+  {
+    "start": 248.56,
+    "end": 250.54,
+    "en": "and you notice yourself avoiding something.",
+    "zh": "当你注意到自己正在逃避某件事时。",
+    "id": 81
+  },
+  {
+    "start": 250.54,
+    "end": 252.92,
+    "en": "think about the emotion you're experiencing.",
+    "zh": "想一想你正在经历的情绪是什么。",
+    "id": 82
+  },
+  {
+    "start": 252.92,
+    "end": 254.42,
+    "en": "are you feeling overwhelmed.",
+    "zh": "你是不是感到不堪重负？",
+    "id": 83
+  },
+  {
+    "start": 254.42,
+    "end": 255.48,
+    "en": "are you feeling anxious.",
+    "zh": "你是不是感到焦虑？",
+    "id": 84
+  },
+  {
+    "start": 255.48,
+    "end": 257.86,
+    "en": "are you afraid that your result is not going to be good enough.",
+    "zh": "你是不是害怕自己的结果不够好？",
+    "id": 85
+  },
+  {
+    "start": 257.86,
+    "end": 261.44,
+    "en": "just naming that emotion is enough for you.",
+    "zh": "仅仅说出这种情绪，对你来说就已经足够了。",
+    "id": 86
+  },
+  {
+    "start": 261.44,
+    "end": 265.5,
+    "en": "to switch from your emotional mind back into your rational mind.",
+    "zh": "它能让你从情绪脑切换回理性脑。",
+    "id": 87
+  },
+  {
+    "start": 265.5,
+    "end": 269.72,
+    "en": "and second step is to make your task stupidly small.",
+    "zh": "第二步，是把你的任务缩小到蠢到不能再小。",
+    "id": 88
+  },
+  {
+    "start": 269.72,
+    "end": 273.28,
+    "en": "essentially think about what is the tiniest possible action.",
+    "zh": "本质上，你要想一想，最小的可能行动是什么。",
+    "id": 89
+  },
+  {
+    "start": 273.28,
+    "end": 275.26,
+    "en": "you can set for yourself as the goal.",
+    "zh": "你可以把它设定为自己的目标。",
+    "id": 90
+  },
+  {
+    "start": 275.26,
+    "end": 278.04,
+    "en": "just to make at least a little bit of progress.",
+    "zh": "只是为了至少取得一点点进展。",
+    "id": 91
+  },
+  {
+    "start": 278.04,
+    "end": 282.54,
+    "en": "for example don't think that you have to write a whole essay tonight.",
+    "zh": "比如，不要想着你今晚必须写完整篇论文。",
+    "id": 92
+  },
+  {
+    "start": 282.54,
+    "end": 286.94,
+    "en": "think oh my task is to open the document in google doc.",
+    "zh": "你可以想：哦，我的任务是在 Google 文档里打开这个文件。",
+    "id": 93
+  },
+  {
+    "start": 286.94,
+    "end": 288.76,
+    "en": "and write for just 10 minutes.",
+    "zh": "然后只写 10 分钟。",
+    "id": 94
+  },
+  {
+    "start": 288.76,
+    "end": 291.96,
+    "en": "and don't think oh i have to do this hour-long workout.",
+    "zh": "也不要想着：哦，我必须完成这一小时的锻炼。",
+    "id": 95
+  },
+  {
+    "start": 291.96,
+    "end": 293.56,
+    "en": "i'm really dreading it.",
+    "zh": "我真的很抗拒它。",
+    "id": 96
+  },
+  {
+    "start": 293.56,
+    "end": 296.78,
+    "en": "think of your task as just putting on your shoes.",
+    "zh": "把你的任务想成只是穿上鞋。",
+    "id": 97
+  },
+  {
+    "start": 296.78,
+    "end": 297.84,
+    "en": "and going outside.",
+    "zh": "然后走到外面去。",
+    "id": 98
+  },
+  {
+    "start": 297.84,
+    "end": 302.52,
+    "en": "and the reason why simply starting something for 10 minutes is so powerful.",
+    "zh": "仅仅开始做一件事 10 分钟之所以如此强大。",
+    "id": 99
+  },
+  {
+    "start": 302.52,
+    "end": 305.64,
+    "en": "is because the actual process of completing a task.",
+    "zh": "是因为真正完成一项任务的过程。",
+    "id": 100
+  },
+  {
+    "start": 305.64,
+    "end": 308.4,
+    "en": "it's almost always much easier.",
+    "zh": "几乎总是要容易得多。",
+    "id": 101
+  },
+  {
+    "start": 308.4,
+    "end": 311.08,
+    "en": "than the extreme dread you feel before doing it.",
+    "zh": "比起你在做它之前感受到的那种极端恐惧。",
+    "id": 102
+  },
+  {
+    "start": 311.08,
+    "end": 314.12,
+    "en": "and Pychyl showed this beautifully in this study.",
+    "zh": "Pychyl 在这项研究中非常漂亮地展示了这一点。",
+    "id": 103
+  },
+  {
+    "start": 314.12,
+    "end": 317.18,
+    "en": "where he gave 45 students pagers.",
+    "zh": "他给了 45 名学生传呼机。",
+    "id": 104
+  },
+  {
+    "start": 317.18,
+    "end": 319.24,
+    "en": "and that was before smartphones existed.",
+    "zh": "那是在智能手机出现之前。",
+    "id": 105
+  },
+  {
+    "start": 319.24,
+    "end": 320.98,
+    "en": "so he gave them pagers.",
+    "zh": "所以他给了他们传呼机。",
+    "id": 106
+  },
+  {
+    "start": 320.98,
+    "end": 324.44,
+    "en": "he would page them eight times a day for five days.",
+    "zh": "在他们某门课的学术截止日期到来前的五天里。",
+    "id": 107
+  },
+  {
+    "start": 324.44,
+    "end": 328.5,
+    "en": "leading up to their academic deadline on some in some class.",
+    "zh": "他每天会呼叫他们八次。",
+    "id": 108
+  },
+  {
+    "start": 328.5,
+    "end": 333.54,
+    "en": "and when the pager went off the student was supposed to report.",
+    "zh": "当传呼机响起时，学生需要报告。",
+    "id": 109
+  },
+  {
+    "start": 333.54,
+    "end": 334.44,
+    "en": "how they were feeling.",
+    "zh": "他们当时感觉如何。",
+    "id": 110
+  },
+  {
+    "start": 334.44,
+    "end": 335.12,
+    "en": "what they were doing.",
+    "zh": "他们当时在做什么。",
+    "id": 111
+  },
+  {
+    "start": 335.12,
+    "end": 338.68,
+    "en": "how they were feeling about the academic assignment that they had to do.",
+    "zh": "以及他们对自己必须完成的那项学术作业感觉如何。",
+    "id": 112
+  },
+  {
+    "start": 338.68,
+    "end": 342.4,
+    "en": "the data showed that the students consistently procrastinated on the tasks.",
+    "zh": "数据显示，学生们会持续拖延那些任务。",
+    "id": 113
+  },
+  {
+    "start": 342.4,
+    "end": 345.2,
+    "en": "that they found difficult or unpleasant or stressful.",
+    "zh": "也就是那些他们觉得困难、不愉快，或者有压力的任务。",
+    "id": 114
+  },
+  {
+    "start": 345.2,
+    "end": 348.26,
+    "en": "and they consistently replaced them with activities.",
+    "zh": "他们会持续用其他活动来替代这些任务。",
+    "id": 115
+  },
+  {
+    "start": 348.26,
+    "end": 350.32,
+    "en": "that were more interesting and more exciting.",
+    "zh": "那些活动更有趣，也更让人兴奋。",
+    "id": 116
+  },
+  {
+    "start": 350.32,
+    "end": 352.42,
+    "en": "and of course we all would do that right.",
+    "zh": "当然，我们都会这么做，对吧。",
+    "id": 117
+  },
+  {
+    "start": 352.42,
+    "end": 354.96,
+    "en": "but here's what Pychyl found most interesting.",
+    "zh": "但 Pychyl 觉得最有意思的是这一点。",
+    "id": 118
+  },
+  {
+    "start": 354.96,
+    "end": 357.64,
+    "en": "when students procrastinated early in the week.",
+    "zh": "当学生在一周早些时候拖延时。",
+    "id": 119
+  },
+  {
+    "start": 357.64,
+    "end": 359.54,
+    "en": "they would constantly justify it.",
+    "zh": "他们会不断为自己找理由。",
+    "id": 120
+  },
+  {
+    "start": 359.54,
+    "end": 362.28,
+    "en": "they would constantly say that oh i work better under pressure.",
+    "zh": "他们会不停地说，哦，我在压力下工作得更好。",
+    "id": 121
+  },
+  {
+    "start": 362.28,
+    "end": 364.34,
+    "en": "and work better close to the deadline.",
+    "zh": "越接近截止日期，我工作得越好。",
+    "id": 122
+  },
+  {
+    "start": 364.34,
+    "end": 366.38,
+    "en": "i will feel like it tomorrow.",
+    "zh": "我明天就会有心情做了。",
+    "id": 123
+  },
+  {
+    "start": 366.38,
+    "end": 368.08,
+    "en": "and they would say things like these.",
+    "zh": "他们会说这些类似的话。",
+    "id": 124
+  },
+  {
+    "start": 368.08,
+    "end": 370.3,
+    "en": "to explain why they're not doing the task.",
+    "zh": "来解释为什么他们没有做那项任务。",
+    "id": 125
+  },
+  {
+    "start": 370.3,
+    "end": 371.34,
+    "en": "they're supposed to be doing.",
+    "zh": "也就是他们本该做的任务。",
+    "id": 126
+  },
+  {
+    "start": 371.34,
+    "end": 374.3,
+    "en": "but when the deadline actually forced them to start.",
+    "zh": "但当截止日期真的迫使他们开始时。",
+    "id": 127
+  },
+  {
+    "start": 374.3,
+    "end": 377.34,
+    "en": "not one of them said that they were glad they waited.",
+    "zh": "没有一个人说自己很庆幸当初等到了现在。",
+    "id": 128
+  },
+  {
+    "start": 377.34,
+    "end": 380.7,
+    "en": "they were all saying that they wish they had more time.",
+    "zh": "他们都说希望自己有更多时间。",
+    "id": 129
+  },
+  {
+    "start": 380.7,
+    "end": 382.26,
+    "en": "they wish they started earlier.",
+    "zh": "他们希望自己早点开始。",
+    "id": 130
+  },
+  {
+    "start": 382.26,
+    "end": 386.02,
+    "en": "and that the task wasn't actually as bad as they thought.",
+    "zh": "而且那项任务其实并没有他们想的那么糟。",
+    "id": 131
+  },
+  {
+    "start": 386.02,
+    "end": 388.34,
+    "en": "so you're not actually avoiding the task.",
+    "zh": "所以你真正逃避的并不是任务本身。",
+    "id": 132
+  },
+  {
+    "start": 388.34,
+    "end": 393.16,
+    "en": "you're avoiding the way that you think the task is going to make you feel.",
+    "zh": "你逃避的是你以为这项任务会带给你的感受。",
+    "id": 133
+  },
+  {
+    "start": 393.16,
+    "end": 396.98,
+    "en": "and your brain is wrong about it almost all of the time.",
+    "zh": "而你的大脑几乎每次在这件事上都是错的。",
+    "id": 134
+  },
+  {
+    "start": 396.98,
+    "end": 398.28,
+    "en": "and now you might be thinking.",
+    "zh": "现在你可能会想。",
+    "id": 135
+  },
+  {
+    "start": 398.28,
+    "end": 401.38,
+    "en": "well i don't just sit on the couch doing nothing.",
+    "zh": "可是我并不是坐在沙发上什么都不做。",
+    "id": 136
+  },
+  {
+    "start": 401.38,
+    "end": 403.48,
+    "en": "i'm actually busy all the time.",
+    "zh": "我其实一直都很忙。",
+    "id": 137
+  },
+  {
+    "start": 403.48,
+    "end": 407.56,
+    "en": "so why can i not finally start this project that i've been putting off for months.",
+    "zh": "那为什么我还是没法真正开始这个已经拖了好几个月的项目呢？",
+    "id": 138
+  },
+  {
+    "start": 407.56,
+    "end": 409.68,
+    "en": "well there's an answer to that.",
+    "zh": "这个问题是有答案的。",
+    "id": 139
+  },
+  {
+    "start": 409.68,
+    "end": 412.32,
+    "en": "your brain does not just let you sit there doing nothing.",
+    "zh": "你的大脑不会只是让你坐在那里什么都不做。",
+    "id": 140
+  },
+  {
+    "start": 412.32,
+    "end": 414.34,
+    "en": "because that triggers guilt.",
+    "zh": "因为那会触发内疚感。",
+    "id": 141
+  },
+  {
+    "start": 414.34,
+    "end": 417.2,
+    "en": "and guilt is another negative emotion.",
+    "zh": "而内疚感也是另一种负面情绪。",
+    "id": 142
+  },
+  {
+    "start": 417.2,
+    "end": 419.06,
+    "en": "that and they do as trying to escape.",
+    "zh": "它们也会试图逃离这种情绪。",
+    "id": 143
+  },
+  {
+    "start": 419.06,
+    "end": 423.38,
+    "en": "so it disguises that avoidance as productivity.",
+    "zh": "所以它会把逃避伪装成生产力。",
+    "id": 144
+  },
+  {
+    "start": 423.38,
+    "end": 426.54,
+    "en": "and there's actually two specific disguises.",
+    "zh": "实际上有两种具体的伪装方式。",
+    "id": 145
+  },
+  {
+    "start": 426.54,
+    "end": 428.2,
+    "en": "that i want to discuss with you.",
+    "zh": "我想和你们讨论一下。",
+    "id": 146
+  },
+  {
+    "start": 428.2,
+    "end": 430.66,
+    "en": "and the first disguise is perfectionism.",
+    "zh": "第一种伪装是完美主义。",
+    "id": 147
+  },
+  {
+    "start": 430.66,
+    "end": 437.6,
+    "en": "and research has consistently shown that people who score higher on perfectionism are bigger procrastinators.",
+    "zh": "研究一直显示，完美主义得分越高的人，拖延越严重。",
+    "id": 148
+  },
+  {
+    "start": 437.6,
+    "end": 440.82,
+    "en": "because perfectionism essentially makes you afraid.",
+    "zh": "因为完美主义本质上会让你害怕。",
+    "id": 149
+  },
+  {
+    "start": 440.82,
+    "end": 443.44,
+    "en": "that your result is not going to be good enough.",
+    "zh": "害怕你的结果不够好。",
+    "id": 150
+  },
+  {
+    "start": 443.44,
+    "end": 446.44,
+    "en": "which makes you not even start in the first place.",
+    "zh": "这会让你一开始就根本不行动。",
+    "id": 151
+  },
+  {
+    "start": 446.44,
+    "end": 452.7,
+    "en": "and researchers found that more perfectionist professors actually publish less papers.",
+    "zh": "研究人员发现，更完美主义的教授实际上发表的论文更少。",
+    "id": 152
+  },
+  {
+    "start": 452.7,
+    "end": 455.64,
+    "en": "than their last perfectionist colleagues.",
+    "zh": "比起那些不那么完美主义的同事。",
+    "id": 153
+  },
+  {
+    "start": 455.64,
+    "end": 458.64,
+    "en": "even if control for how hardworking they are.",
+    "zh": "即使控制了他们的勤奋程度也是如此。",
+    "id": 154
+  },
+  {
+    "start": 458.64,
+    "end": 461.42,
+    "en": "essentially perfectionism makes you never start.",
+    "zh": "本质上，完美主义会让你永远无法开始。",
+    "id": 155
+  },
+  {
+    "start": 461.42,
+    "end": 463.24,
+    "en": "so you never fall short.",
+    "zh": "这样你就永远不会达不到标准。",
+    "id": 156
+  },
+  {
+    "start": 463.24,
+    "end": 466.44,
+    "en": "and disguise number two is productive procrastination.",
+    "zh": "第二种伪装是生产性拖延。",
+    "id": 157
+  },
+  {
+    "start": 466.44,
+    "end": 468.3,
+    "en": "and this one gets everyone.",
+    "zh": "这一种每个人都会中招。",
+    "id": 158
+  },
+  {
+    "start": 468.3,
+    "end": 469.6,
+    "en": "it's the sneakiest one.",
+    "zh": "它是最隐蔽的一种。",
+    "id": 159
+  },
+  {
+    "start": 469.6,
+    "end": 471.68,
+    "en": "because you're not actually sitting on the couch.",
+    "zh": "因为你并不是真的坐在沙发上。",
+    "id": 160
+  },
+  {
+    "start": 471.68,
+    "end": 473.44,
+    "en": "you are doing something.",
+    "zh": "你是在做一些事情。",
+    "id": 161
+  },
+  {
+    "start": 473.44,
+    "end": 475.94,
+    "en": "you're researching. you're reorganizing your desk.",
+    "zh": "你在做调研。你在重新整理书桌。",
+    "id": 162
+  },
+  {
+    "start": 475.94,
+    "end": 477.08,
+    "en": "you're planning something.",
+    "zh": "你在计划某件事。",
+    "id": 163
+  },
+  {
+    "start": 477.08,
+    "end": 481.28,
+    "en": "you're watching videos on youtube about how to be more productive.",
+    "zh": "你在 YouTube 上看关于如何提高效率的视频。",
+    "id": 164
+  },
+  {
+    "start": 481.28,
+    "end": 482.94,
+    "en": "instead of actually doing the thing.",
+    "zh": "而不是实际去做那件真正该做的事。",
+    "id": 165
+  },
+  {
+    "start": 482.94,
+    "end": 485.1,
+    "en": "maybe you're watching this video right now.",
+    "zh": "也许你现在就在看这个视频。",
+    "id": 166
+  },
+  {
+    "start": 485.1,
+    "end": 488.78,
+    "en": "instead of working on your assignment or working on your new project.",
+    "zh": "而不是写你的作业，或者推进你的新项目。",
+    "id": 167
+  },
+  {
+    "start": 488.78,
+    "end": 489.74,
+    "en": "i don't know.",
+    "zh": "我不知道。",
+    "id": 168
+  },
+  {
+    "start": 489.74,
+    "end": 493.24,
+    "en": "and Pychyl's research calls this short-term mood repair.",
+    "zh": "Pychyl 的研究把这称为短期情绪修复。",
+    "id": 169
+  },
+  {
+    "start": 493.24,
+    "end": 497.86,
+    "en": "when a real task triggers anxiety or overwhelm or some negative emotion.",
+    "zh": "当一项真正的任务触发焦虑、压力过大，或者某种负面情绪时。",
+    "id": 170
+  },
+  {
+    "start": 497.86,
+    "end": 500.74,
+    "en": "your brain essentially decides to swap it.",
+    "zh": "你的大脑本质上会决定把它替换掉。",
+    "id": 171
+  },
+  {
+    "start": 500.74,
+    "end": 503.32,
+    "en": "for a safer and less risky task.",
+    "zh": "换成一项更安全、风险更低的任务。",
+    "id": 172
+  },
+  {
+    "start": 503.32,
+    "end": 506.12,
+    "en": "that is still going to give you some sense of accomplishment.",
+    "zh": "这项任务仍然会给你一些成就感。",
+    "id": 173
+  },
+  {
+    "start": 506.12,
+    "end": 507.16,
+    "en": "when you finish it.",
+    "zh": "当你完成它的时候。",
+    "id": 174
+  },
+  {
+    "start": 507.16,
+    "end": 511.78,
+    "en": "but it's going to be without any risk of failure or judgment.",
+    "zh": "但它不会带来任何失败或被评判的风险。",
+    "id": 175
+  },
+  {
+    "start": 511.78,
+    "end": 515.18,
+    "en": "because that task is going to be less high stakes.",
+    "zh": "因为那项任务的利害关系更低。",
+    "id": 176
+  },
+  {
+    "start": 515.18,
+    "end": 517.0,
+    "en": "like instead of writing an essay.",
+    "zh": "比如，你没有去写论文。",
+    "id": 177
+  },
+  {
+    "start": 517.0,
+    "end": 520.04,
+    "en": "you spent an hour color coding your notes.",
+    "zh": "而是花了一个小时给笔记做颜色分类。",
+    "id": 178
+  },
+  {
+    "start": 520.04,
+    "end": 521.98,
+    "en": "or instead of applying to jobs.",
+    "zh": "或者你没有去投工作。",
+    "id": 179
+  },
+  {
+    "start": 521.98,
+    "end": 525.22,
+    "en": "you spent hours perfecting your resume for the fifth time.",
+    "zh": "而是花了好几个小时第五次打磨你的简历。",
+    "id": 180
+  },
+  {
+    "start": 525.22,
+    "end": 526.68,
+    "en": "and instead of starting a business.",
+    "zh": "你没有去开始创业。",
+    "id": 181
+  },
+  {
+    "start": 526.68,
+    "end": 528.66,
+    "en": "that you've jumped up starting for years.",
+    "zh": "那个你已经幻想要开始很多年的事情。",
+    "id": 182
+  },
+  {
+    "start": 528.66,
+    "end": 531.48,
+    "en": "you read 10 books on how to start a business.",
+    "zh": "而是读了 10 本关于如何创业的书。",
+    "id": 183
+  },
+  {
+    "start": 531.48,
+    "end": 534.42,
+    "en": "so you feel like you're making some progress.",
+    "zh": "所以你感觉自己好像在取得一些进展。",
+    "id": 184
+  },
+  {
+    "start": 534.42,
+    "end": 539.24,
+    "en": "but the actual scary task that you actually have to do hasn't moved an inch.",
+    "zh": "但那个你真正必须去做、真正可怕的任务却一点都没有推进。",
+    "id": 185
+  },
+  {
+    "start": 539.24,
+    "end": 542.34,
+    "en": "and again remember you're not actually avoiding the task.",
+    "zh": "再次记住，你真正逃避的并不是任务本身。",
+    "id": 186
+  },
+  {
+    "start": 542.34,
+    "end": 546.08,
+    "en": "you're avoiding how you think the task is going to make you feel.",
+    "zh": "你逃避的是你以为这项任务会带给你的感受。",
+    "id": 187
+  },
+  {
+    "start": 546.08,
+    "end": 547.98,
+    "en": "but when you actually start doing it.",
+    "zh": "但当你真的开始做它时。",
+    "id": 188
+  },
+  {
+    "start": 547.98,
+    "end": 551.4,
+    "en": "you realize that the dread of starting is much worse.",
+    "zh": "你会意识到，开始之前的那种恐惧要糟糕得多。",
+    "id": 189
+  },
+  {
+    "start": 551.4,
+    "end": 553.5,
+    "en": "than doing most of the time.",
+    "zh": "比真正去做这件事本身糟糕得多，大多数时候都是这样。",
+    "id": 190
+  },
+  {
+    "start": 553.5,
+    "end": 556.68,
+    "en": "so now you know what the avoidance loop looks like.",
+    "zh": "所以现在你知道逃避循环是什么样子了。",
+    "id": 191
+  },
+  {
+    "start": 556.68,
+    "end": 558.58,
+    "en": "how your brain disguises it.",
+    "zh": "也知道你的大脑是如何伪装它的。",
+    "id": 192
+  },
+  {
+    "start": 558.58,
+    "end": 560.26,
+    "en": "and how to break it.",
+    "zh": "以及如何打破它。",
+    "id": 193
+  },
+  {
+    "start": 560.26,
+    "end": 561.8,
+    "en": "so subscribe if this helped.",
+    "zh": "如果这个视频帮到了你，记得订阅。",
+    "id": 194
+  },
+  {
+    "start": 561.8,
+    "end": 565.3,
+    "en": "and please let me know in the comments what other topics or videos.",
+    "zh": "也请在评论区告诉我，你们还想在我的 YouTube 频道上看到哪些主题、视频。",
+    "id": 195
+  },
+  {
+    "start": 565.3,
+    "end": 568.18,
+    "en": "or ideas you would like to see in my youtube channel.",
+    "zh": "或者哪些想法。",
+    "id": 196
+  },
+  {
+    "start": 568.18,
+    "end": 570.74,
+    "en": "and i'm currently building out my youtube channel.",
+    "zh": "我现在正在建设我的 YouTube 频道。",
+    "id": 197
+  },
+  {
+    "start": 570.74,
+    "end": 575.66,
+    "en": "so any sort of support or likes or comments would be greatly appreciated.",
+    "zh": "所以任何形式的支持、点赞或评论，我都会非常感激。",
+    "id": 198
+  },
+  {
+    "start": 575.66,
+    "end": 577.24,
+    "en": "and i'll see you in the next one.",
+    "zh": "我们下期视频见。",
+    "id": 199
+  }
+]

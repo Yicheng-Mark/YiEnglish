@@ -1,6 +1,6 @@
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Bookmark, BookOpen, Search, Video } from 'lucide-react'
+import { Bookmark, BookOpen, Hash, Search, Video } from 'lucide-react'
 import {
   mockCorpusVideos,
   categories,
@@ -26,6 +26,7 @@ export default function CorpusList({ scrollRef }) {
   const [searchQuery, setSearchQuery] = useState('')
   const deferredQuery = useDeferredValue(searchQuery)
   const [bookmarkOnly, setBookmarkOnly] = useState(false)
+  const [episodeNum, setEpisodeNum] = useState('')
   const [corpusWordCount, setCorpusWordCount] = useState(0)
 
   useEffect(() => {
@@ -105,6 +106,18 @@ export default function CorpusList({ scrollRef }) {
   const handleSearchChange = useCallback((e) => {
     setSearchQuery(e.target.value)
   }, [])
+
+  const handleEpisodeJump = useCallback(() => {
+    const num = parseInt(episodeNum, 10)
+    if (!num || num < 1) return
+    const idx = filtered.findIndex((v) => v.id === String(num))
+    if (!gridRef.current) return
+    if (idx >= 0) {
+      gridRef.current.scrollToIndex(idx, { behavior: 'smooth' })
+    } else {
+      gridRef.current.scrollToIndex(filtered.length - 1, { behavior: 'smooth' })
+    }
+  }, [episodeNum, filtered])
 
   const handleNavigateWordBook = useCallback(() => {
     navigate('/dict/corpus-word-book')
@@ -196,8 +209,8 @@ export default function CorpusList({ scrollRef }) {
             </div>
           </div>
 
-          <div className="mb-6">
-            <div className="relative max-w-md">
+          <div className="mb-6 flex flex-wrap items-center gap-3">
+            <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-content-tertiary dark:text-gray-500" />
               <input
                 type="text"
@@ -205,6 +218,18 @@ export default function CorpusList({ scrollRef }) {
                 onChange={handleSearchChange}
                 placeholder="搜索标题、主讲人或标签..."
                 className="w-full pl-10 pr-4 py-2.5 bg-surface border border-gray-200 dark:border-white/[0.08] rounded-button text-sm text-content placeholder-gray-400 focus:outline-none focus:border-primary/50 transition-all"
+              />
+            </div>
+            <div className="relative w-full md:w-auto">
+              <Hash className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-content-tertiary dark:text-gray-500" />
+              <input
+                type="number"
+                min="1"
+                value={episodeNum}
+                onChange={(e) => setEpisodeNum(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleEpisodeJump()}
+                placeholder="请输入要跳转的期号"
+                className="w-full md:w-44 pl-8 pr-2 py-2.5 bg-surface border border-gray-200 dark:border-white/[0.08] rounded-button text-sm text-content placeholder-gray-400 focus:outline-none focus:border-primary/50 transition-all text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
             </div>
           </div>

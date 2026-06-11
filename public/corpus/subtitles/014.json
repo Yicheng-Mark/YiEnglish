@@ -1,0 +1,611 @@
+[
+  {
+    "start": 0.0,
+    "end": 2.14,
+    "en": "Wow. Hi, everyone.",
+    "zh": "哇。大家好。",
+    "id": 1
+  },
+  {
+    "start": 10.82,
+    "end": 12.64,
+    "en": "So, I'm going to be honest.",
+    "zh": "那我就实话实说了。",
+    "id": 2
+  },
+  {
+    "start": 13.3,
+    "end": 16.02,
+    "en": "I did not prep a speech for the award.",
+    "zh": "我没有为这个奖准备获奖感言。",
+    "id": 3
+  },
+  {
+    "start": 16.76,
+    "end": 18.58,
+    "en": "And so if you look behind you, all the screens are black.",
+    "zh": "所以如果你们看看身后，所有屏幕都是黑的。",
+    "id": 4
+  },
+  {
+    "start": 18.9,
+    "end": 21.72,
+    "en": "And the reason that I did that was because.",
+    "zh": "我这么做的原因是，",
+    "id": 5
+  },
+  {
+    "start": 21.72,
+    "end": 25.76,
+    "en": "even though all of you are dressed to the nines, and all of you are leaders in your respective industries.",
+    "zh": "尽管今晚你们都盛装出席，也都是各自行业里的领军人物，",
+    "id": 6
+  },
+  {
+    "start": 25.76,
+    "end": 29.54,
+    "en": "I think of this evening as more than just an awards show.",
+    "zh": "但我觉得今晚不只是一个颁奖典礼。",
+    "id": 7
+  },
+  {
+    "start": 30.06,
+    "end": 31.76,
+    "en": "I think of it as a homecoming.",
+    "zh": "我更觉得它像是一场回家团聚。",
+    "id": 8
+  },
+  {
+    "start": 32.56,
+    "end": 36.74,
+    "en": "And when you come home, you sit down, you eat good food,",
+    "zh": "而当你回到家，你会坐下来，吃点好吃的，",
+    "id": 9
+  },
+  {
+    "start": 37.16,
+    "end": 38.38,
+    "en": "you yap with the family.",
+    "zh": "和家人聊个不停。",
+    "id": 10
+  },
+  {
+    "start": 38.64,
+    "end": 40.36,
+    "en": "and more than anything, you speak from the heart.",
+    "zh": "而最重要的是，你会说出心里话。",
+    "id": 11
+  },
+  {
+    "start": 40.74,
+    "end": 41.86,
+    "en": "So that's what I'm going to do.",
+    "zh": "所以我今天也打算这么做。",
+    "id": 12
+  },
+  {
+    "start": 43.52,
+    "end": 48.22,
+    "en": "So, when I think about impact and the change that you affect going into the future,",
+    "zh": "所以，当我想到影响力，以及你们面向未来所带来的改变时，",
+    "id": 13
+  },
+  {
+    "start": 48.52,
+    "end": 51.44,
+    "en": "I think it's inextricable from the history we inherit from the past.",
+    "zh": "我觉得这和我们从过去继承而来的历史密不可分。",
+    "id": 14
+  },
+  {
+    "start": 52.26,
+    "end": 54.56,
+    "en": "My history is very special.",
+    "zh": "我的历史非常特别。",
+    "id": 15
+  },
+  {
+    "start": 54.56,
+    "end": 57.24,
+    "en": "I come from a lineage of incredibly powerful women.",
+    "zh": "我来自一个由无比强大的女性组成的家族。",
+    "id": 16
+  },
+  {
+    "start": 57.8,
+    "end": 60.26,
+    "en": "My grandmother, who is smiling at us from above.",
+    "zh": "我的外婆，此刻一定正在天上对我们微笑。",
+    "id": 17
+  },
+  {
+    "start": 60.26,
+    "end": 62.12,
+    "en": "and also telling me to stand up straight.",
+    "zh": "同时也在提醒我站直一点。",
+    "id": 18
+  },
+  {
+    "start": 63.04,
+    "end": 66.18,
+    "en": "And my mom, who's smiling at me from the front row tonight.",
+    "zh": "还有我的妈妈，今晚正坐在第一排对我微笑。",
+    "id": 19
+  },
+  {
+    "start": 72.52,
+    "end": 75.8,
+    "en": "She is the most beautiful woman I have ever met.",
+    "zh": "她是我见过的最美丽的女人。",
+    "id": 20
+  },
+  {
+    "start": 75.8,
+    "end": 77.86,
+    "en": "because her radiance comes from within.",
+    "zh": "因为她的光芒来自内在。",
+    "id": 21
+  },
+  {
+    "start": 78.34,
+    "end": 81.12,
+    "en": "And that is the kind of thing that you cannot get at the drugstore.",
+    "zh": "而这种东西，是你在药妆店买不到的。",
+    "id": 22
+  },
+  {
+    "start": 82.72,
+    "end": 86.6,
+    "en": "She has inspired me in more ways than I can possibly imagine.",
+    "zh": "她以我难以想象的各种方式激励着我。",
+    "id": 23
+  },
+  {
+    "start": 87.04,
+    "end": 88.58,
+    "en": "And I will tell you a short story.",
+    "zh": "我想给你们讲一个小故事。",
+    "id": 24
+  },
+  {
+    "start": 89.4,
+    "end": 92.4,
+    "en": "When my mom was my age, she defined success, I kid you not,",
+    "zh": "当我妈妈像我现在这么大的时候，她对成功的定义，我真的没开玩笑，",
+    "id": 25
+  },
+  {
+    "start": 92.72,
+    "end": 96.06,
+    "en": "as being able to eat a sweet potato every single day.",
+    "zh": "就是每天都能吃上一个红薯。",
+    "id": 26
+  },
+  {
+    "start": 96.62,
+    "end": 98.38,
+    "en": "That was like made it.",
+    "zh": "那对她来说就已经是成功了。",
+    "id": 27
+  },
+  {
+    "start": 98.42,
+    "end": 100.54,
+    "en": "That was like the Gold House Gala.",
+    "zh": "那就像是她的 Gold House Gala。",
+    "id": 28
+  },
+  {
+    "start": 101.18,
+    "end": 103.56,
+    "en": "She can have a sweet potato every day.",
+    "zh": "她每天都能吃一个红薯。",
+    "id": 29
+  },
+  {
+    "start": 104.24,
+    "end": 107.82,
+    "en": "And so I invite you all, as people who have made it,",
+    "zh": "所以我想邀请在座各位，作为已经获得成功的人，",
+    "id": 30
+  },
+  {
+    "start": 107.82,
+    "end": 111.06,
+    "en": "to think back five years, ten years, fifteen years.",
+    "zh": "回想五年前、十年前、十五年前的自己。",
+    "id": 31
+  },
+  {
+    "start": 111.32,
+    "end": 112.4,
+    "en": "What was your sweet potato?",
+    "zh": "你们的红薯是什么？",
+    "id": 32
+  },
+  {
+    "start": 113.28,
+    "end": 118.2,
+    "en": "What was one goal that you thought would be impossible to reach and",
+    "zh": "有没有一个目标，是你曾经觉得根本不可能实现的，",
+    "id": 33
+  },
+  {
+    "start": 118.2,
+    "end": 120.0,
+    "en": "once you got it, you would have absolute joy?",
+    "zh": "但只要实现了，你就会获得绝对的快乐？",
+    "id": 34
+  },
+  {
+    "start": 120.92,
+    "end": 122.54,
+    "en": "I'm sure we all have something like that.",
+    "zh": "我相信我们每个人都有这样的东西。",
+    "id": 35
+  },
+  {
+    "start": 122.74,
+    "end": 123.8,
+    "en": "For me, it was 2022.",
+    "zh": "对我来说，那是在 2022 年。",
+    "id": 36
+  },
+  {
+    "start": 124.18,
+    "end": 127.04,
+    "en": "I thought that if I won the Olympics, I would be happy forever.",
+    "zh": "我当时以为，如果我赢得奥运会，我就会永远快乐。",
+    "id": 37
+  },
+  {
+    "start": 127.7,
+    "end": 130.54,
+    "en": "And things would just be, you know, I'd be living in a fairy tale for the rest of my life.",
+    "zh": "然后一切都会像童话一样，你懂的，我会在余生都活在童话里。",
+    "id": 38
+  },
+  {
+    "start": 131.12,
+    "end": 133.76,
+    "en": "And after the Olympics, I went through a very tough time when I realized",
+    "zh": "但奥运会结束后，我经历了一段非常艰难的时期，因为我意识到，",
+    "id": 39
+  },
+  {
+    "start": 133.76,
+    "end": 134.98,
+    "en": "that that actually wasn't true.",
+    "zh": "事实其实并不是这样。",
+    "id": 40
+  },
+  {
+    "start": 135.4,
+    "end": 136.44,
+    "en": "That life goes on.",
+    "zh": "生活还是会继续。",
+    "id": 41
+  },
+  {
+    "start": 136.44,
+    "end": 141.18,
+    "en": "And so this very popular phenomenon called the post-Olympic blues hit me very hard.",
+    "zh": "于是这种很常见的现象，叫作“奥运后低谷”，狠狠地击中了我。",
+    "id": 42
+  },
+  {
+    "start": 141.66,
+    "end": 144.08,
+    "en": "And in that time, I was reflecting on impact and mission.",
+    "zh": "在那段时间里，我一直在反思影响力和使命。",
+    "id": 43
+  },
+  {
+    "start": 144.26,
+    "end": 145.68,
+    "en": "And I was thinking about joy.",
+    "zh": "我也在思考快乐。",
+    "id": 44
+  },
+  {
+    "start": 146.44,
+    "end": 149.8,
+    "en": "So in psychology, there's this idea of the hedonic treadmill.",
+    "zh": "在心理学里，有一个概念叫“享乐跑步机”。",
+    "id": 45
+  },
+  {
+    "start": 150.46,
+    "end": 154.98,
+    "en": "This idea essentially says that we acclimate to success and joy very quickly.",
+    "zh": "这个概念本质上是说，我们会很快适应成功和快乐。",
+    "id": 46
+  },
+  {
+    "start": 155.4,
+    "end": 157.56,
+    "en": "So when you reach that goal.",
+    "zh": "所以当你实现那个目标时，",
+    "id": 47
+  },
+  {
+    "start": 158.46,
+    "end": 160.4,
+    "en": "the joy doesn't last as long as you think it does.",
+    "zh": "那种快乐并不会像你以为的那样持续那么久。",
+    "id": 48
+  },
+  {
+    "start": 160.44,
+    "end": 161.58,
+    "en": "And so chasing that high.",
+    "zh": "于是为了追逐那种高峰感，",
+    "id": 49
+  },
+  {
+    "start": 161.82,
+    "end": 164.5,
+    "en": "you keep going and you end up disappointed for most of the time.",
+    "zh": "你会不断向前，最后大部分时间都陷入失望。",
+    "id": 50
+  },
+  {
+    "start": 165.08,
+    "end": 168.74,
+    "en": "Tonight, surrounded by community, love, joy.",
+    "zh": "而今晚，被社群、爱与快乐包围着，",
+    "id": 51
+  },
+  {
+    "start": 169.26,
+    "end": 172.64,
+    "en": "and that kind of gratitude that only an event like this can inspire,",
+    "zh": "还有这种只有像今晚这样的活动才能激发出来的感恩，",
+    "id": 52
+  },
+  {
+    "start": 172.96,
+    "end": 174.26,
+    "en": "I propose a new cycle.",
+    "zh": "我想提出一个新的循环。",
+    "id": 53
+  },
+  {
+    "start": 174.7,
+    "end": 179.18,
+    "en": "We can call it the Impact Cycle or the Gold House Cycle working title.",
+    "zh": "我们可以叫它“影响力循环”，或者“Gold House 循环”，暂定名。",
+    "id": 54
+  },
+  {
+    "start": 180.64,
+    "end": 182.0,
+    "en": "So here it is.",
+    "zh": "那么它是这样的。",
+    "id": 55
+  },
+  {
+    "start": 182.0,
+    "end": 182.7,
+    "en": "Here are the two points.",
+    "zh": "这里有两个要点。",
+    "id": 56
+  },
+  {
+    "start": 183.14,
+    "end": 185.86,
+    "en": "The first one is gratitude.",
+    "zh": "第一点是感恩。",
+    "id": 57
+  },
+  {
+    "start": 186.78,
+    "end": 188.44,
+    "en": "When you reach a certain point.",
+    "zh": "当你走到某个阶段时，",
+    "id": 58
+  },
+  {
+    "start": 189.1,
+    "end": 193.42,
+    "en": "what is most important is to think about your sweet potato and take a long,",
+    "zh": "最重要的是想一想你的那颗红薯，然后慢慢地、",
+    "id": 59
+  },
+  {
+    "start": 193.68,
+    "end": 196.86,
+    "en": "solid, savoring bite of it and think about how much you wanted it.",
+    "zh": "踏踏实实地咬上一口，细细品味，并想想你曾经有多渴望它。",
+    "id": 60
+  },
+  {
+    "start": 197.26,
+    "end": 200.02,
+    "en": "And secondly, to think about who enabled you to get here.",
+    "zh": "第二点，是去想想是谁帮助你走到了这里。",
+    "id": 61
+  },
+  {
+    "start": 200.44,
+    "end": 204.34,
+    "en": "Think about the community members, the giants whose shoulders you stand on.",
+    "zh": "想想那些社群成员，想想那些让你站在他们肩膀上的巨人。",
+    "id": 62
+  },
+  {
+    "start": 204.72,
+    "end": 208.68,
+    "en": "For me, it's my mom and also members of the community like Miss Mickey Lee,",
+    "zh": "对我来说，是我的妈妈，也包括像 Miss Mickey Lee 这样的社群成员，",
+    "id": 63
+  },
+  {
+    "start": 208.72,
+    "end": 210.26,
+    "en": "who's sitting here in the front row as well.",
+    "zh": "她今晚也坐在前排。",
+    "id": 64
+  },
+  {
+    "start": 210.4,
+    "end": 216.94,
+    "en": "who have so selflessly uplifted so many members of the Asian community into the limelight",
+    "zh": "她们如此无私地把许多亚裔社群成员推向聚光灯下，",
+    "id": 65
+  },
+  {
+    "start": 216.94,
+    "end": 220.32,
+    "en": "so that they can hopefully reach back and bring up the next member with them.",
+    "zh": "希望他们也能回过头来，把下一位成员一起带上来。",
+    "id": 66
+  },
+  {
+    "start": 220.32,
+    "end": 223.96,
+    "en": "This is how we move forward and this is how we create long-standing joy.",
+    "zh": "这就是我们向前走的方式，也就是我们创造长久快乐的方式。",
+    "id": 67
+  },
+  {
+    "start": 225.06,
+    "end": 228.36,
+    "en": "The second axis here is representation and also responsibility.",
+    "zh": "这里的第二条轴线，是代表性，也同样是责任。",
+    "id": 68
+  },
+  {
+    "start": 229.06,
+    "end": 232.76,
+    "en": "So success is, again, inseparable from responsibility.",
+    "zh": "所以，成功同样离不开责任。",
+    "id": 69
+  },
+  {
+    "start": 233.14,
+    "end": 237.3,
+    "en": "When you have a platform, I implore you to use it meaningfully,",
+    "zh": "当你拥有一个平台时，我恳请你有意义地使用它，",
+    "id": 70
+  },
+  {
+    "start": 237.54,
+    "end": 239.0,
+    "en": "to make the world better.",
+    "zh": "让这个世界变得更好。",
+    "id": 71
+  },
+  {
+    "start": 239.0,
+    "end": 242.8,
+    "en": "in whatever way you think is most valuable and relevant to you.",
+    "zh": "用任何你认为最有价值、也与你最相关的方式。",
+    "id": 72
+  },
+  {
+    "start": 243.12,
+    "end": 247.98,
+    "en": "And only then, only then, when we have those two axes, responsibility and gratitude,",
+    "zh": "只有到那时，只有到那时，当我们拥有这两条轴线，责任和感恩，",
+    "id": 73
+  },
+  {
+    "start": 247.98,
+    "end": 249.76,
+    "en": "can we uplift one another.",
+    "zh": "我们才能彼此托举。",
+    "id": 74
+  },
+  {
+    "start": 250.24,
+    "end": 252.58,
+    "en": "And so I want to thank everybody here tonight.",
+    "zh": "所以，我想感谢今晚在座的每一个人。",
+    "id": 75
+  },
+  {
+    "start": 252.7,
+    "end": 254.0,
+    "en": "I want to thank Gold House Gala.",
+    "zh": "我想感谢 Gold House Gala。",
+    "id": 76
+  },
+  {
+    "start": 254.28,
+    "end": 259.16,
+    "en": "I want to thank all the other honorees who are so inspiring and so incredible.",
+    "zh": "我想感谢所有其他获奖者，你们如此鼓舞人心，如此了不起。",
+    "id": 77
+  },
+  {
+    "start": 260.0,
+    "end": 261.62,
+    "en": "And lastly, to everyone here tonight.",
+    "zh": "最后，我想感谢今晚在座的每一个人。",
+    "id": 78
+  },
+  {
+    "start": 261.62,
+    "end": 267.16,
+    "en": "who has brought me so much joy that I literally came up with this new theory sitting at this table.",
+    "zh": "你们带给我的快乐太多了，以至于我坐在这张桌子旁，真的想出了这个新理论。",
+    "id": 79
+  },
+  {
+    "start": 268.98,
+    "end": 271.4,
+    "en": "And so thank you all for being part of this community.",
+    "zh": "所以，谢谢你们所有人成为这个社群的一部分。",
+    "id": 80
+  },
+  {
+    "start": 271.54,
+    "end": 272.96,
+    "en": "Thank you so much for this evening.",
+    "zh": "非常感谢你们成就了今晚。",
+    "id": 81
+  },
+  {
+    "start": 272.96,
+    "end": 275.28,
+    "en": "and for all the love that you show one another.",
+    "zh": "也感谢你们彼此展现出的所有爱。",
+    "id": 82
+  },
+  {
+    "start": 275.28,
+    "end": 276.72,
+    "en": "tonight and every night.",
+    "zh": "无论是今晚，还是每一个夜晚。",
+    "id": 83
+  },
+  {
+    "start": 276.72,
+    "end": 277.72,
+    "en": "Let's keep going.",
+    "zh": "让我们继续前进。",
+    "id": 84
+  },
+  {
+    "start": 277.82,
+    "end": 278.62,
+    "en": "Let's keep getting better.",
+    "zh": "让我们继续变得更好。",
+    "id": 85
+  },
+  {
+    "start": 278.72,
+    "end": 282.92,
+    "en": "Let's keep showing the world what we're made of and taking up center stage.",
+    "zh": "让我们继续向世界展示我们的力量，继续站上舞台中央。",
+    "id": 86
+  },
+  {
+    "start": 283.16,
+    "end": 284.22,
+    "en": "So thank you so much.",
+    "zh": "所以，非常感谢大家。",
+    "id": 87
+  }
+]

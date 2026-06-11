@@ -1,0 +1,2445 @@
+[
+  {
+    "start": 15.408,
+    "end": 18.79,
+    "en": "I'm going to talk to you about optimism",
+    "zh": "我要和大家聊聊乐观主义。",
+    "id": 1
+  },
+  {
+    "start": 18.79,
+    "end": 21.273,
+    "en": "or more precisely, the optimism bias.",
+    "zh": "或者更准确地说，是乐观偏见。",
+    "id": 2
+  },
+  {
+    "start": 21.273,
+    "end": 22.918,
+    "en": "It's a cognitive illusion",
+    "zh": "这是一种认知错觉。",
+    "id": 3
+  },
+  {
+    "start": 22.918,
+    "end": 25.66,
+    "en": "that we've been studying in my lab for the past few years,",
+    "zh": "过去几年，我们一直在实验室里研究它。",
+    "id": 4
+  },
+  {
+    "start": 25.66,
+    "end": 27.395,
+    "en": "and 80 percent of us have it.",
+    "zh": "而我们当中有80%的人都有这种错觉。",
+    "id": 5
+  },
+  {
+    "start": 27.395,
+    "end": 30.129,
+    "en": "It's our tendency to overestimate",
+    "zh": "它指的是我们倾向于高估",
+    "id": 6
+  },
+  {
+    "start": 30.129,
+    "end": 33.052,
+    "en": "our likelihood of experiencing good events in our lives",
+    "zh": "自己人生中遇到好事的可能性，",
+    "id": 7
+  },
+  {
+    "start": 33.052,
+    "end": 37.16,
+    "en": "and underestimate our likelihood of experiencing bad events.",
+    "zh": "同时低估自己遇到坏事的可能性。",
+    "id": 8
+  },
+  {
+    "start": 37.16,
+    "end": 40.177,
+    "en": "So we underestimate our likelihood of suffering from cancer,",
+    "zh": "所以，我们会低估自己患癌的可能性，",
+    "id": 9
+  },
+  {
+    "start": 40.177,
+    "end": 41.683,
+    "en": "being in a car accident.",
+    "zh": "也会低估自己遭遇车祸的可能性。",
+    "id": 10
+  },
+  {
+    "start": 41.683,
+    "end": 44.869,
+    "en": "We overestimate our longevity, our career prospects.",
+    "zh": "我们会高估自己的寿命，也会高估自己的职业前景。",
+    "id": 11
+  },
+  {
+    "start": 44.869,
+    "end": 48.314,
+    "en": "In short, we're more optimistic than realistic,",
+    "zh": "简而言之，我们往往比现实情况更乐观，",
+    "id": 12
+  },
+  {
+    "start": 48.314,
+    "end": 50.476,
+    "en": "but we are oblivious to the fact.",
+    "zh": "但我们自己却没有意识到这一点。",
+    "id": 13
+  },
+  {
+    "start": 50.476,
+    "end": 52.703,
+    "en": "Take marriage for example.",
+    "zh": "拿婚姻来说。",
+    "id": 14
+  },
+  {
+    "start": 52.703,
+    "end": 56.237,
+    "en": "In the Western world, divorce rates are about 40 percent.",
+    "zh": "在西方世界，离婚率大约是40%。",
+    "id": 15
+  },
+  {
+    "start": 56.237,
+    "end": 59.706,
+    "en": "That means that out of five married couples,",
+    "zh": "这意味着每五对已婚夫妻中，",
+    "id": 16
+  },
+  {
+    "start": 59.706,
+    "end": 62.427,
+    "en": "two will end up splitting their assets.",
+    "zh": "就有两对最终会分割财产、各奔东西。",
+    "id": 17
+  },
+  {
+    "start": 62.427,
+    "end": 65.802,
+    "en": "But when you ask newlyweds about their own likelihood of divorce,",
+    "zh": "但是当你问新婚夫妇自己离婚的可能性有多大时，",
+    "id": 18
+  },
+  {
+    "start": 65.802,
+    "end": 69.494,
+    "en": "they estimate it at zero percent.",
+    "zh": "他们的估计是零。",
+    "id": 19
+  },
+  {
+    "start": 69.494,
+    "end": 73.223,
+    "en": "And even divorce lawyers, who should really know better,",
+    "zh": "甚至连本该更清楚这一点的离婚律师，",
+    "id": 20
+  },
+  {
+    "start": 73.223,
+    "end": 77.072,
+    "en": "hugely underestimate their own likelihood of divorce.",
+    "zh": "也会大大低估自己离婚的可能性。",
+    "id": 21
+  },
+  {
+    "start": 77.072,
+    "end": 80.198,
+    "en": "So it turns out that optimists are not less likely to divorce,",
+    "zh": "所以事实证明，乐观主义者并不更不容易离婚，",
+    "id": 22
+  },
+  {
+    "start": 80.198,
+    "end": 82.728,
+    "en": "but they are more likely to remarry.",
+    "zh": "但他们更有可能再婚。",
+    "id": 23
+  },
+  {
+    "start": 82.728,
+    "end": 85.031,
+    "en": "In the words of Samuel Johnson,",
+    "zh": "用 Samuel Johnson 的话来说，",
+    "id": 24
+  },
+  {
+    "start": 85.031,
+    "end": 89.028,
+    "en": "\"Remarriage is the triumph of hope over experience.\"",
+    "zh": "'再婚，是希望战胜经验的胜利。'",
+    "id": 25
+  },
+  {
+    "start": 90.99,
+    "end": 95.564,
+    "en": "So if we're married, we're more likely to have kids.",
+    "zh": "所以，如果我们结了婚，我们更有可能会有孩子。",
+    "id": 26
+  },
+  {
+    "start": 95.564,
+    "end": 98.829,
+    "en": "And we all think our kids will be especially talented.",
+    "zh": "而我们都觉得自己的孩子会特别有天赋。",
+    "id": 27
+  },
+  {
+    "start": 98.829,
+    "end": 101.427,
+    "en": "This, by the way, is my two-year-old nephew, Guy.",
+    "zh": "顺便说一下，这是我两岁的侄子 Guy。",
+    "id": 28
+  },
+  {
+    "start": 101.427,
+    "end": 103.802,
+    "en": "And I just want to make it absolutely clear",
+    "zh": "我只想非常明确地说明一点，",
+    "id": 29
+  },
+  {
+    "start": 103.802,
+    "end": 106.573,
+    "en": "that he's a really bad example of the optimism bias,",
+    "zh": "他实在不是乐观偏见的好例子，",
+    "id": 30
+  },
+  {
+    "start": 106.573,
+    "end": 109.385,
+    "en": "because he is in fact uniquely talented.",
+    "zh": "因为事实上，他确实有独一无二的天赋。",
+    "id": 31
+  },
+  {
+    "start": 110.82,
+    "end": 112.427,
+    "en": "And I'm not alone.",
+    "zh": "而且不只是我这样想。",
+    "id": 32
+  },
+  {
+    "start": 112.427,
+    "end": 114.902,
+    "en": "Out of four British people, three said",
+    "zh": "每四个英国人当中，就有三个人说",
+    "id": 33
+  },
+  {
+    "start": 114.902,
+    "end": 118.641,
+    "en": "that they were optimistic about the future of their own families.",
+    "zh": "他们对自己家庭的未来感到乐观。",
+    "id": 34
+  },
+  {
+    "start": 118.641,
+    "end": 120.392,
+    "en": "That's 75 percent.",
+    "zh": "也就是75%。",
+    "id": 35
+  },
+  {
+    "start": 120.392,
+    "end": 122.45,
+    "en": "But only 30 percent said",
+    "zh": "但只有30%的人说，",
+    "id": 36
+  },
+  {
+    "start": 122.45,
+    "end": 125.01,
+    "en": "that they thought families in general",
+    "zh": "他们认为总体来看，家庭的状况",
+    "id": 37
+  },
+  {
+    "start": 125.01,
+    "end": 127.422,
+    "en": "are doing better than a few generations ago.",
+    "zh": "比几代人以前更好了。",
+    "id": 38
+  },
+  {
+    "start": 127.422,
+    "end": 129.443,
+    "en": "And this is a really important point,",
+    "zh": "这是一个非常重要的点，",
+    "id": 39
+  },
+  {
+    "start": 129.443,
+    "end": 131.331,
+    "en": "because we're optimistic about ourselves,",
+    "zh": "因为我们对自己很乐观，",
+    "id": 40
+  },
+  {
+    "start": 131.331,
+    "end": 133.149,
+    "en": "we're optimistic about our kids,",
+    "zh": "对自己的孩子很乐观，",
+    "id": 41
+  },
+  {
+    "start": 133.149,
+    "end": 134.937,
+    "en": "we're optimistic about our families,",
+    "zh": "对自己的家庭也很乐观，",
+    "id": 42
+  },
+  {
+    "start": 134.937,
+    "end": 138.12,
+    "en": "but we're not so optimistic about the guy sitting next to us,",
+    "zh": "但我们对坐在旁边的那个人就没那么乐观了，",
+    "id": 43
+  },
+  {
+    "start": 138.12,
+    "end": 140.349,
+    "en": "and we're somewhat pessimistic",
+    "zh": "而且我们对",
+    "id": 44
+  },
+  {
+    "start": 140.349,
+    "end": 144.228,
+    "en": "about the fate of our fellow citizens and the fate of our country.",
+    "zh": "同胞的命运和国家的命运多少有些悲观。",
+    "id": 45
+  },
+  {
+    "start": 144.228,
+    "end": 148.264,
+    "en": "But private optimism about our own personal future",
+    "zh": "但是，我们对自己个人未来的私人乐观，",
+    "id": 46
+  },
+  {
+    "start": 148.264,
+    "end": 150.275,
+    "en": "remains persistent.",
+    "zh": "却始终存在。",
+    "id": 47
+  },
+  {
+    "start": 150.275,
+    "end": 154.341,
+    "en": "And it doesn't mean that we think things will magically turn out okay,",
+    "zh": "这并不是说我们觉得事情会神奇地自己变好，",
+    "id": 48
+  },
+  {
+    "start": 154.341,
+    "end": 158.373,
+    "en": "but rather that we have the unique ability to make it so.",
+    "zh": "而是说，我们相信自己有独特的能力让事情变好。",
+    "id": 49
+  },
+  {
+    "start": 158.373,
+    "end": 161.214,
+    "en": "Now I'm a scientist, I do experiments.",
+    "zh": "我是科学家，我做实验。",
+    "id": 50
+  },
+  {
+    "start": 161.214,
+    "end": 163.006,
+    "en": "So to show you what I mean,",
+    "zh": "所以为了让大家明白我的意思，",
+    "id": 51
+  },
+  {
+    "start": 163.006,
+    "end": 165.808,
+    "en": "I'm going to do an experiment here with you.",
+    "zh": "我想在这里和大家做一个实验。",
+    "id": 52
+  },
+  {
+    "start": 165.808,
+    "end": 169.658,
+    "en": "So I'm going to give you a list of abilities and characteristics,",
+    "zh": "我会给大家列出一组能力和特质，",
+    "id": 53
+  },
+  {
+    "start": 169.658,
+    "end": 172.552,
+    "en": "and I want you to think for each of these abilities",
+    "zh": "我希望大家针对每一项能力想一想，",
+    "id": 54
+  },
+  {
+    "start": 172.552,
+    "end": 176.945,
+    "en": "where you stand relative to the rest of the population.",
+    "zh": "自己和其他人相比处在什么位置。",
+    "id": 55
+  },
+  {
+    "start": 176.945,
+    "end": 180.731,
+    "en": "The first one is getting along well with others.",
+    "zh": "第一项是与他人相处融洽的能力。",
+    "id": 56
+  },
+  {
+    "start": 180.731,
+    "end": 186.383,
+    "en": "Who here believes they're at the bottom 25 percent?",
+    "zh": "在座有谁认为自己处在后25%？",
+    "id": 57
+  },
+  {
+    "start": 186.383,
+    "end": 190.705,
+    "en": "Okay, that's about 10 people out of 1,500.",
+    "zh": "好，大约是1500人里的10个人。",
+    "id": 58
+  },
+  {
+    "start": 190.705,
+    "end": 194.718,
+    "en": "Who believes they're at the top 25 percent?",
+    "zh": "有谁认为自己处在前25%？",
+    "id": 59
+  },
+  {
+    "start": 194.718,
+    "end": 197.428,
+    "en": "That's most of us here.",
+    "zh": "这里大多数人都是这样认为的。",
+    "id": 60
+  },
+  {
+    "start": 197.428,
+    "end": 202.358,
+    "en": "Okay, now do the same for your driving ability.",
+    "zh": "好，现在请用同样的方法评估一下你的驾驶能力。",
+    "id": 61
+  },
+  {
+    "start": 202.358,
+    "end": 204.941,
+    "en": "How interesting are you?",
+    "zh": "你有多有趣？",
+    "id": 62
+  },
+  {
+    "start": 204.941,
+    "end": 207.785,
+    "en": "How attractive are you?",
+    "zh": "你有多有吸引力？",
+    "id": 63
+  },
+  {
+    "start": 207.785,
+    "end": 210.739,
+    "en": "How honest are you?",
+    "zh": "你有多诚实？",
+    "id": 64
+  },
+  {
+    "start": 210.739,
+    "end": 215.739,
+    "en": "And finally, how modest are you?",
+    "zh": "最后，你有多谦虚？",
+    "id": 65
+  },
+  {
+    "start": 215.739,
+    "end": 218.427,
+    "en": "So most of us put ourselves above average",
+    "zh": "所以在大多数这些能力上，我们大多数人",
+    "id": 66
+  },
+  {
+    "start": 218.427,
+    "end": 220.456,
+    "en": "on most of these abilities.",
+    "zh": "都会把自己放在平均水平以上。",
+    "id": 67
+  },
+  {
+    "start": 220.456,
+    "end": 222.587,
+    "en": "Now this is statistically impossible.",
+    "zh": "但从统计学上来说，这是不可能的。",
+    "id": 68
+  },
+  {
+    "start": 222.587,
+    "end": 225.816,
+    "en": "We can't all be better than everyone else.",
+    "zh": "我们不可能全都比其他人更优秀。",
+    "id": 69
+  },
+  {
+    "start": 227.458,
+    "end": 230.135,
+    "en": "But if we believe we're better than the other guy,",
+    "zh": "可是，如果我们相信自己比别人更优秀，",
+    "id": 70
+  },
+  {
+    "start": 230.135,
+    "end": 234.218,
+    "en": "well that means that we're more likely to get that promotion, to remain married,",
+    "zh": "那就意味着我们更有可能获得升职，也更有可能维持婚姻，",
+    "id": 71
+  },
+  {
+    "start": 234.218,
+    "end": 236.816,
+    "en": "because we're more social, more interesting.",
+    "zh": "因为我们更善于社交，也更有趣。",
+    "id": 72
+  },
+  {
+    "start": 236.816,
+    "end": 238.979,
+    "en": "And it's a global phenomenon.",
+    "zh": "而这是一种全球现象。",
+    "id": 73
+  },
+  {
+    "start": 238.979,
+    "end": 241.447,
+    "en": "The optimism bias has been observed",
+    "zh": "乐观偏见已经被观察到",
+    "id": 74
+  },
+  {
+    "start": 241.447,
+    "end": 243.166,
+    "en": "in many different countries --",
+    "zh": "存在于许多不同的国家——",
+    "id": 75
+  },
+  {
+    "start": 243.166,
+    "end": 246.27,
+    "en": "in Western cultures, in non-Western cultures,",
+    "zh": "存在于西方文化中，也存在于非西方文化中，",
+    "id": 76
+  },
+  {
+    "start": 246.27,
+    "end": 247.776,
+    "en": "in females and males,",
+    "zh": "存在于女性和男性当中，",
+    "id": 77
+  },
+  {
+    "start": 247.776,
+    "end": 249.5,
+    "en": "in kids, in the elderly.",
+    "zh": "存在于儿童和老年人当中。",
+    "id": 78
+  },
+  {
+    "start": 249.5,
+    "end": 251.283,
+    "en": "It's quite widespread.",
+    "zh": "它相当普遍。",
+    "id": 79
+  },
+  {
+    "start": 251.283,
+    "end": 254.783,
+    "en": "But the question is, is it good for us?",
+    "zh": "但问题是，它对我们有好处吗？",
+    "id": 80
+  },
+  {
+    "start": 254.783,
+    "end": 257.237,
+    "en": "So some people say no.",
+    "zh": "有些人说没有。",
+    "id": 81
+  },
+  {
+    "start": 257.237,
+    "end": 259.755,
+    "en": "Some people say the secret to happiness",
+    "zh": "有些人说，幸福的秘诀",
+    "id": 82
+  },
+  {
+    "start": 259.755,
+    "end": 262.508,
+    "en": "is low expectations.",
+    "zh": "就是降低期待。",
+    "id": 83
+  },
+  {
+    "start": 262.508,
+    "end": 265.012,
+    "en": "I think the logic goes something like this:",
+    "zh": "我想这个逻辑大概是这样的：",
+    "id": 84
+  },
+  {
+    "start": 265.012,
+    "end": 267.27,
+    "en": "If we don't expect greatness,",
+    "zh": "如果我们不期待伟大的事情，",
+    "id": 85
+  },
+  {
+    "start": 267.27,
+    "end": 271.15,
+    "en": "if we don't expect to find love and be healthy and successful,",
+    "zh": "如果我们不期待找到爱情、保持健康、获得成功，",
+    "id": 86
+  },
+  {
+    "start": 271.15,
+    "end": 274.248,
+    "en": "well we're not going to be disappointed when these things don't happen.",
+    "zh": "那么当这些事情没有发生时，我们就不会失望。",
+    "id": 87
+  },
+  {
+    "start": 274.248,
+    "end": 277.656,
+    "en": "And if we're not disappointed when good things don't happen,",
+    "zh": "如果好事没有发生时我们不会失望，",
+    "id": 88
+  },
+  {
+    "start": 277.656,
+    "end": 279.635,
+    "en": "and we're pleasantly surprised when they do,",
+    "zh": "而当好事真的发生时，我们又会感到惊喜，",
+    "id": 89
+  },
+  {
+    "start": 279.635,
+    "end": 281.416,
+    "en": "we will be happy.",
+    "zh": "那我们就会幸福。",
+    "id": 90
+  },
+  {
+    "start": 281.416,
+    "end": 283.118,
+    "en": "So it's a very good theory,",
+    "zh": "所以这是一个很好的理论，",
+    "id": 91
+  },
+  {
+    "start": 283.118,
+    "end": 286.145,
+    "en": "but it turns out to be wrong for three reasons.",
+    "zh": "但事实证明，它错了，原因有三个。",
+    "id": 92
+  },
+  {
+    "start": 286.145,
+    "end": 290.76,
+    "en": "Number one: Whatever happens, whether you succeed or you fail,",
+    "zh": "第一：无论发生什么，无论你成功还是失败，",
+    "id": 93
+  },
+  {
+    "start": 290.76,
+    "end": 294.618,
+    "en": "people with high expectations always feel better.",
+    "zh": "期待更高的人总是感觉更好。",
+    "id": 94
+  },
+  {
+    "start": 294.618,
+    "end": 298.55,
+    "en": "Because how we feel when we get dumped or win employee of the month",
+    "zh": "因为当我们被甩，或者被评为月度员工时，心里是什么感受，",
+    "id": 95
+  },
+  {
+    "start": 298.55,
+    "end": 301.58,
+    "en": "depends on how we interpret that event.",
+    "zh": "取决于我们如何解读这件事。",
+    "id": 96
+  },
+  {
+    "start": 301.58,
+    "end": 305.63,
+    "en": "The psychologists Margaret Marshall and John Brown",
+    "zh": "心理学家 Margaret Marshall 和 John Brown",
+    "id": 97
+  },
+  {
+    "start": 305.63,
+    "end": 308.624,
+    "en": "studied students with high and low expectations.",
+    "zh": "研究了高期待和低期待的学生。",
+    "id": 98
+  },
+  {
+    "start": 308.624,
+    "end": 312.808,
+    "en": "And they found that when people with high expectations succeed,",
+    "zh": "他们发现，当高期待的人取得成功时，",
+    "id": 99
+  },
+  {
+    "start": 312.808,
+    "end": 315.718,
+    "en": "they attribute that success to their own traits.",
+    "zh": "他们会把成功归因于自己的特质。",
+    "id": 100
+  },
+  {
+    "start": 315.718,
+    "end": 317.914,
+    "en": "\"I'm a genius, therefore I got an A,",
+    "zh": "'我是个天才，所以我拿了A，",
+    "id": 101
+  },
+  {
+    "start": 317.914,
+    "end": 320.589,
+    "en": "therefore I'll get an A again and again in the future.\"",
+    "zh": "所以以后我还会一次又一次拿A。'",
+    "id": 102
+  },
+  {
+    "start": 320.589,
+    "end": 323.562,
+    "en": "When they failed, it wasn't because they were dumb,",
+    "zh": "当他们失败时，那并不是因为他们笨，",
+    "id": 103
+  },
+  {
+    "start": 323.562,
+    "end": 326.735,
+    "en": "but because the exam just happened to be unfair.",
+    "zh": "而是因为考试刚好不公平。",
+    "id": 104
+  },
+  {
+    "start": 326.735,
+    "end": 329.018,
+    "en": "Next time they will do better.",
+    "zh": "下次他们会做得更好。",
+    "id": 105
+  },
+  {
+    "start": 329.018,
+    "end": 332.095,
+    "en": "People with low expectations do the opposite.",
+    "zh": "低期待的人则正好相反。",
+    "id": 106
+  },
+  {
+    "start": 332.095,
+    "end": 334.927,
+    "en": "So when they failed it was because they were dumb,",
+    "zh": "所以当他们失败时，是因为他们笨，",
+    "id": 107
+  },
+  {
+    "start": 334.927,
+    "end": 336.427,
+    "en": "and when they succeeded",
+    "zh": "而当他们成功时，",
+    "id": 108
+  },
+  {
+    "start": 336.427,
+    "end": 339.744,
+    "en": "it was because the exam just happened to be really easy.",
+    "zh": "那是因为考试刚好真的很简单。",
+    "id": 109
+  },
+  {
+    "start": 339.744,
+    "end": 342.145,
+    "en": "Next time reality would catch up with them.",
+    "zh": "下次现实就会让他们露馅。",
+    "id": 110
+  },
+  {
+    "start": 342.145,
+    "end": 344.218,
+    "en": "So they felt worse.",
+    "zh": "所以他们感觉更糟。",
+    "id": 111
+  },
+  {
+    "start": 344.218,
+    "end": 347.458,
+    "en": "Number two: Regardless of the outcome,",
+    "zh": "第二：无论结果如何，",
+    "id": 112
+  },
+  {
+    "start": 347.458,
+    "end": 351.505,
+    "en": "the pure act of anticipation makes us happy.",
+    "zh": "单纯的期待本身就会让我们快乐。",
+    "id": 113
+  },
+  {
+    "start": 351.505,
+    "end": 354.681,
+    "en": "The behavioral economist George Lowenstein",
+    "zh": "行为经济学家 George Lowenstein",
+    "id": 114
+  },
+  {
+    "start": 354.681,
+    "end": 356.4,
+    "en": "asked students in his university",
+    "zh": "让他所在大学的学生",
+    "id": 115
+  },
+  {
+    "start": 356.4,
+    "end": 360.762,
+    "en": "to imagine getting a passionate kiss from a celebrity, any celebrity.",
+    "zh": "想象自己得到一位名人的热吻，任何名人都可以。",
+    "id": 116
+  },
+  {
+    "start": 360.762,
+    "end": 363.647,
+    "en": "Then he said, \"How much are you willing to pay",
+    "zh": "然后他说：如果要得到一位名人的吻，",
+    "id": 117
+  },
+  {
+    "start": 363.647,
+    "end": 365.635,
+    "en": "to get a kiss from a celebrity",
+    "zh": "你愿意付多少钱？",
+    "id": 118
+  },
+  {
+    "start": 365.635,
+    "end": 367.862,
+    "en": "if the kiss was delivered immediately,",
+    "zh": "如果这个吻是立刻给你，",
+    "id": 119
+  },
+  {
+    "start": 367.862,
+    "end": 372.885,
+    "en": "in three hours, in 24 hours, in three days,",
+    "zh": "或者三小时后、二十四小时后、三天后，",
+    "id": 120
+  },
+  {
+    "start": 372.885,
+    "end": 375.318,
+    "en": "in one year, in 10 years?",
+    "zh": "一年后、十年后呢？'",
+    "id": 121
+  },
+  {
+    "start": 375.318,
+    "end": 378.448,
+    "en": "He found that the students were willing to pay the most",
+    "zh": "他发现，学生愿意付最多钱的，",
+    "id": 122
+  },
+  {
+    "start": 378.448,
+    "end": 380.447,
+    "en": "not to get a kiss immediately,",
+    "zh": "并不是立刻得到这个吻，",
+    "id": 123
+  },
+  {
+    "start": 380.447,
+    "end": 383.427,
+    "en": "but to get a kiss in three days.",
+    "zh": "而是三天后得到这个吻。",
+    "id": 124
+  },
+  {
+    "start": 383.427,
+    "end": 387.674,
+    "en": "They were willing to pay extra in order to wait.",
+    "zh": "他们愿意多付钱，来换取等待。",
+    "id": 125
+  },
+  {
+    "start": 387.674,
+    "end": 390.677,
+    "en": "Now they weren't willing to wait a year or 10 years;",
+    "zh": "当然，他们并不愿意等一年或十年；",
+    "id": 126
+  },
+  {
+    "start": 390.677,
+    "end": 392.098,
+    "en": "no one wants an aging celebrity.",
+    "zh": "没人想要一个已经变老的名人。",
+    "id": 127
+  },
+  {
+    "start": 392.098,
+    "end": 396.887,
+    "en": "But three days seemed to be the optimum amount.",
+    "zh": "但三天似乎是最理想的时长。",
+    "id": 128
+  },
+  {
+    "start": 396.887,
+    "end": 399.19,
+    "en": "So why is that?",
+    "zh": "这是为什么呢？",
+    "id": 129
+  },
+  {
+    "start": 399.19,
+    "end": 402.614,
+    "en": "Well if you get the kiss now, it's over and done with.",
+    "zh": "如果你现在就得到这个吻，那它就结束了。",
+    "id": 130
+  },
+  {
+    "start": 402.614,
+    "end": 404.564,
+    "en": "But if you get the kiss in three days,",
+    "zh": "但如果你三天后才得到这个吻，",
+    "id": 131
+  },
+  {
+    "start": 404.564,
+    "end": 408.718,
+    "en": "well that's three days of jittery anticipation, the thrill of the wait.",
+    "zh": "那你就会有三天紧张又兴奋的期待，有等待带来的刺激感。",
+    "id": 132
+  },
+  {
+    "start": 408.718,
+    "end": 410.587,
+    "en": "The students wanted that time",
+    "zh": "学生们想要这段时间，",
+    "id": 133
+  },
+  {
+    "start": 410.587,
+    "end": 412.968,
+    "en": "to imagine where is it going to happen,",
+    "zh": "去想象这件事会在哪里发生，",
+    "id": 134
+  },
+  {
+    "start": 412.968,
+    "end": 414.597,
+    "en": "how is it going to happen.",
+    "zh": "又会怎样发生。",
+    "id": 135
+  },
+  {
+    "start": 414.597,
+    "end": 416.808,
+    "en": "Anticipation made them happy.",
+    "zh": "期待让他们感到快乐。",
+    "id": 136
+  },
+  {
+    "start": 416.808,
+    "end": 420.677,
+    "en": "This is, by the way, why people prefer Friday to Sunday.",
+    "zh": "顺便说一下，这也是为什么人们更喜欢周五，而不是周日。",
+    "id": 137
+  },
+  {
+    "start": 420.677,
+    "end": 422.76,
+    "en": "It's a really curious fact,",
+    "zh": "这是一个非常有意思的事实，",
+    "id": 138
+  },
+  {
+    "start": 422.76,
+    "end": 426.177,
+    "en": "because Friday is a day of work and Sunday is a day of pleasure,",
+    "zh": "因为周五是工作日，而周日是享乐的日子，",
+    "id": 139
+  },
+  {
+    "start": 426.177,
+    "end": 429.081,
+    "en": "so you'd assume that people will prefer Sunday,",
+    "zh": "所以你可能会以为人们更喜欢周日，",
+    "id": 140
+  },
+  {
+    "start": 429.081,
+    "end": 430.802,
+    "en": "but they don't.",
+    "zh": "但他们并不是。",
+    "id": 141
+  },
+  {
+    "start": 430.802,
+    "end": 433.677,
+    "en": "It's not because they really, really like being in the office",
+    "zh": "这并不是因为他们真的非常非常喜欢待在办公室，",
+    "id": 142
+  },
+  {
+    "start": 433.677,
+    "end": 435.644,
+    "en": "and they can't stand strolling in the park",
+    "zh": "也不是因为他们受不了在公园散步，",
+    "id": 143
+  },
+  {
+    "start": 435.644,
+    "end": 437.305,
+    "en": "or having a lazy brunch.",
+    "zh": "或者受不了悠闲地吃一顿早午餐。",
+    "id": 144
+  },
+  {
+    "start": 437.305,
+    "end": 439.441,
+    "en": "We know that, because when you ask people",
+    "zh": "我们知道这一点，是因为当你问人们",
+    "id": 145
+  },
+  {
+    "start": 439.441,
+    "end": 442.145,
+    "en": "about their ultimate favorite day of the week,",
+    "zh": "他们一周中最喜欢哪一天时，",
+    "id": 146
+  },
+  {
+    "start": 442.145,
+    "end": 444.965,
+    "en": "surprise, surprise, Saturday comes in at first,",
+    "zh": "毫不意外，周六排第一，",
+    "id": 147
+  },
+  {
+    "start": 444.965,
+    "end": 447.885,
+    "en": "then Friday, then Sunday.",
+    "zh": "然后是周五，再然后是周日。",
+    "id": 148
+  },
+  {
+    "start": 447.885,
+    "end": 449.754,
+    "en": "People prefer Friday",
+    "zh": "人们更喜欢周五，",
+    "id": 149
+  },
+  {
+    "start": 449.754,
+    "end": 453.718,
+    "en": "because Friday brings with it the anticipation of the weekend ahead,",
+    "zh": "因为周五带来了对即将到来的周末的期待，",
+    "id": 150
+  },
+  {
+    "start": 453.718,
+    "end": 455.635,
+    "en": "all the plans that you have.",
+    "zh": "以及你已经安排好的所有计划。",
+    "id": 151
+  },
+  {
+    "start": 455.635,
+    "end": 458.339,
+    "en": "On Sunday, the only thing you can look forward to",
+    "zh": "而到了周日，你唯一可以期待的",
+    "id": 152
+  },
+  {
+    "start": 458.339,
+    "end": 460.593,
+    "en": "is the work week.",
+    "zh": "就是接下来的一周工作。",
+    "id": 153
+  },
+  {
+    "start": 460.593,
+    "end": 465.47,
+    "en": "So optimists are people who expect more kisses in their future,",
+    "zh": "所以，乐观主义者就是那些期待未来会有更多亲吻的人，",
+    "id": 154
+  },
+  {
+    "start": 465.47,
+    "end": 467.391,
+    "en": "more strolls in the park.",
+    "zh": "期待未来会有更多公园散步的人。",
+    "id": 155
+  },
+  {
+    "start": 467.391,
+    "end": 471.298,
+    "en": "And that anticipation enhances their wellbeing.",
+    "zh": "而这种期待会提升他们的幸福感。",
+    "id": 156
+  },
+  {
+    "start": 471.298,
+    "end": 474.262,
+    "en": "In fact, without the optimism bias,",
+    "zh": "事实上，如果没有乐观偏见，",
+    "id": 157
+  },
+  {
+    "start": 474.262,
+    "end": 477.012,
+    "en": "we would all be slightly depressed.",
+    "zh": "我们所有人都会有点抑郁。",
+    "id": 158
+  },
+  {
+    "start": 477.012,
+    "end": 479.279,
+    "en": "People with mild depression,",
+    "zh": "轻度抑郁的人，",
+    "id": 159
+  },
+  {
+    "start": 479.279,
+    "end": 482.258,
+    "en": "they don't have a bias when they look into the future.",
+    "zh": "在展望未来时并没有这种偏见。",
+    "id": 160
+  },
+  {
+    "start": 482.258,
+    "end": 486.48,
+    "en": "They're actually more realistic than healthy individuals.",
+    "zh": "他们其实比健康个体更加现实。",
+    "id": 161
+  },
+  {
+    "start": 486.48,
+    "end": 488.581,
+    "en": "But individuals with severe depression,",
+    "zh": "但重度抑郁的人，",
+    "id": 162
+  },
+  {
+    "start": 488.581,
+    "end": 490.41,
+    "en": "they have a pessimistic bias.",
+    "zh": "则会有一种悲观偏见。",
+    "id": 163
+  },
+  {
+    "start": 490.41,
+    "end": 492.873,
+    "en": "So they tend to expect the future",
+    "zh": "所以他们倾向于认为未来",
+    "id": 164
+  },
+  {
+    "start": 492.873,
+    "end": 495.35,
+    "en": "to be worse than it ends up being.",
+    "zh": "会比实际结果更糟。",
+    "id": 165
+  },
+  {
+    "start": 495.35,
+    "end": 498.593,
+    "en": "So optimism changes subjective reality.",
+    "zh": "因此，乐观会改变主观现实。",
+    "id": 166
+  },
+  {
+    "start": 498.593,
+    "end": 502.343,
+    "en": "The way we expect the world to be changes the way we see it.",
+    "zh": "我们期待世界是什么样子，会改变我们看待世界的方式。",
+    "id": 167
+  },
+  {
+    "start": 502.343,
+    "end": 505.585,
+    "en": "But it also changes objective reality.",
+    "zh": "但它也会改变客观现实。",
+    "id": 168
+  },
+  {
+    "start": 505.585,
+    "end": 508.312,
+    "en": "It acts as a self-fulfilling prophecy.",
+    "zh": "它会成为一种自我实现的预言。",
+    "id": 169
+  },
+  {
+    "start": 508.312,
+    "end": 510.38,
+    "en": "And that is the third reason",
+    "zh": "这就是第三个原因，",
+    "id": 170
+  },
+  {
+    "start": 510.38,
+    "end": 513.56,
+    "en": "why lowering your expectations will not make you happy.",
+    "zh": "说明降低期待并不会让你幸福。",
+    "id": 171
+  },
+  {
+    "start": 513.56,
+    "end": 515.395,
+    "en": "Controlled experiments have shown",
+    "zh": "受控实验已经表明，",
+    "id": 172
+  },
+  {
+    "start": 515.395,
+    "end": 518.312,
+    "en": "that optimism is not only related to success,",
+    "zh": "乐观不仅与成功相关，",
+    "id": 173
+  },
+  {
+    "start": 518.312,
+    "end": 520.119,
+    "en": "it leads to success.",
+    "zh": "它还会带来成功。",
+    "id": 174
+  },
+  {
+    "start": 520.119,
+    "end": 524.989,
+    "en": "Optimism leads to success in academia and sports and politics.",
+    "zh": "乐观会带来学业、体育和政治上的成功。",
+    "id": 175
+  },
+  {
+    "start": 524.989,
+    "end": 529.464,
+    "en": "And maybe the most surprising benefit of optimism is health.",
+    "zh": "而乐观也许最令人惊讶的好处，是对健康的影响。",
+    "id": 176
+  },
+  {
+    "start": 529.464,
+    "end": 532.789,
+    "en": "If we expect the future to be bright,",
+    "zh": "如果我们期待未来是光明的，",
+    "id": 177
+  },
+  {
+    "start": 532.789,
+    "end": 535.529,
+    "en": "stress and anxiety are reduced.",
+    "zh": "压力和焦虑就会减少。",
+    "id": 178
+  },
+  {
+    "start": 535.529,
+    "end": 539.749,
+    "en": "So all in all, optimism has lots of benefits.",
+    "zh": "所以总的来说，乐观有很多好处。",
+    "id": 179
+  },
+  {
+    "start": 539.749,
+    "end": 542.76,
+    "en": "But the question that was really confusing to me was,",
+    "zh": "但真正让我困惑的问题是，",
+    "id": 180
+  },
+  {
+    "start": 542.76,
+    "end": 547.429,
+    "en": "how do we maintain optimism in the face of reality?",
+    "zh": "面对现实，我们是如何保持乐观的？",
+    "id": 181
+  },
+  {
+    "start": 547.429,
+    "end": 550.447,
+    "en": "As an neuroscientist, this was especially confusing,",
+    "zh": "作为一名神经科学家，这一点尤其让我困惑，",
+    "id": 182
+  },
+  {
+    "start": 550.447,
+    "end": 553.343,
+    "en": "because according to all the theories out there,",
+    "zh": "因为根据现有的所有理论，",
+    "id": 183
+  },
+  {
+    "start": 553.343,
+    "end": 557.531,
+    "en": "when your expectations are not met, you should alter them.",
+    "zh": "当你的期待没有实现时，你应该调整期待。",
+    "id": 184
+  },
+  {
+    "start": 557.531,
+    "end": 559.083,
+    "en": "But this is not what we find.",
+    "zh": "但我们发现的并不是这样。",
+    "id": 185
+  },
+  {
+    "start": 559.083,
+    "end": 562.566,
+    "en": "We asked people to come into our lab",
+    "zh": "我们请人来到实验室，",
+    "id": 186
+  },
+  {
+    "start": 562.566,
+    "end": 565.376,
+    "en": "in order to try and figure out what was going on.",
+    "zh": "试图弄清楚到底发生了什么。",
+    "id": 187
+  },
+  {
+    "start": 565.376,
+    "end": 567.923,
+    "en": "We asked them to estimate their likelihood",
+    "zh": "我们让他们估计自己",
+    "id": 188
+  },
+  {
+    "start": 567.923,
+    "end": 570.427,
+    "en": "of experiencing different terrible events in their lives.",
+    "zh": "在一生中经历各种可怕事件的可能性。",
+    "id": 189
+  },
+  {
+    "start": 570.427,
+    "end": 574.802,
+    "en": "So, for example, what is your likelihood of suffering from cancer?",
+    "zh": "比如说，你患癌的可能性有多大？",
+    "id": 190
+  },
+  {
+    "start": 574.802,
+    "end": 577.154,
+    "en": "And then we told them the average likelihood",
+    "zh": "然后我们告诉他们，像他们这样的人",
+    "id": 191
+  },
+  {
+    "start": 577.154,
+    "end": 580.135,
+    "en": "of someone like them to suffer these misfortunes.",
+    "zh": "遭遇这些不幸的平均概率是多少。",
+    "id": 192
+  },
+  {
+    "start": 580.135,
+    "end": 583.7,
+    "en": "So cancer, for example, is about 30 percent.",
+    "zh": "比如癌症，大约是30%。",
+    "id": 193
+  },
+  {
+    "start": 583.7,
+    "end": 586.635,
+    "en": "And then we asked them again,",
+    "zh": "然后我们再次问他们：",
+    "id": 194
+  },
+  {
+    "start": 586.635,
+    "end": 589.51,
+    "en": "\"How likely are you to suffer from cancer?\"",
+    "zh": "'你患癌的可能性有多大？'",
+    "id": 195
+  },
+  {
+    "start": 589.51,
+    "end": 591.758,
+    "en": "What we wanted to know was",
+    "zh": "我们想知道的是，",
+    "id": 196
+  },
+  {
+    "start": 591.758,
+    "end": 594.427,
+    "en": "whether people will take the information that we gave them",
+    "zh": "人们是否会利用我们给他们的信息，",
+    "id": 197
+  },
+  {
+    "start": 594.427,
+    "end": 596.558,
+    "en": "to change their beliefs.",
+    "zh": "来改变自己的信念。",
+    "id": 198
+  },
+  {
+    "start": 596.558,
+    "end": 598.927,
+    "en": "And indeed they did --",
+    "zh": "而事实上，他们确实会——",
+    "id": 199
+  },
+  {
+    "start": 598.927,
+    "end": 601.508,
+    "en": "but mostly when the information we gave them",
+    "zh": "但主要是在我们给他们的信息",
+    "id": 200
+  },
+  {
+    "start": 601.508,
+    "end": 604.339,
+    "en": "was better than what they expected.",
+    "zh": "比他们预期的要好。",
+    "id": 201
+  },
+  {
+    "start": 604.339,
+    "end": 605.7,
+    "en": "So for example,",
+    "zh": "比如说，",
+    "id": 202
+  },
+  {
+    "start": 605.7,
+    "end": 608.61,
+    "en": "if someone said, \"My likelihood of suffering from cancer",
+    "zh": "如果有人说：我患癌症的可能性",
+    "id": 203
+  },
+  {
+    "start": 608.61,
+    "end": 610.991,
+    "en": "is about 50 percent,\"",
+    "zh": "大约是50%。",
+    "id": 204
+  },
+  {
+    "start": 610.991,
+    "end": 613.512,
+    "en": "and we said, \"Hey, good news.",
+    "zh": "然后我们说：嘿，好消息。",
+    "id": 205
+  },
+  {
+    "start": 613.512,
+    "end": 616.093,
+    "en": "The average likelihood is only 30 percent,\"",
+    "zh": "平均概率只有30%。'",
+    "id": 206
+  },
+  {
+    "start": 616.093,
+    "end": 618.139,
+    "en": "the next time around they would say,",
+    "zh": "下一轮他们就会说：",
+    "id": 207
+  },
+  {
+    "start": 618.139,
+    "end": 620.854,
+    "en": "\"Well maybe my likelihood is about 35 percent.\"",
+    "zh": "'嗯，也许我的概率大概是35%。'",
+    "id": 208
+  },
+  {
+    "start": 620.854,
+    "end": 623.49,
+    "en": "So they learned quickly and efficiently.",
+    "zh": "所以他们学得又快又有效。",
+    "id": 209
+  },
+  {
+    "start": 623.49,
+    "end": 626.04,
+    "en": "But if someone started off saying,",
+    "zh": "但如果有人一开始说：",
+    "id": 210
+  },
+  {
+    "start": 626.04,
+    "end": 629.443,
+    "en": "\"My average likelihood of suffering from cancer is about 10 percent,\"",
+    "zh": "'我患癌症的平均可能性大约是10%。'",
+    "id": 211
+  },
+  {
+    "start": 629.443,
+    "end": 632.135,
+    "en": "and we said, \"Hey, bad news.",
+    "zh": "然后我们说：嘿，坏消息。",
+    "id": 212
+  },
+  {
+    "start": 632.135,
+    "end": 635.208,
+    "en": "The average likelihood is about 30 percent,\"",
+    "zh": "平均概率大约是30%。'",
+    "id": 213
+  },
+  {
+    "start": 635.208,
+    "end": 637.266,
+    "en": "the next time around they would say,",
+    "zh": "下一轮他们会说：",
+    "id": 214
+  },
+  {
+    "start": 637.266,
+    "end": 640.385,
+    "en": "\"Yep. Still think it's about 11 percent.\"",
+    "zh": "'嗯。还是觉得大概是11%。'",
+    "id": 215
+  },
+  {
+    "start": 642.075,
+    "end": 645.394,
+    "en": "So it's not that they didn't learn at all -- they did --",
+    "zh": "所以并不是说他们完全没学到——他们确实学到了——",
+    "id": 216
+  },
+  {
+    "start": 645.394,
+    "end": 647.73,
+    "en": "but much, much less than when we gave them",
+    "zh": "只是比起我们给他们",
+    "id": 217
+  },
+  {
+    "start": 647.73,
+    "end": 650.203,
+    "en": "positive information about the future.",
+    "zh": "关于未来的正面信息时，学到的要少得多。",
+    "id": 218
+  },
+  {
+    "start": 650.203,
+    "end": 653.237,
+    "en": "And it's not that they didn't remember the numbers that we gave them;",
+    "zh": "而且也不是说他们不记得我们给出的数字；",
+    "id": 219
+  },
+  {
+    "start": 653.237,
+    "end": 656.31,
+    "en": "everyone remembers that the average likelihood of cancer",
+    "zh": "每个人都记得患癌症的平均概率",
+    "id": 220
+  },
+  {
+    "start": 656.31,
+    "end": 657.81,
+    "en": "is about 30 percent",
+    "zh": "大约是30%，",
+    "id": 221
+  },
+  {
+    "start": 657.81,
+    "end": 660.589,
+    "en": "and the average likelihood of divorce is about 40 percent.",
+    "zh": "离婚的平均概率大约是40%。",
+    "id": 222
+  },
+  {
+    "start": 660.589,
+    "end": 665.22,
+    "en": "But they didn't think that those numbers were related to them.",
+    "zh": "但他们并不认为这些数字和自己有关。",
+    "id": 223
+  },
+  {
+    "start": 665.22,
+    "end": 669.368,
+    "en": "What this means is that warning signs such as these",
+    "zh": "这意味着，像这样的警示标志",
+    "id": 224
+  },
+  {
+    "start": 669.368,
+    "end": 672.26,
+    "en": "may only have limited impact.",
+    "zh": "可能只能产生有限的影响。",
+    "id": 225
+  },
+  {
+    "start": 672.26,
+    "end": 676.419,
+    "en": "Yes, smoking kills, but mostly it kills the other guy.",
+    "zh": "没错，吸烟会致命，但死的多半是别人。",
+    "id": 226
+  },
+  {
+    "start": 676.419,
+    "end": 678.302,
+    "en": "What I wanted to know was",
+    "zh": "我想知道的是，",
+    "id": 227
+  },
+  {
+    "start": 678.302,
+    "end": 681.162,
+    "en": "what was going on inside the human brain",
+    "zh": "人类大脑内部到底发生了什么，",
+    "id": 228
+  },
+  {
+    "start": 681.162,
+    "end": 685.256,
+    "en": "that prevented us from taking these warning signs personally.",
+    "zh": "让我们无法把这些警示当成和自己有关的事。",
+    "id": 229
+  },
+  {
+    "start": 685.256,
+    "end": 686.743,
+    "en": "But at the same time,",
+    "zh": "但与此同时，",
+    "id": 230
+  },
+  {
+    "start": 686.743,
+    "end": 688.721,
+    "en": "when we hear that the housing market is hopeful,",
+    "zh": "当我们听说楼市前景乐观时，",
+    "id": 231
+  },
+  {
+    "start": 688.721,
+    "end": 692.837,
+    "en": "we think, \"Oh, my house is definitely going to double in price.\"",
+    "zh": "我们会想：哦，我的房子价格肯定会翻倍。",
+    "id": 232
+  },
+  {
+    "start": 692.837,
+    "end": 694.922,
+    "en": "To try and figure that out,",
+    "zh": "为了弄清楚这一点，",
+    "id": 233
+  },
+  {
+    "start": 694.922,
+    "end": 697.395,
+    "en": "I asked the participants in the experiment",
+    "zh": "我让实验参与者",
+    "id": 234
+  },
+  {
+    "start": 697.395,
+    "end": 699.556,
+    "en": "to lie in a brain imaging scanner.",
+    "zh": "躺进脑成像扫描仪里。",
+    "id": 235
+  },
+  {
+    "start": 699.556,
+    "end": 701.083,
+    "en": "It looks like this.",
+    "zh": "它看起来是这样的。",
+    "id": 236
+  },
+  {
+    "start": 701.083,
+    "end": 704.114,
+    "en": "And using a method called functional MRI,",
+    "zh": "通过一种叫作功能性磁共振成像的方法，",
+    "id": 237
+  },
+  {
+    "start": 704.114,
+    "end": 707.72,
+    "en": "we were able to identify regions in the brain",
+    "zh": "我们能够识别出大脑中",
+    "id": 238
+  },
+  {
+    "start": 707.72,
+    "end": 710.537,
+    "en": "that were responding to positive information.",
+    "zh": "会对正面信息作出反应的区域。",
+    "id": 239
+  },
+  {
+    "start": 710.537,
+    "end": 714.116,
+    "en": "One of these regions is called the left inferior frontal gyrus.",
+    "zh": "其中一个区域叫作左侧额下回。",
+    "id": 240
+  },
+  {
+    "start": 714.116,
+    "end": 717.904,
+    "en": "So if someone said, \"My likelihood of suffering from cancer is 50 percent,\"",
+    "zh": "所以如果有人说：我患癌症的可能性是50%。",
+    "id": 241
+  },
+  {
+    "start": 717.904,
+    "end": 719.76,
+    "en": "and we said, \"Hey, good news.",
+    "zh": "然后我们说：嘿，好消息。",
+    "id": 242
+  },
+  {
+    "start": 719.76,
+    "end": 722.05,
+    "en": "Average likelihood is 30 percent,\"",
+    "zh": "平均概率是30%。",
+    "id": 243
+  },
+  {
+    "start": 722.05,
+    "end": 725.622,
+    "en": "the left inferior frontal gyrus would respond fiercely.",
+    "zh": "左侧额下回就会作出强烈反应。",
+    "id": 244
+  },
+  {
+    "start": 725.622,
+    "end": 730.354,
+    "en": "And it didn't matter if you're an extreme optimist, a mild optimist",
+    "zh": "而且不管你是极度乐观、轻度乐观，",
+    "id": 245
+  },
+  {
+    "start": 730.354,
+    "end": 732.175,
+    "en": "or slightly pessimistic,",
+    "zh": "还是稍微有点悲观，",
+    "id": 246
+  },
+  {
+    "start": 732.175,
+    "end": 734.76,
+    "en": "everyone's left inferior frontal gyrus",
+    "zh": "每个人的左侧额下回",
+    "id": 247
+  },
+  {
+    "start": 734.76,
+    "end": 736.604,
+    "en": "was functioning perfectly well,",
+    "zh": "都运行得非常正常，",
+    "id": 248
+  },
+  {
+    "start": 736.604,
+    "end": 739.51,
+    "en": "whether you're Barack Obama or Woody Allen.",
+    "zh": "无论你是Barack Obama还是Woody Allen。",
+    "id": 249
+  },
+  {
+    "start": 739.51,
+    "end": 741.154,
+    "en": "On the other side of the brain,",
+    "zh": "而在大脑的另一侧，",
+    "id": 250
+  },
+  {
+    "start": 741.154,
+    "end": 745.94,
+    "en": "the right inferior frontal gyrus was responding to bad news.",
+    "zh": "右侧额下回会对坏消息作出反应。",
+    "id": 251
+  },
+  {
+    "start": 745.94,
+    "end": 749.666,
+    "en": "And here's the thing: it wasn't doing a very good job.",
+    "zh": "但问题是：它做得并不太好。",
+    "id": 252
+  },
+  {
+    "start": 749.666,
+    "end": 751.681,
+    "en": "The more optimistic you were,",
+    "zh": "你越乐观，",
+    "id": 253
+  },
+  {
+    "start": 751.681,
+    "end": 754.018,
+    "en": "the less likely this region was",
+    "zh": "这个区域就越不可能",
+    "id": 254
+  },
+  {
+    "start": 754.018,
+    "end": 757.0,
+    "en": "to respond to unexpected negative information.",
+    "zh": "对意外的负面信息作出反应。",
+    "id": 255
+  },
+  {
+    "start": 757.0,
+    "end": 760.058,
+    "en": "And if your brain is failing",
+    "zh": "如果你的大脑无法",
+    "id": 256
+  },
+  {
+    "start": 760.058,
+    "end": 763.283,
+    "en": "at integrating bad news about the future,",
+    "zh": "整合关于未来的坏消息，",
+    "id": 257
+  },
+  {
+    "start": 763.283,
+    "end": 767.906,
+    "en": "you will constantly leave your rose-tinted spectacles on.",
+    "zh": "你就会一直戴着玫瑰色眼镜看世界。",
+    "id": 258
+  },
+  {
+    "start": 767.906,
+    "end": 772.875,
+    "en": "So we wanted to know, could we change this?",
+    "zh": "所以我们想知道，我们能改变这一点吗？",
+    "id": 259
+  },
+  {
+    "start": 772.875,
+    "end": 776.318,
+    "en": "Could we alter people's optimism bias",
+    "zh": "我们能不能通过干扰这些区域的大脑活动，",
+    "id": 260
+  },
+  {
+    "start": 776.318,
+    "end": 780.25,
+    "en": "by interfering with the brain activity in these regions?",
+    "zh": "来改变人们的乐观偏差？",
+    "id": 261
+  },
+  {
+    "start": 780.25,
+    "end": 782.845,
+    "en": "And there's a way for us to do that.",
+    "zh": "而我们确实有办法做到。",
+    "id": 262
+  },
+  {
+    "start": 782.845,
+    "end": 785.472,
+    "en": "This is my collaborator Ryota Kanai.",
+    "zh": "这是我的合作者Ryota Kanai。",
+    "id": 263
+  },
+  {
+    "start": 785.472,
+    "end": 789.427,
+    "en": "And what he's doing is he's passing a small magnetic pulse",
+    "zh": "他正在做的是，让一个小小的磁脉冲",
+    "id": 264
+  },
+  {
+    "start": 789.427,
+    "end": 791.546,
+    "en": "through the skull of the participant in our study",
+    "zh": "穿过我们研究参与者的颅骨，",
+    "id": 265
+  },
+  {
+    "start": 791.546,
+    "end": 793.791,
+    "en": "into their inferior frontal gyrus.",
+    "zh": "进入他们的额下回。",
+    "id": 266
+  },
+  {
+    "start": 793.791,
+    "end": 795.718,
+    "en": "And by doing that,",
+    "zh": "通过这样做，",
+    "id": 267
+  },
+  {
+    "start": 795.718,
+    "end": 798.622,
+    "en": "he's interfering with the activity of this brain region",
+    "zh": "他会干扰这个脑区的活动，",
+    "id": 268
+  },
+  {
+    "start": 798.622,
+    "end": 799.837,
+    "en": "for about half an hour.",
+    "zh": "持续大约半个小时。",
+    "id": 269
+  },
+  {
+    "start": 799.837,
+    "end": 802.758,
+    "en": "After that everything goes back to normal, I assure you.",
+    "zh": "之后一切都会恢复正常，我向你们保证。",
+    "id": 270
+  },
+  {
+    "start": 804.751,
+    "end": 807.905,
+    "en": "So let's see what happens.",
+    "zh": "那我们来看看会发生什么。",
+    "id": 271
+  },
+  {
+    "start": 807.905,
+    "end": 810.002,
+    "en": "First of all, I'm going to show you",
+    "zh": "首先，我要给你们展示",
+    "id": 272
+  },
+  {
+    "start": 810.002,
+    "end": 812.706,
+    "en": "the average amount of bias that we see.",
+    "zh": "我们观察到的平均偏差程度。",
+    "id": 273
+  },
+  {
+    "start": 812.706,
+    "end": 815.529,
+    "en": "So if I was to test all of you now,",
+    "zh": "也就是说，如果我现在测试你们所有人，",
+    "id": 274
+  },
+  {
+    "start": 815.529,
+    "end": 817.323,
+    "en": "this is the amount that you would learn",
+    "zh": "这就是你们会从好消息中学到的内容，",
+    "id": 275
+  },
+  {
+    "start": 817.323,
+    "end": 820.443,
+    "en": "more from good news relative to bad news.",
+    "zh": "相比坏消息而言，多出来的程度。",
+    "id": 276
+  },
+  {
+    "start": 820.443,
+    "end": 822.927,
+    "en": "Now we interfere with the region",
+    "zh": "接着，我们干扰了那个",
+    "id": 277
+  },
+  {
+    "start": 822.927,
+    "end": 827.394,
+    "en": "that we found to integrate negative information in this task,",
+    "zh": "在这个任务中负责整合负面信息的区域，",
+    "id": 278
+  },
+  {
+    "start": 827.394,
+    "end": 830.958,
+    "en": "and the optimism bias grew even larger.",
+    "zh": "结果乐观偏差变得更大了。",
+    "id": 279
+  },
+  {
+    "start": 830.958,
+    "end": 836.428,
+    "en": "We made people more biased in the way that they process information.",
+    "zh": "我们让人们在处理信息的方式上变得更有偏差。",
+    "id": 280
+  },
+  {
+    "start": 836.428,
+    "end": 839.325,
+    "en": "Then we interfered with the brain region",
+    "zh": "然后我们干扰了那个",
+    "id": 281
+  },
+  {
+    "start": 839.325,
+    "end": 842.843,
+    "en": "that we found to integrate good news in this task,",
+    "zh": "在这个任务中负责整合好消息的脑区，",
+    "id": 282
+  },
+  {
+    "start": 842.843,
+    "end": 847.314,
+    "en": "and the optimism bias disappeared.",
+    "zh": "结果乐观偏差消失了。",
+    "id": 283
+  },
+  {
+    "start": 847.314,
+    "end": 849.322,
+    "en": "We were quite amazed by these results",
+    "zh": "这些结果让我们相当惊讶，",
+    "id": 284
+  },
+  {
+    "start": 849.322,
+    "end": 851.514,
+    "en": "because we were able to eliminate",
+    "zh": "因为我们竟然能够消除",
+    "id": 285
+  },
+  {
+    "start": 851.514,
+    "end": 854.71,
+    "en": "a deep-rooted bias in humans.",
+    "zh": "人类身上一种根深蒂固的偏差。",
+    "id": 286
+  },
+  {
+    "start": 854.71,
+    "end": 859.483,
+    "en": "And at this point we stopped and we asked ourselves,",
+    "zh": "到这个时候，我们停下来问自己，",
+    "id": 287
+  },
+  {
+    "start": 859.483,
+    "end": 864.585,
+    "en": "would we want to shatter the optimism illusion into tiny little bits?",
+    "zh": "我们真的想把乐观幻觉击得粉碎吗？",
+    "id": 288
+  },
+  {
+    "start": 864.585,
+    "end": 869.629,
+    "en": "If we could do that, would we want to take people's optimism bias away?",
+    "zh": "如果我们能做到，我们真的想拿走人们的乐观偏差吗？",
+    "id": 289
+  },
+  {
+    "start": 869.629,
+    "end": 874.229,
+    "en": "Well I've already told you about all of the benefits of the optimism bias,",
+    "zh": "我已经告诉过你们乐观偏差的种种好处，",
+    "id": 290
+  },
+  {
+    "start": 874.229,
+    "end": 878.55,
+    "en": "which probably makes you want to hold onto it for dear life.",
+    "zh": "这大概会让你们想拼命留住它。",
+    "id": 291
+  },
+  {
+    "start": 878.55,
+    "end": 880.635,
+    "en": "But there are, of course, pitfalls,",
+    "zh": "但当然，它也有陷阱，",
+    "id": 292
+  },
+  {
+    "start": 880.635,
+    "end": 883.755,
+    "en": "and it would be really foolish of us to ignore them.",
+    "zh": "忽视这些陷阱会非常愚蠢。",
+    "id": 293
+  },
+  {
+    "start": 883.755,
+    "end": 887.301,
+    "en": "Take for example this email I recieved",
+    "zh": "比如看看我收到的这封邮件，",
+    "id": 294
+  },
+  {
+    "start": 887.301,
+    "end": 889.995,
+    "en": "from a firefighter here in California.",
+    "zh": "它来自加州这里的一名消防员。",
+    "id": 295
+  },
+  {
+    "start": 889.995,
+    "end": 893.299,
+    "en": "He says, \"Fatality investigations for firefighters",
+    "zh": "他说：消防员死亡事故调查中，",
+    "id": 296
+  },
+  {
+    "start": 893.299,
+    "end": 897.441,
+    "en": "often include 'We didn't think the fire was going to do that,'",
+    "zh": "经常会出现‘我们没想到火势会那样发展’这句话，",
+    "id": 297
+  },
+  {
+    "start": 897.441,
+    "end": 899.743,
+    "en": "even when all of the available information",
+    "zh": "尽管当时所有可用的信息",
+    "id": 298
+  },
+  {
+    "start": 899.743,
+    "end": 901.998,
+    "en": "was there to make safe decisions.\"",
+    "zh": "都足以让他们作出安全的决定。'",
+    "id": 299
+  },
+  {
+    "start": 901.998,
+    "end": 905.872,
+    "en": "This captain is going to use our findings on the optimism bias",
+    "zh": "这位队长打算利用我们关于乐观偏差的研究发现，",
+    "id": 300
+  },
+  {
+    "start": 905.872,
+    "end": 908.064,
+    "en": "to try to explain to the firefighters",
+    "zh": "去向消防员解释",
+    "id": 301
+  },
+  {
+    "start": 908.064,
+    "end": 910.273,
+    "en": "why they think the way they do,",
+    "zh": "为什么他们会那样思考，",
+    "id": 302
+  },
+  {
+    "start": 910.273,
+    "end": 917.399,
+    "en": "to make them acutely aware of this very optimistic bias in humans.",
+    "zh": "让他们强烈意识到人类身上这种非常乐观的偏差。",
+    "id": 303
+  },
+  {
+    "start": 917.399,
+    "end": 922.518,
+    "en": "So unrealistic optimism can lead to risky behavior,",
+    "zh": "所以，不现实的乐观可能导致冒险行为，",
+    "id": 304
+  },
+  {
+    "start": 922.518,
+    "end": 926.156,
+    "en": "to financial collapse, to faulty planning.",
+    "zh": "导致金融崩溃，导致错误的规划。",
+    "id": 305
+  },
+  {
+    "start": 926.156,
+    "end": 928.294,
+    "en": "The British government, for example,",
+    "zh": "比如英国政府",
+    "id": 306
+  },
+  {
+    "start": 928.294,
+    "end": 930.968,
+    "en": "has acknowledged that the optimism bias",
+    "zh": "已经承认，乐观偏差",
+    "id": 307
+  },
+  {
+    "start": 930.968,
+    "end": 934.255,
+    "en": "can make individuals more likely",
+    "zh": "会让个人更容易",
+    "id": 308
+  },
+  {
+    "start": 934.255,
+    "end": 938.281,
+    "en": "to underestimate the costs and durations of projects.",
+    "zh": "低估项目的成本和工期。",
+    "id": 309
+  },
+  {
+    "start": 938.281,
+    "end": 942.535,
+    "en": "So they have adjusted the 2012 Olympic budget",
+    "zh": "所以他们在制定2012年奥运会预算时，",
+    "id": 310
+  },
+  {
+    "start": 942.535,
+    "end": 944.646,
+    "en": "for the optimism bias.",
+    "zh": "对乐观偏差作了调整。",
+    "id": 311
+  },
+  {
+    "start": 944.646,
+    "end": 946.833,
+    "en": "My friend who's getting married in a few weeks",
+    "zh": "我有个朋友几周后要结婚，",
+    "id": 312
+  },
+  {
+    "start": 946.833,
+    "end": 949.267,
+    "en": "has done the same for his wedding budget.",
+    "zh": "他也对自己的婚礼预算做了同样的处理。",
+    "id": 313
+  },
+  {
+    "start": 949.267,
+    "end": 952.329,
+    "en": "And by the way, when I asked him about his own likelihood of divorce,",
+    "zh": "顺便说一句，当我问他自己离婚的可能性有多大时，",
+    "id": 314
+  },
+  {
+    "start": 952.329,
+    "end": 955.889,
+    "en": "he said he was quite sure it was zero percent.",
+    "zh": "他说他非常确定是0%。",
+    "id": 315
+  },
+  {
+    "start": 955.889,
+    "end": 958.306,
+    "en": "So what we would really like to do,",
+    "zh": "所以我们真正想做的是，",
+    "id": 316
+  },
+  {
+    "start": 958.306,
+    "end": 962.467,
+    "en": "is we would like to protect ourselves from the dangers of optimism,",
+    "zh": "保护自己免受乐观的危险影响，",
+    "id": 317
+  },
+  {
+    "start": 962.467,
+    "end": 965.695,
+    "en": "but at the same time remain hopeful,",
+    "zh": "但与此同时保持希望，",
+    "id": 318
+  },
+  {
+    "start": 965.695,
+    "end": 968.539,
+    "en": "benefiting from the many fruits of optimism.",
+    "zh": "享受乐观带来的许多成果。",
+    "id": 319
+  },
+  {
+    "start": 968.539,
+    "end": 971.343,
+    "en": "And I believe there's a way for us to do that.",
+    "zh": "我相信我们有办法做到这一点。",
+    "id": 320
+  },
+  {
+    "start": 971.343,
+    "end": 973.403,
+    "en": "The key here really is knowledge.",
+    "zh": "这里真正的关键是知识。",
+    "id": 321
+  },
+  {
+    "start": 973.403,
+    "end": 976.714,
+    "en": "We're not born with an innate understanding of our biases.",
+    "zh": "我们并不是天生就懂得自己的偏差。",
+    "id": 322
+  },
+  {
+    "start": 976.714,
+    "end": 980.555,
+    "en": "These have to be identified by scientific investigation.",
+    "zh": "这些偏差必须通过科学研究来识别。",
+    "id": 323
+  },
+  {
+    "start": 980.555,
+    "end": 984.739,
+    "en": "But the good news is that becoming aware of the optimism bias",
+    "zh": "但好消息是，意识到乐观偏差的存在",
+    "id": 324
+  },
+  {
+    "start": 984.739,
+    "end": 986.514,
+    "en": "does not shatter the illusion.",
+    "zh": "并不会打破这种幻觉。",
+    "id": 325
+  },
+  {
+    "start": 986.514,
+    "end": 988.062,
+    "en": "It's like visual illusions,",
+    "zh": "这就像视觉错觉一样，",
+    "id": 326
+  },
+  {
+    "start": 988.062,
+    "end": 991.552,
+    "en": "in which understanding them does not make them go away.",
+    "zh": "你理解了它们，也不会让它们消失。",
+    "id": 327
+  },
+  {
+    "start": 991.552,
+    "end": 993.789,
+    "en": "And this is good because it means",
+    "zh": "这是一件好事，因为它意味着",
+    "id": 328
+  },
+  {
+    "start": 993.789,
+    "end": 996.262,
+    "en": "we should be able to strike a balance,",
+    "zh": "我们应该能够取得一种平衡，",
+    "id": 329
+  },
+  {
+    "start": 996.262,
+    "end": 998.689,
+    "en": "to come up with plans and rules",
+    "zh": "制定计划和规则，",
+    "id": 330
+  },
+  {
+    "start": 998.689,
+    "end": 1001.472,
+    "en": "to protect ourselves from unrealistic optimism,",
+    "zh": "保护自己免受不现实乐观的影响，",
+    "id": 331
+  },
+  {
+    "start": 1001.472,
+    "end": 1004.624,
+    "en": "but at the same time remain hopeful.",
+    "zh": "但同时仍然保持希望。",
+    "id": 332
+  },
+  {
+    "start": 1004.624,
+    "end": 1008.048,
+    "en": "I think this cartoon portrays it nicely.",
+    "zh": "我觉得这幅漫画很好地表达了这一点。",
+    "id": 333
+  },
+  {
+    "start": 1008.048,
+    "end": 1011.574,
+    "en": "Because if you're one of these pessimistic penguins up there",
+    "zh": "因为如果你是上面那些悲观的企鹅之一，",
+    "id": 334
+  },
+  {
+    "start": 1011.574,
+    "end": 1013.693,
+    "en": "who just does not believe they can fly,",
+    "zh": "完全不相信自己能飞，",
+    "id": 335
+  },
+  {
+    "start": 1013.693,
+    "end": 1016.052,
+    "en": "you certainly never will.",
+    "zh": "那你当然永远也飞不起来。",
+    "id": 336
+  },
+  {
+    "start": 1016.052,
+    "end": 1017.883,
+    "en": "Because to make any kind of progress,",
+    "zh": "因为要取得任何进步，",
+    "id": 337
+  },
+  {
+    "start": 1017.883,
+    "end": 1020.233,
+    "en": "we need to be able to imagine a different reality,",
+    "zh": "我们都需要能够想象一种不同的现实，",
+    "id": 338
+  },
+  {
+    "start": 1020.233,
+    "end": 1023.964,
+    "en": "and then we need to believe that that reality is possible.",
+    "zh": "然后我们需要相信那种现实是可能的。",
+    "id": 339
+  },
+  {
+    "start": 1023.974,
+    "end": 1027.498,
+    "en": "But if you are an extreme optimistic penguin",
+    "zh": "但如果你是一只极度乐观的企鹅，",
+    "id": 340
+  },
+  {
+    "start": 1027.498,
+    "end": 1030.26,
+    "en": "who just jumps down blindly hoping for the best,",
+    "zh": "只是盲目跳下去，希望一切顺利，",
+    "id": 341
+  },
+  {
+    "start": 1030.26,
+    "end": 1035.041,
+    "en": "you might find yourself in a bit of a mess when you hit the ground.",
+    "zh": "那你落地的时候，可能会发现自己有点麻烦。",
+    "id": 342
+  },
+  {
+    "start": 1035.041,
+    "end": 1036.93,
+    "en": "But if you're an optimistic penguin",
+    "zh": "但如果你是一只乐观的企鹅，",
+    "id": 343
+  },
+  {
+    "start": 1036.93,
+    "end": 1038.726,
+    "en": "who believes they can fly,",
+    "zh": "相信自己能飞，",
+    "id": 344
+  },
+  {
+    "start": 1038.726,
+    "end": 1041.389,
+    "en": "but then adjusts a parachute to your back",
+    "zh": "但随后又在背上装好降落伞，",
+    "id": 345
+  },
+  {
+    "start": 1041.389,
+    "end": 1044.406,
+    "en": "just in case things don't work out exactly as you had planned,",
+    "zh": "以防事情没有完全按你的计划发展，",
+    "id": 346
+  },
+  {
+    "start": 1044.406,
+    "end": 1046.269,
+    "en": "you will soar like an eagle,",
+    "zh": "你就会像鹰一样翱翔，",
+    "id": 347
+  },
+  {
+    "start": 1046.269,
+    "end": 1049.318,
+    "en": "even if you're just a penguin.",
+    "zh": "即便你只是一只企鹅。",
+    "id": 348
+  },
+  {
+    "start": 1049.318,
+    "end": 1051.08,
+    "en": "Thank you.",
+    "zh": "谢谢大家。",
+    "id": 349
+  }
+]
