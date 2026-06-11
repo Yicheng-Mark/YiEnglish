@@ -23,17 +23,17 @@
 
 /* ── Dark theme ── */
 .dark {
-  --mobile-bg: #0b1120;
-  --mobile-card-bg: #151e32;
+  --mobile-bg: #111827;
+  --mobile-card-bg: #1c2438;
   --mobile-card-shadow: rgba(0,0,0,0.4);
   --mobile-text: #f1f5f9;
   --mobile-text-secondary: #94a3b8;
-  --mobile-border: #1e293b;
+  --mobile-border: #232d3f;
   --mobile-primary: #f59e0b;
-  --mobile-bottom-bg: #0f172a;
+  --mobile-bottom-bg: #161d2f;
   --mobile-control-text: #64748b;
   --mobile-icon-color: #94a3b8;
-  --mobile-recording-bg: #172554;
+  --mobile-recording-bg: #1c2d5a;
   --mobile-answer-bg: rgba(245,158,11,0.08);
   --mobile-answer-border: rgba(245,158,11,0.2);
   --mobile-focus-card-bg: rgba(245,158,11,0.08);
@@ -42,17 +42,17 @@
 
 /* ── Gray theme ── */
 [data-theme="gray"] {
-  --mobile-bg: #0b1120;
-  --mobile-card-bg: #151e32;
+  --mobile-bg: #111827;
+  --mobile-card-bg: #1c2438;
   --mobile-card-shadow: rgba(0,0,0,0.4);
   --mobile-text: #f1f5f9;
   --mobile-text-secondary: #94a3b8;
-  --mobile-border: #1e293b;
+  --mobile-border: #232d3f;
   --mobile-primary: #f59e0b;
-  --mobile-bottom-bg: #0f172a;
+  --mobile-bottom-bg: #161d2f;
   --mobile-control-text: #64748b;
   --mobile-icon-color: #94a3b8;
-  --mobile-recording-bg: #172554;
+  --mobile-recording-bg: #1c2d5a;
   --mobile-answer-bg: rgba(245,158,11,0.08);
   --mobile-answer-border: rgba(245,158,11,0.2);
   --mobile-focus-card-bg: rgba(245,158,11,0.08);
