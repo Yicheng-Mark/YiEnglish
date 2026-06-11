@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { toast } from 'sonner'
+import SocialLinks from '../components/SocialLinks'
 
 export default function Login() {
   const { login } = useAuth()
@@ -102,6 +103,7 @@ export default function Login() {
         </div>
       </div>
 
+      <SocialLinks className="absolute bottom-12 left-0 right-0" />
       <a
         href="https://beian.miit.gov.cn/"
         target="_blank"

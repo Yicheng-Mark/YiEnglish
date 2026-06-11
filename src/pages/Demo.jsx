@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { toast } from 'sonner'
+import SocialLinks from '../components/SocialLinks'
 
 export default function Demo() {
   const { redeemDemoCode } = useAuth()
@@ -49,7 +50,7 @@ export default function Demo() {
             WebkitBackdropFilter: 'blur(24px)',
           }}
         >
-          <h1 className="text-2xl font-bold text-white text-center mb-8">体验 LingoForge</h1>
+          <h1 className="text-2xl font-bold text-white text-center mb-8">体验</h1>
           <p className="text-sm text-white/50 text-center mb-6">
             输入体验码，免费试用 1 小时
           </p>
@@ -93,6 +94,7 @@ export default function Demo() {
         </div>
       </div>
 
+      <SocialLinks className="absolute bottom-12 left-0 right-0" />
       <a
         href="https://beian.miit.gov.cn/"
         target="_blank"
