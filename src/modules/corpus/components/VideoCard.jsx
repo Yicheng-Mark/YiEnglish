@@ -24,6 +24,7 @@ const CATEGORY_TAG = {
   '经济': 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300',
   '心理': 'bg-fuchsia-50 text-fuchsia-600 dark:bg-fuchsia-500/10 dark:text-fuchsia-300',
   '商业': 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300',
+  '演讲': 'bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-300',
 }
 
 const DEFAULT_TAG = 'bg-gray-100 text-gray-600 dark:bg-white/[0.06] dark:text-gray-300'

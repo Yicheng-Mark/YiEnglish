@@ -1,0 +1,310 @@
+[
+  {
+    "start": 0.0,
+    "end": 2.34,
+    "en": "I realize I'm not introducing myself at all.",
+    "zh": "我发现我完全没有介绍自己。",
+    "id": 1
+  },
+  {
+    "start": 2.42,
+    "end": 5.92,
+    "en": "I'm 23 years old and I turned 24 in November.",
+    "zh": "我今年23岁，11月就满24岁了。",
+    "id": 2
+  },
+  {
+    "start": 6.14,
+    "end": 9.22,
+    "en": "I am from Mallorca in Spain.",
+    "zh": "我来自西班牙的马略卡岛。",
+    "id": 3
+  },
+  {
+    "start": 9.68,
+    "end": 12.06,
+    "en": "which is one of the Balearic Islands.",
+    "zh": "也就是Balearic Islands中的一个岛。",
+    "id": 4
+  },
+  {
+    "start": 12.38,
+    "end": 15.84,
+    "en": "People are always very surprised when I say I'm from Mallorca because.",
+    "zh": "每次我说我来自马略卡岛，大家都会特别惊讶，因为",
+    "id": 5
+  },
+  {
+    "start": 15.84,
+    "end": 17.92,
+    "en": "a lot of people go there for vacation.",
+    "zh": "很多人都会去那里度假。",
+    "id": 6
+  },
+  {
+    "start": 18.1,
+    "end": 21.0,
+    "en": "But actually, my parents are also from Mallorca.",
+    "zh": "但其实，我爸妈也都是马略卡岛人。",
+    "id": 7
+  },
+  {
+    "start": 21.2,
+    "end": 22.76,
+    "en": "They both grew up in Mallorca.",
+    "zh": "他们俩都是在马略卡岛长大的。",
+    "id": 8
+  },
+  {
+    "start": 22.96,
+    "end": 24.68,
+    "en": "However, my mum is half Swedish.",
+    "zh": "不过，我妈妈有一半瑞典血统。",
+    "id": 9
+  },
+  {
+    "start": 24.68,
+    "end": 28.6,
+    "en": "which is why I am partly Swedish from Stockholm.",
+    "zh": "所以我也有一部分来自斯德哥尔摩的瑞典血统。",
+    "id": 10
+  },
+  {
+    "start": 28.82,
+    "end": 31.82,
+    "en": "I have two sisters and three stepbrothers.",
+    "zh": "我有两个姐妹，还有三个继兄弟。",
+    "id": 11
+  },
+  {
+    "start": 32.1,
+    "end": 36.38,
+    "en": "My dad was previously married before my mum and had three boys.",
+    "zh": "我爸爸在娶我妈妈之前曾经结过婚，并且有三个儿子。",
+    "id": 12
+  },
+  {
+    "start": 36.38,
+    "end": 39.1,
+    "en": "and then married my mum and had three girls.",
+    "zh": "后来他娶了我妈妈，又有了三个女儿。",
+    "id": 13
+  },
+  {
+    "start": 39.22,
+    "end": 40.34,
+    "en": "I speak four languages.",
+    "zh": "我会说四种语言。",
+    "id": 14
+  },
+  {
+    "start": 40.5,
+    "end": 44.02,
+    "en": "I speak Spanish, Swedish, English and a tiny bit of French.",
+    "zh": "我会说西班牙语、瑞典语、英语，还有一点点法语。",
+    "id": 15
+  },
+  {
+    "start": 44.08,
+    "end": 49.92,
+    "en": "I do understand a lot of French though because I did study it in school for around six years.",
+    "zh": "不过我能听懂很多法语，因为我在学校学了大概六年法语。",
+    "id": 16
+  },
+  {
+    "start": 49.96,
+    "end": 53.9,
+    "en": "I studied a bachelor in business administration in Madrid.",
+    "zh": "我在马德里读了工商管理本科。",
+    "id": 17
+  },
+  {
+    "start": 54.06,
+    "end": 57.38,
+    "en": "I went to IE University and had the best time of my life.",
+    "zh": "我上的是IE University，那是我人生中最快乐的一段时光。",
+    "id": 18
+  },
+  {
+    "start": 57.52,
+    "end": 60.64,
+    "en": "So what brings me to New York, you may ask.",
+    "zh": "那你可能会问，我为什么会来到纽约呢？",
+    "id": 19
+  },
+  {
+    "start": 60.72,
+    "end": 63.86,
+    "en": "My university in Madrid opened a campus in New York.",
+    "zh": "我在马德里的大学在纽约开设了一个校区。",
+    "id": 20
+  },
+  {
+    "start": 63.86,
+    "end": 68.86,
+    "en": "and so a bunch of us got offered the opportunity to fast track our bachelor.",
+    "zh": "所以我们当中有一批人获得了提前完成本科的机会，",
+    "id": 21
+  },
+  {
+    "start": 68.86,
+    "end": 71.28,
+    "en": "and get started on our master's degree.",
+    "zh": "并且可以开始攻读硕士学位。",
+    "id": 22
+  },
+  {
+    "start": 71.34,
+    "end": 74.08,
+    "en": "Luckily, my boyfriend also got offered the opportunity.",
+    "zh": "很幸运的是，我男朋友也得到了这个机会。",
+    "id": 23
+  },
+  {
+    "start": 74.22,
+    "end": 75.18,
+    "en": "It's great to have him here.",
+    "zh": "有他在这里真的太好了。",
+    "id": 24
+  },
+  {
+    "start": 75.18,
+    "end": 77.42,
+    "en": "I don't know what I would have done without him, honestly.",
+    "zh": "说真的，我不知道没有他我该怎么办。",
+    "id": 25
+  },
+  {
+    "start": 77.42,
+    "end": 79.34,
+    "en": "Yeah, that brings me here to YouTube.",
+    "zh": "是的，这也就把我带到了YouTube。",
+    "id": 26
+  },
+  {
+    "start": 79.68,
+    "end": 82.4,
+    "en": "YouTube has been my biggest dream.",
+    "zh": "YouTube一直是我最大的梦想。",
+    "id": 27
+  },
+  {
+    "start": 82.54,
+    "end": 83.48,
+    "en": "So you get an idea.",
+    "zh": "给你们一个概念。",
+    "id": 28
+  },
+  {
+    "start": 83.78,
+    "end": 87.76,
+    "en": "My dad bought me the Canon G7X when I was like 13.",
+    "zh": "我大概13岁的时候，我爸爸给我买了Canon G7X。",
+    "id": 29
+  },
+  {
+    "start": 87.86,
+    "end": 90.78,
+    "en": "He got me that camera because I wanted to become a vlogger.",
+    "zh": "他给我买那台相机，是因为我想成为一个vlogger。",
+    "id": 30
+  },
+  {
+    "start": 90.86,
+    "end": 94.04,
+    "en": "I never got over my shyness and my fear of judgment.",
+    "zh": "但我一直没能克服自己的害羞和对被评价的恐惧。",
+    "id": 31
+  },
+  {
+    "start": 94.3,
+    "end": 98.64,
+    "en": "That's why I love TikTok so much because it's such a easy platform to get started.",
+    "zh": "这也是为什么我这么喜欢TikTok，因为它是一个特别容易开始的平台。",
+    "id": 32
+  },
+  {
+    "start": 98.66,
+    "end": 103.26,
+    "en": "Whereas I feel like Instagram and YouTube are a lot more daunting for different reasons.",
+    "zh": "但我觉得Instagram和YouTube因为不同的原因，会让人更有压力。",
+    "id": 33
+  },
+  {
+    "start": 103.82,
+    "end": 105.7,
+    "en": "YouTube, I feel like it's a lot more personal.",
+    "zh": "YouTube，我觉得它要私人化得多。",
+    "id": 34
+  },
+  {
+    "start": 105.7,
+    "end": 110.54,
+    "en": "and Instagram is harder to get started because you already have that base of people you know,",
+    "zh": "而Instagram更难开始，因为你已经有了一批认识你的人，",
+    "id": 35
+  },
+  {
+    "start": 110.6,
+    "end": 114.36,
+    "en": "that follow you from back home or whatever the case may be.",
+    "zh": "你知道，就是那些从老家就关注你的人，或者类似这种情况。",
+    "id": 36
+  },
+  {
+    "start": 114.38,
+    "end": 115.6,
+    "en": "So you're a lot more afraid.",
+    "zh": "所以你会害怕得多。",
+    "id": 37
+  },
+  {
+    "start": 115.64,
+    "end": 117.0,
+    "en": "or at least that was the case for me.",
+    "zh": "至少对我来说是这样。",
+    "id": 38
+  },
+  {
+    "start": 117.02,
+    "end": 120.4,
+    "en": "But TikTok, you start from scratch and it's fast paced content.",
+    "zh": "但TikTok不一样，你是从零开始，而且内容节奏很快。",
+    "id": 39
+  },
+  {
+    "start": 120.5,
+    "end": 123.76,
+    "en": "So no one really sits and watches you for long periods of time.",
+    "zh": "所以没有人真的会坐在那里长时间看着你。",
+    "id": 40
+  },
+  {
+    "start": 124.06,
+    "end": 126.6,
+    "en": "I set my makeup with this One/Size spray.",
+    "zh": "我用这个One/Size定妆喷雾来定妆。",
+    "id": 41
+  },
+  {
+    "start": 126.7,
+    "end": 128.4,
+    "en": "I've gotten so many people on the spray.",
+    "zh": "我已经安利了好多人用这个喷雾。",
+    "id": 42
+  },
+  {
+    "start": 128.6,
+    "end": 133.42,
+    "en": "It's amazing. This's my makeup, I go for very natural makeup.",
+    "zh": "它真的很好用。这就是我的妆容，我一般会化很自然的妆。",
+    "id": 43
+  },
+  {
+    "start": 133.42,
+    "end": 136.96,
+    "en": "and makeup I can do quickly because I'm a huge amateur.",
+    "zh": "而且是那种我能快速完成的妆，因为我真的超级业余。",
+    "id": 44
+  }
+]

@@ -25,6 +25,7 @@ const ReviewQuiz = lazy(() => import('./pages/ReviewQuiz'))
 const Login = lazy(() => import('./pages/Login'))
 const Register = lazy(() => import('./pages/Register'))
 const Demo = lazy(() => import('./pages/Demo'))
+const Activate = lazy(() => import('./pages/Activate'))
 const DemoLayout = lazy(() => import('./pages/demo/DemoLayout'))
 const DemoWord = lazy(() => import('./pages/demo/DemoWord'))
 const DemoReading = lazy(() => import('./pages/demo/DemoReading'))
@@ -67,6 +68,12 @@ function ProtectedRoute() {
   return <Outlet />
 }
 
+function RegisterGuard() {
+  const validatedCode = sessionStorage.getItem('validated_activation_code')
+  if (!validatedCode) return <Navigate to="/activate" replace />
+  return <Register />
+}
+
 function App() {
   useScrollingFlag()
   const location = useLocation()
@@ -78,7 +85,7 @@ function App() {
     }
   }, [])
   const [aiHidden, setAiHidden] = useState(isAIAssistantHidden)
-  const hideAI = (AUTH_ENABLED && ['/login', '/register', '/demo'].includes(location.pathname)) || location.pathname.startsWith('/demo/') || aiHidden
+  const hideAI = (AUTH_ENABLED && ['/login', '/register', '/demo', '/activate'].includes(location.pathname)) || location.pathname.startsWith('/demo/') || location.pathname.startsWith('/activate/') || aiHidden
 
   useEffect(() => {
     const handler = () => setAiHidden(isAIAssistantHidden())
@@ -103,7 +110,9 @@ function App() {
       <Suspense fallback={<PageLoading />}>
         <Routes>
           {AUTH_ENABLED && <Route path="/login" element={<Login />} />}
-          {AUTH_ENABLED && <Route path="/register" element={<Register />} />}
+          {AUTH_ENABLED && <Route path="/register" element={<RegisterGuard />} />}
+          {AUTH_ENABLED && <Route path="/activate" element={<Activate />} />}
+          {AUTH_ENABLED && <Route path="/activate/:code" element={<Activate />} />}
           {/* Demo 路由（体验码输入 + demo 应用） */}
           {AUTH_ENABLED && (
             <Route path="/demo">

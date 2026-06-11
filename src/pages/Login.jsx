@@ -90,7 +90,7 @@ export default function Login() {
 
           <p className="mt-6 text-center text-sm text-white/60">
             还没有账号？
-            <Link to="/register" className="text-white hover:underline ml-1">
+            <Link to="/activate" className="text-white hover:underline ml-1">
               注册
             </Link>
           </p>

@@ -1,0 +1,548 @@
+[
+  {
+    "start": 1.2,
+    "end": 3.62,
+    "en": "Hi Vanity Fair, I'm Charles Leclerc.",
+    "zh": "嗨，Vanity Fair，我是Charles Leclerc。",
+    "id": 1
+  },
+  {
+    "start": 3.62,
+    "end": 6.16,
+    "en": "and I'm getting ready for the Cannes Festival, come on in.",
+    "zh": "我正在为Cannes Festival做准备，进来吧。",
+    "id": 2
+  },
+  {
+    "start": 12.74,
+    "end": 16.1,
+    "en": "Today we are in Cannes for the Festival de Cannes.",
+    "zh": "今天我们在戛纳，参加Festival de Cannes。",
+    "id": 3
+  },
+  {
+    "start": 16.1,
+    "end": 18.9,
+    "en": "and I'm getting ready for the red carpet tonight.",
+    "zh": "我正在为今晚的红毯做准备。",
+    "id": 4
+  },
+  {
+    "start": 19.82,
+    "end": 23.82,
+    "en": "It's not my first time in Cannes but it's my first time here for the Festival de Cannes.",
+    "zh": "这不是我第一次来戛纳，但这是我第一次为了Festival de Cannes来到这里。",
+    "id": 5
+  },
+  {
+    "start": 23.9,
+    "end": 26.86,
+    "en": "Growing up in Monaco it's a huge event worldwide.",
+    "zh": "我从小在摩纳哥🇲🇨长大，所以知道这是全球瞩目的大活动。",
+    "id": 6
+  },
+  {
+    "start": 26.86,
+    "end": 30.8,
+    "en": "I'm really excited, I mean it's a very new experience to me,",
+    "zh": "我真的很兴奋，毕竟这对我来说是一次非常新鲜的体验，",
+    "id": 7
+  },
+  {
+    "start": 30.92,
+    "end": 31.82,
+    "en": "a lot to discover.",
+    "zh": "有很多东西可以去发现。",
+    "id": 8
+  },
+  {
+    "start": 32.14,
+    "end": 34.4,
+    "en": "I'm here with my wife Alexandra as well.",
+    "zh": "我这次也和我的妻子Alexandra一起来了。",
+    "id": 9
+  },
+  {
+    "start": 34.48,
+    "end": 35.86,
+    "en": "she did the red carpet last year.",
+    "zh": "她去年走过红毯。",
+    "id": 10
+  },
+  {
+    "start": 36.02,
+    "end": 38.08,
+    "en": "I'm looking forward to it, I don't really know what to expect.",
+    "zh": "我很期待，不过说实话，我也不太知道会发生什么。",
+    "id": 11
+  },
+  {
+    "start": 38.24,
+    "end": 43.08,
+    "en": "I did one premiere not in Festival de Cannes again but for the F1 movie.",
+    "zh": "我之前参加过一次首映礼，不是在Festival de Cannes，而是F1电影的首映。",
+    "id": 12
+  },
+  {
+    "start": 43.2,
+    "end": 45.74,
+    "en": "It's a fully new world, I mean I love watching movies.",
+    "zh": "这是一个全新的世界，我是说，我很喜欢看电影。",
+    "id": 13
+  },
+  {
+    "start": 45.82,
+    "end": 47.6,
+    "en": "I don't know much about this world actually.",
+    "zh": "但其实我对这个领域了解不多。",
+    "id": 14
+  },
+  {
+    "start": 47.88,
+    "end": 52.26,
+    "en": "The world of Formula One is quite unique but I'm sure that the world of movies.",
+    "zh": "F1的世界非常独特，但我相信电影的世界。",
+    "id": 15
+  },
+  {
+    "start": 52.26,
+    "end": 55.8,
+    "en": "and others are always super interesting and I'm very curious.",
+    "zh": "以及其他领域，也一定都非常有意思，我也很好奇。",
+    "id": 16
+  },
+  {
+    "start": 55.8,
+    "end": 57.28,
+    "en": "so I'm looking forward to that.",
+    "zh": "所以我很期待。",
+    "id": 17
+  },
+  {
+    "start": 57.68,
+    "end": 61.8,
+    "en": "Mentally there's some tension because I mean I go a little bit into the unknown.",
+    "zh": "心理上还是会有一点紧张，因为我算是走进了一个未知的领域。",
+    "id": 18
+  },
+  {
+    "start": 62.06,
+    "end": 68.62,
+    "en": "I don't think there's a special mental preparation, it's just a bit out of my comfort zone but I'm looking forward to that.",
+    "zh": "我觉得没有什么特别的心理准备，只是有点走出舒适区，但我很期待。",
+    "id": 19
+  },
+  {
+    "start": 68.8,
+    "end": 71.72,
+    "en": "The thing is that I'm always on the road, always on races,",
+    "zh": "问题是我总是在路上，总是在参加比赛，",
+    "id": 20
+  },
+  {
+    "start": 71.98,
+    "end": 73.14,
+    "en": "always on racing tracks.",
+    "zh": "总是在赛道上。",
+    "id": 21
+  },
+  {
+    "start": 73.34,
+    "end": 74.78,
+    "en": "So not much time for free time.",
+    "zh": "所以没有太多空闲时间。",
+    "id": 22
+  },
+  {
+    "start": 74.78,
+    "end": 78.38,
+    "en": "and the little free time I have I spend it with my family,",
+    "zh": "而我仅有的一点空闲时间，都会用来陪家人，",
+    "id": 23
+  },
+  {
+    "start": 79.18,
+    "end": 81.86,
+    "en": "with my dog Leo that I miss today in Cannes actually.",
+    "zh": "还有陪我的狗Leo，说实话今天在戛纳我还挺想它的。",
+    "id": 24
+  },
+  {
+    "start": 81.86,
+    "end": 84.98,
+    "en": "Leo travels with us nearly everywhere, he's a superstar.",
+    "zh": "Leo几乎会跟我们一起去任何地方，它可是个大明星。",
+    "id": 25
+  },
+  {
+    "start": 85.22,
+    "end": 89.18,
+    "en": "I'm sure he could be invited to the Cannes Festival one day.",
+    "zh": "我相信有一天它也能被邀请来Cannes Festival。",
+    "id": 26
+  },
+  {
+    "start": 89.36,
+    "end": 92.8,
+    "en": "Has there ever been a dog walking the red carpet in Cannes Festival?",
+    "zh": "Cannes Festival以前有狗走过红毯吗？",
+    "id": 27
+  },
+  {
+    "start": 92.96,
+    "end": 94.44,
+    "en": "Maybe he could be the first dog to walk the red carpet.",
+    "zh": "也许它可以成为第一只走上红毯的狗。",
+    "id": 28
+  },
+  {
+    "start": 94.48,
+    "end": 96.08,
+    "en": "Oh my god, I would love that.",
+    "zh": "天啊，我真的会很喜欢那样。",
+    "id": 29
+  },
+  {
+    "start": 96.14,
+    "end": 99.18,
+    "en": "I mean I don't even know what the red carpet looks like but",
+    "zh": "我是说，我甚至都不知道红毯到底长什么样，但",
+    "id": 30
+  },
+  {
+    "start": 99.18,
+    "end": 100.5,
+    "en": "if it's a big red carpet.",
+    "zh": "如果那是一条很大的红毯。",
+    "id": 31
+  },
+  {
+    "start": 100.5,
+    "end": 103.34,
+    "en": "I'll bring a toy, he will have the time of his life.",
+    "zh": "我就带个玩具来，它一定会玩得特别开心。",
+    "id": 32
+  },
+  {
+    "start": 103.7,
+    "end": 106.8,
+    "en": "The look tonight is actually a Giorgio Armani look, it's a suit.",
+    "zh": "今晚的造型其实是Giorgio Armani的，是一套西装。",
+    "id": 33
+  },
+  {
+    "start": 106.8,
+    "end": 110.94,
+    "en": "I just need to feel myself whenever I wear something that's where I feel the best and that's",
+    "zh": "每次穿一件衣服，我只需要感觉像我自己，那就是我状态最好的时候，也就是",
+    "id": 34
+  },
+  {
+    "start": 110.94,
+    "end": 112.9,
+    "en": "where it looks most authentic.",
+    "zh": "看起来最真实自然的时候。",
+    "id": 35
+  },
+  {
+    "start": 112.9,
+    "end": 115.82,
+    "en": "and authenticity is important for me.",
+    "zh": "而真实感对我来说很重要。",
+    "id": 36
+  },
+  {
+    "start": 116.22,
+    "end": 120.3,
+    "en": "Since Sarah this morning stuff I keep saying that my hair is perfect.",
+    "zh": "从Sarah今天早上开始做造型起，我就一直说我的头发很完美。",
+    "id": 37
+  },
+  {
+    "start": 121.32,
+    "end": 123.0,
+    "en": "It is, completely perfect.",
+    "zh": "确实，完全完美。",
+    "id": 38
+  },
+  {
+    "start": 123.62,
+    "end": 127.3,
+    "en": "No, you are being too nice, you made it look perfect.",
+    "zh": "不，你太客气了，是你把它弄得这么完美。",
+    "id": 39
+  },
+  {
+    "start": 127.76,
+    "end": 129.84,
+    "en": "I just textured a little bit the hair.",
+    "zh": "我只是稍微给头发做了一点纹理。",
+    "id": 40
+  },
+  {
+    "start": 130.1,
+    "end": 132.32,
+    "en": "But I like it actually quite messy.",
+    "zh": "但我其实挺喜欢它乱一点的感觉。",
+    "id": 41
+  },
+  {
+    "start": 132.32,
+    "end": 134.76,
+    "en": "so that's why it has a messy look.",
+    "zh": "所以才会有这种随性的凌乱感。",
+    "id": 42
+  },
+  {
+    "start": 134.76,
+    "end": 137.72,
+    "en": "If only it was that easy.",
+    "zh": "要是真有那么简单就好了。",
+    "id": 43
+  },
+  {
+    "start": 138.0,
+    "end": 139.7,
+    "en": "Just put a helmet and take it off.",
+    "zh": "戴上头盔，然后摘下来就行。",
+    "id": 44
+  },
+  {
+    "start": 141.18,
+    "end": 143.64,
+    "en": "I like having the hair looking natural.",
+    "zh": "我喜欢头发看起来很自然。",
+    "id": 45
+  },
+  {
+    "start": 143.64,
+    "end": 146.84,
+    "en": "but staying structured the way I place them.",
+    "zh": "但又能按照我整理好的样子保持住结构。",
+    "id": 46
+  },
+  {
+    "start": 147.12,
+    "end": 148.86,
+    "en": "Which is quite a difficult task.",
+    "zh": "这其实是个挺难的任务。",
+    "id": 47
+  },
+  {
+    "start": 150.3,
+    "end": 155.279,
+    "en": "c'est super. perfect merci beaucoup.",
+    "zh": "（这里说的是法语）太棒了。完美，谢谢你。",
+    "id": 48
+  },
+  {
+    "start": 160.1,
+    "end": 161.58,
+    "en": "Oh, hello again.",
+    "zh": "哦，又见面了。",
+    "id": 49
+  },
+  {
+    "start": 162.06,
+    "end": 163.16,
+    "en": "You guys are still here.",
+    "zh": "你们还在这儿啊。",
+    "id": 50
+  },
+  {
+    "start": 163.16,
+    "end": 164.42,
+    "en": "There's something missing.",
+    "zh": "还少了点东西。",
+    "id": 51
+  },
+  {
+    "start": 164.88,
+    "end": 166.78,
+    "en": "Can I have the missing part please?",
+    "zh": "可以把少的那部分给我吗？",
+    "id": 52
+  },
+  {
+    "start": 167.64,
+    "end": 169.02,
+    "en": "Here it is.",
+    "zh": "来了。",
+    "id": 53
+  },
+  {
+    "start": 169.52,
+    "end": 170.64,
+    "en": "Look at that.",
+    "zh": "看看这个。",
+    "id": 54
+  },
+  {
+    "start": 170.9,
+    "end": 172.4,
+    "en": "Full Giorgio Armani look.",
+    "zh": "整套Giorgio Armani造型。",
+    "id": 55
+  },
+  {
+    "start": 172.7,
+    "end": 175.02,
+    "en": "Timeless. It's beautiful.",
+    "zh": "经典不过时。真的很美。",
+    "id": 56
+  },
+  {
+    "start": 175.44,
+    "end": 177.36,
+    "en": "I love it and I feel good in it.",
+    "zh": "我很喜欢，而且穿着感觉很好。",
+    "id": 57
+  },
+  {
+    "start": 177.5,
+    "end": 179.96,
+    "en": "Last touch of the golden palm.",
+    "zh": "最后再加上金棕榈的小细节。",
+    "id": 58
+  },
+  {
+    "start": 180.2,
+    "end": 183.88,
+    "en": "And then we made the fit custom because it's always kind of tricky.",
+    "zh": "然后我们把这套衣服做成了定制版，因为这一直有点麻烦。",
+    "id": 59
+  },
+  {
+    "start": 183.88,
+    "end": 187.56,
+    "en": "for people that are not so aware about Formula One but we have big necks",
+    "zh": "对于不太了解F1的人来说，我们的脖子都比较粗，",
+    "id": 60
+  },
+  {
+    "start": 187.56,
+    "end": 193.0,
+    "en": "because this is the muscle that is the toughest when you drive a Formula One car.",
+    "zh": "因为开F1赛车时，脖子这块肌肉承受的压力最大。",
+    "id": 61
+  },
+  {
+    "start": 193.0,
+    "end": 197.76,
+    "en": "So you always have a problem at the neck with shirts and.",
+    "zh": "所以穿衬衫的时候，脖子这里总会有点问题。",
+    "id": 62
+  },
+  {
+    "start": 197.76,
+    "end": 200.28,
+    "en": "so we made sure everything was fitting properly.",
+    "zh": "所以我们确保所有地方都合身。",
+    "id": 63
+  },
+  {
+    "start": 200.72,
+    "end": 205.74,
+    "en": "I will describe my fashion style in minimalist but elevated.",
+    "zh": "我会把自己的时尚风格形容为极简，但有质感。",
+    "id": 64
+  },
+  {
+    "start": 206.28,
+    "end": 207.96,
+    "en": "And then whatever makes me feel good.",
+    "zh": "然后就是穿让我感觉舒服的东西。",
+    "id": 65
+  },
+  {
+    "start": 208.08,
+    "end": 210.54,
+    "en": "When I feel good that's where I feel just most myself.",
+    "zh": "当我感觉舒服的时候，我就最像我自己。",
+    "id": 66
+  },
+  {
+    "start": 211.0,
+    "end": 214.6,
+    "en": "When things just flow and where I feel most authentic.",
+    "zh": "一切都很自然流畅，那也是我感觉最真实的时候。",
+    "id": 67
+  },
+  {
+    "start": 214.82,
+    "end": 216.5,
+    "en": "What do I do before going to a big event?",
+    "zh": "去参加大型活动之前我会做什么？",
+    "id": 68
+  },
+  {
+    "start": 216.66,
+    "end": 217.92,
+    "en": "I don't know, just check my hair.",
+    "zh": "我也不知道，就是检查一下头发。",
+    "id": 69
+  },
+  {
+    "start": 218.08,
+    "end": 219.46,
+    "en": "Making sure that this looks sleek.",
+    "zh": "确保它看起来利落。",
+    "id": 70
+  },
+  {
+    "start": 219.56,
+    "end": 222.46,
+    "en": "I don't want to have a picture with crazy hair.",
+    "zh": "我可不想拍到一张头发乱飞的照片。",
+    "id": 71
+  },
+  {
+    "start": 222.46,
+    "end": 223.74,
+    "en": "That's it really.",
+    "zh": "真的就这些。",
+    "id": 72
+  },
+  {
+    "start": 223.98,
+    "end": 227.04,
+    "en": "And then again, just being myself, smile, enjoy the moment.",
+    "zh": "然后还是一样，做自己，微笑，享受当下。",
+    "id": 73
+  },
+  {
+    "start": 227.22,
+    "end": 229.64,
+    "en": "I feel like more you get out of your comfort zone.",
+    "zh": "我觉得你越是走出舒适区，",
+    "id": 74
+  },
+  {
+    "start": 230.04,
+    "end": 232.48,
+    "en": "the most at ease you are with the unexpected.",
+    "zh": "就越能从容面对意想不到的事情。",
+    "id": 75
+  },
+  {
+    "start": 232.94,
+    "end": 235.56,
+    "en": "Thank you Vanity Fair for getting ready with me.",
+    "zh": "谢谢Vanity Fair陪我一起做准备。",
+    "id": 76
+  },
+  {
+    "start": 235.62,
+    "end": 239.54,
+    "en": "I'm now ready and I need to go to the premiere.",
+    "zh": "我现在准备好了，得去参加首映礼了。",
+    "id": 77
+  },
+  {
+    "start": 240.46,
+    "end": 240.9,
+    "en": "Bye bye.",
+    "zh": "拜拜。",
+    "id": 78
+  }
+]

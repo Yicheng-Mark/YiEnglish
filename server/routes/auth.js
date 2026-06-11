@@ -78,17 +78,73 @@ function clearCookies(res) {
   res.clearCookie(REFRESH_COOKIE, { ...clearOpts, path: '/api/auth/refresh' })
 }
 
+// --- Validate activation code ---
+router.post('/validate-activation-code', async (req, res, next) => {
+  try {
+    const { code } = req.body
+    if (!code || typeof code !== 'string' || !code.trim()) {
+      return res.status(400).json({ valid: false, message: '请输入激活码' })
+    }
+
+    const [codes] = await pool.execute(
+      `SELECT id, code, max_uses, current_uses, is_active, expires_at
+       FROM experience_codes WHERE code = ? AND type = 'activation'`,
+      [code.trim()]
+    )
+    if (codes.length === 0) {
+      return res.json({ valid: false, message: '激活码无效' })
+    }
+    const actCode = codes[0]
+    if (!actCode.is_active) {
+      return res.json({ valid: false, message: '激活码已失效' })
+    }
+    if (actCode.expires_at && new Date(actCode.expires_at) < new Date()) {
+      return res.json({ valid: false, message: '激活码已过期' })
+    }
+    if (actCode.max_uses > 0 && actCode.current_uses >= actCode.max_uses) {
+      return res.json({ valid: false, message: '激活码已达使用上限' })
+    }
+
+    res.json({ valid: true })
+  } catch (err) {
+    next(err)
+  }
+})
+
 // --- Register ---
 router.post('/register', async (req, res, next) => {
   try {
-    const { username, password, nickname } = req.body
+    const { username, password, nickname, activationCode } = req.body
     const ip = getClientIp(req)
 
+    if (!activationCode || typeof activationCode !== 'string' || !activationCode.trim()) {
+      return res.status(400).json({ error: '请输入激活码' })
+    }
     if (!validateUsername(username)) {
       return res.status(400).json({ error: '用户名需 3-30 位，支持字母、数字、下划线、中文' })
     }
     if (!validatePassword(password)) {
       return res.status(400).json({ error: '密码需 8-128 位，至少包含一个字母和一个数字' })
+    }
+
+    // 验证激活码
+    const [codes] = await pool.execute(
+      `SELECT id, code, max_uses, current_uses, is_active, expires_at
+       FROM experience_codes WHERE code = ? AND type = 'activation'`,
+      [activationCode.trim()]
+    )
+    if (codes.length === 0) {
+      return res.status(400).json({ error: '激活码无效' })
+    }
+    const actCode = codes[0]
+    if (!actCode.is_active) {
+      return res.status(400).json({ error: '激活码已失效' })
+    }
+    if (actCode.expires_at && new Date(actCode.expires_at) < new Date()) {
+      return res.status(400).json({ error: '激活码已过期' })
+    }
+    if (actCode.max_uses > 0 && actCode.current_uses >= actCode.max_uses) {
+      return res.status(400).json({ error: '激活码已达使用上限' })
     }
 
     await checkRegisterRateLimit(ip)
@@ -106,6 +162,23 @@ router.post('/register', async (req, res, next) => {
       [username, displayName, hash]
     )
     const userId = result.insertId
+
+    // 原子消费激活码（防竞态）
+    const [updateResult] = await pool.execute(
+      'UPDATE experience_codes SET current_uses = current_uses + 1 WHERE id = ? AND (max_uses = 0 OR current_uses < max_uses)',
+      [actCode.id]
+    )
+    if (updateResult.affectedRows === 0) {
+      // 码在并发下被耗尽，回滚删除刚创建的用户
+      await pool.execute('DELETE FROM users WHERE id = ?', [userId])
+      return res.status(400).json({ error: '激活码已达使用上限' })
+    }
+
+    // 记录激活码来源
+    await pool.execute(
+      'UPDATE users SET activation_code_id = ? WHERE id = ?',
+      [actCode.id, userId]
+    )
 
     await issueTokens(res, userId)
     await logAttempt(`register:${ip}`, ip, true)

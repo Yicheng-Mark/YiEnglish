@@ -1,0 +1,1437 @@
+[
+  {
+    "start": 0.98,
+    "end": 6.26,
+    "en": "I'm honored to be with you today for your commencement from one of the finest universities in the world.",
+    "zh": "今天，我很荣幸能和各位在一起，参加你们从世界上最优秀的大学之一毕业的典礼。",
+    "id": 1
+  },
+  {
+    "start": 9.8,
+    "end": 13.98,
+    "en": "Truth be told, I never graduated from college.",
+    "zh": "说实话，我从来没有大学毕业过。",
+    "id": 2
+  },
+  {
+    "start": 15.16,
+    "end": 18.96,
+    "en": "and this is the closest I've ever gotten to a college graduation.",
+    "zh": "而今天，是我离大学毕业典礼最近的一次。",
+    "id": 3
+  },
+  {
+    "start": 21.64,
+    "end": 24.5,
+    "en": "Today, I want to tell you three stories from my life.",
+    "zh": "今天，我想给你们讲三个我人生中的故事。",
+    "id": 4
+  },
+  {
+    "start": 24.9,
+    "end": 26.54,
+    "en": "That's it. No big deal.",
+    "zh": "就这些。没什么大道理。",
+    "id": 5
+  },
+  {
+    "start": 26.94,
+    "end": 32.48,
+    "en": "Just three stories. The first story is about connecting the dots.",
+    "zh": "只是三个故事。第一个故事，是关于把生命中的点滴连接起来。",
+    "id": 6
+  },
+  {
+    "start": 34.72,
+    "end": 37.46,
+    "en": "I dropped out of Reed College after the first six months.",
+    "zh": "我在里德学院读了六个月后就退学了。",
+    "id": 7
+  },
+  {
+    "start": 37.68,
+    "end": 41.72,
+    "en": "but then stayed around as a drop-in for another 18 months or so before I really quit.",
+    "zh": "但后来又以旁听生的身份在那里待了大约十八个月，才真正离开。",
+    "id": 8
+  },
+  {
+    "start": 43.02,
+    "end": 44.22,
+    "en": "So why'd I drop out?",
+    "zh": "那么，我为什么要退学呢？",
+    "id": 9
+  },
+  {
+    "start": 45.62,
+    "end": 47.58,
+    "en": "It started before I was born.",
+    "zh": "这件事在我出生前就开始了。",
+    "id": 10
+  },
+  {
+    "start": 48.94,
+    "end": 52.64,
+    "en": "My biological mother was a young, unwed graduate student.",
+    "zh": "我的生母当时是一位年轻的未婚研究生。",
+    "id": 11
+  },
+  {
+    "start": 52.92,
+    "end": 54.68,
+    "en": "and she decided to put me up for adoption.",
+    "zh": "她决定把我送给别人收养。",
+    "id": 12
+  },
+  {
+    "start": 55.6,
+    "end": 59.4,
+    "en": "She felt very strongly that I should be adopted by college graduates,",
+    "zh": "她非常坚持，我应该被大学毕业的人收养。",
+    "id": 13
+  },
+  {
+    "start": 59.84,
+    "end": 64.28,
+    "en": "so everything was all set for me to be adopted at birth by a lawyer and his wife.",
+    "zh": "所以，一切都已经安排好了，我一出生就会被一位律师和他的妻子收养。",
+    "id": 14
+  },
+  {
+    "start": 65.42,
+    "end": 68.66,
+    "en": "Except that when I popped out, they decided at the last minute",
+    "zh": "可是，当我出生的时候，他们在最后一刻决定，",
+    "id": 15
+  },
+  {
+    "start": 68.66,
+    "end": 70.04,
+    "en": "that they really wanted a girl.",
+    "zh": "他们其实想要一个女孩。",
+    "id": 16
+  },
+  {
+    "start": 71.46,
+    "end": 75.92,
+    "en": "So my parents, who were on a waiting list, got a call in the middle of the night asking,",
+    "zh": "于是，我的养父母，当时还在等候名单上，半夜接到了一个电话，问他们：",
+    "id": 17
+  },
+  {
+    "start": 76.58,
+    "end": 78.92,
+    "en": "We've got an unexpected baby boy.",
+    "zh": "我们这里突然有了一个男婴。",
+    "id": 18
+  },
+  {
+    "start": 79.32,
+    "end": 80.18,
+    "en": "Do you want him?",
+    "zh": "你们想要他吗？",
+    "id": 19
+  },
+  {
+    "start": 80.94,
+    "end": 82.82,
+    "en": "They said, of course.",
+    "zh": "他们说，当然要。",
+    "id": 20
+  },
+  {
+    "start": 84.56,
+    "end": 86.52,
+    "en": "My biological mother found out later.",
+    "zh": "我的生母后来发现，",
+    "id": 21
+  },
+  {
+    "start": 86.52,
+    "end": 89.64,
+    "en": "that my mother had never graduated from college and.",
+    "zh": "我的养母从未大学毕业，",
+    "id": 22
+  },
+  {
+    "start": 89.64,
+    "end": 91.88,
+    "en": "that my father had never graduated from high school.",
+    "zh": "我的养父甚至从未高中毕业。",
+    "id": 23
+  },
+  {
+    "start": 92.66,
+    "end": 95.42,
+    "en": "She refused to sign the final adoption papers.",
+    "zh": "她拒绝在最终的收养文件上签字。",
+    "id": 24
+  },
+  {
+    "start": 96.84,
+    "end": 101.92,
+    "en": "She only relented a few months later when my parents promised that I would go to college.",
+    "zh": "几个月后，在我的养父母承诺我将来一定会上大学之后，她才让步。",
+    "id": 25
+  },
+  {
+    "start": 102.92,
+    "end": 105.24,
+    "en": "This was the start in my life.",
+    "zh": "这就是我人生的开端。",
+    "id": 26
+  },
+  {
+    "start": 107.28,
+    "end": 110.26,
+    "en": "And 17 years later, I did go to college.",
+    "zh": "十七年后，我确实上了大学。",
+    "id": 27
+  },
+  {
+    "start": 111.12,
+    "end": 114.92,
+    "en": "But I naively chose a college that was almost as expensive as Stanford.",
+    "zh": "但我很天真地选择了一所几乎和斯坦福一样昂贵的大学。",
+    "id": 28
+  },
+  {
+    "start": 116.04,
+    "end": 120.12,
+    "en": "And all of my working class parents' savings were being spent on my college tuition.",
+    "zh": "我工薪阶层父母一生的积蓄，全都花在了我的大学学费上。",
+    "id": 29
+  },
+  {
+    "start": 121.16,
+    "end": 123.96,
+    "en": "After six months, I couldn't see the value in it.",
+    "zh": "六个月后，我看不出这件事有什么价值。",
+    "id": 30
+  },
+  {
+    "start": 124.3,
+    "end": 126.74,
+    "en": "I had no idea what I wanted to do with my life.",
+    "zh": "我完全不知道自己的人生想做什么。",
+    "id": 31
+  },
+  {
+    "start": 126.74,
+    "end": 129.96,
+    "en": "and no idea how college was going to help me figure it out.",
+    "zh": "也不知道大学要怎样帮我弄明白这一点。",
+    "id": 32
+  },
+  {
+    "start": 130.36,
+    "end": 134.17,
+    "en": "And here I was, spending all of the money my parents had saved their entire life.",
+    "zh": "而我却正在花掉父母一辈子攒下来的所有钱。",
+    "id": 33
+  },
+  {
+    "start": 135.81,
+    "end": 140.19,
+    "en": "So I decided to drop out and trust that it would all work out okay.",
+    "zh": "所以我决定退学，并相信一切最终都会好起来。",
+    "id": 34
+  },
+  {
+    "start": 141.19,
+    "end": 142.73,
+    "en": "It was pretty scary at the time.",
+    "zh": "当时这确实让我很害怕。",
+    "id": 35
+  },
+  {
+    "start": 142.77,
+    "end": 145.97,
+    "en": "but looking back, it was one of the best decisions I ever made.",
+    "zh": "但现在回头看，那是我做过的最好的决定之一。",
+    "id": 36
+  },
+  {
+    "start": 147.61,
+    "end": 148.93,
+    "en": "The minute I dropped out.",
+    "zh": "从我退学的那一刻起，",
+    "id": 37
+  },
+  {
+    "start": 149.47,
+    "end": 153.13,
+    "en": "I could stop taking the required classes that didn't interest me.",
+    "zh": "我就可以不再去上那些我不感兴趣的必修课。",
+    "id": 38
+  },
+  {
+    "start": 153.13,
+    "end": 156.89,
+    "en": "and begin dropping in on the ones that looked far more interesting.",
+    "zh": "转而去旁听那些看起来有趣得多的课程。",
+    "id": 39
+  },
+  {
+    "start": 158.29,
+    "end": 159.51,
+    "en": "It wasn't all romantic.",
+    "zh": "当然，这一切并不浪漫。",
+    "id": 40
+  },
+  {
+    "start": 160.13,
+    "end": 163.31,
+    "en": "I didn't have a dorm room, so I slept on the floor in friends' rooms.",
+    "zh": "我没有宿舍，所以只能睡在朋友房间的地板上。",
+    "id": 41
+  },
+  {
+    "start": 163.31,
+    "end": 167.69,
+    "en": "I returned coke bottles for the five-cent deposits to buy food with.",
+    "zh": "我靠退还可乐瓶换回五美分押金，用这些钱来买吃的。",
+    "id": 42
+  },
+  {
+    "start": 168.25,
+    "end": 171.25,
+    "en": "And I would walk the seven miles across town every Sunday night.",
+    "zh": "每个星期天晚上，我都会步行七英里穿过整座城。",
+    "id": 43
+  },
+  {
+    "start": 171.25,
+    "end": 174.55,
+    "en": "to get one good meal a week at the Hare Krishna temple.",
+    "zh": "去哈瑞奎师那神庙吃上一周里唯一一顿像样的饭。",
+    "id": 44
+  },
+  {
+    "start": 175.65,
+    "end": 183.17,
+    "en": "I loved it. And much of what I stumbled into by following my curiosity and intuition turned out to be priceless later on.",
+    "zh": "但我热爱这一切。而很多我凭着好奇心和直觉偶然走进的东西，后来都证明是无价的。",
+    "id": 45
+  },
+  {
+    "start": 183.79,
+    "end": 185.27,
+    "en": "Let me give you one example.",
+    "zh": "我给你们举一个例子。",
+    "id": 46
+  },
+  {
+    "start": 186.95,
+    "end": 191.59,
+    "en": "Reed College at that time offered perhaps the best calligraphy instruction in the country.",
+    "zh": "当时，里德学院提供的书法课程，可能是全美国最好的。",
+    "id": 47
+  },
+  {
+    "start": 191.59,
+    "end": 197.78,
+    "en": "Throughout the campus, every poster, every label on every drawer was beautifully hand-calligraphed.",
+    "zh": "校园里的每一张海报、每一个抽屉上的标签，都有漂亮的手写书法。",
+    "id": 48
+  },
+  {
+    "start": 199.01,
+    "end": 202.19,
+    "en": "Because I had dropped out and didn't have to take the normal classes,",
+    "zh": "因为我已经退学，不必再上那些常规课程，",
+    "id": 49
+  },
+  {
+    "start": 203.19,
+    "end": 206.01,
+    "en": "I decided to take a calligraphy class to learn how to do this.",
+    "zh": "我决定去上一门书法课，学习它是怎么做到的。",
+    "id": 50
+  },
+  {
+    "start": 206.63,
+    "end": 209.41,
+    "en": "I learned about serif and sans serif typefaces.",
+    "zh": "我学到了衬线字体和无衬线字体。",
+    "id": 51
+  },
+  {
+    "start": 209.93,
+    "end": 215.75,
+    "en": "about varying the amount of space between different letter combinations, about what makes great typography great.",
+    "zh": "学到了如何调整不同字母组合之间的间距，也学到了是什么让优秀的字体排印真正优秀。",
+    "id": 52
+  },
+  {
+    "start": 215.75,
+    "end": 222.41,
+    "en": "It was beautiful, historical, artistically subtle in a way that science can't capture,",
+    "zh": "它美丽、古老，带着一种科学无法捕捉的艺术细腻感。",
+    "id": 53
+  },
+  {
+    "start": 223.15,
+    "end": 224.37,
+    "en": "and I found it fascinating.",
+    "zh": "而我觉得它迷人极了。",
+    "id": 54
+  },
+  {
+    "start": 225.71,
+    "end": 229.81,
+    "en": "None of this had even a hope of any practical application in my life.",
+    "zh": "这一切当时看起来，完全不可能在我的人生中有什么实际用途。",
+    "id": 55
+  },
+  {
+    "start": 231.07,
+    "end": 234.85,
+    "en": "But ten years later, when we were designing the first Macintosh computer,",
+    "zh": "但十年后，当我们设计第一台麦金塔电脑时，",
+    "id": 56
+  },
+  {
+    "start": 235.29,
+    "end": 236.71,
+    "en": "it all came back to me.",
+    "zh": "这些东西全都回到了我的脑海里。",
+    "id": 57
+  },
+  {
+    "start": 236.87,
+    "end": 239.19,
+    "en": "And we designed it all into the Mac.",
+    "zh": "于是，我们把它们全部设计进了 Mac 里。",
+    "id": 58
+  },
+  {
+    "start": 239.59,
+    "end": 242.15,
+    "en": "It was the first computer with beautiful typography.",
+    "zh": "它成了第一台拥有漂亮字体排印的电脑。",
+    "id": 59
+  },
+  {
+    "start": 242.15,
+    "end": 246.03,
+    "en": "If I had never dropped in on that single course in college,",
+    "zh": "如果我当年没有旁听那门大学课程，",
+    "id": 60
+  },
+  {
+    "start": 246.53,
+    "end": 250.29,
+    "en": "the Mac would have never had multiple typefaces or proportionally spaced fonts.",
+    "zh": "Mac 就不会拥有多种字体，也不会有按比例间距设计的字形。",
+    "id": 61
+  },
+  {
+    "start": 250.93,
+    "end": 255.55,
+    "en": "And since Windows just copied the Mac, it's likely that no personal computer would have them.",
+    "zh": "而既然 Windows 只是借鉴了 Mac，那么很可能所有个人电脑都不会拥有这些东西。",
+    "id": 62
+  },
+  {
+    "start": 263.03,
+    "end": 267.43,
+    "en": "If I had never dropped out, I would have never dropped in on that calligraphy class,",
+    "zh": "如果我从未退学，我就不会去旁听那门书法课。",
+    "id": 63
+  },
+  {
+    "start": 267.59,
+    "end": 271.13,
+    "en": "and personal computers might not have the wonderful typography that they do.",
+    "zh": "个人电脑也可能不会拥有今天这样美妙的字体排印。",
+    "id": 64
+  },
+  {
+    "start": 271.13,
+    "end": 276.01,
+    "en": "Of course, it was impossible to connect the dots looking forward when I was in college,",
+    "zh": "当然，当我还在大学的时候，不可能向前看就把这些点连接起来。",
+    "id": 65
+  },
+  {
+    "start": 276.51,
+    "end": 279.93,
+    "en": "but it was very, very clear looking backwards ten years later.",
+    "zh": "但十年后回头看，一切都变得非常非常清楚。",
+    "id": 66
+  },
+  {
+    "start": 280.69,
+    "end": 283.39,
+    "en": "Again, you can't connect the dots looking forward.",
+    "zh": "再说一次，你无法向前看，把这些点连接起来。",
+    "id": 67
+  },
+  {
+    "start": 283.61,
+    "end": 285.67,
+    "en": "You can only connect them looking backwards.",
+    "zh": "你只能在回头看时，才把它们连接起来。",
+    "id": 68
+  },
+  {
+    "start": 286.39,
+    "end": 289.63,
+    "en": "So you have to trust that the dots will somehow connect in your future.",
+    "zh": "所以你必须相信，这些点会在未来以某种方式连接起来。",
+    "id": 69
+  },
+  {
+    "start": 290.19,
+    "end": 294.61,
+    "en": "You have to trust in something, your gut, destiny, life, karma, whatever.",
+    "zh": "你必须相信某种东西，你的直觉、命运、人生、因果，随便什么。",
+    "id": 70
+  },
+  {
+    "start": 294.61,
+    "end": 298.03,
+    "en": "Because believing that the dots will connect down the road.",
+    "zh": "因为相信这些点会在未来某一天连接起来，",
+    "id": 71
+  },
+  {
+    "start": 298.03,
+    "end": 303.85,
+    "en": "will give you the confidence to follow your heart, even when it leads you off the well-worn path,",
+    "zh": "会给你信心去追随自己的内心，即使它带你偏离那条人们走惯的道路。",
+    "id": 72
+  },
+  {
+    "start": 303.89,
+    "end": 305.73,
+    "en": "and that will make all the difference.",
+    "zh": "而这会让一切变得不同。",
+    "id": 73
+  },
+  {
+    "start": 311.77,
+    "end": 315.57,
+    "en": "My second story is about love and loss.",
+    "zh": "我的第二个故事，是关于热爱与失去。",
+    "id": 74
+  },
+  {
+    "start": 317.31,
+    "end": 321.45,
+    "en": "I was lucky. I found what I loved to do early in life.",
+    "zh": "我很幸运。我很早就找到了自己热爱的事情。",
+    "id": 75
+  },
+  {
+    "start": 321.45,
+    "end": 324.77,
+    "en": "Woz and I started Apple in my parents' garage when I was 20.",
+    "zh": "我二十岁时，沃兹和我在父母家的车库里创办了苹果。",
+    "id": 76
+  },
+  {
+    "start": 325.29,
+    "end": 329.43,
+    "en": "We worked hard, and in ten years, Apple had grown from just the two of us in a garage.",
+    "zh": "我们努力工作，十年里，苹果从车库里的我们两个人，",
+    "id": 77
+  },
+  {
+    "start": 329.43,
+    "end": 332.91,
+    "en": "into a $2 billion company with over 4,000 employees.",
+    "zh": "成长为一家市值二十亿美元、拥有四千多名员工的公司。",
+    "id": 78
+  },
+  {
+    "start": 333.55,
+    "end": 337.19,
+    "en": "We'd just released our finest creation, the Macintosh, a year earlier.",
+    "zh": "就在一年前，我们刚刚发布了我们最优秀的作品——麦金塔电脑。",
+    "id": 79
+  },
+  {
+    "start": 337.21,
+    "end": 338.51,
+    "en": "and I'd just turned 30.",
+    "zh": "而我也刚刚三十岁。",
+    "id": 80
+  },
+  {
+    "start": 339.47,
+    "end": 340.83,
+    "en": "And then I got fired.",
+    "zh": "然后，我被解雇了。",
+    "id": 81
+  },
+  {
+    "start": 342.19,
+    "end": 344.59,
+    "en": "How can you get fired from a company you started?",
+    "zh": "一个人怎么会被自己创办的公司解雇呢？",
+    "id": 82
+  },
+  {
+    "start": 345.57,
+    "end": 351.91,
+    "en": "Well, as Apple grew, we hired someone who I thought was very talented to run the company with me.",
+    "zh": "事情是这样的，随着苹果的发展，我们请来了一位我认为非常有才华的人，与我一起经营公司。",
+    "id": 83
+  },
+  {
+    "start": 352.09,
+    "end": 354.09,
+    "en": "And for the first year or so, things went well.",
+    "zh": "最初一年左右，一切都很顺利。",
+    "id": 84
+  },
+  {
+    "start": 354.51,
+    "end": 358.67,
+    "en": "But then our visions of the future began to diverge, and eventually we had a falling-out.",
+    "zh": "但后来，我们对未来的愿景开始产生分歧，最终闹翻了。",
+    "id": 85
+  },
+  {
+    "start": 359.15,
+    "end": 361.87,
+    "en": "When we did, our board of directors sided with him.",
+    "zh": "当事情发展到那一步时，董事会站在了他那边。",
+    "id": 86
+  },
+  {
+    "start": 362.37,
+    "end": 366.05,
+    "en": "And so at 30, I was out, and very publicly out.",
+    "zh": "于是，在三十岁的时候，我出局了，而且是非常公开地出局。",
+    "id": 87
+  },
+  {
+    "start": 366.77,
+    "end": 369.45,
+    "en": "What had been the focus of my entire adult life was gone,",
+    "zh": "曾经占据我整个成年人生核心位置的东西，消失了。",
+    "id": 88
+  },
+  {
+    "start": 369.45,
+    "end": 370.69,
+    "en": "and it was devastating.",
+    "zh": "这对我来说是毁灭性的打击。",
+    "id": 89
+  },
+  {
+    "start": 371.77,
+    "end": 373.69,
+    "en": "I really didn't know what to do for a few months.",
+    "zh": "有好几个月，我真的不知道该怎么办。",
+    "id": 90
+  },
+  {
+    "start": 374.59,
+    "end": 377.73,
+    "en": "I felt that I had let the previous generation of entrepreneurs down,",
+    "zh": "我觉得自己辜负了上一代创业者。",
+    "id": 91
+  },
+  {
+    "start": 378.15,
+    "end": 380.75,
+    "en": "that I had dropped the baton as it was being passed to me.",
+    "zh": "仿佛接力棒传到我手中时，我却把它掉在了地上。",
+    "id": 92
+  },
+  {
+    "start": 381.43,
+    "end": 384.05,
+    "en": "I met with David Packard and Bob Noyce.",
+    "zh": "我去见了戴维·帕卡德和鲍勃·诺伊斯。",
+    "id": 93
+  },
+  {
+    "start": 384.05,
+    "end": 386.77,
+    "en": "and tried to apologize for screwing up so badly.",
+    "zh": "试着为自己把事情搞得如此糟糕而道歉。",
+    "id": 94
+  },
+  {
+    "start": 387.75,
+    "end": 391.13,
+    "en": "I was a very public failure, and I even thought about running away from the Valley.",
+    "zh": "我成了一个众所周知的失败者，甚至想过逃离硅谷。",
+    "id": 95
+  },
+  {
+    "start": 391.91,
+    "end": 394.53,
+    "en": "But something slowly began to dawn on me.",
+    "zh": "但有件事慢慢开始在我心里显现出来。",
+    "id": 96
+  },
+  {
+    "start": 394.91,
+    "end": 396.83,
+    "en": "I still loved what I did.",
+    "zh": "我仍然热爱自己所做的事情。",
+    "id": 97
+  },
+  {
+    "start": 398.41,
+    "end": 400.89,
+    "en": "The turn of events at Apple had not changed that one bit.",
+    "zh": "苹果发生的变故，一点也没有改变这一点。",
+    "id": 98
+  },
+  {
+    "start": 401.63,
+    "end": 404.17,
+    "en": "I'd been rejected, but I was still in love.",
+    "zh": "我被拒绝了，但我仍然深爱着它。",
+    "id": 99
+  },
+  {
+    "start": 405.05,
+    "end": 407.07,
+    "en": "And so I decided to start over.",
+    "zh": "所以，我决定重新开始。",
+    "id": 100
+  },
+  {
+    "start": 408.33,
+    "end": 409.39,
+    "en": "I didn't see it then.",
+    "zh": "当时我还看不出来。",
+    "id": 101
+  },
+  {
+    "start": 409.77,
+    "end": 413.69,
+    "en": "but it turned out that getting fired from Apple was the best thing that could have ever happened to me.",
+    "zh": "但后来证明，被苹果解雇，是发生在我身上最好的事情。",
+    "id": 102
+  },
+  {
+    "start": 414.39,
+    "end": 419.35,
+    "en": "The heaviness of being successful was replaced by the lightness of being a beginner again,",
+    "zh": "成功所带来的沉重感，被重新成为初学者的轻盈感取代了。",
+    "id": 103
+  },
+  {
+    "start": 419.65,
+    "end": 420.59,
+    "en": "less sure about everything.",
+    "zh": "我对一切都不再那么确定。",
+    "id": 104
+  },
+  {
+    "start": 421.47,
+    "end": 424.13,
+    "en": "It freed me to enter one of the most creative periods of my life.",
+    "zh": "这让我获得了自由，进入了人生中最富创造力的时期之一。",
+    "id": 105
+  },
+  {
+    "start": 424.85,
+    "end": 429.21,
+    "en": "During the next five years, I started a company named NeXT, another company named Pixar,",
+    "zh": "在接下来的五年里，我创办了一家名叫 NeXT 的公司，又创办了另一家名叫皮克斯的公司。",
+    "id": 106
+  },
+  {
+    "start": 429.63,
+    "end": 432.25,
+    "en": "and fell in love with an amazing woman who would become my wife.",
+    "zh": "还爱上了一位了不起的女人，她后来成了我的妻子。",
+    "id": 107
+  },
+  {
+    "start": 432.93,
+    "end": 437.25,
+    "en": "Pixar went on to create the world's first computer-animated feature film, Toy Story,",
+    "zh": "皮克斯后来制作了世界上第一部电脑动画长片《玩具总动员》。",
+    "id": 108
+  },
+  {
+    "start": 437.67,
+    "end": 440.95,
+    "en": "and is now the most successful animation studio in the world.",
+    "zh": "如今，它已经成为世界上最成功的动画工作室。",
+    "id": 109
+  },
+  {
+    "start": 443.29,
+    "end": 448.17,
+    "en": "In a remarkable turn of events, Apple bought NeXT, and I returned to Apple.",
+    "zh": "在一次非凡的转折中，苹果收购了 NeXT，而我回到了苹果。",
+    "id": 110
+  },
+  {
+    "start": 448.61,
+    "end": 452.45,
+    "en": "And the technology we developed at NeXT is at the heart of Apple's current renaissance.",
+    "zh": "我们在 NeXT 开发的技术，正是苹果如今复兴的核心。",
+    "id": 111
+  },
+  {
+    "start": 453.19,
+    "end": 455.91,
+    "en": "And Lorene and I have a wonderful family together.",
+    "zh": "我和劳伦也一起拥有了一个美好的家庭。",
+    "id": 112
+  },
+  {
+    "start": 457.25,
+    "end": 460.79,
+    "en": "I'm pretty sure none of this would have happened if I hadn't been fired from Apple.",
+    "zh": "我很确定，如果我当年没有被苹果解雇，这一切都不会发生。",
+    "id": 113
+  },
+  {
+    "start": 460.79,
+    "end": 465.51,
+    "en": "It was awful tasting medicine, but I guess the patient needed it.",
+    "zh": "那是一剂味道糟糕的药，但我想，病人确实需要它。",
+    "id": 114
+  },
+  {
+    "start": 465.97,
+    "end": 468.95,
+    "en": "Sometimes life's going to hit you in the head with a brick.",
+    "zh": "有时候，人生会拿砖头狠狠砸你的头。",
+    "id": 115
+  },
+  {
+    "start": 469.69,
+    "end": 473.91,
+    "en": "Don't lose faith. I'm convinced that the only thing that kept me going was",
+    "zh": "不要失去信念。我相信，让我坚持下去的唯一原因，",
+    "id": 116
+  },
+  {
+    "start": 473.91,
+    "end": 475.07,
+    "en": "that I loved what I did.",
+    "zh": "就是我热爱自己所做的事情。",
+    "id": 117
+  },
+  {
+    "start": 475.61,
+    "end": 480.45,
+    "en": "You've got to find what you love, and that is as true for work as it is for your lovers.",
+    "zh": "你必须找到你热爱的东西。对工作如此，对你的爱人也是如此。",
+    "id": 118
+  },
+  {
+    "start": 481.43,
+    "end": 483.67,
+    "en": "Your work is going to fill a large part of your life,",
+    "zh": "你的工作将占据你人生中很大一部分。",
+    "id": 119
+  },
+  {
+    "start": 483.83,
+    "end": 488.01,
+    "en": "and the only way to be truly satisfied is to do what you believe is great work.",
+    "zh": "而真正获得满足的唯一方式，就是去做你认为伟大的工作。",
+    "id": 120
+  },
+  {
+    "start": 488.01,
+    "end": 491.91,
+    "en": "And the only way to do great work is to love what you do.",
+    "zh": "而做出伟大工作的唯一方式，就是热爱你所做的事情。",
+    "id": 121
+  },
+  {
+    "start": 492.45,
+    "end": 496.19,
+    "en": "If you haven't found it yet, keep looking, and don't settle.",
+    "zh": "如果你还没有找到，那就继续寻找，不要将就。",
+    "id": 122
+  },
+  {
+    "start": 496.97,
+    "end": 500.25,
+    "en": "As with all matters of the heart, you'll know when you find it.",
+    "zh": "就像所有关乎内心的事情一样，当你找到时，你自然会知道。",
+    "id": 123
+  },
+  {
+    "start": 500.57,
+    "end": 505.17,
+    "en": "And like any great relationship, it just gets better and better as the years roll on.",
+    "zh": "而且像任何美好的关系一样，随着岁月流逝，它只会变得越来越好。",
+    "id": 124
+  },
+  {
+    "start": 505.43,
+    "end": 507.83,
+    "en": "So keep looking. Don't settle.",
+    "zh": "所以，继续寻找。不要将就。",
+    "id": 125
+  },
+  {
+    "start": 518.17,
+    "end": 521.27,
+    "en": "My third story is about death.",
+    "zh": "我的第三个故事，是关于死亡。",
+    "id": 126
+  },
+  {
+    "start": 522.49,
+    "end": 525.95,
+    "en": "When I was 17, I read a quote that went something like,",
+    "zh": "十七岁时，我读到过一句话，大意是：",
+    "id": 127
+  },
+  {
+    "start": 526.59,
+    "end": 528.91,
+    "en": "If you live each day as if it was your last.",
+    "zh": "如果你把每一天都当作生命中的最后一天来过，",
+    "id": 128
+  },
+  {
+    "start": 529.27,
+    "end": 531.19,
+    "en": "someday you'll most certainly be right.",
+    "zh": "那么总有一天，你一定会是对的。",
+    "id": 129
+  },
+  {
+    "start": 533.95,
+    "end": 535.77,
+    "en": "It made an impression on me.",
+    "zh": "这句话给我留下了很深的印象。",
+    "id": 130
+  },
+  {
+    "start": 535.99,
+    "end": 541.17,
+    "en": "and since then, for the past 33 years, I've looked in the mirror every morning and asked myself",
+    "zh": "从那以后，过去三十三年里，我每天早晨都会看着镜子问自己：",
+    "id": 131
+  },
+  {
+    "start": 541.17,
+    "end": 546.61,
+    "en": "if today were the last day of my life, would I want to do what I am about to do today?",
+    "zh": "如果今天是我生命中的最后一天，我还会想去做今天将要做的事情吗？",
+    "id": 132
+  },
+  {
+    "start": 546.61,
+    "end": 550.63,
+    "en": "And whenever the answer has been no for too many days in a row,",
+    "zh": "每当答案连续很多天都是不的时候，",
+    "id": 133
+  },
+  {
+    "start": 551.23,
+    "end": 553.05,
+    "en": "I know I need to change something.",
+    "zh": "我就知道，我需要做出一些改变。",
+    "id": 134
+  },
+  {
+    "start": 553.93,
+    "end": 555.75,
+    "en": "Remembering that I'll be dead soon.",
+    "zh": "记住自己很快就会死去，",
+    "id": 135
+  },
+  {
+    "start": 555.75,
+    "end": 560.31,
+    "en": "is the most important tool I've ever encountered to help me make the big choices in life.",
+    "zh": "是我遇到过的、帮助我做出人生重大选择的最重要工具。",
+    "id": 136
+  },
+  {
+    "start": 561.09,
+    "end": 567.61,
+    "en": "Because almost everything, all external expectations, all pride, all fear of embarrassment or failure,",
+    "zh": "因为几乎所有东西，所有外界的期待，所有骄傲，所有对尴尬或失败的恐惧，",
+    "id": 137
+  },
+  {
+    "start": 568.07,
+    "end": 570.83,
+    "en": "these things just fall away in the face of death.",
+    "zh": "在死亡面前都会消散。",
+    "id": 138
+  },
+  {
+    "start": 571.41,
+    "end": 573.39,
+    "en": "leaving only what is truly important.",
+    "zh": "只留下真正重要的东西。",
+    "id": 139
+  },
+  {
+    "start": 574.17,
+    "end": 580.73,
+    "en": "Remembering that you are going to die is the best way I know to avoid the trap of thinking you have something to lose.",
+    "zh": "记住自己终将死去，是我知道的避免陷入自己还有什么可失去这种陷阱的最好方法。",
+    "id": 140
+  },
+  {
+    "start": 581.41,
+    "end": 582.65,
+    "en": "You are already naked.",
+    "zh": "你本来就已经一无所有。",
+    "id": 141
+  },
+  {
+    "start": 583.21,
+    "end": 585.69,
+    "en": "There is no reason not to follow your heart.",
+    "zh": "所以没有理由不去追随自己的内心。",
+    "id": 142
+  },
+  {
+    "start": 587.17,
+    "end": 590.17,
+    "en": "About a year ago, I was diagnosed with cancer.",
+    "zh": "大约一年前，我被诊断出患有癌症。",
+    "id": 143
+  },
+  {
+    "start": 591.19,
+    "end": 595.57,
+    "en": "I had a scan at 7.30 in the morning, and it clearly showed a tumor on my pancreas.",
+    "zh": "我早上七点半做了一次扫描，结果清楚地显示我的胰腺上有一个肿瘤。",
+    "id": 144
+  },
+  {
+    "start": 596.59,
+    "end": 598.41,
+    "en": "I didn't even know what a pancreas was.",
+    "zh": "我当时甚至不知道胰腺是什么。",
+    "id": 145
+  },
+  {
+    "start": 598.97,
+    "end": 604.47,
+    "en": "The doctors told me this was almost certainly a type of cancer that is incurable and",
+    "zh": "医生告诉我，这几乎可以确定是一种无法治愈的癌症，",
+    "id": 146
+  },
+  {
+    "start": 604.47,
+    "end": 607.91,
+    "en": "that I should expect to live no longer than three to six months.",
+    "zh": "我预期最多只能再活三到六个月。",
+    "id": 147
+  },
+  {
+    "start": 609.09,
+    "end": 613.03,
+    "en": "My doctor advised me to go home and get my affairs in order,",
+    "zh": "我的医生建议我回家，把身后事安排好。",
+    "id": 148
+  },
+  {
+    "start": 613.45,
+    "end": 616.15,
+    "en": "which is doctor's code for prepare to die.",
+    "zh": "这是医生的委婉说法，意思就是准备去死。",
+    "id": 149
+  },
+  {
+    "start": 617.05,
+    "end": 619.41,
+    "en": "It means to try and tell your kids everything.",
+    "zh": "这意味着你要试着把所有事情都告诉你的孩子。",
+    "id": 150
+  },
+  {
+    "start": 619.41,
+    "end": 624.07,
+    "en": "you thought you'd have the next ten years to tell them in just a few months.",
+    "zh": "那些你原以为还有十年时间可以告诉他们的话，现在要在几个月里说完。",
+    "id": 151
+  },
+  {
+    "start": 624.63,
+    "end": 627.43,
+    "en": "It means to make sure everything is buttoned up.",
+    "zh": "这意味着你要确保一切都安排妥当。",
+    "id": 152
+  },
+  {
+    "start": 627.43,
+    "end": 630.07,
+    "en": "so that it will be as easy as possible for your family.",
+    "zh": "这样你的家人以后才能尽可能轻松一些。",
+    "id": 153
+  },
+  {
+    "start": 630.79,
+    "end": 632.07,
+    "en": "It means to say your goodbyes.",
+    "zh": "这意味着你要和人告别。",
+    "id": 154
+  },
+  {
+    "start": 634.59,
+    "end": 636.57,
+    "en": "I live with that diagnosis all day.",
+    "zh": "我整整一天都带着那个诊断结果生活着。",
+    "id": 155
+  },
+  {
+    "start": 637.31,
+    "end": 641.61,
+    "en": "Later that evening, I had a biopsy where they stuck an endoscope down my throat,",
+    "zh": "那天晚上晚些时候，我做了一次活检，医生把内窥镜从我的喉咙伸进去，",
+    "id": 156
+  },
+  {
+    "start": 642.11,
+    "end": 643.83,
+    "en": "threw my stomach into my intestines.",
+    "zh": "穿过我的胃，进入我的肠道。",
+    "id": 157
+  },
+  {
+    "start": 644.43,
+    "end": 647.59,
+    "en": "put a needle into my pancreas and got a few cells from the tumor.",
+    "zh": "再把一根针插进我的胰腺，从肿瘤里取出一些细胞。",
+    "id": 158
+  },
+  {
+    "start": 647.59,
+    "end": 652.49,
+    "en": "I was sedated, but my wife, who was there, told me that",
+    "zh": "我当时被麻醉了，但在场的妻子后来告诉我，",
+    "id": 159
+  },
+  {
+    "start": 652.49,
+    "end": 656.15,
+    "en": "when they viewed the cells under a microscope, the doctors started crying",
+    "zh": "当医生们在显微镜下观察那些细胞时，他们开始哭了。",
+    "id": 160
+  },
+  {
+    "start": 656.15,
+    "end": 661.33,
+    "en": "because it turned out to be a very rare form of pancreatic cancer that is curable with surgery.",
+    "zh": "因为结果显示，那是一种非常罕见、可以通过手术治愈的胰腺癌。",
+    "id": 161
+  },
+  {
+    "start": 662.09,
+    "end": 665.63,
+    "en": "I had the surgery, and thankfully, I'm fine now.",
+    "zh": "我做了手术，谢天谢地，现在我很好。",
+    "id": 162
+  },
+  {
+    "start": 673.29,
+    "end": 676.31,
+    "en": "This was the closest I've been to facing death.",
+    "zh": "这是我离面对死亡最近的一次。",
+    "id": 163
+  },
+  {
+    "start": 676.61,
+    "end": 679.39,
+    "en": "and I hope it's the closest I get for a few more decades.",
+    "zh": "我希望在接下来的几十年里，这仍然是我离死亡最近的一次。",
+    "id": 164
+  },
+  {
+    "start": 679.95,
+    "end": 681.21,
+    "en": "Having lived through it.",
+    "zh": "经历过这件事之后，",
+    "id": 165
+  },
+  {
+    "start": 681.41,
+    "end": 684.13,
+    "en": "I can now say this to you with a bit more certainty than",
+    "zh": "我现在可以更确定地对你们说这些话。",
+    "id": 166
+  },
+  {
+    "start": 684.13,
+    "end": 687.35,
+    "en": "when death was a useful but purely intellectual concept.",
+    "zh": "比起死亡还只是一个有用但纯粹理性的概念时，要确定得多。",
+    "id": 167
+  },
+  {
+    "start": 688.75,
+    "end": 690.53,
+    "en": "No one wants to die.",
+    "zh": "没有人想死。",
+    "id": 168
+  },
+  {
+    "start": 691.21,
+    "end": 694.67,
+    "en": "Even people who want to go to heaven don't want to die to get there.",
+    "zh": "即使是想上天堂的人，也不想通过死亡去那里。",
+    "id": 169
+  },
+  {
+    "start": 694.67,
+    "end": 698.57,
+    "en": "And yet, death is the destination we all share.",
+    "zh": "然而，死亡是我们所有人共同的终点。",
+    "id": 170
+  },
+  {
+    "start": 699.33,
+    "end": 700.81,
+    "en": "No one has ever escaped it.",
+    "zh": "从来没有人能逃过它。",
+    "id": 171
+  },
+  {
+    "start": 701.21,
+    "end": 703.25,
+    "en": "And that is as it should be.",
+    "zh": "这本来也应该如此。",
+    "id": 172
+  },
+  {
+    "start": 703.57,
+    "end": 707.39,
+    "en": "because death is very likely the single best invention of life.",
+    "zh": "因为死亡很可能是生命中唯一最好的发明。",
+    "id": 173
+  },
+  {
+    "start": 708.17,
+    "end": 709.51,
+    "en": "It's life's change agent.",
+    "zh": "它是生命的变革推动者。",
+    "id": 174
+  },
+  {
+    "start": 709.69,
+    "end": 711.89,
+    "en": "It clears out the old to make way for the new.",
+    "zh": "它清除旧事物，为新事物让路。",
+    "id": 175
+  },
+  {
+    "start": 712.91,
+    "end": 714.73,
+    "en": "Right now, the new is you.",
+    "zh": "现在，新的就是你们。",
+    "id": 176
+  },
+  {
+    "start": 715.57,
+    "end": 717.49,
+    "en": "But someday, not too long from now.",
+    "zh": "但总有一天，在不久的将来，",
+    "id": 177
+  },
+  {
+    "start": 717.63,
+    "end": 720.47,
+    "en": "you will gradually become the old and be cleared away.",
+    "zh": "你们也会逐渐变成旧的，然后被清除。",
+    "id": 178
+  },
+  {
+    "start": 721.19,
+    "end": 724.43,
+    "en": "Sorry to be so dramatic, but it's quite true.",
+    "zh": "抱歉说得这么戏剧化，但这确实是真的。",
+    "id": 179
+  },
+  {
+    "start": 725.65,
+    "end": 730.27,
+    "en": "Your time is limited, so don't waste it living someone else's life.",
+    "zh": "你们的时间有限，所以不要浪费时间去过别人的人生。",
+    "id": 180
+  },
+  {
+    "start": 730.95,
+    "end": 735.29,
+    "en": "Don't be trapped by dogma, which is living with the results of other people's thinking.",
+    "zh": "不要被教条束缚，那等于活在别人思考的结果里。",
+    "id": 181
+  },
+  {
+    "start": 736.15,
+    "end": 739.77,
+    "en": "Don't let the noise of others' opinions drown out your own inner voice.",
+    "zh": "不要让别人观点的噪音，淹没你自己内心的声音。",
+    "id": 182
+  },
+  {
+    "start": 740.33,
+    "end": 743.97,
+    "en": "And most important, have the courage to follow your heart and intuition.",
+    "zh": "最重要的是，要有勇气追随自己的内心和直觉。",
+    "id": 183
+  },
+  {
+    "start": 744.57,
+    "end": 748.09,
+    "en": "They somehow already know what you truly want to become.",
+    "zh": "它们不知为何，早已知道你真正想成为什么样的人。",
+    "id": 184
+  },
+  {
+    "start": 748.09,
+    "end": 751.23,
+    "en": "Everything else is secondary.",
+    "zh": "其他一切都是次要的。",
+    "id": 185
+  },
+  {
+    "start": 762.79,
+    "end": 767.93,
+    "en": "When I was young, there was an amazing publication called The Whole Earth Catalog,",
+    "zh": "我年轻的时候，有一本很了不起的出版物，叫《全球概览》。",
+    "id": 186
+  },
+  {
+    "start": 768.39,
+    "end": 770.53,
+    "en": "which was one of the Bibles of my generation.",
+    "zh": "它是我们那一代人的圣经之一。",
+    "id": 187
+  },
+  {
+    "start": 771.25,
+    "end": 775.51,
+    "en": "It was created by a fellow named Stuart Brand, not far from here in Menlo Park.",
+    "zh": "它由一个名叫斯图尔特·布兰德的人创办，就在离这里不远的门洛帕克。",
+    "id": 188
+  },
+  {
+    "start": 775.51,
+    "end": 778.29,
+    "en": "And he brought it to life with his poetic touch.",
+    "zh": "他用自己富有诗意的方式，让它鲜活了起来。",
+    "id": 189
+  },
+  {
+    "start": 779.23,
+    "end": 782.81,
+    "en": "This was in the late 60s, before personal computers and desktop publishing.",
+    "zh": "那是在六十年代末，个人电脑和桌面出版还没有出现之前。",
+    "id": 190
+  },
+  {
+    "start": 783.43,
+    "end": 786.99,
+    "en": "So it was all made with typewriters, scissors, and Polaroid cameras.",
+    "zh": "所以它完全是用打字机、剪刀和宝丽来相机制作出来的。",
+    "id": 191
+  },
+  {
+    "start": 787.67,
+    "end": 792.19,
+    "en": "It was sort of like Google in paperback form 35 years before Google came along.",
+    "zh": "它有点像纸质版的 Google，只不过比 Google 早出现了三十五年。",
+    "id": 192
+  },
+  {
+    "start": 792.91,
+    "end": 797.25,
+    "en": "It was idealistic, overflowing with neat tools and great notions.",
+    "zh": "它充满理想主义，里面有大量有趣的工具和很棒的想法。",
+    "id": 193
+  },
+  {
+    "start": 798.55,
+    "end": 801.63,
+    "en": "Stuart and his team put out several issues of The Whole Earth Catalog.",
+    "zh": "斯图尔特和他的团队出版了好几期《全球概览》。",
+    "id": 194
+  },
+  {
+    "start": 801.63,
+    "end": 805.77,
+    "en": "And then, when it had run its course, they put out a final issue.",
+    "zh": "后来，当它完成了自己的使命时，他们推出了最后一期。",
+    "id": 195
+  },
+  {
+    "start": 806.45,
+    "end": 809.83,
+    "en": "It was the mid -1970s, and I was your age.",
+    "zh": "那是在二十世纪七十年代中期，而我当时和你们现在差不多大。",
+    "id": 196
+  },
+  {
+    "start": 811.53,
+    "end": 816.75,
+    "en": "On the back cover of their final issue was a photograph of an early morning country road,",
+    "zh": "在最后一期的封底上，有一张清晨乡间道路的照片。",
+    "id": 197
+  },
+  {
+    "start": 817.31,
+    "end": 820.81,
+    "en": "the kind you might find yourself hitchhiking on if you were so adventurous.",
+    "zh": "如果你足够有冒险精神，那可能就是你会在上面搭车旅行的那种路。",
+    "id": 198
+  },
+  {
+    "start": 821.93,
+    "end": 826.03,
+    "en": "Beneath it were the words, stay hungry, stay foolish.",
+    "zh": "照片下面写着几个字：求知若饥，虚心若愚。",
+    "id": 199
+  },
+  {
+    "start": 826.03,
+    "end": 829.25,
+    "en": "It was their farewell message as they signed off.",
+    "zh": "那是他们停刊告别时留下的信息。",
+    "id": 200
+  },
+  {
+    "start": 830.15,
+    "end": 832.27,
+    "en": "Stay hungry, stay foolish.",
+    "zh": "求知若饥，虚心若愚。",
+    "id": 201
+  },
+  {
+    "start": 833.05,
+    "end": 835.49,
+    "en": "And I have always wished that for myself.",
+    "zh": "我一直希望自己能做到这一点。",
+    "id": 202
+  },
+  {
+    "start": 836.55,
+    "end": 841.35,
+    "en": "And now, as you graduate to begin anew, I wish that for you.",
+    "zh": "而现在，当你们毕业并开始新的人生时，我也把这句话送给你们。",
+    "id": 203
+  },
+  {
+    "start": 842.03,
+    "end": 843.95,
+    "en": "Stay hungry, stay foolish.",
+    "zh": "求知若饥，虚心若愚。",
+    "id": 204
+  },
+  {
+    "start": 844.87,
+    "end": 845.89,
+    "en": "Thank you all very much.",
+    "zh": "非常感谢大家。",
+    "id": 205
+  }
+]

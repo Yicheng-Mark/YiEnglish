@@ -1,0 +1,982 @@
+[
+  {
+    "start": 0.0,
+    "end": 2.0,
+    "en": "Hello again. We just got back from the lake.",
+    "zh": "又见面啦。我们刚从湖边回来。",
+    "id": 1
+  },
+  {
+    "start": 2.0,
+    "end": 4.76,
+    "en": "and it was literally such a breath of fresh air.",
+    "zh": "真的感觉像是呼吸到了一口新鲜空气。",
+    "id": 2
+  },
+  {
+    "start": 4.9,
+    "end": 8.42,
+    "en": "We're both city folks, so I feel like we're both kind of used to breathing in a lot of smog.",
+    "zh": "我们俩都是城里人，所以感觉都已经有点习惯吸各种雾霾了。",
+    "id": 3
+  },
+  {
+    "start": 8.58,
+    "end": 10.9,
+    "en": "The oxygen out here feels like high definition.",
+    "zh": "这里的氧气感觉像高清版一样。",
+    "id": 4
+  },
+  {
+    "start": 11.02,
+    "end": 13.78,
+    "en": "But we got to see a bunch of wildlife, water, ducks.",
+    "zh": "不过我们看到了好多小动物，还有湖水、鸭子。",
+    "id": 5
+  },
+  {
+    "start": 14.16,
+    "end": 15.16,
+    "en": "What more could you ask for?",
+    "zh": "还能要求什么呢？",
+    "id": 6
+  },
+  {
+    "start": 15.32,
+    "end": 16.56,
+    "en": "But as you can kind of see now.",
+    "zh": "不过你们现在也能看出来。",
+    "id": 7
+  },
+  {
+    "start": 16.68,
+    "end": 19.76,
+    "en": "sun's setting and we're getting a little bit peckish so it's time for dinner.",
+    "zh": "太阳快落山了，我们也有点饿了，所以该吃晚饭了。",
+    "id": 8
+  },
+  {
+    "start": 19.98,
+    "end": 23.9,
+    "en": "Right over here we have some thinly shaved beef along with a Japanese cucumber,",
+    "zh": "这边有一些薄切牛肉，还有一根日式黄瓜，",
+    "id": 9
+  },
+  {
+    "start": 24.34,
+    "end": 28.08,
+    "en": "an onion, sugar, soy sauce, sake, and mirin.",
+    "zh": "一个洋葱、糖、酱油、清酒和味醂。",
+    "id": 10
+  },
+  {
+    "start": 28.08,
+    "end": 30.3,
+    "en": "And also this jar is full of dashi.",
+    "zh": "还有这个罐子里装满了高汤。",
+    "id": 11
+  },
+  {
+    "start": 30.5,
+    "end": 33.24,
+    "en": "And when you see all those ingredients together, that means gyudon.",
+    "zh": "当你看到这些食材放在一起，就说明要做牛丼了。",
+    "id": 12
+  },
+  {
+    "start": 33.48,
+    "end": 37.04,
+    "en": "And also gonna make a little cucumber salad to freshen it up a little bit.",
+    "zh": "我还打算做一点黄瓜沙拉，让整体更清爽一点。",
+    "id": 13
+  },
+  {
+    "start": 37.32,
+    "end": 37.88,
+    "en": "Add some green.",
+    "zh": "加点绿色。",
+    "id": 14
+  },
+  {
+    "start": 38.7,
+    "end": 40.3,
+    "en": "Let's start over here at the stove first.",
+    "zh": "我们先从炉灶这边开始。",
+    "id": 15
+  },
+  {
+    "start": 40.86,
+    "end": 42.22,
+    "en": "We're gonna make our sauce mixture.",
+    "zh": "先来调一个酱汁。",
+    "id": 16
+  },
+  {
+    "start": 42.6,
+    "end": 43.82,
+    "en": "Our soy sauce.",
+    "zh": "先加酱油。",
+    "id": 17
+  },
+  {
+    "start": 44.9,
+    "end": 51.5,
+    "en": "Gonna do like one, two, three.",
+    "zh": "我大概倒一、二、三下。",
+    "id": 18
+  },
+  {
+    "start": 52.56,
+    "end": 53.52,
+    "en": "Something like that.",
+    "zh": "差不多这样。",
+    "id": 19
+  },
+  {
+    "start": 53.68,
+    "end": 55.74,
+    "en": "Kind of enough to cover the base of the pan.",
+    "zh": "差不多能铺满锅底就行。",
+    "id": 20
+  },
+  {
+    "start": 56.92,
+    "end": 61.7,
+    "en": "Sake. I'm gonna go for about one, two.",
+    "zh": "清酒。我大概倒一、二下。",
+    "id": 21
+  },
+  {
+    "start": 63.1,
+    "end": 66.92,
+    "en": "Mirin. Also about a one, two.",
+    "zh": "味醂。也大概一、二下。",
+    "id": 22
+  },
+  {
+    "start": 67.82,
+    "end": 69.98,
+    "en": "Think I'm actually gonna do a little more soy sauce.",
+    "zh": "我觉得其实还要再加一点酱油。",
+    "id": 23
+  },
+  {
+    "start": 71.22,
+    "end": 71.82,
+    "en": "A little more.",
+    "zh": "再多一点。",
+    "id": 24
+  },
+  {
+    "start": 72.74,
+    "end": 74.78,
+    "en": "And then sugar, kind of optional.",
+    "zh": "然后是糖，这个可加可不加。",
+    "id": 25
+  },
+  {
+    "start": 75.38,
+    "end": 78.08,
+    "en": "but I kind of like things a little bit sweet.",
+    "zh": "不过我个人比较喜欢带一点甜味。",
+    "id": 26
+  },
+  {
+    "start": 80.18,
+    "end": 81.16,
+    "en": "There we go.",
+    "zh": "好了。",
+    "id": 27
+  },
+  {
+    "start": 81.46,
+    "end": 83.52,
+    "en": "And right here we have some dashi.",
+    "zh": "这边是一些高汤。",
+    "id": 28
+  },
+  {
+    "start": 83.64,
+    "end": 84.68,
+    "en": "It's really full.",
+    "zh": "装得特别满。",
+    "id": 29
+  },
+  {
+    "start": 84.68,
+    "end": 86.28,
+    "en": "I only want about half of it.",
+    "zh": "我只想用大概一半。",
+    "id": 30
+  },
+  {
+    "start": 92.18,
+    "end": 93.18,
+    "en": "That should be good.",
+    "zh": "这样应该就差不多了。",
+    "id": 31
+  },
+  {
+    "start": 93.5,
+    "end": 95.48,
+    "en": "That was a little bit over, but that's okay.",
+    "zh": "稍微倒多了一点，不过没关系。",
+    "id": 32
+  },
+  {
+    "start": 95.76,
+    "end": 97.66,
+    "en": "And then get that heat on.",
+    "zh": "然后开火。",
+    "id": 33
+  },
+  {
+    "start": 97.88,
+    "end": 99.34,
+    "en": "I'm gonna go for about a medium.",
+    "zh": "我会调到差不多中火。",
+    "id": 34
+  },
+  {
+    "start": 99.68,
+    "end": 101.16,
+    "en": "just until it goes to a simmer.",
+    "zh": "煮到微微沸腾就行。",
+    "id": 35
+  },
+  {
+    "start": 101.78,
+    "end": 103.38,
+    "en": "And I'm also gonna add these onions.",
+    "zh": "我还要把这些洋葱加进去。",
+    "id": 36
+  },
+  {
+    "start": 103.56,
+    "end": 104.68,
+    "en": "This is about a half onion.",
+    "zh": "这里大概是半个洋葱。",
+    "id": 37
+  },
+  {
+    "start": 105.0,
+    "end": 106.8,
+    "en": "I usually like to use about a full onion.",
+    "zh": "我平时一般喜欢用差不多一整个洋葱。",
+    "id": 38
+  },
+  {
+    "start": 107.06,
+    "end": 110.94,
+    "en": "but wifey's not much of a fan of onions, so this is compromise.",
+    "zh": "但我女朋友不是很爱吃洋葱，所以这就是我们的折中方案。",
+    "id": 39
+  },
+  {
+    "start": 112.56,
+    "end": 113.58,
+    "en": "Spread that over.",
+    "zh": "把它铺开。",
+    "id": 40
+  },
+  {
+    "start": 114.42,
+    "end": 116.2,
+    "en": "And we'll just let that come up to a simmer.",
+    "zh": "然后让它慢慢煮到微微沸腾。",
+    "id": 41
+  },
+  {
+    "start": 116.44,
+    "end": 118.74,
+    "en": "In the meantime, let's see what this cucumber salad's talking about.",
+    "zh": "与此同时，我们来看看这个黄瓜沙拉怎么做。",
+    "id": 42
+  },
+  {
+    "start": 119.0,
+    "end": 120.3,
+    "en": "No fancy shades for the cucumber.",
+    "zh": "黄瓜不用切什么花哨的形状。",
+    "id": 43
+  },
+  {
+    "start": 120.5,
+    "end": 122.76,
+    "en": "Just cut them straight into these little circles.",
+    "zh": "直接切成这种小圆片就行。",
+    "id": 44
+  },
+  {
+    "start": 123.32,
+    "end": 126.38,
+    "en": "And I'm gonna transfer them all into this steel bowl.",
+    "zh": "然后我把它们全部倒进这个钢盆里。",
+    "id": 45
+  },
+  {
+    "start": 126.64,
+    "end": 128.5,
+    "en": "And since cucumbers are so dense in water.",
+    "zh": "因为黄瓜含水量特别高。",
+    "id": 46
+  },
+  {
+    "start": 128.56,
+    "end": 131.92,
+    "en": "I'm gonna try to extract some of it by sprinkling some sea salt over it.",
+    "zh": "所以我会撒一点海盐，尽量把里面的水分逼出来一些。",
+    "id": 47
+  },
+  {
+    "start": 132.08,
+    "end": 135.06,
+    "en": "Careful not to do too much, or else they will turn out very salty.",
+    "zh": "注意别撒太多，不然最后会特别咸。",
+    "id": 48
+  },
+  {
+    "start": 135.48,
+    "end": 137.0,
+    "en": "Just a small sprinkle like that.",
+    "zh": "像这样轻轻撒一点就行。",
+    "id": 49
+  },
+  {
+    "start": 137.6,
+    "end": 138.92,
+    "en": "And you just go in with your hands.",
+    "zh": "然后直接用手抓拌。",
+    "id": 50
+  },
+  {
+    "start": 139.12,
+    "end": 140.6,
+    "en": "make sure they're all evenly covered.",
+    "zh": "确保每一片都均匀裹上盐。",
+    "id": 51
+  },
+  {
+    "start": 141.54,
+    "end": 142.42,
+    "en": "Something like that.",
+    "zh": "差不多这样。",
+    "id": 52
+  },
+  {
+    "start": 142.92,
+    "end": 146.32,
+    "en": "And now we need to let these rest for about 10 minutes to let that salt do its work.",
+    "zh": "现在要让它们静置大概10分钟，让盐发挥作用。",
+    "id": 53
+  },
+  {
+    "start": 146.32,
+    "end": 148.0,
+    "en": "and get rid of some of that water.",
+    "zh": "把一部分水分带出来。",
+    "id": 54
+  },
+  {
+    "start": 148.32,
+    "end": 149.3,
+    "en": "Let's go back to the stove.",
+    "zh": "我们回到炉灶这边。",
+    "id": 55
+  },
+  {
+    "start": 149.86,
+    "end": 151.16,
+    "en": "It's just been a few minutes now.",
+    "zh": "现在才过了几分钟。",
+    "id": 56
+  },
+  {
+    "start": 151.46,
+    "end": 153.0,
+    "en": "Let some of that sake burn off.",
+    "zh": "让里面的一些清酒挥发掉。",
+    "id": 57
+  },
+  {
+    "start": 153.2,
+    "end": 156.5,
+    "en": "And then now we can go on top with our shaved beef.",
+    "zh": "然后现在可以把薄切牛肉铺上去了。",
+    "id": 58
+  },
+  {
+    "start": 157.06,
+    "end": 158.32,
+    "en": "Just cover the pan.",
+    "zh": "把锅面盖满。",
+    "id": 59
+  },
+  {
+    "start": 162.44,
+    "end": 163.58,
+    "en": "We'll keep that on a simmer.",
+    "zh": "继续保持微微沸腾的状态。",
+    "id": 60
+  },
+  {
+    "start": 163.96,
+    "end": 165.22,
+    "en": "And then just add a lid.",
+    "zh": "然后盖上盖子。",
+    "id": 61
+  },
+  {
+    "start": 165.86,
+    "end": 167.38,
+    "en": "Turn the temperature down a little bit.",
+    "zh": "把火调小一点。",
+    "id": 62
+  },
+  {
+    "start": 167.38,
+    "end": 168.44,
+    "en": "And now you just leave it.",
+    "zh": "现在就放着让它煮。",
+    "id": 63
+  },
+  {
+    "start": 168.62,
+    "end": 171.22,
+    "en": "Once all the meat turns brown and it absorbs a lot of that sauce,",
+    "zh": "等所有肉都变成棕色，并且吸收了很多酱汁之后，",
+    "id": 64
+  },
+  {
+    "start": 171.22,
+    "end": 172.46,
+    "en": "then it's just ready.",
+    "zh": "就做好了。",
+    "id": 65
+  },
+  {
+    "start": 172.9,
+    "end": 173.82,
+    "en": "Back to the cucumbers.",
+    "zh": "回到黄瓜这边。",
+    "id": 66
+  },
+  {
+    "start": 174.58,
+    "end": 177.3,
+    "en": "All right, so you should see the cucumbers start to sweat a little bit.",
+    "zh": "好了，这时候你应该能看到黄瓜开始有点出水了。",
+    "id": 67
+  },
+  {
+    "start": 177.36,
+    "end": 178.3,
+    "en": "They start glistening.",
+    "zh": "表面会开始变得亮晶晶的。",
+    "id": 68
+  },
+  {
+    "start": 179.3,
+    "end": 182.36,
+    "en": "Now we just grab all of them and then just squeeze.",
+    "zh": "现在把它们全部抓起来，然后挤一挤。",
+    "id": 69
+  },
+  {
+    "start": 183.08,
+    "end": 184.76,
+    "en": "And all that juice is gonna come out.",
+    "zh": "里面的汁水就会全部出来。",
+    "id": 70
+  },
+  {
+    "start": 185.12,
+    "end": 188.98,
+    "en": "Try to drain as much of it as possible without damaging the cucumbers.",
+    "zh": "在不把黄瓜弄坏的前提下，尽量把水分挤干。",
+    "id": 71
+  },
+  {
+    "start": 189.64,
+    "end": 191.28,
+    "en": "But if you do, that's okay.",
+    "zh": "不过如果弄坏了也没关系。",
+    "id": 72
+  },
+  {
+    "start": 191.68,
+    "end": 194.08,
+    "en": "Unless you're like a Michelin star chef or anything.",
+    "zh": "除非你是什么米其林星级大厨之类的。",
+    "id": 73
+  },
+  {
+    "start": 194.56,
+    "end": 198.12,
+    "en": "I'm sure whoever you're serving food would not mind.",
+    "zh": "我相信吃你做的东西的人应该不会介意。",
+    "id": 74
+  },
+  {
+    "start": 198.6,
+    "end": 200.74,
+    "en": "And you wanna get all of them kind of looking like this.",
+    "zh": "你要让它们最后大概都变成这种样子。",
+    "id": 75
+  },
+  {
+    "start": 201.06,
+    "end": 205.82,
+    "en": "Real floppy. That means that they're gonna take in whatever liquid you put in next.",
+    "zh": "软趴趴的。这就说明它们接下来会吸收你加进去的液体。",
+    "id": 76
+  },
+  {
+    "start": 207.64,
+    "end": 209.52,
+    "en": "Now just run it under some cold water.",
+    "zh": "现在用冷水冲一下。",
+    "id": 77
+  },
+  {
+    "start": 209.84,
+    "end": 211.16,
+    "en": "Wash out some of that salt.",
+    "zh": "把一部分盐洗掉。",
+    "id": 78
+  },
+  {
+    "start": 214.18,
+    "end": 215.82,
+    "en": "Maybe one more good squeeze.",
+    "zh": "可能再用力挤最后一次。",
+    "id": 79
+  },
+  {
+    "start": 219.1,
+    "end": 220.54,
+    "en": "All right, and we're ready.",
+    "zh": "好了，准备好了。",
+    "id": 80
+  },
+  {
+    "start": 221.16,
+    "end": 222.52,
+    "en": "It's only been a few minutes now.",
+    "zh": "现在才过了几分钟。",
+    "id": 81
+  },
+  {
+    "start": 222.92,
+    "end": 224.22,
+    "en": "Gonna check in on this.",
+    "zh": "来看看这边怎么样了。",
+    "id": 82
+  },
+  {
+    "start": 225.32,
+    "end": 228.04,
+    "en": "Beautiful. All of our beef is nice and brown.",
+    "zh": "漂亮。所有牛肉都变成很好看的棕色了。",
+    "id": 83
+  },
+  {
+    "start": 228.3,
+    "end": 229.36,
+    "en": "I see no pink.",
+    "zh": "看不到粉色了。",
+    "id": 84
+  },
+  {
+    "start": 229.92,
+    "end": 231.7,
+    "en": "The onions look nice and translucent.",
+    "zh": "洋葱看起来也变得很通透。",
+    "id": 85
+  },
+  {
+    "start": 232.34,
+    "end": 233.08,
+    "en": "This is ready.",
+    "zh": "这个已经好了。",
+    "id": 86
+  },
+  {
+    "start": 234.52,
+    "end": 236.88,
+    "en": "Cover that up for now until our cucumber salad is done.",
+    "zh": "先盖起来，等黄瓜沙拉做好。",
+    "id": 87
+  },
+  {
+    "start": 237.14,
+    "end": 239.72,
+    "en": "So right here I got some rice vinegar and sesame oil.",
+    "zh": "这边我准备了米醋和芝麻油。",
+    "id": 88
+  },
+  {
+    "start": 239.94,
+    "end": 241.72,
+    "en": "This is my own rice vinegar that I brought.",
+    "zh": "这个米醋是我自己带来的。",
+    "id": 89
+  },
+  {
+    "start": 242.16,
+    "end": 245.42,
+    "en": "But this sesame oil was in the pantry of the B&B.",
+    "zh": "但这个芝麻油是民宿储物柜里的。",
+    "id": 90
+  },
+  {
+    "start": 246.08,
+    "end": 248.48,
+    "en": "And the Best Buy date is like completely rubbed off.",
+    "zh": "而且最佳食用日期已经完全被磨掉了。",
+    "id": 91
+  },
+  {
+    "start": 248.72,
+    "end": 251.7,
+    "en": "but I can just assume it's like grandma pantry's old.",
+    "zh": "不过我猜它大概就是那种奶奶家储物柜里放了很久的东西。",
+    "id": 92
+  },
+  {
+    "start": 251.88,
+    "end": 255.88,
+    "en": "But if anybody can let me know if sesame oil actually like expires,",
+    "zh": "如果有人知道芝麻油到底会不会过期，",
+    "id": 93
+  },
+  {
+    "start": 256.74,
+    "end": 257.72,
+    "en": "that would be appreciated.",
+    "zh": "麻烦告诉我一下。",
+    "id": 94
+  },
+  {
+    "start": 257.72,
+    "end": 261.18,
+    "en": "Or I guess I can let you know if I got sick or not.",
+    "zh": "或者我也可以之后告诉你们我有没有吃坏肚子。",
+    "id": 95
+  },
+  {
+    "start": 261.64,
+    "end": 265.82,
+    "en": "Untwist it. Passes the smell test, so that's a good sign.",
+    "zh": "拧开。闻起来没问题，所以这是个好迹象。",
+    "id": 96
+  },
+  {
+    "start": 267.06,
+    "end": 268.78,
+    "en": "Just gonna go right over the top.",
+    "zh": "直接淋在上面。",
+    "id": 97
+  },
+  {
+    "start": 269.64,
+    "end": 270.64,
+    "en": "Just a little bit.",
+    "zh": "一点点就行。",
+    "id": 98
+  },
+  {
+    "start": 271.58,
+    "end": 273.06,
+    "en": "Followed by some rice vinegar.",
+    "zh": "然后加一点米醋。",
+    "id": 99
+  },
+  {
+    "start": 277.32,
+    "end": 278.22,
+    "en": "Just a splash.",
+    "zh": "就倒一点。",
+    "id": 100
+  },
+  {
+    "start": 279.28,
+    "end": 280.68,
+    "en": "Give that a good mix.",
+    "zh": "好好拌匀。",
+    "id": 101
+  },
+  {
+    "start": 281.2,
+    "end": 282.54,
+    "en": "Sample an ugly one.",
+    "zh": "尝一片长得不太好看的。",
+    "id": 102
+  },
+  {
+    "start": 283.06,
+    "end": 283.86,
+    "en": "That's pretty good.",
+    "zh": "挺不错的。",
+    "id": 103
+  },
+  {
+    "start": 284.52,
+    "end": 285.92,
+    "en": "The flavors are emerging.",
+    "zh": "味道开始出来了。",
+    "id": 104
+  },
+  {
+    "start": 285.92,
+    "end": 289.32,
+    "en": "I'm actually gonna add in a little bit of that gyudon sauce.",
+    "zh": "我其实打算再加一点牛丼的酱汁进去。",
+    "id": 105
+  },
+  {
+    "start": 289.44,
+    "end": 290.68,
+    "en": "I think that'll add a nice pop.",
+    "zh": "我觉得这样会让味道更亮一点。",
+    "id": 106
+  },
+  {
+    "start": 290.84,
+    "end": 293.52,
+    "en": "Some more sweetness, some more saltiness from that soy sauce.",
+    "zh": "能多一点甜味，也多一点酱油带来的咸香。",
+    "id": 107
+  },
+  {
+    "start": 293.6,
+    "end": 294.54,
+    "en": "I think it'll be good.",
+    "zh": "我觉得会很好吃。",
+    "id": 108
+  },
+  {
+    "start": 295.68,
+    "end": 297.44,
+    "en": "Just a real petite spoonful.",
+    "zh": "就加非常小的一勺。",
+    "id": 109
+  },
+  {
+    "start": 298.56,
+    "end": 300.04,
+    "en": "Or three actually.",
+    "zh": "或者其实加三勺。",
+    "id": 110
+  },
+  {
+    "start": 301.34,
+    "end": 304.92,
+    "en": "And the finishing touch, nice sprinkle of sesame seeds.",
+    "zh": "最后收尾，撒上一点漂亮的芝麻。",
+    "id": 111
+  },
+  {
+    "start": 305.92,
+    "end": 308.06,
+    "en": "All right, try an ugly one.",
+    "zh": "好了，再尝一片长得不太好看的。",
+    "id": 112
+  },
+  {
+    "start": 308.92,
+    "end": 311.38,
+    "en": "Needs a touch more sesame oil.",
+    "zh": "还需要再来一点点芝麻油。",
+    "id": 113
+  },
+  {
+    "start": 313.04,
+    "end": 314.66,
+    "en": "Splash more rice vinegar.",
+    "zh": "再加一点米醋。",
+    "id": 114
+  },
+  {
+    "start": 316.2,
+    "end": 318.44,
+    "en": "And honestly, a little bit of sweetener.",
+    "zh": "说实话，还需要加一点甜味剂。",
+    "id": 115
+  },
+  {
+    "start": 320.84,
+    "end": 321.82,
+    "en": "Light soy sauce.",
+    "zh": "淡口酱油。",
+    "id": 116
+  },
+  {
+    "start": 323.3,
+    "end": 326.6,
+    "en": "A little bit saltier and lighter than dark soy sauce.",
+    "zh": "它比老抽更咸一点，颜色也更浅。",
+    "id": 117
+  },
+  {
+    "start": 331.36,
+    "end": 334.46,
+    "en": "That's money. Okay, I think we're just about done.",
+    "zh": "这味道绝了。好了，我觉得我们差不多完成了。",
+    "id": 118
+  },
+  {
+    "start": 335.1,
+    "end": 337.42,
+    "en": "Actually, last step, the rice.",
+    "zh": "其实还有最后一步，米饭。",
+    "id": 119
+  },
+  {
+    "start": 337.76,
+    "end": 340.3,
+    "en": "I did not bring my rice cooker on this trip, so.",
+    "zh": "这次旅行我没有带电饭煲，所以，",
+    "id": 120
+  },
+  {
+    "start": 340.3,
+    "end": 343.68,
+    "en": "this instant rice is a big help.",
+    "zh": "这种即食米饭真的帮大忙了。",
+    "id": 121
+  },
+  {
+    "start": 344.18,
+    "end": 345.48,
+    "en": "Open up a little corner.",
+    "zh": "打开一个小角。",
+    "id": 122
+  },
+  {
+    "start": 346.32,
+    "end": 347.86,
+    "en": "And this is actually a microwave.",
+    "zh": "而且这其实是一个微波炉。",
+    "id": 123
+  },
+  {
+    "start": 351.86,
+    "end": 352.86,
+    "en": "Feel like Tony Stark.",
+    "zh": "感觉自己像 Tony Stark。",
+    "id": 124
+  },
+  {
+    "start": 353.8,
+    "end": 354.64,
+    "en": "Close that up.",
+    "zh": "把它关上。",
+    "id": 125
+  },
+  {
+    "start": 357.64,
+    "end": 359.3,
+    "en": "And I'm gonna go about a minute.",
+    "zh": "我大概加热一分钟。",
+    "id": 126
+  },
+  {
+    "start": 360.82,
+    "end": 362.42,
+    "en": "Always wanted a microwave like that.",
+    "zh": "我一直都想要一个这样的微波炉。",
+    "id": 127
+  },
+  {
+    "start": 362.84,
+    "end": 363.94,
+    "en": "This is fulfilling that dream.",
+    "zh": "这算是圆梦了。",
+    "id": 128
+  },
+  {
+    "start": 364.38,
+    "end": 367.52,
+    "en": "So I obviously wasn't able to take my whole ceramic collection on the road trip,",
+    "zh": "显然我不可能把我的整套陶瓷收藏都带上公路旅行，",
+    "id": 129
+  },
+  {
+    "start": 367.58,
+    "end": 372.22,
+    "en": "but luckily, this B&B owner has some pretty decent taste.",
+    "zh": "不过幸运的是，这家民宿的房东审美还挺不错。",
+    "id": 130
+  },
+  {
+    "start": 372.8,
+    "end": 374.26,
+    "en": "These bowls are pretty cool.",
+    "zh": "这些碗还挺好看的。",
+    "id": 131
+  },
+  {
+    "start": 374.5,
+    "end": 375.5,
+    "en": "I'm gonna use these.",
+    "zh": "我就用这些。",
+    "id": 132
+  },
+  {
+    "start": 375.88,
+    "end": 378.28,
+    "en": "Here are our trays of the day.",
+    "zh": "这就是我们今天的餐盘。",
+    "id": 133
+  },
+  {
+    "start": 381.68,
+    "end": 385.86,
+    "en": "Our gyudon. Mine's the one with a bunch of onion.",
+    "zh": "我们的牛丼。我这份是有很多洋葱的。",
+    "id": 134
+  },
+  {
+    "start": 387.32,
+    "end": 390.24,
+    "en": "Cucumber salad. She likes that bowl.",
+    "zh": "黄瓜沙拉。她喜欢那个碗。",
+    "id": 135
+  },
+  {
+    "start": 390.92,
+    "end": 392.34,
+    "en": "And I like this one.",
+    "zh": "我喜欢这个。",
+    "id": 136
+  },
+  {
+    "start": 392.94,
+    "end": 395.22,
+    "en": "Let's get a little more sauce on there.",
+    "zh": "再往上面多浇一点酱汁。",
+    "id": 137
+  },
+  {
+    "start": 397.88,
+    "end": 399.0,
+    "en": "Listen it up.",
+    "zh": "让它更湿润一点。",
+    "id": 138
+  },
+  {
+    "start": 400.0,
+    "end": 404.12,
+    "en": "And I think we have enough time for one finishing touch.",
+    "zh": "我觉得我们还有时间做一个最后的点缀。",
+    "id": 139
+  },
+  {
+    "start": 413.04,
+    "end": 413.84,
+    "en": "Perfect.",
+    "zh": "完美。",
+    "id": 140
+  }
+]

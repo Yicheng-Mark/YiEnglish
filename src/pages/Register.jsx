@@ -4,18 +4,32 @@ import { useAuth } from '../contexts/AuthContext'
 import { toast } from 'sonner'
 import SocialLinks from '../components/SocialLinks'
 
+const VALIDATED_CODE_KEY = 'validated_activation_code'
+
 export default function Register() {
   const { register } = useAuth()
   const navigate = useNavigate()
+  const validatedCode = sessionStorage.getItem(VALIDATED_CODE_KEY) || ''
+  const [activationCode, setActivationCode] = useState(validatedCode)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [nickname, setNickname] = useState('')
   const [loading, setLoading] = useState(false)
 
+  // 没有经过激活验证的激活码，重定向到激活页
+  if (!validatedCode) {
+    window.location.href = '/activate'
+    return null
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
 
+    if (!activationCode.trim()) {
+      toast.error('请输入激活码')
+      return
+    }
     if (!username.trim()) {
       toast.error('请输入用户名')
       return
@@ -39,7 +53,8 @@ export default function Register() {
 
     setLoading(true)
     try {
-      await register(username.trim(), password, nickname.trim() || undefined)
+      await register(username.trim(), password, nickname.trim() || undefined, activationCode.trim())
+      sessionStorage.removeItem(VALIDATED_CODE_KEY)
       toast.success('注册成功')
       navigate('/', { replace: true })
     } catch (err) {
@@ -59,6 +74,17 @@ export default function Register() {
           <h1 className="text-2xl font-bold text-white text-center mb-8">注册</h1>
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={activationCode}
+                onChange={e => setActivationCode(e.target.value)}
+                placeholder="激活码"
+                autoComplete="off"
+                readOnly
+                className="w-full bg-transparent border-b border-white/30 text-white placeholder-white/40 py-3 px-1 outline-none focus:border-white transition-colors text-sm opacity-70 cursor-default"
+              />
+            </div>
             <div>
               <input
                 type="text"

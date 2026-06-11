@@ -40,7 +40,7 @@ router.post('/redeem', async (req, res, next) => {
     // 查找体验码
     const [codes] = await pool.execute(
       `SELECT id, code, max_uses, current_uses, trial_hours, is_active, expires_at
-       FROM experience_codes WHERE code = ?`,
+       FROM experience_codes WHERE code = ? AND type = 'trial'`,
       [code.trim()]
     )
 

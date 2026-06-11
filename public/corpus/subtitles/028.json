@@ -1,0 +1,639 @@
+[
+  {
+    "start": 0.0,
+    "end": 4.18,
+    "en": "Hello, we are in the supermarket and learning English.",
+    "zh": "大家好，我们现在在超市里学英语。",
+    "id": 1
+  },
+  {
+    "start": 17.84,
+    "end": 18.96,
+    "en": "Ah, toilet roll.",
+    "zh": "啊，厕纸。",
+    "id": 2
+  },
+  {
+    "start": 22.64,
+    "end": 25.36,
+    "en": "I am walking down the aisle.",
+    "zh": "我正沿着过道往前走。",
+    "id": 3
+  },
+  {
+    "start": 25.62,
+    "end": 26.92,
+    "en": "There are shelves.",
+    "zh": "这里有货架。",
+    "id": 4
+  },
+  {
+    "start": 27.72,
+    "end": 32.56,
+    "en": "On the shelves there are items, things, stuff.",
+    "zh": "货架上有商品、东西、各种物品。",
+    "id": 5
+  },
+  {
+    "start": 33.98,
+    "end": 34.86,
+    "en": "Let's get some stuff.",
+    "zh": "我们来买点东西吧。",
+    "id": 6
+  },
+  {
+    "start": 35.6,
+    "end": 38.66,
+    "en": "So Chang is shopping for some deodorant.",
+    "zh": "所以 Chang 正在买一些除臭剂。",
+    "id": 7
+  },
+  {
+    "start": 39.68,
+    "end": 42.02,
+    "en": "We say deodorant, three syllables.",
+    "zh": "我们说 deodorant，三个音节。",
+    "id": 8
+  },
+  {
+    "start": 43.1,
+    "end": 47.52,
+    "en": "Chang is rubbing the deodorant on my armpit because I'm smelly.",
+    "zh": "Chang 正把除臭剂抹在我的腋下，因为我有点臭。",
+    "id": 9
+  },
+  {
+    "start": 47.78,
+    "end": 51.98,
+    "en": "These are roll-on deodorants and they are on sale.",
+    "zh": "这些是滚珠除臭剂，而且正在打折。",
+    "id": 10
+  },
+  {
+    "start": 52.66,
+    "end": 54.96,
+    "en": "This is a promotion.",
+    "zh": "这是一个促销活动。",
+    "id": 11
+  },
+  {
+    "start": 55.76,
+    "end": 59.02,
+    "en": "The promotion is when something is cheaper than normal.",
+    "zh": "促销就是某样东西比平时便宜。",
+    "id": 12
+  },
+  {
+    "start": 59.54,
+    "end": 60.28,
+    "en": "They're on sale.",
+    "zh": "它们正在打折。",
+    "id": 13
+  },
+  {
+    "start": 60.54,
+    "end": 64.66,
+    "en": "The next thing on our list is kitchen roll.",
+    "zh": "我们清单上的下一样东西是厨房纸。",
+    "id": 14
+  },
+  {
+    "start": 67.42,
+    "end": 71.9,
+    "en": "This is a multi-pack of kitchen roll.",
+    "zh": "这是一组多包装的厨房纸。",
+    "id": 15
+  },
+  {
+    "start": 73.4,
+    "end": 75.72,
+    "en": "Kitchen roll is for the kitchen.",
+    "zh": "厨房纸是厨房用的。",
+    "id": 16
+  },
+  {
+    "start": 75.72,
+    "end": 81.86,
+    "en": "and toilet roll is for, well, you tell me.",
+    "zh": "而厕纸是用来，嗯，你来告诉我。",
+    "id": 17
+  },
+  {
+    "start": 82.2,
+    "end": 83.4,
+    "en": "Oh, this is useful.",
+    "zh": "哦，这个很有用。",
+    "id": 18
+  },
+  {
+    "start": 84.28,
+    "end": 88.56,
+    "en": "So guys, this is a shopping basket.",
+    "zh": "所以大家，这叫购物篮。",
+    "id": 19
+  },
+  {
+    "start": 88.84,
+    "end": 93.0,
+    "en": "It's called a basket because it has a handle and I carry it.",
+    "zh": "它叫 basket，因为它有一个把手，我可以提着它。",
+    "id": 20
+  },
+  {
+    "start": 93.86,
+    "end": 95.64,
+    "en": "And this is a trolley.",
+    "zh": "而这个是 trolley。",
+    "id": 21
+  },
+  {
+    "start": 96.2,
+    "end": 100.64,
+    "en": "Or in America, they would say a shopping cart, shopping cart.",
+    "zh": "或者在 America，他们会说 shopping cart，shopping cart。",
+    "id": 22
+  },
+  {
+    "start": 101.14,
+    "end": 103.48,
+    "en": "In England, we say a trolley.",
+    "zh": "在 England，我们说 trolley。",
+    "id": 23
+  },
+  {
+    "start": 103.48,
+    "end": 105.82,
+    "en": "and you push the trolley on its wheels.",
+    "zh": "你可以推着 trolley，让它靠轮子移动。",
+    "id": 24
+  },
+  {
+    "start": 106.62,
+    "end": 109.86,
+    "en": "Now we are going to pay for our items and then.",
+    "zh": "现在我们要去为这些商品付款，然后。",
+    "id": 25
+  },
+  {
+    "start": 109.86,
+    "end": 110.84,
+    "en": "go get some food.",
+    "zh": "去吃点东西。",
+    "id": 26
+  },
+  {
+    "start": 110.96,
+    "end": 111.98,
+    "en": "Trolley is going back.",
+    "zh": "Trolley 要放回去了。",
+    "id": 27
+  },
+  {
+    "start": 113.4,
+    "end": 115.56,
+    "en": "We've just done part one of the shop.",
+    "zh": "我们刚刚完成了购物的第一部分。",
+    "id": 28
+  },
+  {
+    "start": 115.9,
+    "end": 117.88,
+    "en": "We've just paid at the checkout counters.",
+    "zh": "我们刚刚在收银台付完款。",
+    "id": 29
+  },
+  {
+    "start": 118.34,
+    "end": 120.86,
+    "en": "We've got our items for home.",
+    "zh": "我们买好了家里要用的东西。",
+    "id": 30
+  },
+  {
+    "start": 121.76,
+    "end": 122.7,
+    "en": "It leaves plastic bags.",
+    "zh": "还剩下塑料袋。",
+    "id": 31
+  },
+  {
+    "start": 123.88,
+    "end": 125.64,
+    "en": "Now I'm getting hungry.",
+    "zh": "现在我有点饿了。",
+    "id": 32
+  },
+  {
+    "start": 126.2,
+    "end": 126.66,
+    "en": "Are you hungry?",
+    "zh": "你饿了吗？",
+    "id": 33
+  },
+  {
+    "start": 127.26,
+    "end": 128.54,
+    "en": "Yeah, always hungry.",
+    "zh": "饿啊，总是饿。",
+    "id": 34
+  },
+  {
+    "start": 129.9,
+    "end": 131.7,
+    "en": "This is the restaurant side.",
+    "zh": "这是餐厅区域。",
+    "id": 35
+  },
+  {
+    "start": 132.04,
+    "end": 133.44,
+    "en": "Chang is flicking through the menu.",
+    "zh": "Chang 正在翻看菜单。",
+    "id": 36
+  },
+  {
+    "start": 134.2,
+    "end": 138.2,
+    "en": "Do we want to eat here okay.",
+    "zh": "我们要在这里吃吗？好吧。",
+    "id": 37
+  },
+  {
+    "start": 149.16,
+    "end": 151.5,
+    "en": "I've got a white shirt on and we're about to eat.",
+    "zh": "我穿着一件白衬衫，而我们马上要吃饭了。",
+    "id": 38
+  },
+  {
+    "start": 151.68,
+    "end": 153.26,
+    "en": "So I've been asked if I would like an apron.",
+    "zh": "所以有人问我要不要一条围裙。",
+    "id": 39
+  },
+  {
+    "start": 154.02,
+    "end": 156.5,
+    "en": "Yes. Thank you.",
+    "zh": "要的。谢谢。",
+    "id": 40
+  },
+  {
+    "start": 156.66,
+    "end": 163.1,
+    "en": "All right, guys, this is an apron and you use it to not get food on yourself.",
+    "zh": "好了，大家，这是一条围裙，你用它来避免把食物弄到自己身上。",
+    "id": 41
+  },
+  {
+    "start": 164.76,
+    "end": 165.68,
+    "en": "I'm going to wear my apron.",
+    "zh": "我要穿上我的围裙。",
+    "id": 42
+  },
+  {
+    "start": 167.5,
+    "end": 168.06,
+    "en": "My arms are going in.",
+    "zh": "我的胳膊要伸进去了。",
+    "id": 43
+  },
+  {
+    "start": 170.74,
+    "end": 173.92,
+    "en": "All right. I feel like a kid again.",
+    "zh": "好了。我感觉自己又像个小孩了。",
+    "id": 44
+  },
+  {
+    "start": 174.3,
+    "end": 176.24,
+    "en": "Korean number one soju.",
+    "zh": "韩国第一烧酒。",
+    "id": 45
+  },
+  {
+    "start": 177.42,
+    "end": 180.96,
+    "en": "If you're Korean and watching this, then thank you.",
+    "zh": "如果你是韩国人，而且正在看这个，那谢谢你。",
+    "id": 46
+  },
+  {
+    "start": 185.66,
+    "end": 187.48,
+    "en": "My soup is absolutely bubbling.",
+    "zh": "我的汤正在咕嘟咕嘟地冒泡。",
+    "id": 47
+  },
+  {
+    "start": 189.02,
+    "end": 190.42,
+    "en": "Looks like a witch's cauldron.",
+    "zh": "看起来像女巫的坩埚。",
+    "id": 48
+  },
+  {
+    "start": 191.28,
+    "end": 194.02,
+    "en": "If I drink that or eat that, I will scold my tongue.",
+    "zh": "如果我喝了或者吃了它，我会烫到舌头。",
+    "id": 49
+  },
+  {
+    "start": 195.64,
+    "end": 196.52,
+    "en": "Okay, Chang's food is arriving.",
+    "zh": "好了，Chang 的菜上来了。",
+    "id": 50
+  },
+  {
+    "start": 197.3,
+    "end": 198.98,
+    "en": "Wow, that is insanely hot.",
+    "zh": "哇，那真的烫得离谱。",
+    "id": 51
+  },
+  {
+    "start": 199.28,
+    "end": 201.18,
+    "en": "All right, guys, I've got my apron on.",
+    "zh": "好了，大家，我已经穿好围裙了。",
+    "id": 52
+  },
+  {
+    "start": 201.18,
+    "end": 205.56,
+    "en": "I'm ready. We have our Korean banquets, our buffet, our food.",
+    "zh": "我准备好了。我们有韩餐、自助餐、我们的食物。",
+    "id": 53
+  },
+  {
+    "start": 206.42,
+    "end": 211.56,
+    "en": "We have some tofu seafood soup, a plate of kimchi.",
+    "zh": "我们有一些豆腐海鲜汤，还有一盘韩国泡菜。",
+    "id": 54
+  },
+  {
+    "start": 213.16,
+    "end": 215.88,
+    "en": "We have some bean sprouts.",
+    "zh": "我们有一些豆芽。",
+    "id": 55
+  },
+  {
+    "start": 216.96,
+    "end": 219.64,
+    "en": "some mashed potato, it looks like.",
+    "zh": "看起来还有一些土豆泥。",
+    "id": 56
+  },
+  {
+    "start": 220.34,
+    "end": 226.12,
+    "en": "and some sweet potato noodles with red, green, and yellow pepper.",
+    "zh": "还有一些红椒、青椒和黄椒拌的红薯粉条。",
+    "id": 57
+  },
+  {
+    "start": 226.98,
+    "end": 229.46,
+    "en": "I'm holding a ladle for the soup.",
+    "zh": "我正拿着一个汤勺，用来舀汤。",
+    "id": 58
+  },
+  {
+    "start": 230.26,
+    "end": 233.04,
+    "en": "This is kimbap, looks delicious.",
+    "zh": "这是 kimbap，看起来很好吃。",
+    "id": 59
+  },
+  {
+    "start": 233.68,
+    "end": 234.16,
+    "en": "Let's dig in.",
+    "zh": "开吃吧。",
+    "id": 60
+  },
+  {
+    "start": 234.32,
+    "end": 236.28,
+    "en": "One more language point before we eat.",
+    "zh": "吃之前再讲一个语言点。",
+    "id": 61
+  },
+  {
+    "start": 236.66,
+    "end": 238.96,
+    "en": "When something is really, really, really hot.",
+    "zh": "当某样东西非常非常非常烫的时候。",
+    "id": 62
+  },
+  {
+    "start": 239.2,
+    "end": 241.34,
+    "en": "a liquid, we can say it's piping.",
+    "zh": "如果是液体，我们可以说它是 piping。",
+    "id": 63
+  },
+  {
+    "start": 242.08,
+    "end": 242.98,
+    "en": "It's piping hot.",
+    "zh": "它是 piping hot。",
+    "id": 64
+  },
+  {
+    "start": 243.48,
+    "end": 245.44,
+    "en": "You can also say it's steaming hot.",
+    "zh": "你也可以说它是 steaming hot。",
+    "id": 65
+  },
+  {
+    "start": 246.2,
+    "end": 247.54,
+    "en": "This is absolutely piping.",
+    "zh": "这个真的滚烫。",
+    "id": 66
+  },
+  {
+    "start": 247.98,
+    "end": 249.06,
+    "en": "so I'm not going to eat it yet.",
+    "zh": "所以我还不打算吃它。",
+    "id": 67
+  },
+  {
+    "start": 249.48,
+    "end": 256.06,
+    "en": "I think I'll take my chopsticks and take a piece of kimchi fermented cabbage.",
+    "zh": "我想我会拿起筷子，夹一块 kimchi，也就是发酵白菜。",
+    "id": 68
+  },
+  {
+    "start": 261.84,
+    "end": 264.14,
+    "en": "Mm, this food is delicious.",
+    "zh": "嗯，这些食物太好吃了。",
+    "id": 69
+  },
+  {
+    "start": 264.9,
+    "end": 265.54,
+    "en": "What do you think?",
+    "zh": "你觉得怎么样？",
+    "id": 70
+  },
+  {
+    "start": 266.22,
+    "end": 267.22,
+    "en": "Yeah, it is.",
+    "zh": "是啊，确实好吃。",
+    "id": 71
+  },
+  {
+    "start": 269.24,
+    "end": 269.94,
+    "en": "Time to pay.",
+    "zh": "该付款了。",
+    "id": 72
+  },
+  {
+    "start": 273.14,
+    "end": 274.88,
+    "en": "Going up the escalator.",
+    "zh": "正在上自动扶梯。",
+    "id": 73
+  },
+  {
+    "start": 277.68,
+    "end": 281.74,
+    "en": "What's this? A man texting.",
+    "zh": "这是什么？一个正在发短信的男人。",
+    "id": 74
+  },
+  {
+    "start": 283.4,
+    "end": 284.38,
+    "en": "A family chatting.",
+    "zh": "一家人在聊天。",
+    "id": 75
+  },
+  {
+    "start": 287.5,
+    "end": 289.82,
+    "en": "Two Grab drivers waiting.",
+    "zh": "两个 Grab 司机在等候。",
+    "id": 76
+  },
+  {
+    "start": 295.46,
+    "end": 299.08,
+    "en": "Now, my friends, we are doing a food shop.",
+    "zh": "现在，朋友们，我们要去采购食物。",
+    "id": 77
+  },
+  {
+    "start": 299.76,
+    "end": 303.1,
+    "en": "A food shop is a UK term for a grocery shop.",
+    "zh": "A food shop 是 UK 的说法，意思是买日常食品。",
+    "id": 78
+  },
+  {
+    "start": 303.72,
+    "end": 305.26,
+    "en": "We're getting our food for the week.",
+    "zh": "我们要买这一周吃的食物。",
+    "id": 79
+  },
+  {
+    "start": 306.42,
+    "end": 312.4,
+    "en": "Ooh, eggs. Ah, a box of a dozen eggs.",
+    "zh": "哦，鸡蛋。啊，一盒十二个鸡蛋。",
+    "id": 80
+  },
+  {
+    "start": 312.94,
+    "end": 314.88,
+    "en": "A dozen is 12.",
+    "zh": "A dozen 就是十二个。",
+    "id": 81
+  },
+  {
+    "start": 316.54,
+    "end": 319.26,
+    "en": "This is the dairy section.",
+    "zh": "这是乳制品区。",
+    "id": 82
+  },
+  {
+    "start": 320.46,
+    "end": 324.28,
+    "en": "These products are in the fridge because they are made from milk.",
+    "zh": "这些产品放在冰箱里，因为它们是用牛奶制成的。",
+    "id": 83
+  },
+  {
+    "start": 324.6,
+    "end": 328.4,
+    "en": "I need some Greek yoghurt.",
+    "zh": "我需要一些希腊酸奶。",
+    "id": 84
+  },
+  {
+    "start": 333.48,
+    "end": 338.36,
+    "en": "Ooh, pines. Tomato ketchup.",
+    "zh": "哦，HEINZ。番茄酱。",
+    "id": 85
+  },
+  {
+    "start": 338.66,
+    "end": 342.0,
+    "en": "Next, I need pasta, but we've got a traffic jam.",
+    "zh": "接下来，我需要意面，但这里堵车了。",
+    "id": 86
+  },
+  {
+    "start": 342.4,
+    "end": 344.22,
+    "en": "Can I get through?",
+    "zh": "我能过去吗？",
+    "id": 87
+  },
+  {
+    "start": 345.26,
+    "end": 349.5,
+    "en": "Excuse me. Come on, thank you.",
+    "zh": "不好意思。来吧，谢谢。",
+    "id": 88
+  },
+  {
+    "start": 350.6,
+    "end": 351.6,
+    "en": "I made it through the traffic jam.",
+    "zh": "我成功穿过了这场堵车。",
+    "id": 89
+  },
+  {
+    "start": 351.6,
+    "end": 356.64,
+    "en": "to be met by another traffic jam, but pasta.",
+    "zh": "结果又遇到了另一场堵车，不过意面到了。",
+    "id": 90
+  },
+  {
+    "start": 357.98,
+    "end": 359.36,
+    "en": "Box of pasta.",
+    "zh": "一盒意面。",
+    "id": 91
+  }
+]

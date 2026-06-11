@@ -1,0 +1,653 @@
+[
+  {
+    "start": 0.0,
+    "end": 1.38,
+    "en": "Good morning, everyone.",
+    "zh": "大家早上好。",
+    "id": 1
+  },
+  {
+    "start": 1.5,
+    "end": 4.84,
+    "en": "Happy Sunday. I just made myself a smoothie for breakfast.",
+    "zh": "周日快乐。我刚给自己做了一杯早餐奶昔。",
+    "id": 2
+  },
+  {
+    "start": 5.04,
+    "end": 8.02,
+    "en": "This has pineapple, mango, and strawberries.",
+    "zh": "里面有菠萝、芒果和草莓。",
+    "id": 3
+  },
+  {
+    "start": 11.04,
+    "end": 14.44,
+    "en": "Very good. And it is already, in fact, 11:30.",
+    "zh": "很好喝。而且现在其实已经11点半了。",
+    "id": 4
+  },
+  {
+    "start": 14.52,
+    "end": 17.52,
+    "en": "I've had a very chill Sunday morning.",
+    "zh": "我度过了一个非常悠闲的周日早晨。",
+    "id": 5
+  },
+  {
+    "start": 17.62,
+    "end": 19.12,
+    "en": "I slept in, which was really nice.",
+    "zh": "我睡了个懒觉，感觉真的很舒服。",
+    "id": 6
+  },
+  {
+    "start": 19.16,
+    "end": 21.22,
+    "en": "and took some time journaling in bed.",
+    "zh": "还躺在床上写了一会儿日记。",
+    "id": 7
+  },
+  {
+    "start": 21.22,
+    "end": 24.68,
+    "en": "but it is about time I get my day started I actually wrote out.",
+    "zh": "不过也差不多该开始这一天了，我其实还写了。",
+    "id": 8
+  },
+  {
+    "start": 24.68,
+    "end": 27.94,
+    "en": "a little to-do list to keep myself on track.",
+    "zh": "一份小小的待办清单，好让自己别跑偏。",
+    "id": 9
+  },
+  {
+    "start": 27.98,
+    "end": 30.26,
+    "en": "For the most part today, I really just have to catch up on editing.",
+    "zh": "今天大部分时间，我其实就是得补一下剪辑进度。",
+    "id": 10
+  },
+  {
+    "start": 30.46,
+    "end": 34.46,
+    "en": "That's my main task that I feel like I'm constantly having to stay on track with,",
+    "zh": "这是我最主要的任务，而且我感觉自己总是得提醒自己跟上进度。",
+    "id": 11
+  },
+  {
+    "start": 34.5,
+    "end": 39.26,
+    "en": "but I have a bunch of short-form videos that I have just sitting on my hard drive,",
+    "zh": "不过我硬盘里还堆着一堆短视频。",
+    "id": 12
+  },
+  {
+    "start": 39.28,
+    "end": 41.64,
+    "en": "so I'd love to go through all of them, ideally.",
+    "zh": "所以我理想情况下很想把它们都过一遍。",
+    "id": 13
+  },
+  {
+    "start": 41.8,
+    "end": 42.94,
+    "en": "and edit every single video.",
+    "zh": "然后把每一条视频都剪完。",
+    "id": 14
+  },
+  {
+    "start": 43.02,
+    "end": 45.32,
+    "en": "It's not necessarily that time-consuming.",
+    "zh": "这倒不一定有多耗时间。",
+    "id": 15
+  },
+  {
+    "start": 45.48,
+    "end": 48.3,
+    "en": "It's just that I have to sit down and get it all done.",
+    "zh": "只是我必须坐下来，把它们一次性做完。",
+    "id": 16
+  },
+  {
+    "start": 48.36,
+    "end": 50.4,
+    "en": "I also didn't film yesterday, which was Saturday.",
+    "zh": "我昨天也没有拍视频，昨天是周六。",
+    "id": 17
+  },
+  {
+    "start": 50.66,
+    "end": 53.1,
+    "en": "because I had a very mundane day.",
+    "zh": "因为我过得非常平淡。",
+    "id": 18
+  },
+  {
+    "start": 53.1,
+    "end": 55.56,
+    "en": "I just pretty much spent the entire day cleaning up the house.",
+    "zh": "我基本上一整天都在收拾家里。",
+    "id": 19
+  },
+  {
+    "start": 55.78,
+    "end": 58.4,
+    "en": "It's really been a resetting kind of weekend.",
+    "zh": "这个周末真的有点像是在重新整理状态。",
+    "id": 20
+  },
+  {
+    "start": 58.4,
+    "end": 61.92,
+    "en": "I took all day yesterday to clean, and now I'm catching up on work today.",
+    "zh": "我昨天花了一整天打扫，今天就开始补工作进度。",
+    "id": 21
+  },
+  {
+    "start": 61.92,
+    "end": 63.42,
+    "en": "to get myself on track for the week.",
+    "zh": "好让自己为新的一周进入正轨。",
+    "id": 22
+  },
+  {
+    "start": 63.6,
+    "end": 65.32,
+    "en": "I did want to give you guys a bit of a haul,",
+    "zh": "我确实想给你们简单分享一下我买了什么。",
+    "id": 23
+  },
+  {
+    "start": 65.32,
+    "end": 69.06,
+    "en": "because I did end up getting some things from Brandy Melville when I went on Friday.",
+    "zh": "因为我周五去的时候，最后还是在Brandy Melville买了些东西。",
+    "id": 24
+  },
+  {
+    "start": 69.26,
+    "end": 71.18,
+    "en": "I feel like it's always hit or miss in there.",
+    "zh": "我感觉那家店真的总是看运气。",
+    "id": 25
+  },
+  {
+    "start": 71.3,
+    "end": 74.02,
+    "en": "They always are changing out the things that are on display.",
+    "zh": "他们展示出来的东西一直在换。",
+    "id": 26
+  },
+  {
+    "start": 74.04,
+    "end": 76.5,
+    "en": "so it's kind of just a matter of luck.",
+    "zh": "所以有点就是看运气。",
+    "id": 27
+  },
+  {
+    "start": 76.5,
+    "end": 79.52,
+    "en": "and seeing what they have in store when I go in.",
+    "zh": "看我进去的时候店里刚好有什么。",
+    "id": 28
+  },
+  {
+    "start": 79.64,
+    "end": 81.66,
+    "en": "And I feel like they always have a lot of really good.",
+    "zh": "而且我觉得他们总是有很多非常不错的。",
+    "id": 29
+  },
+  {
+    "start": 81.66,
+    "end": 84.8,
+    "en": "staple basics that I find myself always reaching for in my closet.",
+    "zh": "基础款单品，是我衣橱里总会反复拿来穿的那种。",
+    "id": 30
+  },
+  {
+    "start": 85.18,
+    "end": 87.92,
+    "en": "So all this to say, I thought I would go in and see what they have.",
+    "zh": "所以说了这么多，我就想着进去看看他们有什么。",
+    "id": 31
+  },
+  {
+    "start": 87.92,
+    "end": 90.66,
+    "en": "I'm specifically also kind of on the hunt for.",
+    "zh": "我其实也在特别留意。",
+    "id": 32
+  },
+  {
+    "start": 90.66,
+    "end": 93.48,
+    "en": "some pieces for spring and summer that I can add into my wardrobe,",
+    "zh": "一些可以加进我衣橱里的春夏单品。",
+    "id": 33
+  },
+  {
+    "start": 93.66,
+    "end": 97.02,
+    "en": "because I feel like in terms of winter clothing, I love to wear sweaters,",
+    "zh": "因为我觉得冬装这方面，我很喜欢穿毛衣。",
+    "id": 34
+  },
+  {
+    "start": 97.02,
+    "end": 98.42,
+    "en": "so I have a bunch of those.",
+    "zh": "所以我有一大堆毛衣。",
+    "id": 35
+  },
+  {
+    "start": 98.96,
+    "end": 100.9,
+    "en": "But then as soon as it gets warm out.",
+    "zh": "但天气一变暖。",
+    "id": 36
+  },
+  {
+    "start": 101.58,
+    "end": 103.82,
+    "en": "I don't really have that many clothes to wear.",
+    "zh": "我就真的没那么多衣服可以穿。",
+    "id": 37
+  },
+  {
+    "start": 103.94,
+    "end": 106.36,
+    "en": "And I feel like it's hard for me to dress cute in the summertime,",
+    "zh": "而且我觉得夏天对我来说很难穿得好看。",
+    "id": 38
+  },
+  {
+    "start": 106.46,
+    "end": 108.46,
+    "en": "because the only thing I'm thinking about is.",
+    "zh": "因为我脑子里唯一在想的就是。",
+    "id": 39
+  },
+  {
+    "start": 108.46,
+    "end": 111.4,
+    "en": "being comfortable and not being super sweaty.",
+    "zh": "要舒服，而且不要热得满身是汗。",
+    "id": 40
+  },
+  {
+    "start": 111.78,
+    "end": 116.0,
+    "en": "So anyways, I got a few things for spring and summer, and I think eventually down the line,",
+    "zh": "总之，我买了几件春夏穿的东西，而且我觉得以后某个时候。",
+    "id": 41
+  },
+  {
+    "start": 116.0,
+    "end": 119.66,
+    "en": "I'm gonna do like a big spring cleaning and kind of clean out my closet,",
+    "zh": "我会来一次大规模的春季清理，顺便整理一下衣橱。",
+    "id": 42
+  },
+  {
+    "start": 119.68,
+    "end": 122.66,
+    "en": "swap out my winter clothes for my summer clothing.",
+    "zh": "把冬装换成夏装。",
+    "id": 43
+  },
+  {
+    "start": 122.66,
+    "end": 125.42,
+    "en": "And that way I can really see what it is that I have.",
+    "zh": "这样我就能真正看清自己到底有什么。",
+    "id": 44
+  },
+  {
+    "start": 125.42,
+    "end": 128.98,
+    "en": "and maybe even go thrifting for some summer clothes.",
+    "zh": "也许还会去淘一些夏天的衣服。",
+    "id": 45
+  },
+  {
+    "start": 129.02,
+    "end": 129.8,
+    "en": "We will see.",
+    "zh": "到时候再看吧。",
+    "id": 46
+  },
+  {
+    "start": 130.06,
+    "end": 133.02,
+    "en": "First things first, I just got this very basic white tank top,",
+    "zh": "首先，我买了这件非常基础的白色背心。",
+    "id": 47
+  },
+  {
+    "start": 133.02,
+    "end": 135.72,
+    "en": "but it has these kind of thicker straps, which I liked.",
+    "zh": "不过它的肩带是这种稍微宽一点的，我挺喜欢的。",
+    "id": 48
+  },
+  {
+    "start": 135.92,
+    "end": 138.92,
+    "en": "I know this is nothing very groundbreaking in terms of fashion.",
+    "zh": "我知道从时尚角度来说，这不是什么特别颠覆性的东西。",
+    "id": 49
+  },
+  {
+    "start": 138.92,
+    "end": 144.08,
+    "en": "but I truly feel like these are the kind of basics I end up wearing the most on a day-to-day basis.",
+    "zh": "但我真心觉得，这种基础款才是我日常最常穿的衣服。",
+    "id": 50
+  },
+  {
+    "start": 144.08,
+    "end": 145.98,
+    "en": "And then also when I tried it on, obviously.",
+    "zh": "然后我试穿的时候，当然。",
+    "id": 51
+  },
+  {
+    "start": 145.98,
+    "end": 149.86,
+    "en": "this is like the way it's supposed to face with like the lower neck kind of in the front.",
+    "zh": "它本来应该是这样穿的，也就是低一点的领口在前面。",
+    "id": 52
+  },
+  {
+    "start": 149.88,
+    "end": 151.16,
+    "en": "But I also tried it on backwards.",
+    "zh": "但我也反过来试穿了一下。",
+    "id": 53
+  },
+  {
+    "start": 151.16,
+    "end": 154.58,
+    "en": "just to see, and it does have like the logo on the back,",
+    "zh": "就是想看看效果，而且它背后确实有个logo。",
+    "id": 54
+  },
+  {
+    "start": 154.58,
+    "end": 158.04,
+    "en": "but it doesn't really peek through when I wear it backwards.",
+    "zh": "但我反着穿的时候，基本也不会透出来。",
+    "id": 55
+  },
+  {
+    "start": 158.58,
+    "end": 161.72,
+    "en": "So I could also wear it facing the other side with kind of a higher neckline.",
+    "zh": "所以我也可以把它反过来穿，变成领口更高一点的样子。",
+    "id": 56
+  },
+  {
+    "start": 162.74,
+    "end": 163.14,
+    "en": "I don't know.",
+    "zh": "我也不知道。",
+    "id": 57
+  },
+  {
+    "start": 163.14,
+    "end": 166.52,
+    "en": "This is just me trying to get the most versatility out of what I have,",
+    "zh": "这只是我想尽量把手头的衣服穿出更多搭配方式。",
+    "id": 58
+  },
+  {
+    "start": 166.52,
+    "end": 169.72,
+    "en": "but basic white tank top, I feel like you can't go wrong with that.",
+    "zh": "但基础白背心嘛，我觉得怎么都不会出错。",
+    "id": 59
+  },
+  {
+    "start": 169.72,
+    "end": 173.36,
+    "en": "And then I also got a basic kind of white T.",
+    "zh": "然后我还买了一件基础款的白色T恤。",
+    "id": 60
+  },
+  {
+    "start": 173.36,
+    "end": 174.66,
+    "en": "This is more of like a heather gray.",
+    "zh": "它更像是这种麻灰色。",
+    "id": 61
+  },
+  {
+    "start": 174.8,
+    "end": 175.92,
+    "en": "It's a little bit darker.",
+    "zh": "颜色稍微深一点。",
+    "id": 62
+  },
+  {
+    "start": 175.92,
+    "end": 179.26,
+    "en": "and the neckline is kind of not necessarily off the shoulders.",
+    "zh": "领口不一定算是露肩。",
+    "id": 63
+  },
+  {
+    "start": 179.28,
+    "end": 181.42,
+    "en": "but like more of a scoop neckline which I liked.",
+    "zh": "但更像是一个大圆领，我挺喜欢的。",
+    "id": 64
+  },
+  {
+    "start": 181.7,
+    "end": 184.12,
+    "en": "And then last but not least, I'm very excited about this one",
+    "zh": "最后但同样重要的是，这件我特别期待。",
+    "id": 65
+  },
+  {
+    "start": 184.12,
+    "end": 186.02,
+    "en": "because I think it is very up my alley.",
+    "zh": "因为我觉得它非常符合我的风格。",
+    "id": 66
+  },
+  {
+    "start": 186.46,
+    "end": 190.3,
+    "en": "It is this white long sleeve and it's actually more of a quarter sleeves.",
+    "zh": "这是一件白色长袖，但其实更像是七分袖。",
+    "id": 67
+  },
+  {
+    "start": 190.38,
+    "end": 193.42,
+    "en": "And then the neckline had this kind of detailing that I thought was really cute.",
+    "zh": "然后领口有这种小细节，我觉得特别可爱。",
+    "id": 68
+  },
+  {
+    "start": 193.52,
+    "end": 196.98,
+    "en": "I figured I can very easily like dress this up or down depending on the occasion.",
+    "zh": "我感觉根据不同场合，我可以很轻松地把它穿得正式一点或者休闲一点。",
+    "id": 69
+  },
+  {
+    "start": 197.62,
+    "end": 200.38,
+    "en": "And I really need to like buy more colorful clothing.",
+    "zh": "而且我真的需要多买一些有颜色的衣服。",
+    "id": 70
+  },
+  {
+    "start": 200.38,
+    "end": 204.12,
+    "en": "because I realized most of the clothes I wear on a daily basis are.",
+    "zh": "因为我发现我日常穿的大多数衣服都是。",
+    "id": 71
+  },
+  {
+    "start": 204.12,
+    "end": 206.5,
+    "en": "black or white or some shade of gray.",
+    "zh": "黑色、白色，或者某种灰色。",
+    "id": 72
+  },
+  {
+    "start": 206.66,
+    "end": 208.1,
+    "en": "And I really want to incorporate more color.",
+    "zh": "我真的很想加入更多颜色。",
+    "id": 73
+  },
+  {
+    "start": 208.12,
+    "end": 208.86,
+    "en": "I think it's super cute.",
+    "zh": "我觉得有颜色的衣服超级可爱。",
+    "id": 74
+  },
+  {
+    "start": 208.9,
+    "end": 210.94,
+    "en": "I just can never pull the trigger because.",
+    "zh": "我只是一直下不了决心买。",
+    "id": 75
+  },
+  {
+    "start": 210.94,
+    "end": 214.04,
+    "en": "I feel like I don't really know what colors suit me that much.",
+    "zh": "因为我感觉自己真的不太知道什么颜色适合我。",
+    "id": 76
+  },
+  {
+    "start": 214.18,
+    "end": 217.4,
+    "en": "Occasionally, if I'm feeling kind of wild, I might wear some navy,",
+    "zh": "偶尔如果我觉得自己有点大胆，我可能会穿点海军蓝。",
+    "id": 77
+  },
+  {
+    "start": 217.46,
+    "end": 219.16,
+    "en": "but I feel like I don't really take many risks.",
+    "zh": "但我觉得自己真的不太敢冒险。",
+    "id": 78
+  },
+  {
+    "start": 219.16,
+    "end": 221.76,
+    "en": "when it comes to different colors and patterns.",
+    "zh": "尤其是在不同颜色和图案这方面。",
+    "id": 79
+  },
+  {
+    "start": 222.34,
+    "end": 224.84,
+    "en": "But then I feel like whenever I wear something a little bit more colorful.",
+    "zh": "但我又觉得每次我穿得稍微更有颜色一点。",
+    "id": 80
+  },
+  {
+    "start": 224.84,
+    "end": 227.84,
+    "en": "or a bit more out there, then I get more compliments.",
+    "zh": "或者稍微更出挑一点的时候，我就会收到更多夸奖。",
+    "id": 81
+  },
+  {
+    "start": 227.96,
+    "end": 232.56,
+    "en": "So maybe that's a sign that I should take more risks because.",
+    "zh": "所以也许这就是一个信号，说明我应该多尝试一点。",
+    "id": 82
+  },
+  {
+    "start": 232.56,
+    "end": 235.34,
+    "en": "unfortunately I love my basic staples.",
+    "zh": "可惜的是，我真的太爱我的基础款了。",
+    "id": 83
+  },
+  {
+    "start": 236.14,
+    "end": 238.54,
+    "en": "That is my little haul from Brandy.",
+    "zh": "这就是我在Brandy买的小小战利品。",
+    "id": 84
+  },
+  {
+    "start": 238.68,
+    "end": 240.58,
+    "en": "I am actually gonna finish getting ready.",
+    "zh": "我现在其实要继续把自己收拾好。",
+    "id": 85
+  },
+  {
+    "start": 240.88,
+    "end": 244.4,
+    "en": "I'm still in my PJs right now, so I'm gonna change probably into some comfy sweats.",
+    "zh": "我现在还穿着睡衣，所以我大概会换上一身舒服的运动休闲裤。",
+    "id": 86
+  },
+  {
+    "start": 244.42,
+    "end": 247.86,
+    "en": "I'm just staying home today, so I love to be comfortable.",
+    "zh": "我今天就待在家里，所以我很喜欢穿得舒服一点。",
+    "id": 87
+  },
+  {
+    "start": 248.24,
+    "end": 250.22,
+    "en": "I was thinking I might actually curl my hair.",
+    "zh": "我刚刚在想，也许我其实可以卷一下头发。",
+    "id": 88
+  },
+  {
+    "start": 250.28,
+    "end": 251.4,
+    "en": "Even though I'm not leaving the house.",
+    "zh": "虽然我不会出门。",
+    "id": 89
+  },
+  {
+    "start": 251.48,
+    "end": 255.78,
+    "en": "I just washed it yesterday, so it might be nice to style it and then.",
+    "zh": "我昨天刚洗过头，所以稍微做个造型应该也不错。",
+    "id": 90
+  },
+  {
+    "start": 255.78,
+    "end": 258.28,
+    "en": "that way it can be curled for the week ahead as well.",
+    "zh": "这样接下来这一周头发也可以保持卷卷的状态。",
+    "id": 91
+  },
+  {
+    "start": 258.4,
+    "end": 259.8,
+    "en": "I'm gonna do that and then.",
+    "zh": "我准备去做一下这个，然后。",
+    "id": 92
+  },
+  {
+    "start": 259.8,
+    "end": 262.78,
+    "en": "we can get to work on my to-do list for the day.",
+    "zh": "我们就可以开始处理我今天的待办清单了。",
+    "id": 93
+  }
+]

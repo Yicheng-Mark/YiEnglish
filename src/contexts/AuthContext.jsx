@@ -66,8 +66,8 @@ export function AuthProvider({ children }) {
     return data.user
   }, [])
 
-  const register = useCallback(async (username, password, nickname) => {
-    const body = { username, password }
+  const register = useCallback(async (username, password, nickname, activationCode) => {
+    const body = { username, password, activationCode }
     if (nickname) body.nickname = nickname
     const res = await fetch(`${API_BASE}/api/auth/register`, {
       method: 'POST',

@@ -1,0 +1,765 @@
+[
+  {
+    "start": 0.0,
+    "end": 3.42,
+    "en": "I am very focused now on the societal implications of AI.",
+    "zh": "我现在非常关注 AI 对社会的影响。",
+    "id": 1
+  },
+  {
+    "start": 4.8,
+    "end": 6.84,
+    "en": "I spent the last several years, you know.",
+    "zh": "过去几年里，我一直在做这方面的事，你知道。",
+    "id": 2
+  },
+  {
+    "start": 6.88,
+    "end": 8.88,
+    "en": "I was back at Google and, you know.",
+    "zh": "我当时回到了 Google，你知道。",
+    "id": 3
+  },
+  {
+    "start": 9.14,
+    "end": 13.72,
+    "en": "A lot of the last 15 years have been involved in AI and the technology.",
+    "zh": "过去 15 年里，我大部分时间都参与在 AI 和技术领域。",
+    "id": 4
+  },
+  {
+    "start": 13.72,
+    "end": 16.0,
+    "en": "And how quickly it is gathering steam.",
+    "zh": "以及它的发展势头有多快。",
+    "id": 5
+  },
+  {
+    "start": 16.12,
+    "end": 17.46,
+    "en": "How much more advanced it’s getting.",
+    "zh": "它正在变得多么先进。",
+    "id": 6
+  },
+  {
+    "start": 17.92,
+    "end": 20.08,
+    "en": "How much more advanced it will be in the next decade.",
+    "zh": "未来十年它还会变得多么先进。",
+    "id": 7
+  },
+  {
+    "start": 20.54,
+    "end": 24.1,
+    "en": "That is something which is going to be wildly more devastating.",
+    "zh": "这件事造成的破坏会严重得多。",
+    "id": 8
+  },
+  {
+    "start": 24.1,
+    "end": 28.8,
+    "en": "Than any of the consequences of the mismanaged technologies of the last 15 years.",
+    "zh": "远远超过过去 15 年那些管理失当的技术所带来的任何后果。",
+    "id": 9
+  },
+  {
+    "start": 28.8,
+    "end": 33.36,
+    "en": "And the consequences will crash land on societies all over the world.",
+    "zh": "而这些后果会猛烈冲击世界各地的社会。",
+    "id": 10
+  },
+  {
+    "start": 33.98,
+    "end": 35.48,
+    "en": "We are not prepared for these things at all.",
+    "zh": "我们完全没有为这些事情做好准备。",
+    "id": 11
+  },
+  {
+    "start": 35.48,
+    "end": 39.02,
+    "en": "economically, societally, geopolitically, environmentally.",
+    "zh": "无论是在经济、社会、地缘政治，还是环境层面。",
+    "id": 12
+  },
+  {
+    "start": 39.02,
+    "end": 41.1,
+    "en": "And that’s the agenda that I’m really focused on.",
+    "zh": "这就是我真正关注的议题。",
+    "id": 13
+  },
+  {
+    "start": 41.22,
+    "end": 45.86,
+    "en": "The tech industry has massively distorted the agenda for how to manage these things.",
+    "zh": "科技行业已经严重扭曲了我们该如何管理这些事情的议程。",
+    "id": 14
+  },
+  {
+    "start": 46.08,
+    "end": 47.3,
+    "en": "We talk about AI governance.",
+    "zh": "我们谈论 AI 治理。",
+    "id": 15
+  },
+  {
+    "start": 47.3,
+    "end": 51.16,
+    "en": "And there’s a whole bunch of stuff which is about how you manage the AI systems themselves.",
+    "zh": "其中有一大堆内容是在讲如何管理 AI 系统本身。",
+    "id": 16
+  },
+  {
+    "start": 51.42,
+    "end": 53.04,
+    "en": "That’s like 1 percent of the problem.",
+    "zh": "那大概只占问题的 1%。",
+    "id": 17
+  },
+  {
+    "start": 53.62,
+    "end": 56.56,
+    "en": "15 years from now, probably less than 15 years.",
+    "zh": "15 年后，可能还不到 15 年。",
+    "id": 18
+  },
+  {
+    "start": 56.88,
+    "end": 59.36,
+    "en": "When a lot of people have lost their jobs to AI.",
+    "zh": "当很多人因为 AI 失去工作的时候。",
+    "id": 19
+  },
+  {
+    "start": 59.36,
+    "end": 62.0,
+    "en": "And we have no economic solutions.",
+    "zh": "而我们没有任何经济解决方案。",
+    "id": 20
+  },
+  {
+    "start": 62.02,
+    "end": 64.74,
+    "en": "We have no idea how to give people a good quality of life.",
+    "zh": "我们完全不知道该如何让人们过上有质量的生活。",
+    "id": 21
+  },
+  {
+    "start": 64.94,
+    "end": 66.78,
+    "en": "That is a much, much bigger problem.",
+    "zh": "那才是一个大得多得多的问题。",
+    "id": 22
+  },
+  {
+    "start": 66.78,
+    "end": 69.84,
+    "en": "than some of the technical issues we’re facing in those systems.",
+    "zh": "比我们在这些系统中面临的一些技术问题要大得多。",
+    "id": 23
+  },
+  {
+    "start": 70.22,
+    "end": 75.52,
+    "en": "What happens when AI turbocharged industries consume wildly more resources.",
+    "zh": "当 AI 加速发展的行业消耗远超以往的资源时，会发生什么？",
+    "id": 24
+  },
+  {
+    "start": 75.52,
+    "end": 78.4,
+    "en": "And they destabilize already reeling ecosystems.",
+    "zh": "它们会让已经摇摇欲坠的生态系统更加不稳定。",
+    "id": 25
+  },
+  {
+    "start": 78.46,
+    "end": 79.96,
+    "en": "Which we know are hanging by a thread.",
+    "zh": "而我们知道，这些生态系统已经命悬一线。",
+    "id": 26
+  },
+  {
+    "start": 79.96,
+    "end": 84.04,
+    "en": "And which will impact the lives of millions, if not billions of people.",
+    "zh": "并且会影响数百万，甚至数十亿人的生活。",
+    "id": 27
+  },
+  {
+    "start": 84.6,
+    "end": 90.96,
+    "en": "Between 2018 and 2023, the world consumed almost as much resources as one third of the 20th century.",
+    "zh": "2018 年到 2023 年间，世界消耗的资源几乎相当于 20 世纪三分之一的资源消耗量。",
+    "id": 28
+  },
+  {
+    "start": 90.96,
+    "end": 93.14,
+    "en": "And it’s accelerating all the time.",
+    "zh": "而且这种速度一直在加快。",
+    "id": 29
+  },
+  {
+    "start": 93.76,
+    "end": 96.56,
+    "en": "These are things where in fact big tech companies.",
+    "zh": "事实上，在这些事情上，大型科技公司会这样做。",
+    "id": 30
+  },
+  {
+    "start": 96.56,
+    "end": 99.0,
+    "en": "They go to government who are desperate for economic growth now.",
+    "zh": "它们去找那些现在迫切需要经济增长的政府。",
+    "id": 31
+  },
+  {
+    "start": 99.28,
+    "end": 101.16,
+    "en": "A lot of the advanced economies in the global north.",
+    "zh": "全球北方的很多发达经济体。",
+    "id": 32
+  },
+  {
+    "start": 101.28,
+    "end": 104.06,
+    "en": "They’ve got plateauing growth, they’ve got declining living standards.",
+    "zh": "它们增长停滞，生活水平也在下降。",
+    "id": 33
+  },
+  {
+    "start": 104.32,
+    "end": 105.12,
+    "en": "They go to them and say.",
+    "zh": "科技公司就去对它们说。",
+    "id": 34
+  },
+  {
+    "start": 105.82,
+    "end": 108.66,
+    "en": "build this wonder technology, build this infrastructure.",
+    "zh": "建设这项神奇的技术，建设这些基础设施。",
+    "id": 35
+  },
+  {
+    "start": 108.74,
+    "end": 111.24,
+    "en": "We will give you back the keys to a good future.",
+    "zh": "我们会把通往美好未来的钥匙还给你们。",
+    "id": 36
+  },
+  {
+    "start": 111.78,
+    "end": 112.98,
+    "en": "Of course, that’s not happening.",
+    "zh": "当然，这根本不会发生。",
+    "id": 37
+  },
+  {
+    "start": 113.56,
+    "end": 119.78,
+    "en": "This is something which on the present path promises to enrich a tiny sliver of societies.",
+    "zh": "按照目前这条路走下去，这件事只会让社会中极小一部分人变得富有。",
+    "id": 38
+  },
+  {
+    "start": 120.12,
+    "end": 121.88,
+    "en": "Mostly in the United States, mostly in China.",
+    "zh": "主要是在美国，主要是在中国。",
+    "id": 39
+  },
+  {
+    "start": 122.16,
+    "end": 124.1,
+    "en": "I think the world we’re going to end up in.",
+    "zh": "我认为我们最终会走向的那个世界。",
+    "id": 40
+  },
+  {
+    "start": 124.1,
+    "end": 126.14,
+    "en": "in the next 10, 15 years.",
+    "zh": "在未来 10 年、15 年里。",
+    "id": 41
+  },
+  {
+    "start": 126.14,
+    "end": 128.78,
+    "en": "Is going to be much more unstable than today.",
+    "zh": "会比今天不稳定得多。",
+    "id": 42
+  },
+  {
+    "start": 128.78,
+    "end": 132.88,
+    "en": "With rapidly declining living standards for hundreds of millions of people.",
+    "zh": "数亿人的生活水平会迅速下降。",
+    "id": 43
+  },
+  {
+    "start": 133.28,
+    "end": 136.4,
+    "en": "I think a lot of graduates will not be able to get good jobs at all.",
+    "zh": "我认为很多毕业生根本找不到好工作。",
+    "id": 44
+  },
+  {
+    "start": 136.64,
+    "end": 139.12,
+    "en": "People who did a whole bunch of things in their lives.",
+    "zh": "这些人一生中做了很多事情。",
+    "id": 45
+  },
+  {
+    "start": 139.12,
+    "end": 140.82,
+    "en": "and were told if they did these things right.",
+    "zh": "而且他们被告知，只要把这些事情做好。",
+    "id": 46
+  },
+  {
+    "start": 140.94,
+    "end": 142.08,
+    "en": "They would get a good life.",
+    "zh": "他们就能过上好日子。",
+    "id": 47
+  },
+  {
+    "start": 142.08,
+    "end": 143.52,
+    "en": "And their kids would have better lives than them.",
+    "zh": "他们的孩子也会过得比他们更好。",
+    "id": 48
+  },
+  {
+    "start": 143.74,
+    "end": 146.1,
+    "en": "That is not going to happen at all on the path they’re on.",
+    "zh": "按照他们现在这条路走下去，这根本不会发生。",
+    "id": 49
+  },
+  {
+    "start": 146.94,
+    "end": 148.98,
+    "en": "Is the tech industry going to solve these things No.",
+    "zh": "科技行业会解决这些问题吗？不会。",
+    "id": 50
+  },
+  {
+    "start": 149.34,
+    "end": 152.82,
+    "en": "In fact, they have tried to minimize debate about these things.",
+    "zh": "事实上，它们一直试图把关于这些问题的讨论降到最低。",
+    "id": 51
+  },
+  {
+    "start": 152.84,
+    "end": 155.18,
+    "en": "They’ve tried to point people back towards the technical solutions.",
+    "zh": "它们试图把人们的注意力重新引回技术解决方案。",
+    "id": 52
+  },
+  {
+    "start": 155.7,
+    "end": 161.66,
+    "en": "Now it is a moment in which societies and our leaders need to have a mainstream conversation.",
+    "zh": "现在正是社会和我们的领导者需要展开主流讨论的时刻。",
+    "id": 53
+  },
+  {
+    "start": 161.66,
+    "end": 163.82,
+    "en": "About what the heck we’re going to do to manage all of those effects.",
+    "zh": "讨论我们到底该怎么管理所有这些影响。",
+    "id": 54
+  },
+  {
+    "start": 164.08,
+    "end": 165.72,
+    "en": "That cannot be left up to the tech industry.",
+    "zh": "这件事不能交给科技行业来决定。",
+    "id": 55
+  },
+  {
+    "start": 165.72,
+    "end": 169.18,
+    "en": "But now we’re in a situation where.",
+    "zh": "但我们现在所处的局面是。",
+    "id": 56
+  },
+  {
+    "start": 169.8,
+    "end": 171.9,
+    "en": "Like you said earlier in the conversation.",
+    "zh": "就像你刚才在对话中说的那样。",
+    "id": 57
+  },
+  {
+    "start": 173.66,
+    "end": 176.34,
+    "en": "The world affected tech and now tech is affecting the world.",
+    "zh": "过去是世界影响科技，而现在是科技在影响世界。",
+    "id": 58
+  },
+  {
+    "start": 177.58,
+    "end": 183.44,
+    "en": "In the lead up to some of the elections happening in the US.",
+    "zh": "在美国一些选举即将到来之际。",
+    "id": 59
+  },
+  {
+    "start": 184.44,
+    "end": 193.96,
+    "en": "The tech giants have put together some of the most insane amounts for political campaigns.",
+    "zh": "科技巨头已经为政治竞选投入了极其疯狂的资金。",
+    "id": 60
+  },
+  {
+    "start": 194.24,
+    "end": 196.84,
+    "en": "They’re going after every single politician.",
+    "zh": "它们正在针对每一个政客。",
+    "id": 61
+  },
+  {
+    "start": 196.84,
+    "end": 202.38,
+    "en": "Who is proposing any type of restraint or constraint on AI.",
+    "zh": "只要这个政客提出任何形式的 AI 限制或约束。",
+    "id": 62
+  },
+  {
+    "start": 203.72,
+    "end": 208.94,
+    "en": "Whether we like it or not, money shapes a lot of an election.",
+    "zh": "不管我们喜不喜欢，金钱都会在很大程度上塑造一场选举。",
+    "id": 63
+  },
+  {
+    "start": 209.86,
+    "end": 213.08,
+    "en": "You have the tech industry fighting to define.",
+    "zh": "科技行业正在努力争夺定义权。",
+    "id": 64
+  },
+  {
+    "start": 213.08,
+    "end": 215.74,
+    "en": "How it should be managed or it should be governed.",
+    "zh": "定义它应该如何被管理，或者应该如何被治理。",
+    "id": 65
+  },
+  {
+    "start": 216.32,
+    "end": 220.26,
+    "en": "The people who are going to govern it being funded by them.",
+    "zh": "而那些将要治理它的人，却正在接受它们的资金。",
+    "id": 66
+  },
+  {
+    "start": 220.26,
+    "end": 224.38,
+    "en": "It seems like an infinite loop that’s for the most part already lost.",
+    "zh": "这看起来像是一个无限循环，而且在很大程度上已经输了。",
+    "id": 67
+  },
+  {
+    "start": 224.52,
+    "end": 227.96,
+    "en": "Unless something big breaks, as we’ve seen in the past.",
+    "zh": "除非有什么重大事件爆发，就像我们过去见过的那样。",
+    "id": 68
+  },
+  {
+    "start": 228.04,
+    "end": 231.36,
+    "en": "It’s only when something big breaks that something changes dramatically.",
+    "zh": "只有当重大事件爆发时，事情才会发生剧烈改变。",
+    "id": 69
+  },
+  {
+    "start": 231.36,
+    "end": 233.58,
+    "en": "I mean I don’t think we should be under any illusions.",
+    "zh": "我的意思是，我认为我们不应该抱有任何幻想。",
+    "id": 70
+  },
+  {
+    "start": 233.86,
+    "end": 235.76,
+    "en": "The most likely path we’re on.",
+    "zh": "我们现在最可能走上的那条路。",
+    "id": 71
+  },
+  {
+    "start": 235.8,
+    "end": 237.18,
+    "en": "The one we are on right now.",
+    "zh": "也就是我们此刻正在走的这条路。",
+    "id": 72
+  },
+  {
+    "start": 237.64,
+    "end": 241.6,
+    "en": "Leads to disaster for our societies and all societies globally.",
+    "zh": "会给我们的社会以及全球所有社会带来灾难。",
+    "id": 73
+  },
+  {
+    "start": 241.74,
+    "end": 243.65,
+    "en": "I actually don’t think anyone gets out of this thing.",
+    "zh": "我其实不认为任何人能从这件事里全身而退。",
+    "id": 74
+  },
+  {
+    "start": 244.01,
+    "end": 246.77,
+    "en": "I’ve spent the last six months traveling the world.",
+    "zh": "过去六个月，我一直在世界各地旅行。",
+    "id": 75
+  },
+  {
+    "start": 246.77,
+    "end": 250.69,
+    "en": "Talking to leaders and a whole bunch of people behind closed doors.",
+    "zh": "和各国领导人以及许多幕后人士交谈。",
+    "id": 76
+  },
+  {
+    "start": 250.69,
+    "end": 253.67,
+    "en": "Where you have some really spine-tingling conversations.",
+    "zh": "在那些场合，你会听到一些真正令人不寒而栗的对话。",
+    "id": 77
+  },
+  {
+    "start": 254.97,
+    "end": 257.65,
+    "en": "There’s a strain of opinion, mostly in the US and China.",
+    "zh": "有一种观点主要存在于美国和中国。",
+    "id": 78
+  },
+  {
+    "start": 257.69,
+    "end": 260.85,
+    "en": "Which thinks we can just win this race for AI.",
+    "zh": "他们认为我们只要赢得这场 AI 竞赛就可以了。",
+    "id": 79
+  },
+  {
+    "start": 262.13,
+    "end": 264.01,
+    "en": "A bunch of other people will get screwed, but we’ll be okay.",
+    "zh": "其他很多人会遭殃，但我们会没事。",
+    "id": 80
+  },
+  {
+    "start": 264.39,
+    "end": 266.09,
+    "en": "That’s not going to happen when, of course.",
+    "zh": "当然，这种事不会发生。",
+    "id": 81
+  },
+  {
+    "start": 266.17,
+    "end": 268.37,
+    "en": "You have societies all over the world that are going to be in chaos.",
+    "zh": "因为世界各地的社会都会陷入混乱。",
+    "id": 82
+  },
+  {
+    "start": 268.37,
+    "end": 270.81,
+    "en": "No one gets out of this thing in one piece.",
+    "zh": "没有人能从这件事里毫发无损地脱身。",
+    "id": 83
+  },
+  {
+    "start": 270.81,
+    "end": 276.17,
+    "en": "But we’re in a moment now where I think actually a lot of people across societies.",
+    "zh": "但我认为，我们现在正处在这样一个时刻，社会中其实有很多人。",
+    "id": 84
+  },
+  {
+    "start": 276.17,
+    "end": 278.63,
+    "en": "Who are paying a bit of attention.",
+    "zh": "只要稍微留意一点。",
+    "id": 85
+  },
+  {
+    "start": 279.17,
+    "end": 282.11,
+    "en": "They’re seeing things are failing on any number of fronts.",
+    "zh": "他们就会看到，很多方面都正在失灵。",
+    "id": 86
+  },
+  {
+    "start": 282.77,
+    "end": 283.65,
+    "en": "You look at all the polling.",
+    "zh": "你看看所有的民调。",
+    "id": 87
+  },
+  {
+    "start": 283.87,
+    "end": 288.21,
+    "en": "Why is it the overwhelming majority of societies in almost all the world.",
+    "zh": "为什么几乎全世界绝大多数社会的人。",
+    "id": 88
+  },
+  {
+    "start": 288.21,
+    "end": 290.09,
+    "en": "Say things are generally going in the wrong direction.",
+    "zh": "都说事情总体上正在朝错误的方向发展？",
+    "id": 89
+  },
+  {
+    "start": 290.59,
+    "end": 291.47,
+    "en": "People are angry.",
+    "zh": "人们很愤怒。",
+    "id": 90
+  },
+  {
+    "start": 291.89,
+    "end": 294.19,
+    "en": "They realize that there aren’t nuances.",
+    "zh": "他们意识到，这里面已经没有什么细微差别可言了。",
+    "id": 91
+  },
+  {
+    "start": 294.31,
+    "end": 296.11,
+    "en": "There is no vision coming from the top anymore.",
+    "zh": "高层已经不再提出任何愿景。",
+    "id": 92
+  },
+  {
+    "start": 296.61,
+    "end": 300.87,
+    "en": "In that context, you then have big tech racing to install these systems.",
+    "zh": "在这种背景下，大型科技公司还在加速部署这些系统。",
+    "id": 93
+  },
+  {
+    "start": 300.87,
+    "end": 302.81,
+    "en": "Where people are now really worried about their jobs.",
+    "zh": "而人们现在真的很担心自己的工作。",
+    "id": 94
+  },
+  {
+    "start": 303.01,
+    "end": 305.03,
+    "en": "There’s a lot of polling showing that the number one thing.",
+    "zh": "有很多民调显示，最让人们感到恐慌的事情。",
+    "id": 95
+  },
+  {
+    "start": 305.03,
+    "end": 307.33,
+    "en": "That gets people panicked about AI.",
+    "zh": "也就是人们对 AI 感到恐慌的头号原因。",
+    "id": 96
+  },
+  {
+    "start": 307.71,
+    "end": 311.19,
+    "en": "Which explains why it is in fact incredibly unpopular with societies.",
+    "zh": "这也解释了为什么 AI 在社会中实际上极不受欢迎。",
+    "id": 97
+  },
+  {
+    "start": 311.51,
+    "end": 313.49,
+    "en": "Is because they’re worried about their future jobs.",
+    "zh": "就是因为他们担心自己未来的工作。",
+    "id": 98
+  },
+  {
+    "start": 314.57,
+    "end": 316.75,
+    "en": "This is something where I think actually there’s a lot of people.",
+    "zh": "在这件事上，我认为其实有很多人。",
+    "id": 99
+  },
+  {
+    "start": 316.75,
+    "end": 320.53,
+    "en": "Who already are looking for a very different approach to how you manage these things.",
+    "zh": "已经在寻找一种截然不同的方式来管理这些事情。",
+    "id": 100
+  },
+  {
+    "start": 321.35,
+    "end": 322.75,
+    "en": "The debate has not shifted there yet.",
+    "zh": "但辩论还没有转向那个方向。",
+    "id": 101
+  },
+  {
+    "start": 322.75,
+    "end": 326.29,
+    "en": "Because I think a lot of people don’t understand the scale of what might happen.",
+    "zh": "因为我认为很多人还不了解可能发生的事情规模有多大。",
+    "id": 102
+  },
+  {
+    "start": 326.57,
+    "end": 328.17,
+    "en": "The speed at which this will unfold.",
+    "zh": "也不了解这一切会以多快的速度展开。",
+    "id": 103
+  },
+  {
+    "start": 328.39,
+    "end": 330.41,
+    "en": "And how interconnected all these agendas are.",
+    "zh": "以及所有这些议题之间有多么相互关联。",
+    "id": 104
+  },
+  {
+    "start": 330.59,
+    "end": 333.15,
+    "en": "When people really do understand that the technologies.",
+    "zh": "当人们真正理解这些技术的时候。",
+    "id": 105
+  },
+  {
+    "start": 333.15,
+    "end": 335.61,
+    "en": "That might give you your amazing apps on your phone.",
+    "zh": "这些技术也许能给你的手机带来很棒的应用。",
+    "id": 106
+  },
+  {
+    "start": 335.61,
+    "end": 339.77,
+    "en": "Also might be things That destroy the prospect of your kids having future jobs.",
+    "zh": "但也可能毁掉你的孩子未来拥有工作的前景。",
+    "id": 107
+  },
+  {
+    "start": 339.77,
+    "end": 342.57,
+    "en": "And also will threaten natural ecosystems.",
+    "zh": "并且还会威胁自然生态系统。",
+    "id": 108
+  },
+  {
+    "start": 342.93,
+    "end": 344.92,
+    "en": "Then it becomes a very different agenda.",
+    "zh": "到那时，这就会变成一个完全不同的议题。",
+    "id": 109
+  }
+]
