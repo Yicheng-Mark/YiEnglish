@@ -1,0 +1,457 @@
+[
+  {
+    "start": 2.96,
+    "end": 7.22,
+    "en": "Hello JENNIE It is so nice to meet you Hello Welcome to the studio.",
+    "zh": "你好 JENNIE 很高兴见到你 你好 欢迎来到录音室。",
+    "id": 1
+  },
+  {
+    "start": 7.22,
+    "end": 13.38,
+    "en": "Thank you for stopping by and congratulations on all the news the announcements Congrats on Ruby.",
+    "zh": "感谢你抽空过来 也恭喜你最近所有的消息和官宣 恭喜 Ruby。",
+    "id": 2
+  },
+  {
+    "start": 13.38,
+    "end": 18.72,
+    "en": "Thank you Coachella Coachella It’s the LA accent.",
+    "zh": "谢谢 Coachella Coachella 是洛杉矶口音。",
+    "id": 3
+  },
+  {
+    "start": 18.72,
+    "end": 20.28,
+    "en": "It’s wearing on me.",
+    "zh": "我都被它带跑了。",
+    "id": 4
+  },
+  {
+    "start": 20.28,
+    "end": 24.28,
+    "en": "So many fun things happening and I can’t wait to dive into a bunch of it with you.",
+    "zh": "最近有很多有趣的事情发生 我已经迫不及待想和你深入聊聊了。",
+    "id": 5
+  },
+  {
+    "start": 24.28,
+    "end": 29.98,
+    "en": "Gotta start with like JENNIE Everyone wants to be like JENNIE.",
+    "zh": "必须从 JENNIE 开始聊 大家都想成为像 JENNIE 一样的人。",
+    "id": 6
+  },
+  {
+    "start": 29.98,
+    "end": 35.86,
+    "en": "no Has that been such a surprise to see how like massive it’s gotten just right when your album comes out.",
+    "zh": "没有 看到它在你专辑刚发行时就变得这么火爆 有没有让你很惊讶。",
+    "id": 7
+  },
+  {
+    "start": 35.86,
+    "end": 44.48,
+    "en": "It’s crazy I was just saying even today I was like wow I’m just so amazed at how the song is doing and how everyone’s reacting to the song.",
+    "zh": "真的很疯狂 我今天还在说 我真的很惊讶这首歌的表现以及大家对它的反应。",
+    "id": 8
+  },
+  {
+    "start": 44.48,
+    "end": 47.08,
+    "en": "It’s definitely not what I expected.",
+    "zh": "这完全不是我预期的。",
+    "id": 9
+  },
+  {
+    "start": 47.08,
+    "end": 51.32,
+    "en": "I didn’t probably know what to expect but yeah I’m glad.",
+    "zh": "我其实也不知道该期待什么 但总之我很开心。",
+    "id": 10
+  },
+  {
+    "start": 51.32,
+    "end": 55.52,
+    "en": "Because when you put it out you’re not thinking like oh I think that song is going to do well.",
+    "zh": "因为你发布的时候并不会去想 哦我觉得这首歌会火。",
+    "id": 11
+  },
+  {
+    "start": 55.52,
+    "end": 59.0,
+    "en": "or that song is it’s just kind of nice to see the fans you know blow it up.",
+    "zh": "或者那首歌会怎样 看到粉丝把它推火真的很开心。",
+    "id": 12
+  },
+  {
+    "start": 59.0,
+    "end": 63.34,
+    "en": "When you scroll on social media are you seeing like your own song Is it coming up the trends.",
+    "zh": "当你刷社交媒体的时候 会看到自己的歌吗 会出现在趋势里吗。",
+    "id": 13
+  },
+  {
+    "start": 63.34,
+    "end": 65.34,
+    "en": "I am! Is that trippy?",
+    "zh": "会的！这会不会有点魔幻？",
+    "id": 14
+  },
+  {
+    "start": 65.34,
+    "end": 67.58,
+    "en": "Yeah I don’t enjoy it. No?",
+    "zh": "是啊 其实我不太享受。不是吗？",
+    "id": 15
+  },
+  {
+    "start": 67.58,
+    "end": 72.32,
+    "en": "I mean it’s cool but then like if it keeps happening.",
+    "zh": "我是说挺酷的 但如果一直发生的话。",
+    "id": 16
+  },
+  {
+    "start": 72.32,
+    "end": 75.86,
+    "en": "it’s like you hear yourself so many times and you’re like ah.",
+    "zh": "就会一直听到自己的声音 然后就会觉得 啊。",
+    "id": 17
+  },
+  {
+    "start": 75.86,
+    "end": 77.92,
+    "en": "If I hear myself my voice.",
+    "zh": "如果我听到自己的声音。",
+    "id": 18
+  },
+  {
+    "start": 77.92,
+    "end": 80.74,
+    "en": "oh it’s the same thing I know exactly what you’re talking about.",
+    "zh": "哦 是一样的 我完全懂你在说什么。",
+    "id": 19
+  },
+  {
+    "start": 80.74,
+    "end": 84.24,
+    "en": "And your rapping is so good Thank you.",
+    "zh": "而且你的说唱真的很好 谢谢。",
+    "id": 20
+  },
+  {
+    "start": 84.24,
+    "end": 87.0,
+    "en": "It’s been so fun to see like your journey and development.",
+    "zh": "看到你的成长和变化真的很有意思。",
+    "id": 21
+  },
+  {
+    "start": 87.0,
+    "end": 92.02,
+    "en": "How do you think your sounds evolve and like in your you know your own project for the first time as well.",
+    "zh": "你觉得你的音乐风格是如何进化的 这是你第一次做个人项目。",
+    "id": 22
+  },
+  {
+    "start": 92.02,
+    "end": 106.64,
+    "en": "I’ve noticed that I didn’t realize how many genres and different type of sounds that I wanted to tap into before I worked on this album.",
+    "zh": "我发现 在做这张专辑之前 我没有意识到自己想尝试这么多不同的风格和声音。",
+    "id": 23
+  },
+  {
+    "start": 106.64,
+    "end": 111.74,
+    "en": "And you know I’m finding myself really as I’m going I’m learning.",
+    "zh": "而且我是在这个过程中慢慢找到自己 我在不断学习。",
+    "id": 24
+  },
+  {
+    "start": 111.74,
+    "end": 115.8,
+    "en": "how to rap for the first time almost how to sing for the first time.",
+    "zh": "几乎是第一次学习怎么说唱 第一次学习怎么唱歌。",
+    "id": 25
+  },
+  {
+    "start": 115.8,
+    "end": 124.78,
+    "en": "Because I’ve never like in a good way I’ve never been able to really focus on only on myself.",
+    "zh": "因为从好的方面来说 我以前从来没有真正只专注于自己。",
+    "id": 26
+  },
+  {
+    "start": 124.78,
+    "end": 129.74,
+    "en": "I’ve always had the girls with me you know I’ve always had other things happening around me.",
+    "zh": "我一直都有成员在身边 也总有其他事情在发生。",
+    "id": 27
+  },
+  {
+    "start": 129.74,
+    "end": 137.72,
+    "en": "But for this for this album I got to really sit down and explore different voices and sounds.",
+    "zh": "但这张专辑让我可以真正坐下来 探索不同的声音和表达。",
+    "id": 28
+  },
+  {
+    "start": 137.72,
+    "end": 140.7,
+    "en": "And it was great So.",
+    "zh": "这真的很棒。",
+    "id": 29
+  },
+  {
+    "start": 140.7,
+    "end": 149.88,
+    "en": "I’m looking into I’m going to look into it and find out more about who and what kind of sound that I want to like hold on to.",
+    "zh": "所以我会继续去探索 找到自己想坚持的那种声音和方向。",
+    "id": 30
+  },
+  {
+    "start": 149.88,
+    "end": 152.26,
+    "en": "So you’re getting to experiment a little bit.",
+    "zh": "所以你现在可以多做一些尝试了。",
+    "id": 31
+  },
+  {
+    "start": 152.26,
+    "end": 156.02,
+    "en": "Is your confidence and like comfort level at like an all time high for making music.",
+    "zh": "你现在在做音乐时的自信和舒适度是历史最高吗。",
+    "id": 32
+  },
+  {
+    "start": 156.02,
+    "end": 161.78,
+    "en": "No I feel like I need more time in the studio for me to feel that way.",
+    "zh": "没有 我觉得我还需要更多时间在录音室里才能达到那种状态。",
+    "id": 33
+  },
+  {
+    "start": 161.78,
+    "end": 163.3,
+    "en": "But I think it was a great start.",
+    "zh": "但我觉得这是一个很好的开始。",
+    "id": 34
+  },
+  {
+    "start": 163.3,
+    "end": 174.68,
+    "en": "And I’ve met so many amazing people on the way to and they’ve inspired me in a way that I was able to finish this album.",
+    "zh": "而且这一路上我遇到了很多很棒的人 他们以某种方式激励了我 让我完成了这张专辑。",
+    "id": 35
+  },
+  {
+    "start": 174.68,
+    "end": 179.82,
+    "en": "So I can’t wait to get back in you know get into it more.",
+    "zh": "所以我迫不及待想回到录音室 继续深入去做。",
+    "id": 36
+  },
+  {
+    "start": 179.82,
+    "end": 183.54,
+    "en": "You feel like a workaholic a little bit like you just love to keep working.",
+    "zh": "你会觉得自己有点工作狂吗 就是很喜欢一直工作。",
+    "id": 37
+  },
+  {
+    "start": 183.54,
+    "end": 195.5,
+    "en": "You know what though it’s not all work that I love So I don’t consider myself as a workaholic Wait do I Oh man.",
+    "zh": "其实也不是所有工作我都喜欢 所以我不觉得自己是工作狂 等等 我是吗 天哪。",
+    "id": 38
+  },
+  {
+    "start": 195.5,
+    "end": 200.16,
+    "en": "Well there’s so many fun collabs Congratulations on all these friends that are hopping on the project.",
+    "zh": "这次有很多很棒的合作 恭喜你有这么多朋友参与这个项目。",
+    "id": 39
+  },
+  {
+    "start": 200.16,
+    "end": 203.3,
+    "en": "You and Dua Lipa sound so good together.",
+    "zh": "你和 Dua Lipa 的声音搭在一起很好听。",
+    "id": 40
+  },
+  {
+    "start": 203.3,
+    "end": 207.22,
+    "en": "Our voices though I love it too I love our voices together.",
+    "zh": "我们的声音 我也很喜欢 我也很喜欢我们在一起的声音。",
+    "id": 41
+  },
+  {
+    "start": 207.22,
+    "end": 211.92,
+    "en": "I loved hearing this song I remember for the first time and it’s like a perfect peanut butter jelly sandwich you know.",
+    "zh": "我第一次听到这首歌的时候就很喜欢 就像完美的花生酱果酱三明治一样。",
+    "id": 42
+  },
+  {
+    "start": 211.92,
+    "end": 215.32,
+    "en": "Or like when you get the right amount of coffee creamer in your coffee it’s like.",
+    "zh": "或者就像咖啡里加了刚刚好的奶精一样。",
+    "id": 43
+  },
+  {
+    "start": 215.32,
+    "end": 216.74,
+    "en": "thank you It flows so well together.",
+    "zh": "谢谢 它们融合得非常自然。",
+    "id": 44
+  },
+  {
+    "start": 216.74,
+    "end": 219.16,
+    "en": "Such a sweet compliment Thank you I appreciate that.",
+    "zh": "真是很甜的夸奖 谢谢 我很感激。",
+    "id": 45
+  },
+  {
+    "start": 219.16,
+    "end": 224.88,
+    "en": "I was so curious about like you guys have been friends for a little bit too What have you learned from just your friendship with her.",
+    "zh": "我很好奇 你们也认识一段时间了 从你们的友谊中你学到了什么。",
+    "id": 46
+  },
+  {
+    "start": 224.88,
+    "end": 227.9,
+    "en": "She’s a caring person in general.",
+    "zh": "她本身就是一个很关心别人的人。",
+    "id": 47
+  },
+  {
+    "start": 227.9,
+    "end": 233.48,
+    "en": "And we used to like do dinners and we would meet at parties.",
+    "zh": "我们以前会一起吃饭 也会在派对上见面。",
+    "id": 48
+  },
+  {
+    "start": 233.48,
+    "end": 239.04,
+    "en": "And every time she’s always like making sure if I’m good and happy and healthy is everything good around you.",
+    "zh": "而且每次她都会确认我过得好不好 是否开心 是否健康 身边的一切都好吗。",
+    "id": 49
+  },
+  {
+    "start": 239.04,
+    "end": 242.78,
+    "en": "So she’s someone that’s always made sure that I feel you know I’m feeling good.",
+    "zh": "所以她一直让我感觉很好。",
+    "id": 50
+  },
+  {
+    "start": 242.78,
+    "end": 246.26,
+    "en": "So to have her work on a song on this album.",
+    "zh": "所以能让她参与这张专辑的歌曲。",
+    "id": 51
+  },
+  {
+    "start": 246.26,
+    "end": 254.24,
+    "en": "she it’s like a great it’s it’s like having a great friend at work with you you know.",
+    "zh": "就像是在工作中有一个很好的朋友陪在你身边。",
+    "id": 52
+  },
+  {
+    "start": 254.24,
+    "end": 263.66,
+    "en": "Like what more can I ask for She’s supportive and she’s obviously giving sharing her beautiful voice with me on this album.",
+    "zh": "我还能要求什么呢 她很支持我 而且也把她美妙的声音分享给了这张专辑。",
+    "id": 53
+  },
+  {
+    "start": 263.66,
+    "end": 267.52,
+    "en": "Like I’m just so happy And it was a great day when we had the shoot.",
+    "zh": "我真的很开心 而且我们拍摄那天也很棒。",
+    "id": 54
+  },
+  {
+    "start": 267.52,
+    "end": 272.92,
+    "en": "It felt like we were just out in New York in the cold wearing crazy outfits just jamming to a song.",
+    "zh": "感觉就像我们在纽约的寒冷中 穿着很夸张的衣服 一起随着音乐摇摆。",
+    "id": 55
+  },
+  {
+    "start": 272.92,
+    "end": 278.12,
+    "en": "She really is like a comfort human right like your comfort support human.",
+    "zh": "她真的就是那种让人安心的人 对吧 就是你的情绪支撑。",
+    "id": 56
+  },
+  {
+    "start": 278.12,
+    "end": 281.94,
+    "en": "She just has that presence about her And she’s got to be one of them for you.",
+    "zh": "她身上有那种气场 对你来说她一定是其中之一。",
+    "id": 57
+  },
+  {
+    "start": 281.94,
+    "end": 288.6,
+    "en": "But being honored coming up at Billboard’s Women in Music you’re one of the global forces for 2025 Sounds so cool.",
+    "zh": "而且你还将在 Billboard Women in Music 上被表彰 你是2025年的全球力量之一 听起来很酷。",
+    "id": 58
+  },
+  {
+    "start": 288.6,
+    "end": 292.48,
+    "en": "Obviously you know your mom is such an important figure in your life.",
+    "zh": "当然你也知道 你的妈妈在你的人生中非常重要。",
+    "id": 59
+  },
+  {
+    "start": 292.48,
+    "end": 295.72,
+    "en": "But what about some other women that have inspired you and helped shape your journey.",
+    "zh": "但还有哪些女性也启发了你 并塑造了你的成长之路。",
+    "id": 60
+  },
+  {
+    "start": 295.72,
+    "end": 307.76,
+    "en": "On my team there’s so many strong women or I have so many strong women around me that are really in every step of the way that I’m in.",
+    "zh": "在我的团队里有很多很强大的女性 或者说我身边一直有很多很强大的女性陪伴着我走每一步。",
+    "id": 61
+  },
+  {
+    "start": 307.76,
+    "end": 316.4,
+    "en": "So to have that bond to always kind of shows taught me a way to respect them.",
+    "zh": "所以这种联系一直让我学会去尊重她们。",
+    "id": 62
+  },
+  {
+    "start": 316.4,
+    "end": 322.14,
+    "en": "And and I’ll always be learning from people around me.",
+    "zh": "而且我也会一直从身边的人身上学习。",
+    "id": 63
+  },
+  {
+    "start": 322.14,
+    "end": 330.88,
+    "en": "So to to be someone for to be that person for somebody else would be you know an honor.",
+    "zh": "所以如果我也能成为别人那样的人 那会是一种荣幸。",
+    "id": 64
+  },
+  {
+    "start": 330.88,
+    "end": 335.04,
+    "en": "And you know I want to do well and take care of this honor; of course.",
+    "zh": "而且我也希望能把这份荣誉做好并好好珍惜 当然。",
+    "id": 65
+  }
+]

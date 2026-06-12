@@ -1,0 +1,464 @@
+[
+  {
+    "start": 0.0,
+    "end": 3.12,
+    "en": "Growth and comfort never coexist.",
+    "zh": "成长和舒适不可兼得。",
+    "id": 1
+  },
+  {
+    "start": 3.58,
+    "end": 5.74,
+    "en": "And if you're gonna grow as a person, as a leader.",
+    "zh": "如果你想作为一个人、作为一名领导者不断成长，",
+    "id": 2
+  },
+  {
+    "start": 6.0,
+    "end": 8.22,
+    "en": "you gotta get comfortable with being uncomfortable.",
+    "zh": "你就必须习惯那种不舒服的状态。",
+    "id": 3
+  },
+  {
+    "start": 8.78,
+    "end": 11.16,
+    "en": "You welcome challenge, you welcome risk.",
+    "zh": "你要欢迎挑战，也要拥抱风险。",
+    "id": 4
+  },
+  {
+    "start": 11.4,
+    "end": 13.88,
+    "en": "because you know you come out better at the other side.",
+    "zh": "因为你知道，经历过之后，你会变得更好。",
+    "id": 5
+  },
+  {
+    "start": 14.7,
+    "end": 17.2,
+    "en": "I was born and raised in Chicago, Illinois.",
+    "zh": "我在伊利诺伊州芝加哥出生并长大。",
+    "id": 6
+  },
+  {
+    "start": 17.32,
+    "end": 22.06,
+    "en": "and I think I was always the one that was sort of the mother hen of my brothers and sisters.",
+    "zh": "我觉得我一直都是兄弟姐妹里那个像大姐姐一样照顾大家的人。",
+    "id": 7
+  },
+  {
+    "start": 22.26,
+    "end": 25.22,
+    "en": "Most of my memories are of taking care of them in one way or another.",
+    "zh": "我大多数记忆，都是以这样或那样的方式照顾他们。",
+    "id": 8
+  },
+  {
+    "start": 25.54,
+    "end": 26.38,
+    "en": "I really loved school.",
+    "zh": "我真的很喜欢上学。",
+    "id": 9
+  },
+  {
+    "start": 26.4,
+    "end": 27.62,
+    "en": "I was always good in math.",
+    "zh": "我数学一直很好。",
+    "id": 10
+  },
+  {
+    "start": 27.82,
+    "end": 31.08,
+    "en": "I loved this idea that you should be able to derive where everything comes from.",
+    "zh": "我很喜欢一种想法：你应该能够推导出每件事的来龙去脉。",
+    "id": 11
+  },
+  {
+    "start": 31.3,
+    "end": 32.48,
+    "en": "But I did a lot of activities.",
+    "zh": "不过我也参加了很多活动。",
+    "id": 12
+  },
+  {
+    "start": 32.76,
+    "end": 36.66,
+    "en": "I played basketball, volleyball, and I was student council president.",
+    "zh": "我打篮球、打排球，还当过学生会主席。",
+    "id": 13
+  },
+  {
+    "start": 46.74,
+    "end": 49.02,
+    "en": "In that moment, our world changed.",
+    "zh": "就在那个时刻，我们的世界改变了。",
+    "id": 14
+  },
+  {
+    "start": 49.2,
+    "end": 50.26,
+    "en": "We went on food stamps.",
+    "zh": "我们开始靠食品券生活。",
+    "id": 15
+  },
+  {
+    "start": 50.26,
+    "end": 53.34,
+    "en": "and my mother felt ashamed to have to do something like that.",
+    "zh": "我母亲因为不得不这样做而感到羞愧。",
+    "id": 16
+  },
+  {
+    "start": 53.34,
+    "end": 56.92,
+    "en": "And I can remember that pain in her eyes, but she was determined",
+    "zh": "我还记得她眼里的那种痛苦，但她非常坚定，",
+    "id": 17
+  },
+  {
+    "start": 56.92,
+    "end": 58.92,
+    "en": "that this would not be how this story ended.",
+    "zh": "她绝不会让我们的故事就这样结束。",
+    "id": 18
+  },
+  {
+    "start": 59.64,
+    "end": 62.8,
+    "en": "She went back to school, got a job, then got a better job,",
+    "zh": "她重新回到学校，找到了一份工作，然后又找到了一份更好的工作，",
+    "id": 19
+  },
+  {
+    "start": 62.82,
+    "end": 65.96,
+    "en": "a better job, and I watched my brothers and sisters.",
+    "zh": "再后来又换了更好的工作，而我则照看我的弟弟妹妹们。",
+    "id": 20
+  },
+  {
+    "start": 66.24,
+    "end": 68.7,
+    "en": "It was one of the most defining elements of my life.",
+    "zh": "那是我人生中最重要、最能塑造我的经历之一。",
+    "id": 21
+  },
+  {
+    "start": 68.74,
+    "end": 72.28,
+    "en": "and we all learned you never let someone else define who you are.",
+    "zh": "我们也都学会了，绝不能让别人来定义你是谁。",
+    "id": 22
+  },
+  {
+    "start": 72.38,
+    "end": 74.28,
+    "en": "Only you define who you are.",
+    "zh": "只有你自己能定义你是谁。",
+    "id": 23
+  },
+  {
+    "start": 83.16,
+    "end": 85.52,
+    "en": "I'll often meet people and they'll say, hey, I was with you in class.",
+    "zh": "我经常会遇到一些人，他们会说，嘿，我以前和你一起上过课。",
+    "id": 24
+  },
+  {
+    "start": 85.66,
+    "end": 87.74,
+    "en": "I'm like, that's interesting, I'm sorry, I'm embarrassed.",
+    "zh": "我就会说，这很有意思，真不好意思，我有点尴尬。",
+    "id": 25
+  },
+  {
+    "start": 87.74,
+    "end": 90.58,
+    "en": "I don't remember you, but there was like 30 of you and one of me,",
+    "zh": "我不记得你了，但当时你们有三十来个人，而我只有一个，",
+    "id": 26
+  },
+  {
+    "start": 90.58,
+    "end": 92.46,
+    "en": "so you probably remember me.",
+    "zh": "所以你可能更容易记住我。",
+    "id": 27
+  },
+  {
+    "start": 92.58,
+    "end": 94.14,
+    "en": "It was just not the norm.",
+    "zh": "那在当时真的不是常态。",
+    "id": 28
+  },
+  {
+    "start": 94.48,
+    "end": 97.34,
+    "en": "I came from no money, no anything to go to a great school,",
+    "zh": "我一无所有、家里没什么钱，却一路走进了一所很好的学校，",
+    "id": 29
+  },
+  {
+    "start": 97.7,
+    "end": 100.4,
+    "en": "and it's really, though, why I do feel so strongly that in this country,",
+    "zh": "也正是因为这样，我才会如此强烈地相信，在这个国家，",
+    "id": 30
+  },
+  {
+    "start": 100.48,
+    "end": 103.18,
+    "en": "where there is a will, there is a way to get something done.",
+    "zh": "有志者事竟成。",
+    "id": 31
+  },
+  {
+    "start": 114.4,
+    "end": 117.66,
+    "en": "10 years into my career, I had been offered a promotion.",
+    "zh": "工作十年后，我得到了一次晋升机会。",
+    "id": 32
+  },
+  {
+    "start": 118.12,
+    "end": 120.72,
+    "en": "The man who had offered it said, look, you should take my job,",
+    "zh": "给我这个机会的那位男士说，听着，你应该接替我的职位，",
+    "id": 33
+  },
+  {
+    "start": 121.04,
+    "end": 123.6,
+    "en": "and I said, oh, I'm not ready for this thing yet.",
+    "zh": "而我说，哦，我还没准备好接这个职位。",
+    "id": 34
+  },
+  {
+    "start": 123.78,
+    "end": 125.28,
+    "en": "Just give me a little bit more time.",
+    "zh": "再给我一点时间吧。",
+    "id": 35
+  },
+  {
+    "start": 125.46,
+    "end": 128.16,
+    "en": "I went home that night and my husband looked at me and he said,",
+    "zh": "那天晚上我回到家，我丈夫看着我说，",
+    "id": 36
+  },
+  {
+    "start": 128.96,
+    "end": 131.22,
+    "en": "do you think a man would have answered the question that way?",
+    "zh": "你觉得一个男人会这样回答这个问题吗？",
+    "id": 37
+  },
+  {
+    "start": 132.76,
+    "end": 136.08,
+    "en": "No. So I went back in the next day, I took the job,",
+    "zh": "不会。所以第二天我又回去了，接受了那份工作，",
+    "id": 38
+  },
+  {
+    "start": 136.48,
+    "end": 139.04,
+    "en": "and he looked me in the eye and he said, don't do that again.",
+    "zh": "他看着我的眼睛，对我说，别再这样了。",
+    "id": 39
+  },
+  {
+    "start": 139.72,
+    "end": 140.58,
+    "en": "I said, I understand.",
+    "zh": "我说，我明白了。",
+    "id": 40
+  },
+  {
+    "start": 153.88,
+    "end": 155.96,
+    "en": "To lead IBM, I mean, wow.",
+    "zh": "领导 IBM，说真的，哇。",
+    "id": 41
+  },
+  {
+    "start": 156.06,
+    "end": 159.62,
+    "en": "it is with great gratitude and a great sense of responsibility.",
+    "zh": "我怀着巨大的感激，也怀着强烈的责任感。",
+    "id": 42
+  },
+  {
+    "start": 159.98,
+    "end": 164.78,
+    "en": "But I didn't want the world to define me as the first woman CEO of IBM.",
+    "zh": "但我不希望世界把我定义为 IBM 的第一位女性 CEO。",
+    "id": 43
+  },
+  {
+    "start": 165.12,
+    "end": 167.16,
+    "en": "I just wanted to be a good CEO of IBM.",
+    "zh": "我只想成为一名优秀的 IBM CEO。",
+    "id": 44
+  },
+  {
+    "start": 167.58,
+    "end": 173.14,
+    "en": "It was another pivotal learning point that you do have to recognize you are a role model,",
+    "zh": "这又是一个关键的学习时刻：你确实必须意识到，自己是一个榜样，",
+    "id": 45
+  },
+  {
+    "start": 173.48,
+    "end": 177.32,
+    "en": "that for people to aspire to be something, it does really help",
+    "zh": "因为人们想要追求某种目标时，确实会很有帮助，",
+    "id": 46
+  },
+  {
+    "start": 177.32,
+    "end": 180.3,
+    "en": "if they see other people around them that are in that role,",
+    "zh": "如果他们能看到身边有人已经处在那个位置，",
+    "id": 47
+  },
+  {
+    "start": 180.42,
+    "end": 182.84,
+    "en": "and therefore take that seriously.",
+    "zh": "所以你也必须认真对待这件事。",
+    "id": 48
+  },
+  {
+    "start": 190.62,
+    "end": 195.46,
+    "en": "This era, I believe, will reflect back on, data will be the issue of our time,",
+    "zh": "我相信，当我们回望这个时代时，会发现数据将是我们这个时代的核心议题，",
+    "id": 49
+  },
+  {
+    "start": 195.84,
+    "end": 199.96,
+    "en": "and handled with care, you will solve some of the world's most intractable problems,",
+    "zh": "如果谨慎地处理数据，你就能解决世界上一些最棘手的问题，",
+    "id": 50
+  },
+  {
+    "start": 200.02,
+    "end": 203.26,
+    "en": "and that's behind all our investment in artificial intelligence and cloud.",
+    "zh": "这也是我们所有人工智能和云计算投资背后的原因。",
+    "id": 51
+  },
+  {
+    "start": 203.78,
+    "end": 208.24,
+    "en": "The most important thing you have to do is have conviction about what you believe is right and then stay your course.",
+    "zh": "你最重要要做的事，就是对你认为正确的事情保持信念，然后坚定地走下去。",
+    "id": 52
+  },
+  {
+    "start": 224.24,
+    "end": 226.92,
+    "en": "When I think about women in the workplace, it's about inclusion.",
+    "zh": "当我想到职场中的女性时，核心是包容。",
+    "id": 53
+  },
+  {
+    "start": 227.32,
+    "end": 230.58,
+    "en": "I do believe it's a company's job to create a good environment for that.",
+    "zh": "我确实相信，公司有责任为此创造一个良好的环境。",
+    "id": 54
+  },
+  {
+    "start": 230.78,
+    "end": 232.9,
+    "en": "Companies, they will take everything you can give.",
+    "zh": "公司会拿走你能付出的一切。",
+    "id": 55
+  },
+  {
+    "start": 232.98,
+    "end": 237.2,
+    "en": "So you have to set your boundaries, and that's what gives you your balance.",
+    "zh": "所以你必须设定自己的边界，而这才会给你带来平衡。",
+    "id": 56
+  },
+  {
+    "start": 237.4,
+    "end": 240.4,
+    "en": "And I guarantee you, most things adapt around them.",
+    "zh": "我可以向你保证，大多数事情都会围绕这些边界慢慢适应。",
+    "id": 57
+  },
+  {
+    "start": 240.56,
+    "end": 244.6,
+    "en": "And so I think the state, the focus on that, of how to advance women,",
+    "zh": "所以我认为，关于如何推动女性发展，",
+    "id": 58
+  },
+  {
+    "start": 244.76,
+    "end": 245.76,
+    "en": "it is a constant.",
+    "zh": "这件事必须持续关注。",
+    "id": 59
+  },
+  {
+    "start": 245.96,
+    "end": 246.94,
+    "en": "It isn't about one moment.",
+    "zh": "它不是某一个瞬间的事情。",
+    "id": 60
+  },
+  {
+    "start": 247.02,
+    "end": 249.84,
+    "en": "This is about continuity and about persistence.",
+    "zh": "它关乎持续性，也关乎坚持。",
+    "id": 61
+  },
+  {
+    "start": 250.22,
+    "end": 251.86,
+    "en": "That is what will solve this problem.",
+    "zh": "这才是解决这个问题的方式。",
+    "id": 62
+  },
+  {
+    "start": 252.32,
+    "end": 253.76,
+    "en": "There is no doubt in my mind.",
+    "zh": "我对此毫不怀疑。",
+    "id": 63
+  },
+  {
+    "start": 253.76,
+    "end": 259.24,
+    "en": "that attracting women and great people in general has to do with your values and you live them.",
+    "zh": "吸引女性，以及吸引优秀的人才，本质上取决于你的价值观，以及你是否真正践行它们。",
+    "id": 64
+  },
+  {
+    "start": 259.42,
+    "end": 260.56,
+    "en": "You live them every day.",
+    "zh": "你要每天都践行这些价值观。",
+    "id": 65
+  },
+  {
+    "start": 260.66,
+    "end": 262.24,
+    "en": "Not what you say, it's what you do.",
+    "zh": "重要的不是你说什么，而是你做什么。",
+    "id": 66
+  }
+]

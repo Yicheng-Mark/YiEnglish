@@ -1,0 +1,856 @@
+[
+  {
+    "start": 0.0,
+    "end": 2.04,
+    "en": "I'm halfway through my degree at Cambridge.",
+    "zh": "我在剑桥的学位已经读到一半了。",
+    "id": 1
+  },
+  {
+    "start": 2.9,
+    "end": 4.4,
+    "en": "In my second year of computer science.",
+    "zh": "现在是我计算机科学专业的第二年。",
+    "id": 2
+  },
+  {
+    "start": 4.54,
+    "end": 7.54,
+    "en": "I've got to balance my exam prep with finding a job for the summer,",
+    "zh": "我得一边准备考试，一边找暑假的工作，",
+    "id": 3
+  },
+  {
+    "start": 7.94,
+    "end": 10.78,
+    "en": "all whilst enjoying the dwindling time I have left in the city.",
+    "zh": "同时还要好好享受我在这座城市所剩不多的时光。",
+    "id": 4
+  },
+  {
+    "start": 10.88,
+    "end": 12.54,
+    "en": "And it doesn't help that this year.",
+    "zh": "更麻烦的是，今年，",
+    "id": 5
+  },
+  {
+    "start": 12.66,
+    "end": 14.4,
+    "en": "I'm getting kicked out of college accommodation.",
+    "zh": "我还要被赶出学院宿舍了。",
+    "id": 6
+  },
+  {
+    "start": 14.5,
+    "end": 17.74,
+    "en": "Let me back. But you know what that means New roommates.",
+    "zh": "让我回去吧。不过你知道这意味着什么：新室友。",
+    "id": 7
+  },
+  {
+    "start": 19.02,
+    "end": 22.34,
+    "en": "I sort of know them, but I'll be honest, I'm a bit nervous to live with them.",
+    "zh": "我算是认识他们，但说实话，想到要和他们一起住，我有点紧张。",
+    "id": 8
+  },
+  {
+    "start": 22.44,
+    "end": 26.64,
+    "en": "I've heard of them breaking into people's rooms and putting laundry detergent into people's milk.",
+    "zh": "我听说他们会闯进别人房间，还会把洗衣液倒进别人的牛奶里。",
+    "id": 9
+  },
+  {
+    "start": 28.14,
+    "end": 31.1,
+    "en": "So at the start of the year, I'm genuinely a bit cautious already.",
+    "zh": "所以这一年刚开始，我其实就已经有点警惕了。",
+    "id": 10
+  },
+  {
+    "start": 31.34,
+    "end": 33.34,
+    "en": "Obviously, I know it'll probably be fine.",
+    "zh": "当然，我知道大概率不会有什么事。",
+    "id": 11
+  },
+  {
+    "start": 34.12,
+    "end": 37.68,
+    "en": "Right? I don't know what I'm in for, do I?",
+    "zh": "对吧？我也不知道接下来等着我的是什么。",
+    "id": 12
+  },
+  {
+    "start": 37.68,
+    "end": 56.62,
+    "en": "Yo! No! Though my housing situation differs from last year.",
+    "zh": "哟！不是吧！虽然今年我的住宿情况和去年不一样。",
+    "id": 13
+  },
+  {
+    "start": 56.78,
+    "end": 59.44,
+    "en": "one constant that remains is the glorious computer lab.",
+    "zh": "但有一个不变的地方，就是辉煌的计算机实验室。",
+    "id": 14
+  },
+  {
+    "start": 59.6,
+    "end": 61.78,
+    "en": "Because this year, every lecture we have happens here.",
+    "zh": "因为今年我们所有的课都在这里上。",
+    "id": 15
+  },
+  {
+    "start": 61.84,
+    "end": 63.16,
+    "en": "A 10-minute cycle from college.",
+    "zh": "从学院骑车过来要10分钟。",
+    "id": 16
+  },
+  {
+    "start": 63.3,
+    "end": 64.98,
+    "en": "In Cambridge terms, intercontinental.",
+    "zh": "按剑桥的标准，这都算跨洲旅行了。",
+    "id": 17
+  },
+  {
+    "start": 65.14,
+    "end": 66.54,
+    "en": "This place stresses me out.",
+    "zh": "这个地方让我压力很大。",
+    "id": 18
+  },
+  {
+    "start": 66.54,
+    "end": 69.3,
+    "en": "Every other guy you see has an internship lined up for the summer.",
+    "zh": "你看到的几乎每个男生，暑假都已经安排好了实习。",
+    "id": 19
+  },
+  {
+    "start": 69.44,
+    "end": 70.8,
+    "en": "Many for six-figure jobs.",
+    "zh": "很多都是年薪六位数的工作。",
+    "id": 20
+  },
+  {
+    "start": 71.0,
+    "end": 73.38,
+    "en": "I'm convinced the business school is a less lucrative place.",
+    "zh": "我都觉得商学院可能都没这里赚钱。",
+    "id": 21
+  },
+  {
+    "start": 73.6,
+    "end": 76.96,
+    "en": "People talk about startups, big tech and trading firms almost every day.",
+    "zh": "大家几乎每天都在聊创业、大厂和交易公司。",
+    "id": 22
+  },
+  {
+    "start": 77.02,
+    "end": 79.46,
+    "en": "And there I am, barely holding on during graphics lectures.",
+    "zh": "而我呢，图形学课都快撑不住了。",
+    "id": 23
+  },
+  {
+    "start": 80.02,
+    "end": 81.8,
+    "en": "So I hopped on the recruiting trend.",
+    "zh": "所以我也跟上了找工作的潮流。",
+    "id": 24
+  },
+  {
+    "start": 82.04,
+    "end": 82.98,
+    "en": "I want a job too.",
+    "zh": "我也想要一份工作。",
+    "id": 25
+  },
+  {
+    "start": 83.12,
+    "end": 86.3,
+    "en": "If my friends could secure themselves great internships, so could I.",
+    "zh": "如果我的朋友们都能拿到很棒的实习，那我也可以。",
+    "id": 26
+  },
+  {
+    "start": 86.4,
+    "end": 90.4,
+    "en": "I begin scouring job boards for anything tech-related just to get my foot in the door.",
+    "zh": "我开始疯狂刷招聘网站，找任何和科技相关的岗位，只想先挤进去。",
+    "id": 27
+  },
+  {
+    "start": 90.5,
+    "end": 94.36,
+    "en": "One of these companies is surely going to want a piece of my highly technical skillset.",
+    "zh": "这些公司里总有一家会看中我这套高度技术化的技能吧。",
+    "id": 28
+  },
+  {
+    "start": 94.36,
+    "end": 96.64,
+    "en": "I wasn't going to let them tell me otherwise.",
+    "zh": "我才不会让他们告诉我不是这样。",
+    "id": 29
+  },
+  {
+    "start": 99.68,
+    "end": 102.38,
+    "en": "Oh my god. It's a bloodbath.",
+    "zh": "我的天，简直是腥风血雨。",
+    "id": 30
+  },
+  {
+    "start": 102.6,
+    "end": 105.12,
+    "en": "So I guess it's going to be a bit more challenging than I had imagined.",
+    "zh": "所以看来这事会比我想象中更有挑战一点。",
+    "id": 31
+  },
+  {
+    "start": 105.42,
+    "end": 106.4,
+    "en": "Rejection's a funny thing.",
+    "zh": "被拒绝这件事挺有意思的。",
+    "id": 32
+  },
+  {
+    "start": 106.6,
+    "end": 108.9,
+    "en": "Most people at Cambridge haven't experienced enough of it.",
+    "zh": "剑桥的大多数人都没怎么经历过被拒。",
+    "id": 33
+  },
+  {
+    "start": 108.98,
+    "end": 109.74,
+    "en": "And neither had I.",
+    "zh": "我也一样。",
+    "id": 34
+  },
+  {
+    "start": 109.86,
+    "end": 116.06,
+    "en": "Just seeing the extent to which all these great companies seem to agree over my lack of value had me really questioning my abilities.",
+    "zh": "看到这么多优秀公司似乎都一致认定我没什么价值，真的让我开始怀疑自己的能力。",
+    "id": 35
+  },
+  {
+    "start": 116.28,
+    "end": 118.16,
+    "en": "With a new focus on recruiting for the summer.",
+    "zh": "因为现在把重点转向了暑期招聘，",
+    "id": 36
+  },
+  {
+    "start": 118.24,
+    "end": 121.3,
+    "en": "I've had to make drastic changes to the social schedule of this year.",
+    "zh": "我不得不对今年的社交安排做出重大调整。",
+    "id": 37
+  },
+  {
+    "start": 121.3,
+    "end": 124.58,
+    "en": "Practically every week in my first year, you'd find me out at a club",
+    "zh": "第一年的时候，几乎每周你都能在夜店里找到我，",
+    "id": 38
+  },
+  {
+    "start": 124.58,
+    "end": 128.6,
+    "en": "or some event. But this is simply not a sustainable lifestyle for someone as serious",
+    "zh": "或者在某个活动上。但这种生活方式，对我这样认真",
+    "id": 39
+  },
+  {
+    "start": 128.6,
+    "end": 130.4,
+    "en": "and employable as myself.",
+    "zh": "且具备就业竞争力的人来说，显然是不可持续的。",
+    "id": 40
+  },
+  {
+    "start": 134.36,
+    "end": 139.06,
+    "en": "Instead, I'm trying my hand at the College Formal Challenge.",
+    "zh": "所以我改为尝试学院正式晚宴挑战。",
+    "id": 41
+  },
+  {
+    "start": 139.36,
+    "end": 143.92,
+    "en": "Everyone knows by the time you finish a degree at Cambridge, you've got to have visited every college for a formal.",
+    "zh": "大家都知道，在剑桥读完一个学位之前，你必须去每个学院参加一次正式晚宴。",
+    "id": 42
+  },
+  {
+    "start": 144.12,
+    "end": 148.02,
+    "en": "With 31 different colleges to visit and only 6 checked off from my first year,",
+    "zh": "一共有31个学院要去，而我第一年只打卡了6个，",
+    "id": 43
+  },
+  {
+    "start": 148.1,
+    "end": 149.22,
+    "en": "I've not been doing great.",
+    "zh": "进度实在不太理想。",
+    "id": 44
+  },
+  {
+    "start": 149.32,
+    "end": 150.84,
+    "en": "I've got to pick up the pace.",
+    "zh": "我得加快节奏了。",
+    "id": 45
+  },
+  {
+    "start": 151.7,
+    "end": 154.26,
+    "en": "Starting with Tit Hall, Churchill and Girton.",
+    "zh": "先从Tit Hall、Churchill和Girton开始。",
+    "id": 46
+  },
+  {
+    "start": 154.78,
+    "end": 157.5,
+    "en": "and Pembroke, Sydney and Lucy also get checked off.",
+    "zh": "Pembroke、Sidney和Lucy也顺利打卡。",
+    "id": 47
+  },
+  {
+    "start": 157.84,
+    "end": 160.88,
+    "en": "Second year also brings along with it another substitute to going out,",
+    "zh": "大二还带来了另一个替代外出玩乐的选择，",
+    "id": 48
+  },
+  {
+    "start": 161.1,
+    "end": 166.24,
+    "en": "owing to the fact that many people move out of internal college accommodation into external college housing.",
+    "zh": "因为很多人会从学院内部宿舍搬到学院外部住房。",
+    "id": 49
+  },
+  {
+    "start": 166.42,
+    "end": 168.38,
+    "en": "So you get to visit a lot of houses.",
+    "zh": "所以你就能去参观很多房子。",
+    "id": 50
+  },
+  {
+    "start": 173.32,
+    "end": 176.54,
+    "en": "Hayden Young, he is the GOAT.",
+    "zh": "Hayden，他是永远的神。",
+    "id": 51
+  },
+  {
+    "start": 176.62,
+    "end": 177.68,
+    "en": "I don't like him.",
+    "zh": "我不喜欢他。",
+    "id": 52
+  },
+  {
+    "start": 177.82,
+    "end": 181.78,
+    "en": "I love Hayden. I love men, I love women and I love people.",
+    "zh": "我爱Hayden。我爱男人，我爱女人，我爱所有人。",
+    "id": 53
+  },
+  {
+    "start": 181.94,
+    "end": 183.1,
+    "en": "I love men too.",
+    "zh": "我也爱男人。",
+    "id": 54
+  },
+  {
+    "start": 189.36,
+    "end": 193.26,
+    "en": "But honestly, what I really need this year is less social time",
+    "zh": "但说真的，今年我真正需要的是少一点社交时间，",
+    "id": 55
+  },
+  {
+    "start": 193.26,
+    "end": 194.5,
+    "en": "and more desk time.",
+    "zh": "多一点坐在书桌前的时间。",
+    "id": 56
+  },
+  {
+    "start": 194.62,
+    "end": 197.56,
+    "en": "Because the first term of a second year Cambridge Computer Science degree.",
+    "zh": "因为剑桥计算机科学大二第一学期，",
+    "id": 57
+  },
+  {
+    "start": 197.56,
+    "end": 201.38,
+    "en": "is probably one of the densest academic experiences you could give to someone.",
+    "zh": "大概是一个人能经历到的最密集的学术体验之一。",
+    "id": 58
+  },
+  {
+    "start": 201.66,
+    "end": 206.18,
+    "en": "Something like 2,500 slides of lecture content is delivered in the span of 8 weeks.",
+    "zh": "大概有2500页课件内容，要在8周内讲完。",
+    "id": 59
+  },
+  {
+    "start": 206.18,
+    "end": 210.04,
+    "en": "It can easily become a 70-hour work week where you still manage to fall behind.",
+    "zh": "它很容易变成每周工作70个小时，但你还是会落后。",
+    "id": 60
+  },
+  {
+    "start": 210.16,
+    "end": 211.98,
+    "en": "So I really needed to lock in.",
+    "zh": "所以我真的得认真起来了。",
+    "id": 61
+  },
+  {
+    "start": 214.02,
+    "end": 216.2,
+    "en": "My god, one of my internship applications.",
+    "zh": "我的天，我的一个实习申请，",
+    "id": 62
+  },
+  {
+    "start": 216.64,
+    "end": 217.46,
+    "en": "They got back to me.",
+    "zh": "他们回复我了。",
+    "id": 63
+  },
+  {
+    "start": 217.72,
+    "end": 219.62,
+    "en": "It was great getting the chance to meet you in our online interviews.",
+    "zh": "很高兴能在我们的线上面试中见到你。",
+    "id": 64
+  },
+  {
+    "start": 219.72,
+    "end": 222.98,
+    "en": "We'd love to have you come to the London office for a final round.",
+    "zh": "我们希望邀请你来伦敦办公室参加最终轮面试。",
+    "id": 65
+  },
+  {
+    "start": 225.78,
+    "end": 229.08,
+    "en": "I knew the final in-person interview was supposed to be really tough.",
+    "zh": "我知道最后这轮线下面试应该会非常难。",
+    "id": 66
+  },
+  {
+    "start": 229.28,
+    "end": 231.74,
+    "en": "It's had a great company with an amazing internship program.",
+    "zh": "这是一家很棒的公司，也有非常优秀的实习项目。",
+    "id": 67
+  },
+  {
+    "start": 231.8,
+    "end": 233.4,
+    "en": "So I just knew I had to make the bar.",
+    "zh": "所以我知道自己必须达到他们的标准。",
+    "id": 68
+  },
+  {
+    "start": 233.4,
+    "end": 237.0,
+    "en": "With this in mind, I decided to play the strategic degree gambit",
+    "zh": "带着这个想法，我决定采取战略性学位弃子策略，",
+    "id": 69
+  },
+  {
+    "start": 237.0,
+    "end": 242.26,
+    "en": "where I give up staying on top of my academic courses to prepare as hard as I can on interview preparation.",
+    "zh": "也就是放弃跟上课程进度，把全部精力都投入到面试准备上。",
+    "id": 70
+  },
+  {
+    "start": 242.48,
+    "end": 244.04,
+    "en": "I just can't imagine this ending poorly.",
+    "zh": "我完全想象不到这会有什么糟糕的结局。",
+    "id": 71
+  },
+  {
+    "start": 244.32,
+    "end": 246.76,
+    "en": "So after two weeks of absolute cramming.",
+    "zh": "于是，在整整两周疯狂突击之后，",
+    "id": 72
+  },
+  {
+    "start": 246.96,
+    "end": 250.82,
+    "en": "fueled with meal deals and determination, I made my way to Cambridge Station.",
+    "zh": "靠着超市套餐和意志力支撑，我出发去了剑桥火车站。",
+    "id": 73
+  },
+  {
+    "start": 253.4,
+    "end": 254.8,
+    "en": "It's actually really nice.",
+    "zh": "其实还挺不错的。",
+    "id": 74
+  },
+  {
+    "start": 254.94,
+    "end": 258.02,
+    "en": "They've paid for the transport, a hotel for the night and for any meals",
+    "zh": "他们报销了交通费、一晚酒店，还有我在伦敦期间的所有餐费。",
+    "id": 75
+  },
+  {
+    "start": 258.02,
+    "end": 258.86,
+    "en": "whilst I'm in London.",
+    "zh": "只要我人在伦敦。",
+    "id": 76
+  },
+  {
+    "start": 259.1,
+    "end": 262.48,
+    "en": "It almost feels like I'm being pranked because the hotel is so nice.",
+    "zh": "这感觉简直像有人在整我，因为酒店太好了。",
+    "id": 77
+  },
+  {
+    "start": 262.48,
+    "end": 265.2,
+    "en": "Hiya, I've got my room booked for Hayden Young.",
+    "zh": "你好，我订了Hayden 名下的房间。",
+    "id": 78
+  },
+  {
+    "start": 265.38,
+    "end": 267.58,
+    "en": "I mean, all I did was get on a couple of interview calls,",
+    "zh": "我的意思是，我只是参加了几轮线上面试，",
+    "id": 79
+  },
+  {
+    "start": 267.64,
+    "end": 271.08,
+    "en": "my basement room and now I'm really physically showing up to their office.",
+    "zh": "从我的地下室房间出发，现在居然真的亲自来到他们办公室了。",
+    "id": 80
+  },
+  {
+    "start": 271.24,
+    "end": 272.06,
+    "en": "What a world we live in.",
+    "zh": "我们生活的这个世界真神奇。",
+    "id": 81
+  },
+  {
+    "start": 272.18,
+    "end": 274.94,
+    "en": "I pick up some free dinner in central London and head back to the hotel.",
+    "zh": "我在伦敦市中心拿了一顿免费晚餐，然后回到酒店。",
+    "id": 82
+  },
+  {
+    "start": 275.2,
+    "end": 277.62,
+    "en": "My interview's in the morning so I've got some time to relax",
+    "zh": "我的面试在第二天早上，所以我还有点时间放松一下，",
+    "id": 83
+  },
+  {
+    "start": 277.62,
+    "end": 279.04,
+    "en": "and enjoy the luxury water here.",
+    "zh": "顺便享受一下这里奢华的矿泉水。",
+    "id": 84
+  },
+  {
+    "start": 279.22,
+    "end": 281.8,
+    "en": "But before I head to bed, I start getting a bit nervous.",
+    "zh": "但在睡觉前，我开始有点紧张了。",
+    "id": 85
+  },
+  {
+    "start": 281.94,
+    "end": 284.04,
+    "en": "I just have some typical doubts about my preparedness.",
+    "zh": "我只是产生了一些很典型的怀疑，担心自己准备得不够。",
+    "id": 86
+  },
+  {
+    "start": 284.04,
+    "end": 286.1,
+    "en": "but I try not to let it stress me out.",
+    "zh": "但我尽量不让它给我太大压力。",
+    "id": 87
+  },
+  {
+    "start": 286.14,
+    "end": 287.32,
+    "en": "I prepared a bunch for this interview.",
+    "zh": "我已经为这次面试准备了很多。",
+    "id": 88
+  },
+  {
+    "start": 287.36,
+    "end": 290.62,
+    "en": "I'm going to try for nine hours of sleep so I'm as alert as possible tomorrow.",
+    "zh": "我打算睡足九个小时，这样明天能尽可能保持清醒。",
+    "id": 89
+  },
+  {
+    "start": 294.3,
+    "end": 299.12,
+    "en": "I woke up at midnight and I just couldn't get back to sleep.",
+    "zh": "我半夜醒了，然后就再也睡不着了。",
+    "id": 90
+  },
+  {
+    "start": 299.68,
+    "end": 303.34,
+    "en": "It's 5am now and I'm so hungry.",
+    "zh": "现在是早上5点，我饿得不行。",
+    "id": 91
+  },
+  {
+    "start": 304.22,
+    "end": 305.72,
+    "en": "I've just started walking around.",
+    "zh": "我刚开始在外面到处走。",
+    "id": 92
+  },
+  {
+    "start": 306.76,
+    "end": 308.78,
+    "en": "I don't really know what else to do.",
+    "zh": "我也不知道还能干什么。",
+    "id": 93
+  },
+  {
+    "start": 309.42,
+    "end": 311.24,
+    "en": "I didn't do great in the interview.",
+    "zh": "那场面试我表现得不太好。",
+    "id": 94
+  },
+  {
+    "start": 312.34,
+    "end": 314.2,
+    "en": "It was more than just sleep deprivation.",
+    "zh": "不只是因为睡眠不足。",
+    "id": 95
+  },
+  {
+    "start": 315.64,
+    "end": 317.14,
+    "en": "I had let myself down.",
+    "zh": "是我让自己失望了。",
+    "id": 96
+  },
+  {
+    "start": 327.58,
+    "end": 328.98,
+    "en": "I went home for the winter.",
+    "zh": "冬天的时候我回家了。",
+    "id": 97
+  },
+  {
+    "start": 331.66,
+    "end": 332.58,
+    "en": "I spent time with friends.",
+    "zh": "我和朋友们待在一起。",
+    "id": 98
+  },
+  {
+    "start": 333.3,
+    "end": 336.86,
+    "en": "It was nice. They said, Hayden, you know what will cheer you up?",
+    "zh": "感觉挺好的。他们说，Hayden，你知道什么能让你开心起来吗？",
+    "id": 99
+  },
+  {
+    "start": 337.14,
+    "end": 338.36,
+    "en": "Put £5 on the table.",
+    "zh": "把5英镑放到桌上。",
+    "id": 100
+  },
+  {
+    "start": 339.22,
+    "end": 340.08,
+    "en": "Play a hand of poker.",
+    "zh": "打一手扑克。",
+    "id": 101
+  },
+  {
+    "start": 340.7,
+    "end": 342.24,
+    "en": "I had never played poker before.",
+    "zh": "我之前从来没玩过扑克。",
+    "id": 102
+  },
+  {
+    "start": 342.24,
+    "end": 343.96,
+    "en": "and I hated the idea of gambling.",
+    "zh": "而且我讨厌赌博这个想法。",
+    "id": 103
+  },
+  {
+    "start": 344.24,
+    "end": 345.26,
+    "en": "It just seems stupid.",
+    "zh": "它看起来就是很蠢。",
+    "id": 104
+  },
+  {
+    "start": 345.4,
+    "end": 347.6,
+    "en": "Betting money when you've got no guarantee to win.",
+    "zh": "在完全不能保证会赢的情况下拿钱去赌。",
+    "id": 105
+  },
+  {
+    "start": 347.9,
+    "end": 349.28,
+    "en": "But I was weak.",
+    "zh": "但那时的我很脆弱。",
+    "id": 106
+  },
+  {
+    "start": 349.4,
+    "end": 352.54,
+    "en": "I was broken. Why not learn to just play a few hands of this game?",
+    "zh": "我崩了。那为什么不学着玩几手这个游戏呢？",
+    "id": 107
+  },
+  {
+    "start": 355.58,
+    "end": 360.02,
+    "en": "I win. Wait. This game is awesome.",
+    "zh": "我赢了。等等，这游戏也太爽了。",
+    "id": 108
+  },
+  {
+    "start": 361.6,
+    "end": 365.04,
+    "en": "I start next term bringing friends to the basement to play games on the weekend.",
+    "zh": "下个学期一开始，我就开始周末把朋友们带到地下室玩游戏。",
+    "id": 109
+  },
+  {
+    "start": 365.26,
+    "end": 367.26,
+    "en": "I'm not addicted but damn it's fun.",
+    "zh": "我没有上瘾，但该死，这真的很好玩。",
+    "id": 110
+  },
+  {
+    "start": 367.34,
+    "end": 369.42,
+    "en": "And what's better? The house always wins.",
+    "zh": "更妙的是什么？庄家总是赢。",
+    "id": 111
+  },
+  {
+    "start": 371.42,
+    "end": 372.82,
+    "en": "I was pretty good at keeping profitable.",
+    "zh": "我很擅长保持盈利。",
+    "id": 112
+  },
+  {
+    "start": 374.28,
+    "end": 377.52,
+    "en": "Soon word spreads of the underground gambling thing and our numbers grow.",
+    "zh": "很快，地下赌博局的消息传开了，来的人也越来越多。",
+    "id": 113
+  },
+  {
+    "start": 377.52,
+    "end": 380.66,
+    "en": "Every week I set up a game and squeeze 20 people into my kitchen.",
+    "zh": "每周我都会组一局，把20个人塞进我的厨房。",
+    "id": 114
+  },
+  {
+    "start": 380.96,
+    "end": 382.62,
+    "en": "Honestly, it's not just about the poker.",
+    "zh": "说实话，这不只是扑克。",
+    "id": 115
+  },
+  {
+    "start": 382.78,
+    "end": 385.58,
+    "en": "Running these games brings my friends from all over the university together.",
+    "zh": "组织这些牌局，把我来自全校各处的朋友们聚到了一起。",
+    "id": 116
+  },
+  {
+    "start": 385.74,
+    "end": 387.5,
+    "en": "I know this is something I'll miss when I'm gone.",
+    "zh": "我知道，等我离开之后，我会怀念这件事。",
+    "id": 117
+  },
+  {
+    "start": 387.72,
+    "end": 391.02,
+    "en": "I really look forward to every Saturday where I bring another few new friends to join.",
+    "zh": "我真的很期待每个周六，因为我又会带几个新朋友来加入。",
+    "id": 118
+  },
+  {
+    "start": 391.1,
+    "end": 394.26,
+    "en": "And I use the game to branch out a bit, playing in the pub against the Cambridge locals",
+    "zh": "我也借着这个游戏拓展了一点社交圈，在酒吧里和剑桥本地人打牌，",
+    "id": 119
+  },
+  {
+    "start": 394.26,
+    "end": 395.82,
+    "en": "and playing at the university society.",
+    "zh": "也去大学社团里打牌。",
+    "id": 120
+  },
+  {
+    "start": 395.94,
+    "end": 397.04,
+    "en": "I really like the game.",
+    "zh": "我真的很喜欢这个游戏。",
+    "id": 121
+  },
+  {
+    "start": 397.18,
+    "end": 400.6,
+    "en": "but I don't want to encourage degenerate gambling unless you're really good at it.",
+    "zh": "但我不想鼓励堕落式赌博，除非你真的很擅长。",
+    "id": 122
+  }
+]

@@ -1,0 +1,569 @@
+[
+  {
+    "start": 0.0,
+    "end": 2.84,
+    "en": "Hello, I’ve just arrived at Singapore Airport.",
+    "zh": "你好，我刚刚到达新加坡机场。",
+    "id": 1
+  },
+  {
+    "start": 2.84,
+    "end": 5.9,
+    "en": "and I’m heading to meet my friend Jared.",
+    "zh": "我正要去见我的朋友Jared。",
+    "id": 2
+  },
+  {
+    "start": 6.4,
+    "end": 9.46,
+    "en": "You might remember Jared from the last episode.",
+    "zh": "你可能还记得上一期节目里的Jared。",
+    "id": 3
+  },
+  {
+    "start": 9.48,
+    "end": 11.98,
+    "en": "We’re gonna travel around Singapore, explore.",
+    "zh": "我们打算在新加坡到处走走，去探索一下。",
+    "id": 4
+  },
+  {
+    "start": 12.6,
+    "end": 18.02,
+    "en": "and if you like learning English and watching travel content then you’re in the right place.",
+    "zh": "如果你喜欢学英语又喜欢看旅行内容，那你来对地方了。",
+    "id": 5
+  },
+  {
+    "start": 18.08,
+    "end": 19.5,
+    "en": "Now to get my suitcase.",
+    "zh": "现在去拿我的行李箱。",
+    "id": 6
+  },
+  {
+    "start": 20.26,
+    "end": 24.94,
+    "en": "So I am waiting for my suitcase and this is a conveyor belt.",
+    "zh": "我正在等我的行李，这就是传送带。",
+    "id": 7
+  },
+  {
+    "start": 25.54,
+    "end": 30.72,
+    "en": "The conveyor belt is moving around and taking people’s suitcases.",
+    "zh": "传送带在转动，把大家的行李带过来。",
+    "id": 8
+  },
+  {
+    "start": 31.14,
+    "end": 32.52,
+    "en": "What time is it.",
+    "zh": "现在几点了。",
+    "id": 9
+  },
+  {
+    "start": 32.88,
+    "end": 35.14,
+    "en": "Hmm suitcase time.",
+    "zh": "嗯，行李时间到了。",
+    "id": 10
+  },
+  {
+    "start": 36.62,
+    "end": 37.82,
+    "en": "Taxi stand.",
+    "zh": "出租车等候区。",
+    "id": 11
+  },
+  {
+    "start": 38.16,
+    "end": 40.0,
+    "en": "This is a sign for the taxis.",
+    "zh": "这是出租车的标识。",
+    "id": 12
+  },
+  {
+    "start": 40.0,
+    "end": 43.86,
+    "en": "The taxi stand is a place where you wait for your taxi.",
+    "zh": "出租车等候区就是你等出租车的地方。",
+    "id": 13
+  },
+  {
+    "start": 43.86,
+    "end": 48.52,
+    "en": "And now in Singapore they use Grab taxi just like in Vietnam.",
+    "zh": "现在在新加坡他们用Grab打车，就像在越南一样。",
+    "id": 14
+  },
+  {
+    "start": 48.52,
+    "end": 54.22,
+    "en": "So I’m gonna find the taxi stand and order my Grab.",
+    "zh": "所以我打算去找出租车等候区，然后叫一辆Grab。",
+    "id": 15
+  },
+  {
+    "start": 56.64,
+    "end": 58.22,
+    "en": "Here the taxi is here.",
+    "zh": "车来了。",
+    "id": 16
+  },
+  {
+    "start": 58.9,
+    "end": 61.34,
+    "en": "I’m putting my suitcase in the car boot.",
+    "zh": "我把行李放进后备箱。",
+    "id": 17
+  },
+  {
+    "start": 61.72,
+    "end": 63.0,
+    "en": "Thank you.",
+    "zh": "谢谢。",
+    "id": 18
+  },
+  {
+    "start": 78.68,
+    "end": 82.24,
+    "en": "There he is.",
+    "zh": "他来了。",
+    "id": 19
+  },
+  {
+    "start": 83.18,
+    "end": 84.14,
+    "en": "Hello mate.",
+    "zh": "嘿，兄弟。",
+    "id": 20
+  },
+  {
+    "start": 86.08,
+    "end": 88.1,
+    "en": "Thank you man.",
+    "zh": "谢谢你，兄弟。",
+    "id": 21
+  },
+  {
+    "start": 90.7,
+    "end": 92.8,
+    "en": "Well hello guys look who we have here.",
+    "zh": "好了大家看看我们这位是谁。",
+    "id": 22
+  },
+  {
+    "start": 93.08,
+    "end": 94.76,
+    "en": "Hello it’s Jared.",
+    "zh": "你好，是Jared。",
+    "id": 23
+  },
+  {
+    "start": 95.8,
+    "end": 97.74,
+    "en": "For some context for those who don’t know.",
+    "zh": "给不认识的人简单说一下背景。",
+    "id": 24
+  },
+  {
+    "start": 97.74,
+    "end": 102.16,
+    "en": "Jared and I have been friends for 26 years now since we were four years old.",
+    "zh": "我和Jared从四岁起就认识了，到现在已经26年了。",
+    "id": 25
+  },
+  {
+    "start": 102.16,
+    "end": 104.58,
+    "en": "And yeah what a ride.",
+    "zh": "是啊，一路走来挺精彩的。",
+    "id": 26
+  },
+  {
+    "start": 105.74,
+    "end": 107.64,
+    "en": "Many ups and downs.",
+    "zh": "有很多起起伏伏。",
+    "id": 27
+  },
+  {
+    "start": 108.04,
+    "end": 109.2,
+    "en": "Mostly ups. Yeah a few downs.",
+    "zh": "大多数是好的，也有一些低谷。",
+    "id": 28
+  },
+  {
+    "start": 109.64,
+    "end": 112.86,
+    "en": "We’ve been having a catch up which is the next word.",
+    "zh": "我们刚刚在叙旧，这就是接下来的词。",
+    "id": 29
+  },
+  {
+    "start": 112.92,
+    "end": 115.7,
+    "en": "A catch up is when you haven’t seen somebody in a long time.",
+    "zh": "“叙旧”是指你很久没见一个人。",
+    "id": 30
+  },
+  {
+    "start": 115.7,
+    "end": 120.04,
+    "en": "And you have a conversation and see what’s been going on in their lives.",
+    "zh": "然后聊聊天，看看彼此最近都发生了什么。",
+    "id": 31
+  },
+  {
+    "start": 120.34,
+    "end": 123.88,
+    "en": "Now the plan is to go get some food because I’ve been flying for a while.",
+    "zh": "现在的计划是去吃点东西，因为我已经飞了很久。",
+    "id": 32
+  },
+  {
+    "start": 124.02,
+    "end": 126.5,
+    "en": "I’m hungry so we’re going to go to a hawker centre.",
+    "zh": "我饿了，所以我们要去一个熟食中心。",
+    "id": 33
+  },
+  {
+    "start": 126.88,
+    "end": 127.92,
+    "en": "We have arrived.",
+    "zh": "我们到了。",
+    "id": 34
+  },
+  {
+    "start": 128.22,
+    "end": 129.98,
+    "en": "Maxwell food centre.",
+    "zh": "麦士威熟食中心。",
+    "id": 35
+  },
+  {
+    "start": 130.96,
+    "end": 131.74,
+    "en": "Let’s go.",
+    "zh": "走吧。",
+    "id": 36
+  },
+  {
+    "start": 133.96,
+    "end": 136.04,
+    "en": "Okay and we call this a stall.",
+    "zh": "好，这个我们叫摊位。",
+    "id": 37
+  },
+  {
+    "start": 136.66,
+    "end": 140.42,
+    "en": "There are two people in red cooking some food.",
+    "zh": "有两个人穿着红衣服在做饭。",
+    "id": 38
+  },
+  {
+    "start": 142.64,
+    "end": 145.12,
+    "en": "All right let’s find a seat.",
+    "zh": "好吧，我们找个座位。",
+    "id": 39
+  },
+  {
+    "start": 146.44,
+    "end": 153.54,
+    "en": "We found a table and yeah we’re about to toast to good friends in Singapore.",
+    "zh": "我们找到了一张桌子，现在准备为在新加坡的好朋友干杯。",
+    "id": 40
+  },
+  {
+    "start": 154.4,
+    "end": 154.6,
+    "en": "Cheers.",
+    "zh": "干杯。",
+    "id": 41
+  },
+  {
+    "start": 154.6,
+    "end": 155.22,
+    "en": "Where are they.",
+    "zh": "他们在哪。",
+    "id": 42
+  },
+  {
+    "start": 155.62,
+    "end": 156.56,
+    "en": "Yeah I don’t know.",
+    "zh": "我也不知道。",
+    "id": 43
+  },
+  {
+    "start": 156.56,
+    "end": 157.28,
+    "en": "Somewhere around here.",
+    "zh": "大概就在这附近。",
+    "id": 44
+  },
+  {
+    "start": 158.3,
+    "end": 159.02,
+    "en": "It’s good.",
+    "zh": "很好吃。",
+    "id": 45
+  },
+  {
+    "start": 159.48,
+    "end": 160.16,
+    "en": "That is good.",
+    "zh": "真的很好吃。",
+    "id": 46
+  },
+  {
+    "start": 160.22,
+    "end": 160.88,
+    "en": "Cheers man.",
+    "zh": "干杯，兄弟。",
+    "id": 47
+  },
+  {
+    "start": 161.24,
+    "end": 166.52,
+    "en": "So we are in a hawker centre and in this hawker centre there are lots of different stalls.",
+    "zh": "我们现在在一个熟食中心，这里有很多不同的摊位。",
+    "id": 48
+  },
+  {
+    "start": 167.0,
+    "end": 170.92,
+    "en": "The stall is like a small shop that sells different types of food.",
+    "zh": "摊位就像一个卖各种食物的小店。",
+    "id": 49
+  },
+  {
+    "start": 171.2,
+    "end": 172.54,
+    "en": "The beeper is beeping.",
+    "zh": "呼叫器在响。",
+    "id": 50
+  },
+  {
+    "start": 173.32,
+    "end": 174.24,
+    "en": "Are you going to go get that.",
+    "zh": "你要去拿吗。",
+    "id": 51
+  },
+  {
+    "start": 174.24,
+    "end": 174.88,
+    "en": "I’ll go get that.",
+    "zh": "我去拿。",
+    "id": 52
+  },
+  {
+    "start": 175.5,
+    "end": 176.82,
+    "en": "All right see you soon.",
+    "zh": "好，待会见。",
+    "id": 53
+  },
+  {
+    "start": 176.86,
+    "end": 178.22,
+    "en": "Jared’s going to come back with some food.",
+    "zh": "Jared会带吃的回来。",
+    "id": 54
+  },
+  {
+    "start": 178.22,
+    "end": 179.92,
+    "en": "So I’ll see you in three two one.",
+    "zh": "那我们三二一见。",
+    "id": 55
+  },
+  {
+    "start": 181.6,
+    "end": 183.24,
+    "en": "Chopsticks and dumplings.",
+    "zh": "筷子和饺子。",
+    "id": 56
+  },
+  {
+    "start": 183.68,
+    "end": 185.28,
+    "en": "So this is a carrot cake.",
+    "zh": "这个是萝卜糕。",
+    "id": 57
+  },
+  {
+    "start": 185.68,
+    "end": 187.74,
+    "en": "Carrot cake is not normal carrot cake.",
+    "zh": "这个萝卜糕不是我们平常说的那种。",
+    "id": 58
+  },
+  {
+    "start": 188.06,
+    "end": 191.46,
+    "en": "No carrot cake for us would be a sweet baked good.",
+    "zh": "我们平常说的胡萝卜蛋糕是甜的烘焙点心。",
+    "id": 59
+  },
+  {
+    "start": 191.66,
+    "end": 192.76,
+    "en": "I’m really into this.",
+    "zh": "我挺喜欢这个的。",
+    "id": 60
+  },
+  {
+    "start": 193.08,
+    "end": 194.06,
+    "en": "Yeah. Okay there’s a good word.",
+    "zh": "对，这里有个不错的表达。",
+    "id": 61
+  },
+  {
+    "start": 194.06,
+    "end": 196.56,
+    "en": "If you really like something you’re into it.",
+    "zh": "如果你很喜欢某样东西，就可以说你很“上头”。",
+    "id": 62
+  },
+  {
+    "start": 196.56,
+    "end": 198.14,
+    "en": "You say I’m into it.",
+    "zh": "你可以说我很喜欢它。",
+    "id": 63
+  },
+  {
+    "start": 198.84,
+    "end": 199.78,
+    "en": "I’m into this.",
+    "zh": "我很喜欢这个。",
+    "id": 64
+  },
+  {
+    "start": 199.78,
+    "end": 201.7,
+    "en": "I really like it.",
+    "zh": "我真的很喜欢。",
+    "id": 65
+  },
+  {
+    "start": 205.08,
+    "end": 209.36,
+    "en": "This is an escalator and we are going down the escalator.",
+    "zh": "这是自动扶梯，我们正在往下走。",
+    "id": 66
+  },
+  {
+    "start": 209.68,
+    "end": 211.18,
+    "en": "Hello YouTube. Hello YouTube.",
+    "zh": "你好YouTube，你好YouTube。",
+    "id": 67
+  },
+  {
+    "start": 211.24,
+    "end": 212.04,
+    "en": "I love YouTube.",
+    "zh": "我爱YouTube。",
+    "id": 68
+  },
+  {
+    "start": 212.84,
+    "end": 215.48,
+    "en": "We’re on our way to the where are we going Jared.",
+    "zh": "我们正在去的路上，Jared我们去哪来着。",
+    "id": 69
+  },
+  {
+    "start": 215.7,
+    "end": 216.62,
+    "en": "Gardens by the Bay.",
+    "zh": "滨海湾花园。",
+    "id": 70
+  },
+  {
+    "start": 216.66,
+    "end": 219.0,
+    "en": "Anyway we’re going on the metro now on the metro.",
+    "zh": "总之我们现在要坐地铁了。",
+    "id": 71
+  },
+  {
+    "start": 219.0,
+    "end": 221.26,
+    "en": "You can also call it an underground or a subway.",
+    "zh": "地铁也可以叫underground或者subway。",
+    "id": 72
+  },
+  {
+    "start": 221.82,
+    "end": 223.4,
+    "en": "What do they call it in London.",
+    "zh": "在伦敦他们怎么说。",
+    "id": 73
+  },
+  {
+    "start": 223.9,
+    "end": 227.36,
+    "en": "The underground. London underground.",
+    "zh": "叫underground，伦敦地铁。",
+    "id": 74
+  },
+  {
+    "start": 228.02,
+    "end": 228.56,
+    "en": "Cheers.",
+    "zh": "干杯。",
+    "id": 75
+  },
+  {
+    "start": 230.24,
+    "end": 232.48,
+    "en": "Is this it. This is it. Okay.",
+    "zh": "是这里吗，是这里，好。",
+    "id": 76
+  },
+  {
+    "start": 233.58,
+    "end": 235.84,
+    "en": "Me and Jared are having a conversation on the metro.",
+    "zh": "我和Jared正在地铁上聊天。",
+    "id": 77
+  },
+  {
+    "start": 236.16,
+    "end": 239.12,
+    "en": "On the left there is a mother with a push chair.",
+    "zh": "左边有一位推着婴儿车的妈妈。",
+    "id": 78
+  },
+  {
+    "start": 239.58,
+    "end": 242.62,
+    "en": "In the middle there is a muscular man with a vest.",
+    "zh": "中间有一位穿着背心的肌肉男。",
+    "id": 79
+  },
+  {
+    "start": 242.62,
+    "end": 252.56,
+    "en": "And on the right there is a guy looking at my camera.",
+    "zh": "右边有个在看我相机的男的。",
+    "id": 80
+  },
+  {
+    "start": 252.56,
+    "end": 253.746,
+    "en": "I'm taping my card and walking through the barriers",
+    "zh": "我刷卡通过闸机。",
+    "id": 81
+  }
+]

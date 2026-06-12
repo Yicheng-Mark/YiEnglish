@@ -1,0 +1,548 @@
+[
+  {
+    "start": 0.0,
+    "end": 2.68,
+    "en": "This morning, we're doing our grocery shopping.",
+    "zh": "今天早上，我们要去买菜。",
+    "id": 1
+  },
+  {
+    "start": 3.7,
+    "end": 7.02,
+    "en": "We're buying food that we'll cook and eat during the week.",
+    "zh": "我们要买这周做饭和吃饭要用的食物。",
+    "id": 2
+  },
+  {
+    "start": 8.02,
+    "end": 13.32,
+    "en": "In Australia, we don't usually use plastic carry bags at grocery stores.",
+    "zh": "在澳大利亚，我们在杂货店通常不用塑料购物袋。",
+    "id": 3
+  },
+  {
+    "start": 14.6,
+    "end": 17.82,
+    "en": "We need to bring our own reusable bags.",
+    "zh": "我们得自己带可重复使用的袋子。",
+    "id": 4
+  },
+  {
+    "start": 18.76,
+    "end": 22.12,
+    "en": "Reusable means that we can use them again and again.",
+    "zh": "可重复使用的意思是，我们可以一遍又一遍地使用它们。",
+    "id": 5
+  },
+  {
+    "start": 23.06,
+    "end": 30.32,
+    "en": "They're not disposable. Sometimes you can buy paper bags, but most people bring their own.",
+    "zh": "它们不是一次性的。有时候你可以买纸袋，不过大多数人都会自己带袋子。",
+    "id": 6
+  },
+  {
+    "start": 31.4,
+    "end": 34.06,
+    "en": "The market is on the other side of the road.",
+    "zh": "市场就在马路的另一边。",
+    "id": 7
+  },
+  {
+    "start": 34.46,
+    "end": 37.0,
+    "en": "We'll wait for the light to turn green.",
+    "zh": "我们等绿灯亮了再走。",
+    "id": 8
+  },
+  {
+    "start": 38.46,
+    "end": 42.14,
+    "en": "Now that it's green, we can cross and head into the market.",
+    "zh": "现在绿灯了，我们可以过马路进市场了。",
+    "id": 9
+  },
+  {
+    "start": 42.9,
+    "end": 45.7,
+    "en": "We'll go through these automatic doors.",
+    "zh": "我们会从这些自动门进去。",
+    "id": 10
+  },
+  {
+    "start": 46.72,
+    "end": 49.22,
+    "en": "Automatic doors open by themselves.",
+    "zh": "自动门会自己打开。",
+    "id": 11
+  },
+  {
+    "start": 50.6,
+    "end": 52.86,
+    "en": "Now we're inside the market.",
+    "zh": "现在我们已经进到市场里面了。",
+    "id": 12
+  },
+  {
+    "start": 53.78,
+    "end": 55.24,
+    "en": "Let's have a look around.",
+    "zh": "我们四处看看吧。",
+    "id": 13
+  },
+  {
+    "start": 55.96,
+    "end": 58.44,
+    "en": "This shelf is full of cheese.",
+    "zh": "这个货架上摆满了奶酪。",
+    "id": 14
+  },
+  {
+    "start": 59.56,
+    "end": 64.66,
+    "en": "There are small round wheels and pieces cut into smaller parts.",
+    "zh": "有小小的圆形奶酪轮，也有切成更小块的奶酪。",
+    "id": 15
+  },
+  {
+    "start": 65.88,
+    "end": 69.22,
+    "en": "These shelves are refrigerated to keep the cheese fresh.",
+    "zh": "这些货架是冷藏的，这样奶酪才能保持新鲜。",
+    "id": 16
+  },
+  {
+    "start": 70.48,
+    "end": 73.1,
+    "en": "Over here, there are olives and pickles.",
+    "zh": "这边有橄榄和腌菜。",
+    "id": 17
+  },
+  {
+    "start": 74.2,
+    "end": 77.38,
+    "en": "The olives are in round plastic containers.",
+    "zh": "这些橄榄装在圆形塑料盒里。",
+    "id": 18
+  },
+  {
+    "start": 78.44,
+    "end": 80.0,
+    "en": "They're stacked very neatly.",
+    "zh": "它们摆放得非常整齐。",
+    "id": 19
+  },
+  {
+    "start": 81.54,
+    "end": 86.16,
+    "en": "Next to the olives is a bakery with beautiful cakes and sweets.",
+    "zh": "橄榄旁边有一家面包甜点铺，里面有漂亮的蛋糕和甜点。",
+    "id": 20
+  },
+  {
+    "start": 87.54,
+    "end": 89.88,
+    "en": "There's a plate of pink meringues.",
+    "zh": "这里有一盘粉色的蛋白霜小点。",
+    "id": 21
+  },
+  {
+    "start": 90.14,
+    "end": 91.5,
+    "en": "They're piled up high.",
+    "zh": "它们堆得高高的。",
+    "id": 22
+  },
+  {
+    "start": 92.34,
+    "end": 96.56,
+    "en": "A meringue is a sweet dessert made from egg whites and sugar.",
+    "zh": "蛋白霜是一种用蛋白和糖做成的甜点。",
+    "id": 23
+  },
+  {
+    "start": 97.52,
+    "end": 101.22,
+    "en": "It's soft inside and a little crispy on the outside.",
+    "zh": "里面是软的，外面有一点酥脆。",
+    "id": 24
+  },
+  {
+    "start": 102.6,
+    "end": 105.84,
+    "en": "There are tarts and a big round pie.",
+    "zh": "这里还有水果塔和一个大大的圆派。",
+    "id": 25
+  },
+  {
+    "start": 107.6,
+    "end": 111.06,
+    "en": "They're also selling square slices of chocolate cake.",
+    "zh": "他们也在卖一块块方形的巧克力蛋糕。",
+    "id": 26
+  },
+  {
+    "start": 111.94,
+    "end": 114.82,
+    "en": "Each slice has a strawberry on top.",
+    "zh": "每一块上面都放着一颗草莓。",
+    "id": 27
+  },
+  {
+    "start": 116.16,
+    "end": 119.34,
+    "en": "Since it's Easter, they're selling hot cross buns.",
+    "zh": "因为现在是复活节，他们在卖十字面包。",
+    "id": 28
+  },
+  {
+    "start": 120.98,
+    "end": 124.96,
+    "en": "There's sweet bread rolls with fruit and a cross on top.",
+    "zh": "这里有甜面包卷，里面有果干，上面还有一个十字。",
+    "id": 29
+  },
+  {
+    "start": 126.5,
+    "end": 128.54,
+    "en": "Let's walk further into the market.",
+    "zh": "我们继续往市场里面走吧。",
+    "id": 30
+  },
+  {
+    "start": 130.24,
+    "end": 132.86,
+    "en": "There's a big flower shop in the middle.",
+    "zh": "市场中间有一家很大的花店。",
+    "id": 31
+  },
+  {
+    "start": 134.16,
+    "end": 137.52,
+    "en": "A person who sells flowers is called a florist.",
+    "zh": "卖花的人叫花艺师。",
+    "id": 32
+  },
+  {
+    "start": 138.36,
+    "end": 141.44,
+    "en": "You buy flowers from the florist.",
+    "zh": "你可以从花艺师那里买花。",
+    "id": 33
+  },
+  {
+    "start": 142.74,
+    "end": 145.08,
+    "en": "The flowers are bright and colorful.",
+    "zh": "这些花颜色鲜亮，很好看。",
+    "id": 34
+  },
+  {
+    "start": 146.5,
+    "end": 149.32,
+    "en": "They're sitting in buckets of water on the ground.",
+    "zh": "它们插在地上一桶桶的水里。",
+    "id": 35
+  },
+  {
+    "start": 150.58,
+    "end": 157.02,
+    "en": "You can buy one bunch of flowers or you can make a bouquet out of a few bunches.",
+    "zh": "你可以买一束花，也可以用几束花搭配成一个花束。",
+    "id": 36
+  },
+  {
+    "start": 157.8,
+    "end": 161.5,
+    "en": "A bouquet is a group of flowers arranged together.",
+    "zh": "花束就是搭配在一起的一组花。",
+    "id": 37
+  },
+  {
+    "start": 163.58,
+    "end": 168.8,
+    "en": "Next to the florist is a stall selling kimchi and other Korean side dishes.",
+    "zh": "花店旁边有一个摊位，卖泡菜和其他韩式小菜。",
+    "id": 38
+  },
+  {
+    "start": 169.96,
+    "end": 172.92,
+    "en": "I know a lot of you who watch my videos are Korean,",
+    "zh": "我知道很多看我视频的人都是韩国人，",
+    "id": 39
+  },
+  {
+    "start": 173.14,
+    "end": 177.6,
+    "en": "so I hope it's nice to see that you can find some fresh Korean food",
+    "zh": "所以如果你们决定来墨尔本玩，希望看到这里能买到一些新鲜的韩餐会让你们觉得开心。",
+    "id": 40
+  },
+  {
+    "start": 177.6,
+    "end": 179.38,
+    "en": "if you decide to visit Melbourne.",
+    "zh": "如果你决定来墨尔本的话。",
+    "id": 41
+  },
+  {
+    "start": 180.48,
+    "end": 184.14,
+    "en": "Now we're at the green grocer in the corner of the market.",
+    "zh": "现在我们来到市场角落里的蔬果店了。",
+    "id": 42
+  },
+  {
+    "start": 185.26,
+    "end": 188.06,
+    "en": "This is where we'll buy most of our groceries today.",
+    "zh": "今天我们大部分食材都会在这里买。",
+    "id": 43
+  },
+  {
+    "start": 189.14,
+    "end": 190.84,
+    "en": "They sell fruit and veggies.",
+    "zh": "这里卖水果和蔬菜。",
+    "id": 44
+  },
+  {
+    "start": 191.8,
+    "end": 193.92,
+    "en": "Veggies is short for vegetables.",
+    "zh": "Veggies 是 vegetables 的简略说法。",
+    "id": 45
+  },
+  {
+    "start": 194.7,
+    "end": 199.14,
+    "en": "They have boxes of mixed fruit and veggies on these shelves.",
+    "zh": "这些货架上放着一箱箱混合搭配的水果和蔬菜。",
+    "id": 46
+  },
+  {
+    "start": 199.98,
+    "end": 202.94,
+    "en": "These boxes have a variety of items in them.",
+    "zh": "这些箱子里装着各种各样的东西。",
+    "id": 47
+  },
+  {
+    "start": 203.62,
+    "end": 206.72,
+    "en": "A variety means many different kinds.",
+    "zh": "variety 的意思是很多不同的种类。",
+    "id": 48
+  },
+  {
+    "start": 207.38,
+    "end": 210.5,
+    "en": "What do you think we would use from this box?",
+    "zh": "你觉得这一箱里哪些东西是我们会用到的？",
+    "id": 49
+  },
+  {
+    "start": 210.72,
+    "end": 213.78,
+    "en": "The cauliflower, the bananas, the grapes.",
+    "zh": "花椰菜、香蕉、葡萄。",
+    "id": 50
+  },
+  {
+    "start": 214.36,
+    "end": 216.74,
+    "en": "I don't think we would use the avocados.",
+    "zh": "我觉得牛油果我们应该用不上。",
+    "id": 51
+  },
+  {
+    "start": 217.26,
+    "end": 219.72,
+    "en": "We already have kale at home.",
+    "zh": "我们家里已经有羽衣甘蓝了。",
+    "id": 52
+  },
+  {
+    "start": 220.04,
+    "end": 221.98,
+    "en": "Maybe we should just pick individual.",
+    "zh": "也许我们还是单独挑吧。",
+    "id": 53
+  },
+  {
+    "start": 221.98,
+    "end": 224.34,
+    "en": "Yeah, let's get individual fruits and vegetables.",
+    "zh": "对，咱们还是单独挑水果和蔬菜吧。",
+    "id": 54
+  },
+  {
+    "start": 225.16,
+    "end": 228.56,
+    "en": "Instead of buying a box, we'll choose our own items.",
+    "zh": "不买整箱的话，我们就自己选想要的东西。",
+    "id": 55
+  },
+  {
+    "start": 229.2,
+    "end": 230.74,
+    "en": "So... I'll grab a cauliflower.",
+    "zh": "那……我拿一个花椰菜。",
+    "id": 56
+  },
+  {
+    "start": 230.94,
+    "end": 232.04,
+    "en": "Oh yeah, let's get a cauliflower.",
+    "zh": "哦对，我们拿一个花椰菜吧。",
+    "id": 57
+  },
+  {
+    "start": 232.64,
+    "end": 235.98,
+    "en": "We'll put one half of the cauliflower into our bag.",
+    "zh": "我们会把半个花椰菜放进袋子里。",
+    "id": 58
+  },
+  {
+    "start": 236.54,
+    "end": 239.06,
+    "en": "We can pick seven items for $20.",
+    "zh": "我们可以挑七样东西，总共20美元。",
+    "id": 59
+  },
+  {
+    "start": 240.06,
+    "end": 241.52,
+    "en": "That's a pretty good deal.",
+    "zh": "这价格相当划算。",
+    "id": 60
+  },
+  {
+    "start": 241.96,
+    "end": 244.08,
+    "en": "It's much cheaper than the supermarket.",
+    "zh": "比超市便宜多了。",
+    "id": 61
+  },
+  {
+    "start": 244.22,
+    "end": 247.38,
+    "en": "We've just made some soup out of it, so we probably don't need those.",
+    "zh": "我们刚刚才拿它做了汤，所以那些大概就不需要了。",
+    "id": 62
+  },
+  {
+    "start": 247.44,
+    "end": 249.34,
+    "en": "No, we'll get an eggplant.",
+    "zh": "不用了，我们拿个茄子吧。",
+    "id": 63
+  },
+  {
+    "start": 249.34,
+    "end": 254.56,
+    "en": "We'll also grab eggplant, broccoli and zucchini.",
+    "zh": "我们还会拿茄子、西兰花和西葫芦。",
+    "id": 64
+  },
+  {
+    "start": 256.38,
+    "end": 261.9,
+    "en": "We were considering getting a leek, but instead we decided to get a big sweet potato.",
+    "zh": "我们本来在考虑拿一根韭葱，不过最后决定拿一个大的红薯。",
+    "id": 65
+  },
+  {
+    "start": 263.1,
+    "end": 266.28,
+    "en": "Considering means thinking about something before deciding.",
+    "zh": "Considering 的意思是，在做决定之前先想一想某件事。",
+    "id": 66
+  },
+  {
+    "start": 267.46,
+    "end": 270.3,
+    "en": "Some fruits are placed on individual plates.",
+    "zh": "有些水果是单独放在一个个托盘上的。",
+    "id": 67
+  },
+  {
+    "start": 271.12,
+    "end": 274.14,
+    "en": "Each plate counts as one item at the stand.",
+    "zh": "在这个摊位上，每一盘都算一个单品。",
+    "id": 68
+  },
+  {
+    "start": 275.18,
+    "end": 276.64,
+    "en": "It all looks good.",
+    "zh": "看起来都很不错。",
+    "id": 69
+  },
+  {
+    "start": 277.46,
+    "end": 281.24,
+    "en": "There's a big box of limes and a big box of lemons.",
+    "zh": "这里有一大箱青柠，还有一大箱柠檬。",
+    "id": 70
+  },
+  {
+    "start": 281.9,
+    "end": 283.5,
+    "en": "These are citrus fruits.",
+    "zh": "这些都是柑橘类水果。",
+    "id": 71
+  },
+  {
+    "start": 284.08,
+    "end": 285.8,
+    "en": "They usually taste sour.",
+    "zh": "它们通常吃起来是酸的。",
+    "id": 72
+  },
+  {
+    "start": 287.12,
+    "end": 288.9,
+    "en": "The tomatoes look fresh today.",
+    "zh": "今天这些番茄看起来很新鲜。",
+    "id": 73
+  },
+  {
+    "start": 289.82,
+    "end": 291.74,
+    "en": "They're shiny and bright red.",
+    "zh": "它们油亮亮的，颜色鲜红。",
+    "id": 74
+  },
+  {
+    "start": 292.84,
+    "end": 293.82,
+    "en": "We'll take a plate.",
+    "zh": "我们拿一盘吧。",
+    "id": 75
+  },
+  {
+    "start": 295.3,
+    "end": 296.82,
+    "en": "Now it's time to pay.",
+    "zh": "现在该付钱了。",
+    "id": 76
+  },
+  {
+    "start": 297.8,
+    "end": 300.86,
+    "en": "The man who works here has a big personality.",
+    "zh": "在这里工作的这位大哥人很好。",
+    "id": 77
+  },
+  {
+    "start": 301.84,
+    "end": 304.96,
+    "en": "That means he's very friendly and expressive.",
+    "zh": "意思就是他非常友好，而且表现力很强。",
+    "id": 78
+  }
+]

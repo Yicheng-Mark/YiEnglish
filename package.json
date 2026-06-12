@@ -15,6 +15,7 @@
     "dict:check": "npm run dict:cleanup && npm run dict:validate && npm run dict:levels",
     "add:cntitle": "node scripts/add-cnTitle.mjs",
     "server": "node server/index.js",
+    "corpus:check-yt": "node scripts/check-youtube-dup.mjs",
     "dev:all": "concurrently \"npm run dev\" \"npm run server\""
   },
   "dependencies": {
