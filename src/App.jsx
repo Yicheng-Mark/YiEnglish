@@ -45,7 +45,7 @@ function preloadModules() {
   if (preloaded) return
   preloaded = true
   // 等主线程空闲后再预加载，不影响首屏
-  requestIdleCallback
+  typeof requestIdleCallback === 'function'
     ? requestIdleCallback(() => moduleLoaders.forEach(fn => fn()))
     : setTimeout(() => moduleLoaders.forEach(fn => fn()), 200)
 }
@@ -81,7 +81,7 @@ function App() {
   useEffect(preloadModules, [])
   useEffect(() => {
     // 空闲时执行 localStorage → IndexedDB 迁移
-    if (requestIdleCallback) {
+    if (typeof requestIdleCallback === 'function') {
       requestIdleCallback(() => migrateFromLocalStorage().catch(console.warn))
     }
   }, [])

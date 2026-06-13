@@ -1,4 +1,5 @@
 import { Component } from 'react'
+import { reportClientError } from '../utils/reportError'
 
 /**
  * 全局错误边界：捕获子树渲染期错误，显示友好降级 UI 而非白屏。
@@ -18,6 +19,7 @@ class ErrorBoundary extends Component {
   componentDidCatch(error, info) {
     this.setState({ info })
     console.error('[ErrorBoundary]', error, info?.componentStack)
+    reportClientError('react', error, { componentStack: info?.componentStack })
   }
 
   handleReload = () => {

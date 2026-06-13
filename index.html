@@ -46,6 +46,7 @@
       // 这类错误发生在 <script type=module> 层，React ErrorBoundary 抓不到。
       (function () {
         function showFatal(message) {
+          try { if (navigator.sendBeacon) navigator.sendBeacon('/api/client-error', JSON.stringify({ type: 'module-load', message: message || 'fatal' })); } catch (e) {}
           var el = document.getElementById('root');
           if (!el) return;
           el.innerHTML =
