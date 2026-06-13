@@ -16,7 +16,7 @@ function cookieOptions(path, maxAge) {
   return {
     httpOnly: true,
     secure: config.NODE_ENV === 'production',
-    sameSite: 'strict',
+    sameSite: 'lax',
     path,
     maxAge,
   }
@@ -72,7 +72,7 @@ function clearCookies(res) {
   const clearOpts = {
     httpOnly: true,
     secure: config.NODE_ENV === 'production',
-    sameSite: 'strict',
+    sameSite: 'lax',
   }
   res.clearCookie(ACCESS_COOKIE, { ...clearOpts, path: '/api' })
   res.clearCookie(REFRESH_COOKIE, { ...clearOpts, path: '/api/auth/refresh' })

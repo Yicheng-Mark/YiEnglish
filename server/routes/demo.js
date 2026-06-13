@@ -123,7 +123,7 @@ router.post('/redeem', async (req, res, next) => {
     const cookieOpts = {
       httpOnly: true,
       secure: config.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
     }
     res.cookie('lf_access_token', accessToken, { ...cookieOpts, path: '/api', maxAge: 3 * 24 * 60 * 60 * 1000 })
     res.cookie('lf_refresh_token', refreshToken, { ...cookieOpts, path: '/api/auth/refresh', maxAge: 7 * 24 * 60 * 60 * 1000 })
@@ -230,7 +230,7 @@ router.post('/upgrade', authMiddleware, async (req, res, next) => {
     const cookieOpts = {
       httpOnly: true,
       secure: config.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
     }
     res.cookie('lf_access_token', accessToken, { ...cookieOpts, path: '/api', maxAge: 3 * 24 * 60 * 60 * 1000 })
     res.cookie('lf_refresh_token', refreshToken, { ...cookieOpts, path: '/api/auth/refresh', maxAge: 7 * 24 * 60 * 60 * 1000 })
