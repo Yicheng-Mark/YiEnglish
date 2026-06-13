@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
-import SocialLinks from '../components/SocialLinks'
+import AuthFooter from '../components/AuthFooter'
 import { apiFetch } from '../lib/api'
 
 const VALIDATED_CODE_KEY = 'validated_activation_code'
@@ -85,15 +85,7 @@ export default function Activate() {
         </div>
       </div>
 
-      <SocialLinks className="absolute bottom-12 left-0 right-0" />
-      <a
-        href="https://beian.miit.gov.cn/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="absolute bottom-4 left-0 right-0 text-center text-xs text-white/40 hover:text-white/60 transition-colors"
-      >
-        闽ICP备2026017084号-1
-      </a>
+      <AuthFooter />
     </div>
   )
 }

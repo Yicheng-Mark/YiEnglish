@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-export default function SocialLinks({ className = '' }) {
+export default function SocialLinks({ className = '', style }) {
   const [showXhs, setShowXhs] = useState(false)
   const [showWechat, setShowWechat] = useState(false)
   const [showDouyin, setShowDouyin] = useState(false)
@@ -23,7 +23,7 @@ export default function SocialLinks({ className = '' }) {
 
   return (
     <>
-      <div className={`flex items-center justify-center gap-3 ${className}`}>
+      <div className={`flex items-center justify-center gap-3 ${className}`} style={style}>
         {/* 微信 - 点击弹出名片 */}
         <button
           onClick={() => setShowWechat(true)}
