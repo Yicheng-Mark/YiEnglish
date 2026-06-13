@@ -15,7 +15,7 @@ export function getPosition() {
 }
 
 export function setPosition(pos) {
-  localStorage.setItem(STORAGE_KEYS.position, JSON.stringify(pos))
+  try { localStorage.setItem(STORAGE_KEYS.position, JSON.stringify(pos)) } catch {}
 }
 
 export function isAIAssistantHidden() {
@@ -23,7 +23,7 @@ export function isAIAssistantHidden() {
 }
 
 export function setAIAssistantHidden(hidden) {
-  localStorage.setItem(STORAGE_KEYS.hidden, hidden ? 'true' : 'false')
+  try { localStorage.setItem(STORAGE_KEYS.hidden, hidden ? 'true' : 'false') } catch {}
   window.dispatchEvent(new Event('ai-visibility-change'))
 }
 

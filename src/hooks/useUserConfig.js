@@ -60,7 +60,7 @@ export function useUserConfig() {
   const updateConfig = (key, value) => {
     setConfig(prev => {
       const next = { ...prev, [key]: value };
-      localStorage.setItem('typingword_config', JSON.stringify(next));
+      try { localStorage.setItem('typingword_config', JSON.stringify(next)); } catch {}
       syncSettingUpdate({ [key]: value })
       return next;
     });

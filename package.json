@@ -5,6 +5,11 @@
   "description": "英语学习闭环平台 — 输入→理解→训练→应用→反馈",
   "author": "小月",
   "type": "module",
+  "browserslist": [
+    "defaults",
+    "iOS >= 12",
+    "Safari >= 12"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",

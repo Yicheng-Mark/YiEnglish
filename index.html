@@ -41,6 +41,43 @@
         if (theme === 'gray' || theme === 'star') root.classList.add('dark');
       })();
     </script>
+    <script>
+      // 在 React 挂载前拦截「模块脚本加载/解析失败」（白屏的最常见来源）。
+      // 这类错误发生在 <script type=module> 层，React ErrorBoundary 抓不到。
+      (function () {
+        function showFatal(message) {
+          var el = document.getElementById('root');
+          if (!el) return;
+          el.innerHTML =
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;' +
+            'padding:24px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif">' +
+            '<div style="max-width:420px">' +
+            '<div style="font-size:44px;margin-bottom:12px">😵</div>' +
+            '<div style="font-size:17px;font-weight:600;margin-bottom:8px">页面加载失败</div>' +
+            '<div style="font-size:14px;opacity:.7;margin-bottom:18px">' +
+            (message || '可能是浏览器缓存了旧版本，点击下方按钮刷新即可恢复。') + '</div>' +
+            '<button onclick="location.reload()" style="padding:10px 28px;border:none;border-radius:8px;' +
+            'background:#2563eb;color:#fff;font-size:15px;cursor:pointer">刷新页面</button>' +
+            '</div></div>';
+        }
+        // 1) 捕获阶段：<script>/<link> 资源加载失败（如 chunk 404）不冒泡，只能这里抓
+        window.addEventListener('error', function (e) {
+          var t = e.target && (e.target.tagName || e.target.nodeName);
+          if (t === 'SCRIPT' || t === 'LINK') {
+            showFatal('脚本或样式资源加载失败，请刷新或清除浏览器缓存后重试。');
+          }
+        }, true);
+        // 2) 冒泡阶段：仅在 React 尚未挂载（root 为空）时兜底，避免与 ErrorBoundary 冲突
+        window.addEventListener('error', function (e) {
+          if (e.error || e.message) {
+            var el = document.getElementById('root');
+            if (el && el.children.length === 0) {
+              showFatal();
+            }
+          }
+        });
+      })();
+    </script>
   </head>
   <body class="bg-background dark:bg-background-dark">
     <div id="root"></div>

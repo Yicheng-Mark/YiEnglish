@@ -1,4 +1,5 @@
-import { Suspense, lazy, useState, useEffect } from 'react'
+import { Suspense, useState, useEffect } from 'react'
+import { lazyRetry } from './utils/lazyRetry'
 import { useScrollingFlag } from './hooks/useScrollingFlag'
 import { Routes, Route, Navigate, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { Toaster } from 'sonner'
@@ -10,27 +11,27 @@ import { WordProvider } from './contexts/WordContext'
 import { isAIAssistantHidden } from './lib/ai-settings'
 import { migrateFromLocalStorage } from './utils/idb.js'
 
-const Home = lazy(() => import('./pages/Home'))
-const WordBooks = lazy(() => import('./pages/WordBooks'))
-const ChapterSelect = lazy(() => import('./pages/ChapterSelect'))
-const Typing = lazy(() => import('./pages/Typing'))
-const Stats = lazy(() => import('./pages/Stats'))
-const ReadingModule = lazy(() => import('./modules/reading'))
-const CorpusModule = lazy(() => import('./modules/corpus'))
-const PersonalCenter = lazy(() => import('./pages/PersonalCenter'))
-const LearningMethodsModule = lazy(() => import('./modules/learning-methods'))
-const AIChatPage = lazy(() => import('./pages/AIChatPage'))
-const ReviewSetup = lazy(() => import('./pages/ReviewSetup'))
-const ReviewQuiz = lazy(() => import('./pages/ReviewQuiz'))
-const Login = lazy(() => import('./pages/Login'))
-const Register = lazy(() => import('./pages/Register'))
-const Demo = lazy(() => import('./pages/Demo'))
-const Activate = lazy(() => import('./pages/Activate'))
-const DemoLayout = lazy(() => import('./pages/demo/DemoLayout'))
-const DemoWord = lazy(() => import('./pages/demo/DemoWord'))
-const DemoReading = lazy(() => import('./pages/demo/DemoReading'))
-const DemoCorpus = lazy(() => import('./pages/demo/DemoCorpus'))
-const DemoProfile = lazy(() => import('./pages/demo/DemoProfile'))
+const Home = lazyRetry(() => import('./pages/Home'))
+const WordBooks = lazyRetry(() => import('./pages/WordBooks'))
+const ChapterSelect = lazyRetry(() => import('./pages/ChapterSelect'))
+const Typing = lazyRetry(() => import('./pages/Typing'))
+const Stats = lazyRetry(() => import('./pages/Stats'))
+const ReadingModule = lazyRetry(() => import('./modules/reading'))
+const CorpusModule = lazyRetry(() => import('./modules/corpus'))
+const PersonalCenter = lazyRetry(() => import('./pages/PersonalCenter'))
+const LearningMethodsModule = lazyRetry(() => import('./modules/learning-methods'))
+const AIChatPage = lazyRetry(() => import('./pages/AIChatPage'))
+const ReviewSetup = lazyRetry(() => import('./pages/ReviewSetup'))
+const ReviewQuiz = lazyRetry(() => import('./pages/ReviewQuiz'))
+const Login = lazyRetry(() => import('./pages/Login'))
+const Register = lazyRetry(() => import('./pages/Register'))
+const Demo = lazyRetry(() => import('./pages/Demo'))
+const Activate = lazyRetry(() => import('./pages/Activate'))
+const DemoLayout = lazyRetry(() => import('./pages/demo/DemoLayout'))
+const DemoWord = lazyRetry(() => import('./pages/demo/DemoWord'))
+const DemoReading = lazyRetry(() => import('./pages/demo/DemoReading'))
+const DemoCorpus = lazyRetry(() => import('./pages/demo/DemoCorpus'))
+const DemoProfile = lazyRetry(() => import('./pages/demo/DemoProfile'))
 
 // 预加载底部导航对应的模块 chunk，避免切换时闪"加载中"
 const moduleLoaders = [
