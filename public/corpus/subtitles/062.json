@@ -1,0 +1,282 @@
+[
+  {
+    "start": 0.0,
+    "end": 2.14,
+    "en": "I would say day one was a success.",
+    "zh": "我觉得第一天还算成功（前景提要：博主申请宠物寄养，一只叫辛巴的猫咪刚刚来家里不久）。",
+    "id": 1
+  },
+  {
+    "start": 2.14,
+    "end": 4.5,
+    "en": "I'm super happy that Simba seemed really comfortable around us.",
+    "zh": "我非常高兴辛巴在我们身边显得很放松。",
+    "id": 2
+  },
+  {
+    "start": 4.5,
+    "end": 7.12,
+    "en": "but there were some things I noticed that weren't so great.",
+    "zh": "但我注意到了一些不太好的情况。",
+    "id": 3
+  },
+  {
+    "start": 8.6,
+    "end": 11.6,
+    "en": "He seemed to have a cold, which was probably from moving around so much.",
+    "zh": "他看起来有点感冒，可能是因为搬来搬去太频繁了。",
+    "id": 4
+  },
+  {
+    "start": 11.6,
+    "end": 13.54,
+    "en": "and he was a little bit underweight.",
+    "zh": "而且他有点偏瘦。",
+    "id": 5
+  },
+  {
+    "start": 13.54,
+    "end": 15.8,
+    "en": "So for these next couple weeks, we have two goals.",
+    "zh": "所以接下来的几周我们有两个目标。",
+    "id": 6
+  },
+  {
+    "start": 15.8,
+    "end": 20.04,
+    "en": "First, helping Simba get to a healthy weight, and second, helping him recover from his cold.",
+    "zh": "第一，帮辛巴恢复到健康体重；第二，帮他从感冒中康复。",
+    "id": 7
+  },
+  {
+    "start": 20.04,
+    "end": 24.12,
+    "en": "And I think a good place to start is finding someone who knows a little bit more about cats than I do.",
+    "zh": "我觉得一个好的开始方式是找一个比我更懂猫的人。",
+    "id": 8
+  },
+  {
+    "start": 25.12,
+    "end": 27.98,
+    "en": "Long time no see. I know, right? How have you been?",
+    "zh": "好久不见。可不是嘛？你最近怎么样？",
+    "id": 9
+  },
+  {
+    "start": 27.98,
+    "end": 30.9,
+    "en": "This is my girlfriend Mina, and she's fostered 11 cats in her life.",
+    "zh": "这是我女朋友米娜，她一共收养过11只猫。",
+    "id": 10
+  },
+  {
+    "start": 30.9,
+    "end": 34.28,
+    "en": "And she knows a lot more about fostering than I do, so I called her for some help.",
+    "zh": "她比我更懂猫咪寄养，所以我找她问点东西。",
+    "id": 11
+  },
+  {
+    "start": 35.1,
+    "end": 37.3,
+    "en": "What can I help you with?",
+    "zh": "我能帮你什么？",
+    "id": 12
+  },
+  {
+    "start": 37.46,
+    "end": 39.64,
+    "en": "So you know how I just got Simba? Yeah.",
+    "zh": "你知道我刚带回了辛巴，对吧？嗯。",
+    "id": 13
+  },
+  {
+    "start": 39.64,
+    "end": 44.52,
+    "en": "I was wondering, you know, if you're free, if you could be my teacher for this episode.",
+    "zh": "我在想，如果你有空的话，能不能在这期间当我的老师？",
+    "id": 14
+  },
+  {
+    "start": 44.78,
+    "end": 46.04,
+    "en": "absolutely yeah. Okay.",
+    "zh": "当然可以。太好了。",
+    "id": 15
+  },
+  {
+    "start": 48.32,
+    "end": 50.84,
+    "en": "I bring down a couple of questions I wanna ask you. Sure.",
+    "zh": "我写下来了一些问题想问你。没问题。",
+    "id": 16
+  },
+  {
+    "start": 51.16,
+    "end": 53.32,
+    "en": "Sorry, I don't know why I'm like actually nervous. Give me a sec.",
+    "zh": "不知道为什么我现在真的有点紧张。等我一下。",
+    "id": 17
+  },
+  {
+    "start": 54.1,
+    "end": 56.04,
+    "en": "How much does a cat normally weigh?",
+    "zh": "猫正常的体重大概是多少？",
+    "id": 18
+  },
+  {
+    "start": 56.04,
+    "end": 61.8,
+    "en": "I'm pretty sure it varies, but I think something like 8 to 12 pounds is about normal.",
+    "zh": "我觉得这因猫而异，但大概8到12磅是比较正常的范围。",
+    "id": 19
+  },
+  {
+    "start": 61.8,
+    "end": 66.3,
+    "en": "But I think what matters more than just like the number, how their body looks.",
+    "zh": "不过比起数字，更重要的是它身体的状态。",
+    "id": 20
+  },
+  {
+    "start": 66.3,
+    "end": 67.7,
+    "en": "Dry food versus wet food?",
+    "zh": "干粮还是湿粮？",
+    "id": 21
+  },
+  {
+    "start": 67.7,
+    "end": 69.7,
+    "en": "I think ideally they should have a mix of both.",
+    "zh": "理想情况是两种都要给。",
+    "id": 22
+  },
+  {
+    "start": 69.7,
+    "end": 73.18,
+    "en": "Wet food provides a lot of like the hydration for cats.",
+    "zh": "湿粮能为猫咪提供大量水分。",
+    "id": 23
+  },
+  {
+    "start": 73.18,
+    "end": 75.3,
+    "en": "but you never know like what your cat prefers.",
+    "zh": "不过也要看你家猫喜欢哪种。",
+    "id": 24
+  },
+  {
+    "start": 75.3,
+    "end": 78.45,
+    "en": "And if you're worried about his weight, then I would try to make both available.",
+    "zh": "如果你担心它体重，那就两种都提供吧。",
+    "id": 25
+  },
+  {
+    "start": 78.45,
+    "end": 81.4,
+    "en": "Does he like need to go outside at all, or like?",
+    "zh": "他需要出去遛吗？",
+    "id": 26
+  },
+  {
+    "start": 81.7,
+    "end": 85.28,
+    "en": "I feel like I would definitely not let him outside. Okay.",
+    "zh": "我肯定不会让他出去的。行。",
+    "id": 27
+  },
+  {
+    "start": 85.28,
+    "end": 89.86,
+    "en": "New York is gonna not be the best place for an outdoor cat.",
+    "zh": "纽约并不是适合猫在外面活动的地方。",
+    "id": 28
+  },
+  {
+    "start": 89.86,
+    "end": 93.1,
+    "en": "What's the, in your opinion, the hardest part about fostering?",
+    "zh": "你觉得寄养过程中最难的部分是什么？",
+    "id": 29
+  },
+  {
+    "start": 93.1,
+    "end": 95.7,
+    "en": "So at this point, I fostered like three separate times.",
+    "zh": "到现在我已经收养过三次了。",
+    "id": 30
+  },
+  {
+    "start": 95.7,
+    "end": 99.38,
+    "en": "And I'm pretty sure every single time I cried when I had to give them up.",
+    "zh": "每次把猫送走的时候我都哭了。",
+    "id": 31
+  },
+  {
+    "start": 99.38,
+    "end": 102.5,
+    "en": "you should make sure you're capable of like, you know, letting it go.",
+    "zh": "你要确定自己真的能做到“放手”。",
+    "id": 32
+  },
+  {
+    "start": 102.5,
+    "end": 103.6,
+    "en": "Because that's kind of the point.",
+    "zh": "因为那才是重点。",
+    "id": 33
+  },
+  {
+    "start": 103.6,
+    "end": 107.9,
+    "en": "You're supposed to feel like a safe transition for them to be adopted.",
+    "zh": "你应该在他们被领养前给他们一个安全的过渡。",
+    "id": 34
+  },
+  {
+    "start": 107.9,
+    "end": 113.64,
+    "en": "You have like a number or something that I can like contact you in case I have any questions or?",
+    "zh": "你能不能留个联系方式？如果我有问题可以找你。",
+    "id": 35
+  },
+  {
+    "start": 113.64,
+    "end": 115.46,
+    "en": "Oh, I definitely do.",
+    "zh": "当然可以。",
+    "id": 36
+  },
+  {
+    "start": 115.82,
+    "end": 119.6,
+    "en": "Yeah, yeah. If you like just like type in the chat or something, I'll make sure. Yeah, okay.",
+    "zh": "没问题。你可以打字发在聊天里。行。",
+    "id": 37
+  },
+  {
+    "start": 120.08,
+    "end": 123.56,
+    "en": "Okay, cool. I can like drop it in the chat. Okay, cool. Thanks.",
+    "zh": "好，没问题。我可以直接发在聊天里。好呀。谢谢。",
+    "id": 38
+  },
+  {
+    "start": 123.56,
+    "end": 126.2,
+    "en": "You're so welcome. Please let me know how it goes.",
+    "zh": "不客气。有情况一定告诉我。",
+    "id": 39
+  },
+  {
+    "start": 126.54,
+    "end": 129.84,
+    "en": "I love you. I mean, uh. What? Bye.",
+    "zh": "我爱你。呃，我是说……什么？拜。",
+    "id": 40
+  }
+]
