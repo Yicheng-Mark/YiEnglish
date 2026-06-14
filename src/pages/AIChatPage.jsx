@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { ArrowLeft, Send, Square, Trash2, Bot } from 'lucide-react'
 import { createChatStream } from '../lib/chat-engine'
 import {
-  fetchStyles, fetchChatHistory, fetchChatUsage,
+  fetchStyles, fetchChatHistory, fetchChatUsage, deriveUsageUI,
 } from '../lib/ai-settings'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -20,7 +20,7 @@ export default function AIChatPage() {
   const [streaming, setStreaming] = useState(false)
   const [currentStyle, setCurrentStyle] = useState(null)
   const [currentReasoning, setCurrentReasoning] = useState('')
-  const [usage, setUsage] = useState({ used: 0, limit: 10, remaining: 10 })
+  const [usage, setUsage] = useState({ status: 'loading' })
   const messagesEndRef = useRef(null)
   const abortRef = useRef(null)
   const streamingRef = useRef({ content: '', reasoning: '' })
@@ -51,15 +51,19 @@ export default function AIChatPage() {
   }, [messages, streaming])
 
   const displayName = currentStyle?.custom_name || currentStyle?.name || 'AI 助手'
+  const usageUI = deriveUsageUI(usage, displayName)
 
   const handleSend = useCallback(() => {
     const text = inputRef.current.trim()
     if (!text || streamingRef2.current) return
-    if (usageRef.current.remaining <= 0) return
+    if (usageRef.current.status === 'ok' && usageRef.current.remaining <= 0) return
 
     // Optimistic decrement — update ref immediately to prevent race conditions
-    usageRef.current = { ...usageRef.current, used: usageRef.current.used + 1, remaining: Math.max(0, usageRef.current.remaining - 1) }
-    setUsage({ ...usageRef.current })
+    // 仅在已成功加载用量（ok）时乐观自减；loading/error/forbidden 不动用量
+    if (usageRef.current.status === 'ok') {
+      usageRef.current = { ...usageRef.current, used: usageRef.current.used + 1, remaining: Math.max(0, usageRef.current.remaining - 1) }
+      setUsage({ ...usageRef.current })
+    }
 
     const userMsg = { role: 'user', content: text }
     const updated = [...messagesRef.current, userMsg]
@@ -220,19 +224,23 @@ export default function AIChatPage() {
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={usage.remaining > 0 ? `和 ${displayName} 对话...` : '今日对话次数已用完'}
-          disabled={streaming || usage.remaining <= 0}
+          placeholder={usageUI.placeholder}
+          disabled={streaming || usageUI.inputDisabled}
         />
         {streaming ? (
           <button className={styles.sendBtn} onClick={handleStop} title="停止">
             <Square size={16} />
           </button>
         ) : (
-          <button className={styles.sendBtn} onClick={handleSend} disabled={!input.trim() || usage.remaining <= 0} title="发送">
+          <button className={styles.sendBtn} onClick={handleSend} disabled={!input.trim() || usageUI.sendDisabled} title="发送">
             <Send size={16} />
           </button>
         )}
-        <span className={styles.usageHint}>剩余 {usage.remaining}/{usage.limit} 次</span>
+        <span
+          className={styles.usageHint}
+          style={usageUI.retryable ? { cursor: 'pointer' } : undefined}
+          onClick={usageUI.retryable ? () => fetchChatUsage().then(setUsage) : undefined}
+        >{usageUI.hint}</span>
       </div>
     </div>
   )

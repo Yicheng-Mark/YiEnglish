@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Bot, X, Maximize2, Send, Square, Trash2, BookOpen, MessageSquareText, GitCompare, Lightbulb } from 'lucide-react'
 import { createChatStream } from '../../lib/chat-engine'
 import {
-  fetchStyles, fetchChatHistory, fetchChatUsage,
+  fetchStyles, fetchChatHistory, fetchChatUsage, deriveUsageUI,
   getPosition, setPosition as savePosition,
   clearMemory,
 } from '../../lib/ai-settings'
@@ -40,9 +40,10 @@ const ChatContent = memo(function ChatContent({
   onInputChange, onKeyDown, onSend, onStop,
   onClearHistory, onExpand, onClose, messagesEndRef,
   onPanelPointerDown, onPanelPointerMove, onPanelPointerUp,
-  currentWord, onQuickAction,
+  currentWord, onQuickAction, onRetryUsage,
 }) {
   const displayName = currentStyle?.custom_name || currentStyle?.name || 'AI 助手'
+  const usageUI = deriveUsageUI(usage, displayName)
   return (
     <>
       <div className={styles.panelHeader}
@@ -130,19 +131,23 @@ const ChatContent = memo(function ChatContent({
           value={input}
           onChange={e => onInputChange(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder={usage.remaining > 0 ? `和 ${displayName} 对话...` : '今日对话次数已用完'}
-          disabled={streaming || usage.remaining <= 0}
+          placeholder={usageUI.placeholder}
+          disabled={streaming || usageUI.inputDisabled}
         />
         {streaming ? (
           <button className={styles.sendBtn} onClick={onStop} title="停止">
             <Square size={16} />
           </button>
         ) : (
-          <button className={styles.sendBtn} onClick={onSend} disabled={!input.trim() || usage.remaining <= 0} title="发送">
+          <button className={styles.sendBtn} onClick={onSend} disabled={!input.trim() || usageUI.sendDisabled} title="发送">
             <Send size={16} />
           </button>
         )}
-        <span className={styles.usageHint}>剩余 {usage.remaining}/{usage.limit} 次</span>
+        <span
+          className={styles.usageHint}
+          style={usageUI.retryable ? { cursor: 'pointer' } : undefined}
+          onClick={usageUI.retryable ? onRetryUsage : undefined}
+        >{usageUI.hint}</span>
       </div>
     </>
   )
@@ -161,7 +166,7 @@ export default function AICircleFloat() {
   const [isHidden, setIsHidden] = useState(false)
   const [isDraggingState, setIsDraggingState] = useState(false)
   const [currentReasoning, setCurrentReasoning] = useState('')
-  const [usage, setUsage] = useState({ used: 0, limit: 10, remaining: 10 })
+  const [usage, setUsage] = useState({ status: 'loading' })
   const hideTimerRef = useRef(null)
   const prevWordRef = useRef(null)
   const chatGenRef = useRef(0)
@@ -417,11 +422,14 @@ export default function AICircleFloat() {
   // Send text to AI
   const sendText = useCallback((text) => {
     if (!text || streamingRef2.current) return
-    if (usageRef.current.remaining <= 0) return
+    if (usageRef.current.status === 'ok' && usageRef.current.remaining <= 0) return
 
     // Optimistic decrement — update ref immediately to prevent race conditions
-    usageRef.current = { ...usageRef.current, used: usageRef.current.used + 1, remaining: Math.max(0, usageRef.current.remaining - 1) }
-    setUsage({ ...usageRef.current })
+    // 仅在已成功加载用量（ok）时乐观自减；loading/error/forbidden 不动用量
+    if (usageRef.current.status === 'ok') {
+      usageRef.current = { ...usageRef.current, used: usageRef.current.used + 1, remaining: Math.max(0, usageRef.current.remaining - 1) }
+      setUsage({ ...usageRef.current })
+    }
 
     const gen = chatGenRef.current
     const userMsg = { role: 'user', content: text }
@@ -524,6 +532,11 @@ export default function AICircleFloat() {
     setCurrentReasoning('')
   }, [])
 
+  // usage 加载失败时，浮窗提示上的「点击重试」回调
+  const handleRetryUsage = useCallback(() => {
+    fetchChatUsage().then(setUsage)
+  }, [])
+
   const handleClearHistory = useCallback(() => {
     setMessages([])
   }, [])
@@ -571,6 +584,7 @@ export default function AICircleFloat() {
             messages={messages} currentReasoning={currentReasoning}
             streaming={streaming} input={input}
             currentStyle={currentStyle} usage={usage}
+            onRetryUsage={handleRetryUsage}
             onInputChange={handleSetInput}
             onKeyDown={handleKeyDown} onSend={handleSend}
             onStop={handleStop}

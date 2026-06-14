@@ -6,13 +6,17 @@ import { unlockAudio } from '../utils/audioContext.js';
 import { fetchProgress, resetProgress } from '../lib/api.js';
 import { getLocalProgress } from '../utils/localProgress.js';
 import ChapterSkeleton from '../components/ChapterSkeleton.jsx';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
 const RESTORE_KEY = 'lf_wordlib_should_restore';
+const TRIAL_CHAPTER_COUNT = 5;
 
 export default function ChapterSelect() {
   const { dictId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
+  const isTrial = !!user?.isTrial;
   const [dict, setDict] = useState(() => getCached(dictId));
   const [loading, setLoading] = useState(() => !getCached(dictId));
   const [error, setError] = useState(null);
@@ -75,9 +79,10 @@ export default function ChapterSelect() {
     </div>
   );
 
-  const chapterCount = dict.chapters?.length || 0;
-  const totalWords = dict.chapters?.reduce((sum, c) => sum + (c.words?.length || 0), 0) || 0;
-  const totalDone = dict.chapters?.reduce((sum, c) => sum + (progress[c.id] || 0), 0) || 0;
+  const visibleChapters = (dict.chapters || []).slice(0, isTrial ? TRIAL_CHAPTER_COUNT : undefined);
+  const chapterCount = visibleChapters.length;
+  const totalWords = visibleChapters.reduce((sum, c) => sum + (c.words?.length || 0), 0);
+  const totalDone = visibleChapters.reduce((sum, c) => sum + (progress[c.id] || 0), 0);
   const totalPct = totalWords > 0 ? Math.round(totalDone / totalWords * 100) : 0;
   const isBookComplete = totalPct === 100;
 
@@ -144,7 +149,7 @@ export default function ChapterSelect() {
 
         {chapterCount === 0 ? <div className="text-center py-16 text-content-tertiary dark:text-gray-500">暂无章节数据</div> : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 animate-fadeIn">
-            {dict.chapters.map((chapter, index) => (
+            {visibleChapters.map((chapter, index) => (
               <Link key={chapter.id} to={`/typing/${dictId}/${chapter.id}`} className="group card card-hover p-4 relative overflow-hidden animate-card-enter glow-border-subtle active:scale-[0.98] transition-transform duration-150" style={{ animationDelay: `${index * 0.04}s` }}>
                 <div className="absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl from-primary/10 to-transparent rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="text-sm font-semibold text-content dark:text-white group-hover:text-primary transition-colors">{chapter.name}</div>

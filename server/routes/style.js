@@ -1,11 +1,15 @@
 const { Router } = require('express')
 const pool = require('../db')
 const authMiddleware = require('../middleware/auth')
+const requireFullAccount = require('../middleware/requireFullAccount')
 
 const router = Router()
 
+// 所有 style 路由都需要正式账号（体验用户禁用 AI 助手）
+const guarded = [authMiddleware, requireFullAccount]
+
 // GET /api/style — get current style + all available styles
-router.get('/', authMiddleware, async (req, res, next) => {
+router.get('/', guarded, async (req, res, next) => {
   try {
     // Get all active styles
     const [allStyles] = await pool.execute(
@@ -34,7 +38,7 @@ router.get('/', authMiddleware, async (req, res, next) => {
 })
 
 // POST /api/style — switch active style
-router.post('/', authMiddleware, async (req, res, next) => {
+router.post('/', guarded, async (req, res, next) => {
   try {
     const { styleKey, customName, gender } = req.body
     if (!styleKey) {
@@ -64,7 +68,7 @@ router.post('/', authMiddleware, async (req, res, next) => {
 })
 
 // PATCH /api/style/name — update custom name only
-router.patch('/name', authMiddleware, async (req, res, next) => {
+router.patch('/name', guarded, async (req, res, next) => {
   try {
     const { customName } = req.body
     if (typeof customName !== 'string' || customName.trim().length === 0) {
@@ -94,7 +98,7 @@ router.patch('/name', authMiddleware, async (req, res, next) => {
 })
 
 // PATCH /api/style/gender — update gender only
-router.patch('/gender', authMiddleware, async (req, res, next) => {
+router.patch('/gender', guarded, async (req, res, next) => {
   try {
     const validGenders = ['male', 'female']
     const { gender } = req.body
@@ -115,7 +119,7 @@ router.patch('/gender', authMiddleware, async (req, res, next) => {
 })
 
 // PATCH /api/style/custom-prompt — update custom personality prompt
-router.patch('/custom-prompt', authMiddleware, async (req, res, next) => {
+router.patch('/custom-prompt', guarded, async (req, res, next) => {
   try {
     const { customPrompt } = req.body
     if (typeof customPrompt !== 'string') {
@@ -147,7 +151,7 @@ router.patch('/custom-prompt', authMiddleware, async (req, res, next) => {
 })
 
 // POST /api/style/reset-personality — reset custom prompt (custom style only)
-router.post('/reset-personality', authMiddleware, async (req, res, next) => {
+router.post('/reset-personality', guarded, async (req, res, next) => {
   try {
     const [userStyle] = await pool.execute(
       'SELECT style_key FROM user_style_settings WHERE user_id = ?',
@@ -167,7 +171,7 @@ router.post('/reset-personality', authMiddleware, async (req, res, next) => {
 })
 
 // POST /api/style/reset — reset to default settings
-router.post('/reset', authMiddleware, async (req, res, next) => {
+router.post('/reset', guarded, async (req, res, next) => {
   try {
     await pool.execute(
       `INSERT INTO user_style_settings (user_id, style_key, custom_name, gender, custom_prompt)

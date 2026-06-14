@@ -21,11 +21,15 @@ function validatePassword(v) {
 // --- 兑换体验码（无需认证） ---
 router.post('/redeem', async (req, res, next) => {
   try {
-    const { code } = req.body
+    const { code, deviceId } = req.body
     const ip = req.ip || req.headers['x-forwarded-for']?.split(',')[0]?.trim() || '127.0.0.1'
 
     if (!code || typeof code !== 'string' || !code.trim()) {
       return res.status(400).json({ error: '请输入体验码' })
+    }
+
+    if (!deviceId || typeof deviceId !== 'string' || !deviceId.trim()) {
+      return res.status(400).json({ error: '设备识别失败，请刷新页面重试' })
     }
 
     // 简单限流：每个 IP 每分钟最多 5 次
@@ -66,6 +70,16 @@ router.post('/redeem', async (req, res, next) => {
       return res.status(400).json({ error: '体验码已达使用上限' })
     }
 
+    // 每台设备只能体验一次：按 device_id 全局去重
+    const [dupDevice] = await pool.execute(
+      'SELECT 1 FROM trial_activations WHERE device_id = ?',
+      [deviceId.trim()]
+    )
+    if (dupDevice.length > 0) {
+      await logAttempt(`demo_redeem:${ip}`, ip, false)
+      return res.status(400).json({ error: '该设备已体验过' })
+    }
+
     // 生成随机访客用户名（碰撞检测）
     let username
     for (let i = 0; i < 10; i++) {
@@ -94,10 +108,10 @@ router.post('/redeem', async (req, res, next) => {
     // 计算试用到期时间
     const trialExpiresAt = new Date(Date.now() + expCode.trial_hours * 60 * 60 * 1000)
 
-    // 记录试用激活
+    // 记录试用激活（含设备标识，用于"每台设备一次"去重）
     await pool.execute(
-      'INSERT INTO trial_activations (user_id, code_id, expires_at) VALUES (?, ?, ?)',
-      [userId, expCode.id, trialExpiresAt]
+      'INSERT INTO trial_activations (user_id, code_id, device_id, expires_at) VALUES (?, ?, ?, ?)',
+      [userId, expCode.id, deviceId.trim(), trialExpiresAt]
     )
 
     // 递增使用次数

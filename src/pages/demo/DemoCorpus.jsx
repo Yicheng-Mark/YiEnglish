@@ -2,7 +2,8 @@ import { useNavigate } from 'react-router-dom'
 import { mockCorpusVideos } from '../../modules/corpus/data/mockCorpusVideos'
 import VideoCard from '../../modules/corpus/components/VideoCard'
 
-const demoVideo = mockCorpusVideos.find(v => v.id === '5')
+const TRIAL_EPISODE_COUNT = 5
+const demoVideos = mockCorpusVideos.filter(v => Number(v.id) <= TRIAL_EPISODE_COUNT)
 
 export default function DemoCorpus() {
   const navigate = useNavigate()
@@ -26,14 +27,15 @@ export default function DemoCorpus() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pb-28">
-          {demoVideo && (
+          {demoVideos.map(video => (
             <VideoCard
-              video={demoVideo}
+              key={video.id}
+              video={video}
               isBookmarked={false}
               onClick={handleClick}
               onToggleBookmark={() => {}}
             />
-          )}
+          ))}
         </div>
       </div>
     </div>

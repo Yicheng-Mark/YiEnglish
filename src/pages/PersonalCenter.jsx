@@ -36,7 +36,8 @@ export default function PersonalCenter() {
   const store = useReadingStore()
   const { theme, setTheme } = useUserConfig()
   const profile = useProfileStore()
-  const { logout } = useAuth()
+  const { logout, user } = useAuth()
+  const isTrial = !!user?.isTrial
 
   const [editModal, setEditModal] = useState(false)
   const [goalModal, setGoalModal] = useState(false)
@@ -58,6 +59,7 @@ export default function PersonalCenter() {
 
   // Load AI styles
   useEffect(() => {
+    if (isTrial) return   // 体验用户禁用 AI 助手，不请求风格配置
     fetchStyles().then(data => {
       setAiStyles({ current: data.current, all: data.all })
       setCustomPromptInput(data.current?.custom_prompt || '')
@@ -126,10 +128,10 @@ export default function PersonalCenter() {
   ]
 
   const settingsItems = [
-    { label: 'AI 伙伴设置', emoji: '🤖', action: () => setCompanionModal(true) },
+    !isTrial && { label: 'AI 伙伴设置', emoji: '🤖', action: () => setCompanionModal(true) },
 { label: '模式切换', emoji: '🎨', action: () => setThemeModal(true) },
     { label: '帮助与反馈', emoji: '💬', action: () => setHelpModal(true) },
-  ]
+  ].filter(Boolean)
 
   return (
     <div className="min-h-[calc(100vh-3rem-3.5rem)] md:min-h-[calc(100vh-4rem-3.5rem)] max-w-5xl mx-auto px-4 md:px-8 py-6 md:py-8 animate-page-fade-in">

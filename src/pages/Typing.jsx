@@ -24,10 +24,15 @@ import { saveLocalProgress } from '../utils/localProgress.js';
 import { addWordToReview, updateReviewCard } from '../utils/reviewCards.js';
 import { useWordContext } from '../contexts/WordContext.jsx';
 import useErrorTracking from '../hooks/useErrorTracking.js';
+import { useAuth } from '../contexts/AuthContext.jsx';
+
+const TRIAL_CHAPTER_COUNT = 5;
 
 export default function Typing() {
   const { dictId, chapterId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isTrial = !!user?.isTrial;
   const [searchParams] = useSearchParams();
   const [words, setWords] = useState([]);
   const [chapters, setChapters] = useState([]);
@@ -227,8 +232,10 @@ export default function Typing() {
   // 移动端：点击/触摸页面任意位置重新聚焦输入框，防止失焦后无法打字
   useEffect(() => {
     if (!isMobile || isFinished || words.length === 0 || !keyboardActive) return;
-    const focusInput = () => {
+    const focusInput = (e) => {
       if (suppressClickRef.current) return;
+      // 点击/触摸工具栏按钮、下拉菜单项等交互控件时不抢焦点，避免移动端干扰其 click
+      if (e?.target?.closest?.('button, a, .dropdown-menu, .dropdown-item, input, textarea, select, [data-no-refocus]')) return;
       try {
         hiddenInputRef.current?.focus({ preventScroll: true });
       } catch {
@@ -309,8 +316,9 @@ export default function Typing() {
     handleInputRef.current?.('Backspace');
   }, [isFinished]);
 
+  const visibleChapters = isTrial ? chapters.slice(0, TRIAL_CHAPTER_COUNT) : chapters;
   const hasNextChapter = !isErrorBookMode && !isReadingWordBookMode && !isCorpusWordBookMode && !isFavoriteWordBookMode && !isReviewMode
-    && chapters.some(c => c.id === Number(chapterId) + 1);
+    && visibleChapters.some(c => c.id === Number(chapterId) + 1);
 
   const handleNextChapter = useCallback(() => {
     const nextId = Number(chapterId) + 1;
@@ -677,7 +685,7 @@ export default function Typing() {
         </button>
 
         {/* 顶部栏 */}
-        <div className="min-h-12 md:h-14 shrink-0 flex items-center justify-between px-3 md:px-4 z-40">
+        <div className="min-h-12 md:h-14 shrink-0 flex items-center justify-between px-3 md:px-4 z-[60]">
           <button onClick={() => (isErrorBookMode || isReadingWordBookMode || isCorpusWordBookMode || isFavoriteWordBookMode || isReviewMode) ? navigate('/word') : navigate(`/dict/${dictId}`)} className="text-content-tertiary dark:text-gray-400 hover:text-primary dark:hover:text-primary-dark flex items-center gap-2 text-sm transition-colors px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.04]">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -706,7 +714,7 @@ export default function Typing() {
           <TypingToolbar
             dictId={dictId}
             currentChapterId={chapterId}
-            chapters={chapters}
+            chapters={visibleChapters}
             config={config}
             toggleConfig={toggleConfig}
             updateConfig={updateConfig}

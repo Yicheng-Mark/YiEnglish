@@ -1,11 +1,15 @@
 const { Router } = require('express')
 const pool = require('../db')
 const authMiddleware = require('../middleware/auth')
+const requireFullAccount = require('../middleware/requireFullAccount')
 const { streamChatToRes } = require('../services/deepseekProxy')
 const { buildSystemPrompt } = require('../services/promptBuilder')
 const { extractMemories } = require('../services/memoryExtractor')
 
 const router = Router()
+
+// 所有 chat 路由都需要正式账号（体验用户禁用 AI 助手）
+const guarded = [authMiddleware, requireFullAccount]
 
 const DAILY_CHAT_LIMIT = 10
 
@@ -28,7 +32,7 @@ async function incrementUsage(pool, userId) {
 }
 
 // GET /api/chat/usage — get daily usage
-router.get('/usage', authMiddleware, async (req, res, next) => {
+router.get('/usage', guarded, async (req, res, next) => {
   try {
     const usage = await getTodayUsage(pool, req.userId)
     res.json(usage)
@@ -38,7 +42,7 @@ router.get('/usage', authMiddleware, async (req, res, next) => {
 })
 
 // POST /api/chat — SSE streaming chat
-router.post('/', authMiddleware, async (req, res, next) => {
+router.post('/', guarded, async (req, res, next) => {
   try {
     const { messages, styleKey: clientStyleKey } = req.body
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
@@ -135,7 +139,7 @@ router.post('/', authMiddleware, async (req, res, next) => {
 })
 
 // GET /api/chat/history — get recent messages
-router.get('/history', authMiddleware, async (req, res, next) => {
+router.get('/history', guarded, async (req, res, next) => {
   try {
     const limit = Math.min(parseInt(req.query.limit, 10) || 50, 100)
     const [rows] = await pool.execute(
@@ -149,7 +153,7 @@ router.get('/history', authMiddleware, async (req, res, next) => {
 })
 
 // POST /api/chat/clear-memory — clear all conversation memory and chat history
-router.post('/clear-memory', authMiddleware, async (req, res, next) => {
+router.post('/clear-memory', guarded, async (req, res, next) => {
   try {
     await pool.execute('DELETE FROM conversation_memory WHERE user_id = ?', [req.userId])
     await pool.execute('DELETE FROM chat_messages WHERE user_id = ?', [req.userId])

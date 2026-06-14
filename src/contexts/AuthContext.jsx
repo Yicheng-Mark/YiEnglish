@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { apiFetch } from '../lib/api'
+import { getDeviceId } from '../utils/getDeviceId'
 
 const AuthContext = createContext(null)
 
@@ -118,7 +119,7 @@ export function AuthProvider({ children }) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ code }),
+      body: JSON.stringify({ code, deviceId: getDeviceId() }),
     })
     const data = await res.json()
     if (!res.ok) throw new Error(data.error || '体验码无效')

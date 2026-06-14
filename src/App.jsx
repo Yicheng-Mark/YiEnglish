@@ -69,6 +69,35 @@ function ProtectedRoute() {
   return <Outlet />
 }
 
+// 体验用户：重定向到体验沙箱，禁止进入主应用的词库列表页
+function TrialGuard({ children }) {
+  const { user } = useAuth()
+  if (user?.isTrial) return <Navigate to="/demo/home" replace />
+  return children
+}
+
+// 在 AuthProvider 内部渲染，按路径/用户手动设置/体验身份决定是否显示 AI 悬浮球
+function AIAssistantGate() {
+  const location = useLocation()
+  const { user } = useAuth()
+  const [aiHidden, setAiHidden] = useState(isAIAssistantHidden)
+
+  useEffect(() => {
+    const handler = () => setAiHidden(isAIAssistantHidden())
+    window.addEventListener('ai-visibility-change', handler)
+    return () => window.removeEventListener('ai-visibility-change', handler)
+  }, [])
+
+  const hideAI =
+    (AUTH_ENABLED && ['/login', '/register', '/demo', '/activate'].includes(location.pathname)) ||
+    location.pathname.startsWith('/demo/') ||
+    location.pathname.startsWith('/activate/') ||
+    aiHidden ||
+    !!user?.isTrial   // 体验用户全局隐藏 AI 助手
+
+  return !hideAI ? <AICircleFloat /> : null
+}
+
 function RegisterGuard() {
   const validatedCode = sessionStorage.getItem('validated_activation_code')
   if (!validatedCode) return <Navigate to="/activate" replace />
@@ -77,21 +106,12 @@ function RegisterGuard() {
 
 function App() {
   useScrollingFlag()
-  const location = useLocation()
   useEffect(preloadModules, [])
   useEffect(() => {
     // 空闲时执行 localStorage → IndexedDB 迁移
     if (typeof requestIdleCallback === 'function') {
       requestIdleCallback(() => migrateFromLocalStorage().catch(console.warn))
     }
-  }, [])
-  const [aiHidden, setAiHidden] = useState(isAIAssistantHidden)
-  const hideAI = (AUTH_ENABLED && ['/login', '/register', '/demo', '/activate'].includes(location.pathname)) || location.pathname.startsWith('/demo/') || location.pathname.startsWith('/activate/') || aiHidden
-
-  useEffect(() => {
-    const handler = () => setAiHidden(isAIAssistantHidden())
-    window.addEventListener('ai-visibility-change', handler)
-    return () => window.removeEventListener('ai-visibility-change', handler)
   }, [])
 
   return (
@@ -130,8 +150,8 @@ function App() {
             {/* 主应用路由 */}
             <Route element={<Layout />}>
               <Route path="/" element={<Navigate to="/word" replace />} />
-              <Route path="/word" element={<Home />} />
-              <Route path="/wordbooks" element={<WordBooks />} />
+              <Route path="/word" element={<TrialGuard><Home /></TrialGuard>} />
+              <Route path="/wordbooks" element={<TrialGuard><WordBooks /></TrialGuard>} />
               <Route path="/read/*" element={<ReadingModule />} />
               <Route path="/reading/*" element={<ReadingModule />} />
               <Route path="/listening/*" element={<CorpusModule />} />
@@ -147,7 +167,7 @@ function App() {
           </Route>
         </Routes>
       </Suspense>
-      {!hideAI && <AICircleFloat />}
+      <AIAssistantGate />
       </WordProvider>
     </AuthProvider>
   )
