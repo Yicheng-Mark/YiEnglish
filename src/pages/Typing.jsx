@@ -400,7 +400,8 @@ export default function Typing() {
       // 追加模式：拼音在增长，提取新增后缀中的英文字母
       // 使用 replace 而非整体正则，避免 IME 残留中文字符导致整批字母被丢弃
       const newChars = newVal.slice(oldVal.length);
-      const asciiChars = newChars.replace(/[^a-zA-Z]/g, '');
+      // 允许空格通过：复合词连字符已规范化为空格，用户按主面板空格键即可（连字符不在主面板）
+      const asciiChars = newChars.replace(/[^a-zA-Z ]/g, '');
       if (asciiChars) {
         for (const ch of asciiChars) {
           handleCharacterInput(ch);

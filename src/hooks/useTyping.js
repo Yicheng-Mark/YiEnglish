@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { getAudioContext } from '../utils/audioContext.js';
 import { addToErrorBook } from '../utils/errorBook.js';
+import { normalizeWordName } from '../utils/wordName.js';
 
 // ========== 音频合成（机械键盘模拟）==========
 
@@ -277,7 +278,7 @@ export default function useTyping(words, soundEnabled, wordRepeatCount = 1, isEr
 
     if (soundEnabled) playKeySound(noiseBufferRef);
 
-    const target = currentWord.name;
+    const target = normalizeWordName(currentWord.name);
     const nextInput = currentInputRef.current + key;
     inputCountRef.current += 1;
 
@@ -328,7 +329,7 @@ export default function useTyping(words, soundEnabled, wordRepeatCount = 1, isEr
 
       if (onErrorRef.current) {
         const letterIndex = currentInputRef.current.length - 1;
-        onErrorRef.current(currentWord, currentWord.name[letterIndex], key, letterIndex);
+        onErrorRef.current(currentWord, target[letterIndex], key, letterIndex);
       }
 
       if (!isErrorBookMode && currentWord) {

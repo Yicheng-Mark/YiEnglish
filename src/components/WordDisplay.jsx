@@ -1,7 +1,9 @@
 import React, { memo, useMemo, useRef, useEffect } from 'react';
+import { normalizeWordName } from '../utils/wordName.js';
 
 const WordDisplay = memo(function WordDisplay({ word, currentInput, isWrong }) {
-  const chars = useMemo(() => word?.name?.split('') || [], [word?.name]);
+  // 连字符规范化为空格，使显示与打字比对一致（见 normalizeWordName）
+  const chars = useMemo(() => normalizeWordName(word?.name).split(''), [word?.name]);
   const prevLenRef = useRef(0);
 
   // 根据单词长度动态调整字体大小和间距，避免长单词被截断
