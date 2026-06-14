@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import AuthFooter from '../components/AuthFooter'
@@ -10,13 +10,11 @@ export default function Activate() {
   const navigate = useNavigate()
   const { code: urlCode } = useParams()
   const [code, setCode] = useState(urlCode || '')
-  const [loading, setLoading] = useState(false)
+  // 链接带码时初始即为"验证中"，避免先闪一下表单
+  const [loading, setLoading] = useState(!!urlCode)
 
-  async function handleSubmit(e) {
-    e.preventDefault()
-    const trimmed = code.trim()
-    if (!trimmed) return
-
+  // 校验激活码：通过则写入 sessionStorage 并跳转注册页
+  async function validateAndProceed(trimmed) {
     setLoading(true)
     try {
       const res = await apiFetch('/api/auth/validate-activation-code', {
@@ -38,6 +36,29 @@ export default function Activate() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // 链接带码（/activate/<code>）：自动验证，通过直接进注册页
+  useEffect(() => {
+    if (!urlCode) return
+    validateAndProceed(urlCode.trim())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlCode])
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    const trimmed = code.trim()
+    if (!trimmed) return
+    await validateAndProceed(trimmed)
+  }
+
+  // 自动验证中：整页 loading，不渲染表单
+  if (urlCode && loading) {
+    return (
+      <div className="fixed inset-0 bg-black flex items-center justify-center">
+        <p className="text-white/70 text-sm">验证激活码中...</p>
+      </div>
+    )
   }
 
   return (
