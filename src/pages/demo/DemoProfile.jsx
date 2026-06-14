@@ -62,21 +62,12 @@ export default function DemoProfile() {
   return (
     <div className="min-h-[calc(100vh-3rem-3.5rem)] md:min-h-[calc(100vh-4rem-3.5rem)] max-w-5xl mx-auto px-4 md:px-8 py-6 md:py-8 animate-page-fade-in">
 
-      {/* Profile Header - 只读 */}
-      <div className="flex items-center gap-4 mb-6 animate-card-enter">
-        <div className="relative w-16 h-16 rounded-full bg-primary/15 text-primary flex items-center justify-center text-2xl font-bold flex-shrink-0 overflow-hidden">
-          {profile.avatar ? (
-            <img src={profile.avatar} alt="头像" className="w-full h-full object-cover" />
-          ) : (
-            profile.nickname.charAt(0)
-          )}
-        </div>
-        <div className="flex-1 min-w-0">
-          <h2 className="text-xl font-bold text-content dark:text-gray-100 truncate">{profile.nickname}</h2>
-          <p className="text-sm text-content-tertiary dark:text-gray-500 mt-0.5 truncate">
-            {profile.signature || '这个人很懒，什么都没写~'}
-          </p>
-        </div>
+      {/* Profile Header - 只读，体验用户无头像 */}
+      <div className="mb-6 animate-card-enter">
+        <h2 className="text-xl font-bold text-content dark:text-gray-100 truncate">{profile.nickname}</h2>
+        <p className="text-sm text-content-tertiary dark:text-gray-500 mt-0.5 truncate">
+          {profile.signature || '这个人很懒，什么都没写~'}
+        </p>
       </div>
 
       {/* Learning Data Card */}

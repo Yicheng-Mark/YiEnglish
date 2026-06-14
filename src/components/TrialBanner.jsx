@@ -32,17 +32,11 @@ export default function TrialBanner() {
 
   return (
     <>
-      {/* 试用状态条 */}
-      <div className="bg-gradient-to-r from-amber-500/90 to-orange-500/90 text-white text-center py-2 px-4 text-sm flex items-center justify-center gap-3">
+      {/* 试用状态条（保留倒计时） */}
+      <div className="bg-gradient-to-r from-amber-500/90 to-orange-500/90 text-white text-center py-2 px-4 text-sm">
         <span>
           体验中{remaining ? ` — 剩余 ${remaining}` : ''}
         </span>
-        {/* 升级入口暂未开放，待接入外部链接 */}
-        <button
-          className="px-3 py-1 rounded-lg bg-white/20 hover:bg-white/30 transition-colors text-xs font-medium"
-        >
-          升级为正式账号
-        </button>
       </div>
     </>
   )
