@@ -6,6 +6,13 @@ import { apiFetch } from '../lib/api'
 
 const VALIDATED_CODE_KEY = 'validated_activation_code'
 
+// 从输入中提取激活码：支持裸码，也支持用户粘贴完整链接 .../activate/<码>
+function extractCode(raw) {
+  const trimmed = String(raw || '').trim()
+  const m = trimmed.match(/\/activate\/([^/?#]+)/)
+  return m ? m[1] : trimmed
+}
+
 export default function Activate() {
   const navigate = useNavigate()
   const { code: urlCode } = useParams()
@@ -14,7 +21,9 @@ export default function Activate() {
   const [loading, setLoading] = useState(!!urlCode)
 
   // 校验激活码：通过则写入 sessionStorage 并跳转注册页
-  async function validateAndProceed(trimmed) {
+  async function validateAndProceed(raw) {
+    const trimmed = extractCode(raw)
+    if (!trimmed) return
     setLoading(true)
     try {
       const res = await apiFetch('/api/auth/validate-activation-code', {
@@ -41,15 +50,13 @@ export default function Activate() {
   // 链接带码（/activate/<code>）：自动验证，通过直接进注册页
   useEffect(() => {
     if (!urlCode) return
-    validateAndProceed(urlCode.trim())
+    validateAndProceed(urlCode)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlCode])
 
   async function handleSubmit(e) {
     e.preventDefault()
-    const trimmed = code.trim()
-    if (!trimmed) return
-    await validateAndProceed(trimmed)
+    await validateAndProceed(code)
   }
 
   // 自动验证中：整页 loading，不渲染表单
@@ -80,7 +87,7 @@ export default function Activate() {
               <input
                 type="text"
                 value={code}
-                onChange={e => setCode(e.target.value)}
+                onChange={e => setCode(extractCode(e.target.value))}
                 placeholder="请输入激活码"
                 autoComplete="off"
                 autoFocus
