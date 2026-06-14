@@ -100,6 +100,11 @@ export default function Login() {
               输入体验码
             </Link>
           </p>
+          <p className="mt-2 text-center text-sm text-white/60">
+            <Link to="/recover" className="text-white hover:underline">
+              找回密码
+            </Link>
+          </p>
         </div>
       </div>
 

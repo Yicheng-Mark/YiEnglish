@@ -27,6 +27,7 @@ const Login = lazyRetry(() => import('./pages/Login'))
 const Register = lazyRetry(() => import('./pages/Register'))
 const Demo = lazyRetry(() => import('./pages/Demo'))
 const Activate = lazyRetry(() => import('./pages/Activate'))
+const Recover = lazyRetry(() => import('./pages/Recover'))
 const DemoLayout = lazyRetry(() => import('./pages/demo/DemoLayout'))
 const DemoWord = lazyRetry(() => import('./pages/demo/DemoWord'))
 const DemoReading = lazyRetry(() => import('./pages/demo/DemoReading'))
@@ -89,9 +90,10 @@ function AIAssistantGate() {
   }, [])
 
   const hideAI =
-    (AUTH_ENABLED && ['/login', '/register', '/demo', '/activate'].includes(location.pathname)) ||
+    (AUTH_ENABLED && ['/login', '/register', '/demo', '/activate', '/recover'].includes(location.pathname)) ||
     location.pathname.startsWith('/demo/') ||
     location.pathname.startsWith('/activate/') ||
+    location.pathname.startsWith('/recover/') ||
     aiHidden ||
     !!user?.isTrial   // 体验用户全局隐藏 AI 助手
 
@@ -134,6 +136,8 @@ function App() {
           {AUTH_ENABLED && <Route path="/register" element={<RegisterGuard />} />}
           {AUTH_ENABLED && <Route path="/activate" element={<Activate />} />}
           {AUTH_ENABLED && <Route path="/activate/:code" element={<Activate />} />}
+          {AUTH_ENABLED && <Route path="/recover" element={<Recover />} />}
+          {AUTH_ENABLED && <Route path="/recover/:code" element={<Recover />} />}
           {/* Demo 路由（体验码输入 + demo 应用） */}
           {AUTH_ENABLED && (
             <Route path="/demo">

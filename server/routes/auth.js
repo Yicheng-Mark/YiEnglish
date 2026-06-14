@@ -438,4 +438,114 @@ router.post('/change-password', authMiddleware, async (req, res, next) => {
   }
 })
 
+// --- 找回密码：凭注册链接查找关联账号（只读，不修改）---
+router.post('/recover-lookup', async (req, res, next) => {
+  try {
+    const { code } = req.body
+    const ip = getClientIp(req)
+
+    if (!code || typeof code !== 'string' || !code.trim()) {
+      return res.status(400).json({ error: '请输入激活码' })
+    }
+
+    const codeKey = 'recover:' + code.trim()
+    await checkLoginRateLimit(codeKey, ip)
+
+    // 通过 activation_code_id 反查注册账号；不校验 is_active/expires_at/uses，
+    // 这些只管"新注册"，已注册账号的找回权利不随码失效而消失
+    const [rows] = await pool.execute(
+      `SELECT u.id, u.username FROM users u
+       JOIN experience_codes ec ON u.activation_code_id = ec.id
+       WHERE ec.code = ? AND ec.type = 'activation'`,
+      [code.trim()]
+    )
+
+    if (rows.length === 0) {
+      await logAttempt(codeKey, ip, false)
+      return res.status(404).json({ error: '未找到关联账号' })
+    }
+    if (rows.length > 1) {
+      // 一码一账号不变量下不应发生；防御性返回
+      return res.status(409).json({ error: '该链接关联多个账号，请联系客服' })
+    }
+
+    await logAttempt(codeKey, ip, true)
+    res.json({ found: true, username: rows[0].username })
+  } catch (err) {
+    next(err)
+  }
+})
+
+// --- 找回密码：重置用户名与密码，并自动登录 ---
+router.post('/recover-reset', async (req, res, next) => {
+  try {
+    const { code, username, password } = req.body
+    const ip = getClientIp(req)
+
+    if (!code || typeof code !== 'string' || !code.trim()) {
+      return res.status(400).json({ error: '请输入激活码' })
+    }
+    if (!validateUsername(username)) {
+      return res.status(400).json({ error: '用户名需 3-30 位，支持字母、数字、下划线、中文' })
+    }
+    if (!validatePassword(password)) {
+      return res.status(400).json({ error: '密码需 8-128 位，至少包含一个字母和一个数字' })
+    }
+
+    await checkRegisterRateLimit(ip)
+
+    const [rows] = await pool.execute(
+      `SELECT u.id, u.username FROM users u
+       JOIN experience_codes ec ON u.activation_code_id = ec.id
+       WHERE ec.code = ? AND ec.type = 'activation'`,
+      [code.trim()]
+    )
+    if (rows.length === 0) {
+      return res.status(404).json({ error: '未找到关联账号' })
+    }
+    if (rows.length > 1) {
+      return res.status(409).json({ error: '该链接关联多个账号，请联系客服' })
+    }
+    const userId = rows[0].id
+
+    // 唯一性预检（排除自身）
+    const [existing] = await pool.execute(
+      'SELECT id FROM users WHERE username = ? AND id != ?',
+      [username, userId]
+    )
+    if (existing.length > 0) {
+      return res.status(409).json({ error: '用户名已被占用' })
+    }
+
+    const hash = await bcrypt.hash(password, config.BCRYPT_ROUNDS)
+
+    try {
+      await pool.execute(
+        'UPDATE users SET username = ?, password_hash = ?, password_changed_at = NOW() WHERE id = ?',
+        [username, hash, userId]
+      )
+    } catch (err) {
+      // 唯一索引兜底，防 TOCTOU
+      if (err.code === 'ER_DUP_ENTRY') {
+        return res.status(409).json({ error: '用户名已被占用' })
+      }
+      throw err
+    }
+
+    // 踢掉其他设备的登录态
+    await pool.execute('DELETE FROM refresh_tokens WHERE user_id = ?', [userId])
+
+    await issueTokens(res, userId)
+    await logAttempt('recover:' + ip, ip, true)
+
+    const [updated] = await pool.execute(
+      'SELECT id, username, nickname FROM users WHERE id = ?',
+      [userId]
+    )
+    res.json({ user: updated[0] })
+  } catch (err) {
+    next(err)
+  }
+})
+
 module.exports = router

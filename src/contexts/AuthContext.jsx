@@ -82,6 +82,31 @@ export function AuthProvider({ children }) {
     return data.user
   }, [])
 
+  const recoverLookup = useCallback(async (code) => {
+    const res = await fetch(`${API_BASE}/api/auth/recover-lookup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ code }),
+    })
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error || '查找失败')
+    return data
+  }, [])
+
+  const recoverReset = useCallback(async (code, username, password) => {
+    const res = await fetch(`${API_BASE}/api/auth/recover-reset`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ code, username, password }),
+    })
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error || '重置失败')
+    setUser(data.user)
+    return data.user
+  }, [])
+
   const logout = useCallback(async () => {
     try {
       await fetch(`${API_BASE}/api/auth/logout`, {
@@ -141,8 +166,8 @@ export function AuthProvider({ children }) {
   }, [])
 
   const value = useMemo(() => ({
-    user, loading, login, register, logout, updateProfile, changePassword, redeemDemoCode, upgradeAccount, setNavigator
-  }), [user, loading, login, register, logout, updateProfile, changePassword, redeemDemoCode, upgradeAccount, setNavigator])
+    user, loading, login, register, logout, updateProfile, changePassword, redeemDemoCode, upgradeAccount, recoverLookup, recoverReset, setNavigator
+  }), [user, loading, login, register, logout, updateProfile, changePassword, redeemDemoCode, upgradeAccount, recoverLookup, recoverReset, setNavigator])
 
   return (
     <AuthContext.Provider value={value}>
