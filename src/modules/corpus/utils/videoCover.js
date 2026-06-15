@@ -4,7 +4,8 @@
  *
  * 仅对来自 OSS 的视频生效（按域名前缀判断），其他来源返回 null。
  */
-const OSS_HOST_HINTS = ['aliyuncs.com', 'oss-']
+// 含自定义域名 videos.lingoforge.fun（浏览器访问入口）；aliyuncs.com/oss- 保留用于直连。
+const OSS_HOST_HINTS = ['aliyuncs.com', 'oss-', 'lingoforge.fun']
 
 export function getOssVideoCover(videoUrl, { timeMs = 3000, width = 800 } = {}) {
   if (!videoUrl || typeof videoUrl !== 'string') return null

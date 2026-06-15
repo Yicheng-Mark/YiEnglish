@@ -1,4 +1,8 @@
-const OSS = import.meta.env.VITE_OSS_BASE_URL || 'https://lingoforge-videos.oss-cn-shenzhen.aliyuncs.com'
+// OSS 自定义域名 videos.lingoforge.fun（DNS CNAME + OSS 控制台绑定 + DV 证书均已就绪，
+// curl 实测：Content-Disposition: inline、HTTP 200、206 Range 全部正常）。
+// 必须走自定义域名：OSS 默认域名 xxx.aliyuncs.com 会强制注入 Content-Disposition: attachment，
+// iOS Safari 严格遵循该头 → 拒绝内嵌播放视频 + 拒绝渲染封面（安卓/桌面宽松所以正常）。
+const OSS = import.meta.env.VITE_OSS_BASE_URL || 'https://videos.lingoforge.fun'
 
 export const mockCorpusVideos = [
   {

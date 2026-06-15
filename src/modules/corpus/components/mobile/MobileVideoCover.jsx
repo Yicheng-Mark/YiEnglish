@@ -2,9 +2,12 @@ import { useCallback, useRef, useState } from 'react'
 import { Play, Pause, ArrowLeft, Settings } from 'lucide-react'
 import { useCorpusContext } from '../../context/CorpusPlayerContext.jsx'
 import SettingsPanel from '../SettingsPanel.jsx'
+import { resolveVideoCover } from '../../utils/videoCover.js'
+import { handleVideoPlaybackError } from '../../utils/videoError.js'
 
 export default function MobileVideoCover({ onBack }) {
   const { videoRef, video, player, videoCallbackRef } = useCorpusContext()
+  const posterUrl = resolveVideoCover(video)
   const [hasPlayed, setHasPlayed] = useState(false)
   const [tapIcon, setTapIcon] = useState(null) // 'play' | 'pause' | null
   const [settingsOpen, setSettingsOpen] = useState(false)
@@ -48,7 +51,7 @@ export default function MobileVideoCover({ onBack }) {
       <video
         ref={videoCallbackRef}
         src={video?.videoUrl}
-        poster={video?.posterUrl}
+        poster={posterUrl || undefined}
         preload="metadata"
         playsInline
         webkit-playsinline="true"
@@ -57,6 +60,7 @@ export default function MobileVideoCover({ onBack }) {
         onPlay={handlePlay}
         onPause={handlePause}
         onEnded={() => setHasPlayed(false)}
+        onError={(e) => handleVideoPlaybackError(video?.videoUrl, e)}
         className="w-full h-full object-cover block"
       />
 

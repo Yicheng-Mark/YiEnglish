@@ -1,6 +1,7 @@
 import { VideoOff } from 'lucide-react'
 import { useCorpusContext } from '../context/CorpusPlayerContext.jsx'
 import { formatTime } from '../../../utils/formatTime.js'
+import { handleVideoPlaybackError } from '../utils/videoError.js'
 
 export default function VideoPlayer({ src, poster }) {
   const { videoRef, player, settings, toggleSetting } = useCorpusContext()
@@ -18,6 +19,7 @@ export default function VideoPlayer({ src, poster }) {
         preload="metadata"
         playsInline
         loop={settings?.videoLoop}
+        onError={(e) => handleVideoPlaybackError(src, e)}
         className={`w-full h-full bg-black ${hidden ? 'opacity-0' : ''}`}
       />
 

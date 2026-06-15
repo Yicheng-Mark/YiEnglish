@@ -313,6 +313,16 @@ export function useCorpusPlayer({ videoRef, subtitles, videoEl }) {
   const requestFullscreen = useCallback(async () => {
     const v = videoRef.current
     if (!v) return
+    // iOS Safari（含 iPadOS：UA 不带 iPad 但 platform=MacIntel 且可触控）不支持任意元素的
+    // Fullscreen API，只支持 <video> 自身的 webkitEnterFullscreen()。
+    // 不走这条分支的话，iPhone 上全屏按钮点了完全没反应。
+    const isIOS =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+    if (isIOS && typeof v.webkitEnterFullscreen === 'function') {
+      v.webkitEnterFullscreen()
+      return
+    }
     const target = v.parentElement
     if (!target) return
     if (document.fullscreenElement) {
