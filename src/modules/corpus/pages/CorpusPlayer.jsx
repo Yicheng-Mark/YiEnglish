@@ -6,13 +6,18 @@ import { CorpusPlayerProvider } from '../context/CorpusPlayerContext.jsx'
 import useCorpusLayout from '../hooks/useCorpusLayout.js'
 import MobileCorpusPlayer from '../components/mobile/MobileCorpusPlayer.jsx'
 import DesktopCorpusPlayer from '../components/DesktopCorpusPlayer.jsx'
+import { useAuth } from '../../../contexts/AuthContext'
 
 export default function CorpusPlayer() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { user } = useAuth()
   const video = getVideoById(id)
   const posterUrl = useMemo(() => resolveVideoCover(video), [video])
   const isMobile = useCorpusLayout()
+
+  // 体验用户从沙箱点进来看视频，返回时应回到体验沙箱而非完整列表
+  const backTo = user?.isTrial ? '/demo/corpus' : '/listening'
 
   useEffect(() => {
     window.scrollTo({ top: 0 })
@@ -27,7 +32,7 @@ export default function CorpusPlayer() {
             ID: {id}
           </p>
           <button
-            onClick={() => navigate('/listening')}
+            onClick={() => navigate(backTo)}
             className="px-4 py-2 rounded-button bg-primary text-white text-sm hover:opacity-90 transition-opacity"
           >
             返回语料
@@ -40,10 +45,10 @@ export default function CorpusPlayer() {
   return (
     <CorpusPlayerProvider video={video}>
       {isMobile ? (
-        <MobileCorpusPlayer video={video} posterUrl={posterUrl} onBack={() => navigate('/listening')} />
+        <MobileCorpusPlayer video={video} posterUrl={posterUrl} onBack={() => navigate(backTo)} />
       ) : (
         <div className="corpus-tablet-wrapper">
-          <DesktopCorpusPlayer video={video} posterUrl={posterUrl} onBack={() => navigate('/listening')} />
+          <DesktopCorpusPlayer video={video} posterUrl={posterUrl} onBack={() => navigate(backTo)} />
         </div>
       )}
     </CorpusPlayerProvider>

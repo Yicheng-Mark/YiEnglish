@@ -1126,6 +1126,9 @@ export const mockCorpusVideos = [
 
 export const totalCount = mockCorpusVideos.length
 
+// 体验用户可观看的期数上限（含），语料模块统一引用此常量做体验校验
+export const TRIAL_EPISODE_COUNT = 5
+
 const allCategories = [...new Set(mockCorpusVideos.map((v) => v.category).filter(Boolean))].sort()
 export const categories = ['全部', ...allCategories]
 

@@ -1,8 +1,7 @@
 import { useNavigate } from 'react-router-dom'
-import { mockCorpusVideos } from '../../modules/corpus/data/mockCorpusVideos'
+import { mockCorpusVideos, TRIAL_EPISODE_COUNT } from '../../modules/corpus/data/mockCorpusVideos'
 import VideoCard from '../../modules/corpus/components/VideoCard'
 
-const TRIAL_EPISODE_COUNT = 5
 const demoVideos = mockCorpusVideos.filter(v => Number(v.id) <= TRIAL_EPISODE_COUNT)
 
 export default function DemoCorpus() {
