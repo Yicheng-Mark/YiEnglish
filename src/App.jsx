@@ -19,6 +19,7 @@ const Stats = lazyRetry(() => import('./pages/Stats'))
 const ReadingModule = lazyRetry(() => import('./modules/reading'))
 const CorpusModule = lazyRetry(() => import('./modules/corpus'))
 const PersonalCenter = lazyRetry(() => import('./pages/PersonalCenter'))
+const Devices = lazyRetry(() => import('./pages/Devices'))
 const LearningMethodsModule = lazyRetry(() => import('./modules/learning-methods'))
 const AIChatPage = lazyRetry(() => import('./pages/AIChatPage'))
 const ReviewSetup = lazyRetry(() => import('./pages/ReviewSetup'))
@@ -160,6 +161,7 @@ function App() {
               <Route path="/reading/*" element={<ReadingModule />} />
               <Route path="/listening/*" element={<CorpusModule />} />
               <Route path="/profile" element={<PersonalCenter />} />
+              <Route path="/profile/devices" element={<Devices />} />
               <Route path="/stats" element={<Stats />} />
               <Route path="/learning-methods/*" element={<LearningMethodsModule />} />
               <Route path="/dict/:dictId" element={<ChapterSelect />} />

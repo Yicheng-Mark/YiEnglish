@@ -43,6 +43,34 @@ function getClientIp(req) {
   return req.ip || req.headers['x-forwarded-for']?.split(',')[0]?.trim() || '127.0.0.1'
 }
 
+// 解析 User-Agent 为可读设备名，如 "Chrome · Windows" / "Safari · iPhone"
+function parseDeviceName(ua) {
+  if (!ua) return '未知设备'
+  const u = ua.toLowerCase()
+  let browser = '浏览器'
+  if (u.includes('micromessenger')) browser = '微信'
+  else if (u.includes('edg/')) browser = 'Edge'
+  else if (u.includes('chrome/') && !u.includes('chromium')) browser = 'Chrome'
+  else if (u.includes('firefox/')) browser = 'Firefox'
+  else if (u.includes('safari/') && !u.includes('chrome')) browser = 'Safari'
+
+  let os = '设备'
+  if (u.includes('iphone')) os = 'iPhone'
+  else if (u.includes('ipad')) os = 'iPad'
+  else if (u.includes('android')) os = 'Android'
+  else if (u.includes('windows')) os = 'Windows'
+  else if (u.includes('mac os') || u.includes('macintosh')) os = 'Mac'
+  else if (u.includes('linux')) os = 'Linux'
+
+  return `${browser} · ${os}`
+}
+
+// 从请求体取客户端设备标识；缺失时退化为服务端随机值，保证名额判定仍生效
+function resolveDeviceId(req) {
+  const fromBody = req.body && typeof req.body.deviceId === 'string' ? req.body.deviceId.trim() : ''
+  return fromBody || crypto.randomUUID()
+}
+
 function validateUsername(v) {
   if (typeof v !== 'string') return false
   return /^[a-zA-Z0-9_一-鿿]{3,30}$/.test(v)
@@ -53,15 +81,16 @@ function validatePassword(v) {
   return /[a-zA-Z]/.test(v) && /\d/.test(v)
 }
 
-async function issueTokens(res, userId, isGuest = false) {
+async function issueTokens(res, userId, isGuest = false, device = {}) {
   const accessToken = signAccessToken(userId, isGuest)
   const refreshToken = signRefreshToken()
   const tokenHash = hashToken(refreshToken)
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
   await pool.execute(
-    'INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)',
-    [userId, tokenHash, expiresAt]
+    `INSERT INTO refresh_tokens (user_id, token_hash, expires_at, device_id, device_name, ip, last_active_at)
+     VALUES (?, ?, ?, ?, ?, ?, NOW())`,
+    [userId, tokenHash, expiresAt, device.deviceId || '', device.deviceName || null, device.ip || null]
   )
 
   res.cookie(ACCESS_COOKIE, accessToken, ACCESS_COOKIE_OPTS)
@@ -180,7 +209,11 @@ router.post('/register', async (req, res, next) => {
       [actCode.id, userId]
     )
 
-    await issueTokens(res, userId)
+    await issueTokens(res, userId, false, {
+      deviceId: resolveDeviceId(req),
+      deviceName: parseDeviceName(req.headers['user-agent']),
+      ip,
+    })
     await logAttempt(`register:${ip}`, ip, true)
 
     res.json({
@@ -221,10 +254,26 @@ router.post('/login', async (req, res, next) => {
 
     await logAttempt(username, ip, true)
 
-    // invalidate old refresh tokens
-    await pool.execute('DELETE FROM refresh_tokens WHERE user_id = ?', [user.id])
+    // 设备级会话名额：统计本设备以外的活跃设备，达上限则拒绝第 N+1 台登录
+    const deviceId = resolveDeviceId(req)
+    const device = { deviceId, deviceName: parseDeviceName(req.headers['user-agent']), ip }
 
-    await issueTokens(res, user.id)
+    const [[{ cnt }]] = await pool.execute(
+      `SELECT COUNT(*) AS cnt FROM refresh_tokens
+       WHERE user_id = ? AND device_id <> '' AND device_id <> ? AND expires_at > NOW()`,
+      [user.id, deviceId]
+    )
+    if (cnt >= config.MAX_DEVICES_PER_USER) {
+      return res.status(403).json({
+        error: `该账号已在 ${config.MAX_DEVICES_PER_USER} 台设备登录，请到已登录设备的「设置-登录设备管理」中退出一台后再试`,
+        code: 'DEVICE_LIMIT_REACHED',
+      })
+    }
+
+    // 替换本设备旧行：同一设备重复登录不占新名额
+    await pool.execute('DELETE FROM refresh_tokens WHERE user_id = ? AND device_id = ?', [user.id, deviceId])
+
+    await issueTokens(res, user.id, false, device)
 
     res.json({
       user: { id: user.id, username: user.username, nickname: user.nickname },
@@ -245,7 +294,7 @@ router.post('/refresh', async (req, res, next) => {
     const tokenHash = hashToken(refreshToken)
 
     const [rows] = await pool.execute(
-      'SELECT id, user_id FROM refresh_tokens WHERE token_hash = ? AND expires_at > NOW()',
+      'SELECT id, user_id, device_id, device_name, ip FROM refresh_tokens WHERE token_hash = ? AND expires_at > NOW()',
       [tokenHash]
     )
 
@@ -270,7 +319,12 @@ router.post('/refresh', async (req, res, next) => {
     }
 
     const isGuest = !!userRows[0].is_guest
-    await issueTokens(res, stored.user_id, isGuest)
+    // rotation 时沿用原会话的设备标识/IP，刷新 last_active_at
+    await issueTokens(res, stored.user_id, isGuest, {
+      deviceId: stored.device_id,
+      deviceName: stored.device_name,
+      ip: stored.ip,
+    })
 
     const userObj = { id: userRows[0].id, username: userRows[0].username, nickname: userRows[0].nickname }
     if (isGuest) {
@@ -535,7 +589,11 @@ router.post('/recover-reset', async (req, res, next) => {
     // 踢掉其他设备的登录态
     await pool.execute('DELETE FROM refresh_tokens WHERE user_id = ?', [userId])
 
-    await issueTokens(res, userId)
+    await issueTokens(res, userId, false, {
+      deviceId: resolveDeviceId(req),
+      deviceName: parseDeviceName(req.headers['user-agent']),
+      ip,
+    })
     await logAttempt('recover:' + ip, ip, true)
 
     const [updated] = await pool.execute(
@@ -543,6 +601,53 @@ router.post('/recover-reset', async (req, res, next) => {
       [userId]
     )
     res.json({ user: updated[0] })
+  } catch (err) {
+    next(err)
+  }
+})
+
+// --- 设备管理：列出当前账号的登录设备（requires auth）---
+router.get('/devices', authMiddleware, async (req, res, next) => {
+  try {
+    const deviceId = typeof req.query.deviceId === 'string' ? req.query.deviceId.trim() : ''
+    const [rows] = await pool.execute(
+      `SELECT id, device_name, ip, last_active_at,
+              (device_id = ?) AS is_current
+       FROM refresh_tokens
+       WHERE user_id = ? AND device_id <> '' AND expires_at > NOW()
+       ORDER BY last_active_at DESC`,
+      [deviceId, req.userId]
+    )
+    res.json({
+      devices: rows.map((r) => ({
+        id: r.id,
+        name: r.device_name || '未知设备',
+        ip: r.ip,
+        lastActiveAt: r.last_active_at ? new Date(r.last_active_at).toISOString() : null,
+        isCurrent: !!r.is_current,
+      })),
+    })
+  } catch (err) {
+    next(err)
+  }
+})
+
+// --- 设备管理：退出指定设备（requires auth）---
+// 删除该设备的刷新令牌行，名额立即释放；被踢设备的访问令牌最长 3 天后随过期失效
+router.delete('/devices/:id', authMiddleware, async (req, res, next) => {
+  try {
+    const sessionId = Number(req.params.id)
+    if (!Number.isInteger(sessionId) || sessionId <= 0) {
+      return res.status(400).json({ error: '无效的设备会话' })
+    }
+    const [result] = await pool.execute(
+      'DELETE FROM refresh_tokens WHERE id = ? AND user_id = ?',
+      [sessionId, req.userId]
+    )
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: '设备会话不存在或已退出' })
+    }
+    res.json({ ok: true })
   } catch (err) {
     next(err)
   }

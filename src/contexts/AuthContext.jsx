@@ -59,7 +59,7 @@ export function AuthProvider({ children }) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ username, password, deviceId: getDeviceId() }),
     })
     const data = await res.json()
     if (!res.ok) throw new Error(data.error || '登录失败')
@@ -70,6 +70,7 @@ export function AuthProvider({ children }) {
   const register = useCallback(async (username, password, nickname, activationCode) => {
     const body = { username, password, activationCode }
     if (nickname) body.nickname = nickname
+    body.deviceId = getDeviceId()
     const res = await fetch(`${API_BASE}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -99,7 +100,7 @@ export function AuthProvider({ children }) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ code, username, password }),
+      body: JSON.stringify({ code, username, password, deviceId: getDeviceId() }),
     })
     const data = await res.json()
     if (!res.ok) throw new Error(data.error || '重置失败')

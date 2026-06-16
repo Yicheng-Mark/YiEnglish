@@ -129,6 +129,7 @@ export default function PersonalCenter() {
 
   const settingsItems = [
     !isTrial && { label: 'AI 伙伴设置', emoji: '🤖', action: () => setCompanionModal(true) },
+    { label: '登录设备管理', emoji: '💻', action: () => navigate('/profile/devices') },
 { label: '模式切换', emoji: '🎨', action: () => setThemeModal(true) },
     { label: '帮助与反馈', emoji: '💬', action: () => setHelpModal(true) },
   ].filter(Boolean)

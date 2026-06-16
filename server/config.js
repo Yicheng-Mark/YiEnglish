@@ -20,4 +20,6 @@ module.exports = {
   LOGIN_RATE_LIMIT_MAX: 5,
   REGISTER_RATE_LIMIT_WINDOW: 60 * 60 * 1000,
   REGISTER_RATE_LIMIT_MAX: 3,
+  // 每个账号允许同时登录的设备上限，第 N+1 台登录直接拒绝
+  MAX_DEVICES_PER_USER: parseInt(process.env.MAX_DEVICES_PER_USER, 10) || 2,
 }
