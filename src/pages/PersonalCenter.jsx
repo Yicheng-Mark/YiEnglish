@@ -1,9 +1,9 @@
-import { useState, useRef, useMemo, useEffect } from 'react'
+import { useState, useRef, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
   BookMarked, BookOpen, Headphones, Target,
-  Palette, ChevronRight, Pencil, Bot, X, Camera, ChartColumn,
+  Palette, ChevronRight, Pencil, X, Camera, ChartColumn,
 } from 'lucide-react'
 import { useReadingStore } from '../modules/reading/hooks/useReadingStore'
 import { useUserConfig } from '../hooks/useUserConfig'
@@ -12,7 +12,6 @@ import { useAuth } from '../contexts/AuthContext'
 import { getErrorBookCount } from '../utils/errorBook'
 import { getReadingWordBookCount } from '../utils/readingWordBook'
 import { getCorpusWordBookCount } from '../utils/corpusWordBook'
-import { fetchStyles, switchStyle, updateCustomName, updateGender, updateCustomPrompt, resetStyleSettings, resetPersonality, clearMemory, isAIAssistantHidden, setAIAssistantHidden } from '../lib/ai-settings'
 
 function Modal({ open, onClose, title, children }) {
   if (!open) return null
@@ -36,35 +35,15 @@ export default function PersonalCenter() {
   const store = useReadingStore()
   const { theme, setTheme } = useUserConfig()
   const profile = useProfileStore()
-  const { logout, user } = useAuth()
-  const isTrial = !!user?.isTrial
+  const { logout } = useAuth()
 
   const [editModal, setEditModal] = useState(false)
   const [goalModal, setGoalModal] = useState(false)
   const [themeModal, setThemeModal] = useState(false)
-  const [companionModal, setCompanionModal] = useState(false)
   const [helpModal, setHelpModal] = useState(false)
   const [nicknameInput, setNicknameInput] = useState(profile.nickname)
   const [signatureInput, setSignatureInput] = useState(profile.signature)
-  const [aiStyles, setAiStyles] = useState({ current: null, all: [] })
-  const [customNameInput, setCustomNameInput] = useState('')
-  const [editingName, setEditingName] = useState(false)
-  const [customPromptInput, setCustomPromptInput] = useState('')
-  const [editingPrompt, setEditingPrompt] = useState(false)
-  const [showResetConfirm, setShowResetConfirm] = useState(false)
-  const [showResetPersonalityConfirm, setShowResetPersonalityConfirm] = useState(false)
-  const [showClearMemoryConfirm, setShowClearMemoryConfirm] = useState(false)
-  const [aiAssistantHidden, setAiAssistantHiddenState] = useState(isAIAssistantHidden)
   const avatarInputRef = useRef(null)
-
-  // Load AI styles
-  useEffect(() => {
-    if (isTrial) return   // 体验用户禁用 AI 助手，不请求风格配置
-    fetchStyles().then(data => {
-      setAiStyles({ current: data.current, all: data.all })
-      setCustomPromptInput(data.current?.custom_prompt || '')
-    })
-  }, [])
 
   const wordCount = useMemo(() => getReadingWordBookCount() + getCorpusWordBookCount() + getErrorBookCount(), [])
   const completedArticles = useMemo(() => store.getCompletedArticleCount(), [])
@@ -128,7 +107,7 @@ export default function PersonalCenter() {
   ]
 
   const settingsItems = [
-    !isTrial && { label: 'AI 伙伴设置', emoji: '🤖', action: () => setCompanionModal(true) },
+    { label: '学习方法', emoji: '💡', action: () => navigate('/learning-methods') },
     { label: '登录设备管理', emoji: '💻', action: () => navigate('/profile/devices') },
 { label: '模式切换', emoji: '🎨', action: () => setThemeModal(true) },
     { label: '帮助与反馈', emoji: '💬', action: () => setHelpModal(true) },
@@ -290,275 +269,6 @@ export default function PersonalCenter() {
               <p className="text-xs text-content-tertiary dark:text-gray-500 mt-0.5">{opt.desc}</p>
             </button>
           ))}
-        </div>
-      </Modal>
-
-      {/* AI Companion Modal */}
-      <Modal open={companionModal} onClose={() => { setCompanionModal(false); setEditingName(false); setEditingPrompt(false); setShowResetConfirm(false); setShowResetPersonalityConfirm(false); setShowClearMemoryConfirm(false) }} title="AI 伙伴设置">
-        <div className="-mx-2 -mt-1">
-          {/* Merged config card: toggle + name + gender */}
-          <div className="mb-3 p-2.5 rounded-xl bg-gray-50 dark:bg-white/[0.04]">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-content dark:text-gray-100">显示 AI 助手</p>
-                <p className="text-[11px] text-content-tertiary dark:text-gray-500">隐藏后浮球将不再显示</p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={!aiAssistantHidden}
-                  onChange={() => {
-                    const next = !aiAssistantHidden
-                    setAiAssistantHiddenState(next)
-                    setAIAssistantHidden(next)
-                  }}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-5 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-              </label>
-            </div>
-
-            {/* Name + Gender in one row */}
-            {aiStyles.current && (
-              <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-200/50 dark:border-white/[0.04]">
-                <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                  <span className="text-[11px] text-content-tertiary dark:text-gray-500 flex-shrink-0">名称</span>
-                  {editingName ? (
-                    <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                      <input
-                        className="input-field flex-1 text-xs py-1"
-                        value={customNameInput}
-                        onChange={(e) => setCustomNameInput(e.target.value)}
-                        maxLength={12}
-                        autoFocus
-                        placeholder="给 TA 起个名字吧..."
-                        onKeyDown={async (e) => {
-                          if (e.key === 'Enter') {
-                            const trimmed = customNameInput.trim()
-                            if (!trimmed) return
-                            try {
-                              await updateCustomName(trimmed)
-                              setAiStyles(prev => ({ ...prev, current: { ...prev.current, custom_name: trimmed } }))
-                              toast('名称已更新')
-                              setEditingName(false)
-                            } catch (err) {
-                              toast('更新失败', { description: err.message })
-                            }
-                          }
-                          if (e.key === 'Escape') setEditingName(false)
-                        }}
-                      />
-                      <span className="text-[10px] text-content-tertiary flex-shrink-0">{customNameInput.length}/12</span>
-                      <button
-                        onClick={async () => {
-                          const trimmed = customNameInput.trim()
-                          if (!trimmed) return
-                          try {
-                            await updateCustomName(trimmed)
-                            setAiStyles(prev => ({ ...prev, current: { ...prev.current, custom_name: trimmed } }))
-                            toast('名称已更新')
-                            setEditingName(false)
-                          } catch (err) {
-                            toast('更新失败', { description: err.message })
-                          }
-                        }}
-                        className="btn-primary px-2 py-1 rounded-button text-[10px]"
-                      >确定</button>
-                      <button
-                        onClick={() => setEditingName(false)}
-                        className="btn-secondary px-2 py-1 rounded-button text-[10px]"
-                      >取消</button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <span className="text-xs font-medium text-content dark:text-gray-100 truncate">
-                        {aiStyles.current.custom_name || '未命名'}
-                      </span>
-                      <button
-                        onClick={() => { setCustomNameInput(aiStyles.current.custom_name || ''); setEditingName(true) }}
-                        className="text-[10px] text-primary hover:underline flex-shrink-0"
-                      >编辑</button>
-                    </div>
-                  )}
-                </div>
-                {/* Gender buttons inline */}
-                <div className="flex gap-1.5 ml-3 flex-shrink-0">
-                  {[
-                    { key: 'male', label: '男' },
-                    { key: 'female', label: '女' },
-                  ].map(g => (
-                    <button
-                      key={g.key}
-                      onClick={async () => {
-                        try {
-                          await updateGender(g.key)
-                          setAiStyles(prev => ({ ...prev, current: { ...prev.current, gender: g.key } }))
-                          toast('性别已更新')
-                        } catch (err) {
-                          toast('更新失败', { description: err.message })
-                        }
-                      }}
-                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all ${
-                        aiStyles.current.gender === g.key
-                          ? 'bg-primary text-white'
-                          : 'bg-white dark:bg-white/[0.06] text-content-secondary dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.1]'
-                      }`}
-                    >{g.label}</button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Style pills */}
-          <p className="text-xs text-content-secondary dark:text-gray-400 mb-1.5">选择风格</p>
-          <div className="flex flex-wrap gap-1.5 mb-1">
-            {(aiStyles.all || []).map((s) => (
-              <button
-                key={s.style_key}
-                onClick={async () => {
-                  if (aiStyles.current?.style_key === s.style_key) return
-                  try {
-                    await switchStyle(s.style_key)
-                    setAiStyles(prev => ({ ...prev, current: { ...s, custom_name: prev.current?.custom_name, custom_prompt: prev.current?.custom_prompt } }))
-                    toast(`已切换为 ${s.name}`)
-                    if (s.style_key === 'custom' && !aiStyles.current?.custom_prompt) setEditingPrompt(true)
-                  } catch (err) {
-                    toast('切换失败，请重试', { description: err.message })
-                  }
-                }}
-                className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all ${
-                  aiStyles.current?.style_key === s.style_key
-                    ? 'bg-primary text-white shadow-sm'
-                    : 'bg-gray-100 dark:bg-white/[0.06] text-content-secondary dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/[0.1]'
-                }`}
-              >
-                <span>{s.name}</span>
-                {aiStyles.current?.style_key === s.style_key && (
-                  <span className="w-1 h-1 rounded-full bg-white/80" />
-                )}
-              </button>
-            ))}
-          </div>
-
-          {/* Custom Prompt Section — only visible when custom style is selected */}
-          {aiStyles.current?.style_key === 'custom' && (
-          <div className="mt-2 p-2.5 rounded-xl bg-gray-50 dark:bg-white/[0.04]">
-            <p className="text-[11px] text-content-tertiary dark:text-gray-500 mb-1.5">自定义性格描述</p>
-            {editingPrompt ? (
-              <div>
-                <textarea
-                  className="w-full px-3 py-2 bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.06] rounded-xl text-sm text-content dark:text-gray-100 resize-none focus:outline-none focus:border-primary/50 transition-all"
-                  rows={3}
-                  value={customPromptInput}
-                  onChange={(e) => setCustomPromptInput(e.target.value)}
-                  maxLength={500}
-                  placeholder="描述你希望 AI 伙伴的性格、语气和交流方式..."
-                  autoFocus
-                />
-                <div className="flex items-center justify-between mt-1.5">
-                  <span className="text-[11px] text-content-tertiary">{customPromptInput.length}/500</span>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => { setEditingPrompt(false); setCustomPromptInput(aiStyles.current?.custom_prompt || '') }}
-                      className="btn-secondary px-3 py-1 rounded-button text-xs"
-                    >取消</button>
-                    <button
-                      onClick={async () => {
-                        try {
-                          const result = await updateCustomPrompt(customPromptInput)
-                          setAiStyles(prev => ({ ...prev, current: { ...prev.current, custom_prompt: result.customPrompt } }))
-                          toast('自定义描述已更新')
-                          setEditingPrompt(false)
-                        } catch (err) {
-                          toast('更新失败', { description: err.message })
-                        }
-                      }}
-                      className="btn-primary px-3 py-1 rounded-button text-xs"
-                    >保存</button>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-content dark:text-gray-100 truncate flex-1">
-                  {aiStyles.current?.custom_prompt
-                    ? (aiStyles.current.custom_prompt.length > 40
-                        ? aiStyles.current.custom_prompt.slice(0, 40) + '...'
-                        : aiStyles.current.custom_prompt)
-                    : '未设置'}
-                </span>
-                <button
-                  onClick={() => setEditingPrompt(true)}
-                  className="text-[11px] text-primary hover:underline ml-2 flex-shrink-0"
-                >{aiStyles.current?.custom_prompt ? '编辑' : '创建'}</button>
-              </div>
-            )}
-          </div>
-          )}
-
-          {/* Reset Section */}
-          <div className="mt-3 pt-2.5 border-t border-gray-100/60 dark:border-white/[0.06] flex flex-col gap-2">
-            {/* Reset personality — only for custom style */}
-            {aiStyles.current?.style_key === 'custom' && (
-              showResetPersonalityConfirm ? (
-                <div className="flex items-center gap-3 p-2 rounded-lg bg-red-50 dark:bg-red-500/10">
-                  <p className="text-xs text-content-secondary flex-1">确定重置性格描述？将清除自定义性格描述。</p>
-                  <button
-                    onClick={async () => {
-                      try {
-                        await resetPersonality()
-                        setAiStyles(prev => prev.current ? { ...prev, current: { ...prev.current, custom_prompt: null } } : prev)
-                        setCustomPromptInput('')
-                        toast('性格描述已重置')
-                        setShowResetPersonalityConfirm(false)
-                      } catch (err) {
-                        toast('重置失败', { description: err.message })
-                      }
-                    }}
-                    className="px-3 py-1 rounded-button text-xs bg-red-500 text-white hover:bg-red-600 transition-colors"
-                  >确定</button>
-                  <button
-                    onClick={() => setShowResetPersonalityConfirm(false)}
-                    className="btn-secondary px-3 py-1 rounded-button text-xs"
-                  >取消</button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setShowResetPersonalityConfirm(true)}
-                  className="text-xs text-red-400 hover:text-red-500 transition-colors w-fit"
-                >重置性格</button>
-              )
-            )}
-
-            {/* Clear memory */}
-            {showClearMemoryConfirm ? (
-              <div className="flex items-center gap-3 p-2 rounded-lg bg-red-50 dark:bg-red-500/10">
-                <p className="text-xs text-content-secondary flex-1">确定清除记忆？将删除所有聊天记录和 AI 记忆，不可恢复。</p>
-                <button
-                  onClick={async () => {
-                    try {
-                      await clearMemory()
-                      toast('记忆已清除')
-                      setShowClearMemoryConfirm(false)
-                    } catch (err) {
-                      toast('清除失败', { description: err.message })
-                    }
-                  }}
-                  className="px-3 py-1 rounded-button text-xs bg-red-500 text-white hover:bg-red-600 transition-colors"
-                >确定</button>
-                <button
-                  onClick={() => setShowClearMemoryConfirm(false)}
-                  className="btn-secondary px-3 py-1 rounded-button text-xs"
-                >取消</button>
-              </div>
-            ) : (
-              <button
-                onClick={() => setShowClearMemoryConfirm(true)}
-                className="text-xs text-red-400 hover:text-red-500 transition-colors w-fit"
-              >清除记忆</button>
-            )}
-          </div>
         </div>
       </Modal>
 

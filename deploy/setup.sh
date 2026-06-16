@@ -39,7 +39,7 @@ echo "   rsync -avz --exclude node_modules --exclude .git ./ root@SERVER_IP:/hom
 echo ""
 echo "2. 在服务器上创建 .env.local 文件："
 echo "   cp .env.example /home/lingoforge/.env.local"
-echo "   然后编辑填入真实值（数据库密码、JWT_SECRET、DEEPSEEK_API_KEY）"
+echo "   然后编辑填入真实值（数据库密码、JWT_SECRET）"
 echo ""
 echo "3. 导入数据库表结构："
 echo "   mysql -u root lingoforge < /home/lingoforge/server/sql/schema.sql"

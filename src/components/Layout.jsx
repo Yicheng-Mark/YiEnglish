@@ -1,7 +1,6 @@
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import StarryBackground from './StarryBackground'
 import BottomNav from './BottomNav'
-import Toolbar from './Toolbar'
 import TrialBanner from './TrialBanner'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -12,9 +11,8 @@ function Layout() {
   const isTyping = location.pathname.startsWith('/typing/')
   const isListeningPlayer = /^\/listening\/.+/.test(location.pathname)
   const isProfile = location.pathname === '/profile'
-  const isAIChat = location.pathname === '/ai-assistant'
-  const showBottomNav = !isTyping && !isListeningPlayer && !isAIChat && !location.pathname.startsWith('/review/quiz/')
-  const showTopNav = !isListeningPlayer && !isProfile && !isAIChat
+  const showBottomNav = !isTyping && !isListeningPlayer && !location.pathname.startsWith('/review/quiz/')
+  const showTopNav = !isListeningPlayer && !isProfile
 
   return (
     <div className={`${isListeningPlayer ? 'h-dvh overflow-hidden' : 'min-h-screen'} bg-background dark:bg-background-dark transition-colors duration-500 relative`}>
@@ -34,7 +32,6 @@ function Layout() {
                 返回首页
               </Link>
             )}
-            <Toolbar />
           </div>
         </nav>
       )}

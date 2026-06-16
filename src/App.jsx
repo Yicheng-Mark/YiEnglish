@@ -1,14 +1,12 @@
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import { lazyRetry } from './utils/lazyRetry'
 import { useScrollingFlag } from './hooks/useScrollingFlag'
 import { Routes, Route, Navigate, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import Layout from './components/Layout'
 import PageLoading from './components/PageLoading'
-import AICircleFloat from './components/AIAssistant/AICircleFloat'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { WordProvider } from './contexts/WordContext'
-import { isAIAssistantHidden } from './lib/ai-settings'
 import { migrateFromLocalStorage } from './utils/idb.js'
 
 const Home = lazyRetry(() => import('./pages/Home'))
@@ -21,7 +19,6 @@ const CorpusModule = lazyRetry(() => import('./modules/corpus'))
 const PersonalCenter = lazyRetry(() => import('./pages/PersonalCenter'))
 const Devices = lazyRetry(() => import('./pages/Devices'))
 const LearningMethodsModule = lazyRetry(() => import('./modules/learning-methods'))
-const AIChatPage = lazyRetry(() => import('./pages/AIChatPage'))
 const ReviewSetup = lazyRetry(() => import('./pages/ReviewSetup'))
 const ReviewQuiz = lazyRetry(() => import('./pages/ReviewQuiz'))
 const Login = lazyRetry(() => import('./pages/Login'))
@@ -76,29 +73,6 @@ function TrialGuard({ children }) {
   const { user } = useAuth()
   if (user?.isTrial) return <Navigate to="/demo/home" replace />
   return children
-}
-
-// 在 AuthProvider 内部渲染，按路径/用户手动设置/体验身份决定是否显示 AI 悬浮球
-function AIAssistantGate() {
-  const location = useLocation()
-  const { user } = useAuth()
-  const [aiHidden, setAiHidden] = useState(isAIAssistantHidden)
-
-  useEffect(() => {
-    const handler = () => setAiHidden(isAIAssistantHidden())
-    window.addEventListener('ai-visibility-change', handler)
-    return () => window.removeEventListener('ai-visibility-change', handler)
-  }, [])
-
-  const hideAI =
-    (AUTH_ENABLED && ['/login', '/register', '/demo', '/activate', '/recover'].includes(location.pathname)) ||
-    location.pathname.startsWith('/demo/') ||
-    location.pathname.startsWith('/activate/') ||
-    location.pathname.startsWith('/recover/') ||
-    aiHidden ||
-    !!user?.isTrial   // 体验用户全局隐藏 AI 助手
-
-  return !hideAI ? <AICircleFloat /> : null
 }
 
 function RegisterGuard() {
@@ -168,12 +142,10 @@ function App() {
               <Route path="/typing/:dictId/:chapterId" element={<Typing />} />
               <Route path="/review/setup/:bookId" element={<ReviewSetup />} />
               <Route path="/review/quiz/:bookId" element={<ReviewQuiz />} />
-              <Route path="/ai-assistant" element={<AIChatPage />} />
             </Route>
           </Route>
         </Routes>
       </Suspense>
-      <AIAssistantGate />
       </WordProvider>
     </AuthProvider>
   )

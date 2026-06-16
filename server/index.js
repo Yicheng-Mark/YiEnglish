@@ -38,9 +38,6 @@ if (!config.JWT_SECRET) {
   process.exit(1)
 }
 
-const chatRoutes = require('./routes/chat')
-const styleRoutes = require('./routes/style')
-const memoryRoutes = require('./routes/memory')
 const progressRoutes = require('./routes/progress')
 const wordbookRoutes = require('./routes/wordbooks')
 const favoritesRoutes = require('./routes/favorites')
@@ -62,9 +59,6 @@ app.use(express.json({ limit: '1mb' }))
 
 // API routes
 app.use('/api/auth', authRoutes)
-app.use('/api/chat', chatRoutes)
-app.use('/api/style', styleRoutes)
-app.use('/api/memory', memoryRoutes)
 app.use('/api/progress', progressRoutes)
 app.use('/api/wordbooks', wordbookRoutes)
 app.use('/api/favorites', favoritesRoutes)
