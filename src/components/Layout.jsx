@@ -7,7 +7,6 @@ import { useAuth } from '../contexts/AuthContext'
 function Layout() {
   const { user } = useAuth()
   const location = useLocation()
-  const isHome = location.pathname === '/' || location.pathname === '/word'
   const isTyping = location.pathname.startsWith('/typing/')
   const isListeningPlayer = /^\/listening\/.+/.test(location.pathname)
   const isProfile = location.pathname === '/profile'
@@ -23,16 +22,6 @@ function Layout() {
           <Link to="/word" className="text-xl font-bold italic text-primary dark:text-primary-dark flex items-center gap-2 transition-all duration-300 hover:opacity-90 dark:hover:drop-shadow-[0_0_8px_rgba(129,140,248,0.4)]">
             Nothing is impossible.
           </Link>
-          <div className="flex items-center gap-2 md:gap-3">
-            {!isHome && (
-              <Link
-                to="/word"
-                className="text-sm text-content-tertiary dark:text-gray-400 hover:text-primary dark:hover:text-primary-dark transition-colors px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.05]"
-              >
-                返回首页
-              </Link>
-            )}
-          </div>
         </nav>
       )}
       <div className={`relative ${showBottomNav ? 'pb-24' : ''} ${isListeningPlayer ? 'h-full' : ''}`}>

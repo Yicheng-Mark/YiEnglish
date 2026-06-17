@@ -149,23 +149,6 @@ export default function DemoProfile() {
       {/* Help Modal */}
       <Modal open={helpModal} onClose={() => setHelpModal(false)} title="帮助与反馈">
         <div className="space-y-2">
-          <a
-            href="#"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-white/[0.04] hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-colors"
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-lg">📖</span>
-              <span className="text-sm font-medium text-content dark:text-gray-100">使用方法</span>
-            </div>
-            <ChevronRight className="w-4 h-4 text-content-tertiary" />
-          </a>
-          {/* 反馈 */}
-          <div className="flex items-center gap-2 pt-2 pb-1">
-            <span className="text-xs font-medium text-content-tertiary dark:text-gray-500">反馈</span>
-            <div className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
-          </div>
           {/* 微信 */}
           <button
             onClick={() => {
