@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
-function NextWordPreview({ prevWord, nextWord, showTranslation }) {
+function NextWordPreview({ prevWord, nextWord, showTranslation, hideEnglish }) {
   const hasPrev = !!prevWord;
   const hasNext = !!nextWord;
   if (!hasPrev && !hasNext) return null;
@@ -18,9 +18,13 @@ function NextWordPreview({ prevWord, nextWord, showTranslation }) {
         <div className="flex items-center gap-5 opacity-50 hover:opacity-80 transition-opacity cursor-default">
           <ArrowLeft className="w-7 h-7 text-slate-400 dark:text-slate-500 shrink-0" />
           <div className="text-left">
-            <p className="text-2xl font-mono text-slate-500 dark:text-slate-300">
-              {prevWord.name}
-            </p>
+            {hideEnglish ? (
+              <div className="h-8 w-28 rounded-md bg-slate-300/60 dark:bg-slate-600/50" />
+            ) : (
+              <p className="text-2xl font-mono text-slate-500 dark:text-slate-300">
+                {prevWord.name}
+              </p>
+            )}
             {showTranslation && (
               <p className="text-lg text-slate-400 dark:text-slate-500 truncate max-w-[320px]">
                 {formatTrans(prevWord.trans)}
@@ -35,9 +39,13 @@ function NextWordPreview({ prevWord, nextWord, showTranslation }) {
       {hasNext ? (
         <div className="flex items-center gap-5 opacity-50 hover:opacity-80 transition-opacity cursor-default">
           <div className="text-right">
-            <p className="text-2xl font-mono text-slate-500 dark:text-slate-300">
-              {nextWord.name}
-            </p>
+            {hideEnglish ? (
+              <div className="h-8 w-28 ml-auto rounded-md bg-slate-300/60 dark:bg-slate-600/50" />
+            ) : (
+              <p className="text-2xl font-mono text-slate-500 dark:text-slate-300">
+                {nextWord.name}
+              </p>
+            )}
             {showTranslation && (
               <p className="text-lg text-slate-400 dark:text-slate-500 truncate max-w-[320px]">
                 {formatTrans(nextWord.trans)}

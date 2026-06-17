@@ -1,7 +1,7 @@
 import React, { memo, useMemo, useRef, useEffect } from 'react';
 import { normalizeWordName } from '../utils/wordName.js';
 
-const WordDisplay = memo(function WordDisplay({ word, currentInput, isWrong }) {
+const WordDisplay = memo(function WordDisplay({ word, currentInput, isWrong, hideEnglish }) {
   // 连字符规范化为空格，使显示与打字比对一致（见 normalizeWordName）
   const chars = useMemo(() => normalizeWordName(word?.name).split(''), [word?.name]);
   const prevLenRef = useRef(0);
@@ -33,6 +33,17 @@ const WordDisplay = memo(function WordDisplay({ word, currentInput, isWrong }) {
         let className;
         const isCorrect = i < currentInput.length && currentInput[i] === char;
         const isError = i < currentInput.length && currentInput[i] !== char;
+
+        // 英文遮挡：未输入字母（非 correct 非 error）显示灰色方块，已打对/打错的字母照常显示
+        if (hideEnglish && !isCorrect && !isError) {
+          return (
+            <span
+              key={`${word?.name}-${i}`}
+              className="inline-block rounded-[3px] bg-gray-300 dark:bg-gray-600 self-center"
+              style={{ width: '0.62em', height: '1em' }}
+            />
+          );
+        }
 
         if (isCorrect) {
           className = 'text-primary dark:text-primary-dark dark:drop-shadow-[0_0_8px_rgba(99,102,241,0.6)]';

@@ -64,7 +64,7 @@ router.post('/local-to-server', authMiddleware, async (req, res, next) => {
         if (config.soundEnabled !== undefined) { settingParts.push('sound_enabled = ?'); settingValues.push(config.soundEnabled ? 1 : 0) }
         if (config.showTranslation !== undefined) { settingParts.push('show_translation = ?'); settingValues.push(config.showTranslation ? 1 : 0) }
         if (config.showPhonetic !== undefined) { settingParts.push('show_phonetic = ?'); settingValues.push(config.showPhonetic ? 1 : 0) }
-        if (config.dictationMode !== undefined) { settingParts.push('dictation_mode = ?'); settingValues.push(config.dictationMode ? 1 : 0) }
+        if (config.hideEnglish !== undefined) { settingParts.push('dictation_mode = ?'); settingValues.push(config.hideEnglish ? 1 : 0) }
         if (config.wordRepeatCount !== undefined) { settingParts.push('word_repeat_count = ?'); settingValues.push(config.wordRepeatCount) }
         if (config.autoRemoveErrorWord !== undefined) { settingParts.push('auto_remove_error_word = ?'); settingValues.push(config.autoRemoveErrorWord ? 1 : 0) }
       }

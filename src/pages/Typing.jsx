@@ -550,8 +550,8 @@ export default function Typing() {
     audio.play().catch(() => {});
   }, []);
 
-  const showPhonetic = useMemo(() => config.showPhonetic && !config.dictationMode && !currentWord?.name?.includes(' '), [config.showPhonetic, config.dictationMode, currentWord?.name]);
-  const showTranslation = useMemo(() => config.showTranslation && !config.dictationMode, [config.showTranslation, config.dictationMode]);
+  const showPhonetic = useMemo(() => config.showPhonetic && !config.hideEnglish && !currentWord?.name?.includes(' '), [config.showPhonetic, config.hideEnglish, currentWord?.name]);
+  const showTranslation = useMemo(() => config.showTranslation, [config.showTranslation]);
 
   if (loading) return (
     <div className="h-[calc(100dvh-3rem)] md:h-[calc(100vh-4rem)] bg-background dark:bg-transparent flex items-center justify-center transition-colors duration-500">
@@ -737,6 +737,7 @@ export default function Typing() {
           prevWord={wordIndex > 0 ? words[wordIndex - 1] : null}
           nextWord={wordIndex < words.length - 1 ? words[wordIndex + 1] : null}
           showTranslation={showTranslation}
+          hideEnglish={config.hideEnglish}
         />
 
         {/* 单词显示 */}
@@ -784,7 +785,7 @@ export default function Typing() {
             )}
 
             <div className="shrink-0">
-              <WordDisplay key={currentWord?.name} word={currentWord} currentInput={currentInput} isWrong={isWrong} />
+              <WordDisplay key={currentWord?.name} word={currentWord} currentInput={currentInput} isWrong={isWrong} hideEnglish={config.hideEnglish} />
             </div>
 
             {currentWord?.trans && showTranslation && (

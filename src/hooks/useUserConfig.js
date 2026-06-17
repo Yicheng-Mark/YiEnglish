@@ -5,7 +5,7 @@ const DEFAULT_CONFIG = {
   soundEnabled: true,
   showTranslation: true,
   showPhonetic: true,
-  dictationMode: false,
+  hideEnglish: false,
   wordRepeatCount: 1,
   autoRemoveErrorWord: true,
 };
@@ -78,7 +78,7 @@ export async function syncSettingsFromServer() {
       soundEnabled: settings.soundEnabled ?? DEFAULT_CONFIG.soundEnabled,
       showTranslation: settings.showTranslation ?? DEFAULT_CONFIG.showTranslation,
       showPhonetic: settings.showPhonetic ?? DEFAULT_CONFIG.showPhonetic,
-      dictationMode: settings.dictationMode ?? DEFAULT_CONFIG.dictationMode,
+      hideEnglish: settings.hideEnglish ?? DEFAULT_CONFIG.hideEnglish,
       wordRepeatCount: settings.wordRepeatCount ?? DEFAULT_CONFIG.wordRepeatCount,
       autoRemoveErrorWord: settings.autoRemoveErrorWord ?? DEFAULT_CONFIG.autoRemoveErrorWord,
     }
