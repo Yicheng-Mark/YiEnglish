@@ -29,7 +29,7 @@ export default function Recover() {
     e.preventDefault()
     const trimmed = extractCode(code)
     if (!trimmed) {
-      toast.error('请输入注册链接或激活码')
+      toast.error('请输入注册链接')
       return
     }
     setLoading(true)
@@ -101,7 +101,7 @@ export default function Recover() {
                   type="text"
                   value={code}
                   onChange={e => setCode(extractCode(e.target.value))}
-                  placeholder="请输入注册链接或激活码"
+                  placeholder="请输入注册链接"
                   autoComplete="off"
                   autoFocus
                   className="w-full bg-transparent border-b border-white/30 text-white placeholder-white/40 py-3 px-1 outline-none focus:border-white transition-colors text-sm"

@@ -88,7 +88,7 @@ export default function Activate() {
                 type="text"
                 value={code}
                 onChange={e => setCode(extractCode(e.target.value))}
-                placeholder="请输入激活码"
+                placeholder="请输入注册链接"
                 autoComplete="off"
                 autoFocus
                 className="w-full border-b border-white/30 py-3 px-1 outline-none focus:border-white transition-colors text-sm"
