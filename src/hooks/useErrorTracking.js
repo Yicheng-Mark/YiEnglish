@@ -21,7 +21,8 @@ function classifyError(word, letterIndex, expected, typed) {
   if (VOWELS.has(expected) && VOWELS.has(typed)) {
     return 'vowel';
   }
-  // 3. 相邻键位
+  // 3. 相邻键位（expected/typed 可能为 undefined —— 空章节/加载中时触发，需防御）
+  if (typeof expected !== 'string' || typeof typed !== 'string') return 'other';
   const e = expected.toLowerCase();
   const t = typed.toLowerCase();
   if (ADJACENT[e] && ADJACENT[e].includes(t)) {
@@ -43,6 +44,8 @@ function invalidateCache() {
 
 export default function useErrorTracking() {
   const onError = useCallback((wordObj, expected, typed, letterIndex) => {
+    // 空/加载中场景 expected/typed 可能为 undefined，跳过避免崩溃并污染统计
+    if (typeof expected !== 'string' || typeof typed !== 'string') return;
     const word = typeof wordObj === 'string' ? wordObj : wordObj.name;
     const entry = {
       word,
