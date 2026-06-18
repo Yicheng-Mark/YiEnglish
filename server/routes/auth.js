@@ -319,6 +319,21 @@ router.post('/refresh', async (req, res, next) => {
     }
 
     const isGuest = !!userRows[0].is_guest
+
+    // 体验用户：试用到期则拒绝刷新，防止页面加载的会话检查绕过强制下线
+    let trialExpiresAt = null
+    if (isGuest) {
+      const [trialRows] = await pool.execute(
+        'SELECT expires_at FROM trial_activations WHERE user_id = ?',
+        [stored.user_id]
+      )
+      trialExpiresAt = trialRows[0]?.expires_at || null
+      if (!trialExpiresAt || new Date(trialExpiresAt) <= new Date()) {
+        clearCookies(res)
+        return res.status(401).json({ error: '体验时间已结束', code: 'TRIAL_EXPIRED' })
+      }
+    }
+
     // rotation 时沿用原会话的设备标识/IP，刷新 last_active_at
     await issueTokens(res, stored.user_id, isGuest, {
       deviceId: stored.device_id,
@@ -329,14 +344,7 @@ router.post('/refresh', async (req, res, next) => {
     const userObj = { id: userRows[0].id, username: userRows[0].username, nickname: userRows[0].nickname }
     if (isGuest) {
       userObj.isTrial = true
-      // 查询试用到期时间
-      const [trialRows] = await pool.execute(
-        'SELECT expires_at FROM trial_activations WHERE user_id = ?',
-        [stored.user_id]
-      )
-      if (trialRows.length > 0 && trialRows[0].expires_at) {
-        userObj.trialExpiresAt = new Date(trialRows[0].expires_at).toISOString()
-      }
+      userObj.trialExpiresAt = trialExpiresAt ? new Date(trialExpiresAt).toISOString() : null
     }
 
     res.json({ user: userObj })

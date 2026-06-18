@@ -1,3 +1,5 @@
+import { toast } from 'sonner'
+
 const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
 
 let isRefreshing = false
@@ -52,6 +54,9 @@ export async function apiFetch(path, options = {}) {
           credentials: 'include',
         })
       }
+    }
+    if (data.code === 'TRIAL_EXPIRED') {
+      toast.error('体验时间已结束，欢迎注册继续使用')
     }
     window.dispatchEvent(new CustomEvent('auth:unauthorized'))
     throw new Error(data.error || '请先登录')
