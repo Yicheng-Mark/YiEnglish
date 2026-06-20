@@ -22,6 +22,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Test
+        run: npm run test:run
+
       - name: Build frontend
         run: npm run build
 
@@ -31,6 +34,20 @@ jobs:
           echo "${{ secrets.ALIYUN_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H 120.76.228.235 >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Backup production before rsync
+        # rsync --delete 会删除远端被移除的文件，先做硬链接快照保留回滚点。
+        # cp -al 硬链接快照：省空间且快，未变文件共享 inode。
+        # 回滚方式：ssh 进服务器执行 rm -rf /home/lingoforge && cp -al /home/lingoforge.bak /home/lingoforge && pm2 reload lingoforge
+        run: |
+          ssh -i ~/.ssh/deploy_key root@120.76.228.235 'bash -s' << 'EOF'
+            set -e
+            if [ -d /home/lingoforge ]; then
+              rm -rf /home/lingoforge.bak
+              cp -al /home/lingoforge /home/lingoforge.bak
+              echo '已备份至 /home/lingoforge.bak（硬链接快照，可回滚）'
+            fi
+          EOF
 
       - name: Rsync files to server
         run: |
@@ -43,13 +60,18 @@ jobs:
             ./ root@120.76.228.235:/home/lingoforge/
 
       - name: Install deps and restart service
+        # 用 pm2 reload 替代 restart：reload 会先拉起新进程再关旧进程，旧进程处理完手头连接再退出，更平滑。
+        # 注意：ecosystem 是 fork 单实例（未设 exec_mode，instances: 1），非 cluster 模式。
+        #       单实例下 reload 不能像 cluster 那样始终保证有进程在跑，但比 restart 的 hard kill 更温和。
+        #       若 server/index.js 未监听 SIGINT 做 graceful shutdown，reload 会等待 reload 延迟后强制 kill，
+        #       此时若发现部署中连接异常，可退回 pm2 restart lingoforge。
         run: |
           ssh -i ~/.ssh/deploy_key root@120.76.228.235 'bash -s' << 'EOF'
             set -e
             cd /home/lingoforge
             npm install --omit=dev
             if pm2 describe lingoforge > /dev/null 2>&1; then
-              pm2 restart lingoforge
+              pm2 reload lingoforge --update-env
             else
               pm2 start deploy/ecosystem.config.js
             fi

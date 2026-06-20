@@ -5,10 +5,6 @@ const authMiddleware = require('../middleware/auth')
 const router = Router()
 
 const VALID_THEMES = ['light', 'gray', 'star', 'warm']
-const SETTINGS_COLUMNS = [
-  'sound_enabled', 'show_translation', 'show_phonetic',
-  'dictation_mode', 'word_repeat_count', 'auto_remove_error_word', 'theme',
-]
 const CLIENT_TO_DB = {
   soundEnabled: 'sound_enabled',
   showTranslation: 'show_translation',
@@ -20,19 +16,23 @@ const CLIENT_TO_DB = {
 }
 
 // GET /api/settings
+// 注册时已建 user_settings 行（见 auth.js /register），故正常只 SELECT。
+// 老用户（注册早于该改动）可能无行 → SELECT 不到时兜底 INSERT 一次，避免 500。
 router.get('/', authMiddleware, async (req, res, next) => {
   try {
-    // Lazy create default row
-    await pool.execute(
-      'INSERT IGNORE INTO user_settings (user_id) VALUES (?)',
-      [req.userId]
-    )
+    let [rows] = await pool.execute('SELECT * FROM user_settings WHERE user_id = ?', [req.userId])
 
-    const [rows] = await pool.execute(
-      'SELECT * FROM user_settings WHERE user_id = ?',
-      [req.userId]
-    )
+    // 历史老用户兜底：SELECT 不到才 INSERT，避免每次请求都写库
+    if (rows.length === 0) {
+      await pool.execute('INSERT IGNORE INTO user_settings (user_id) VALUES (?)', [req.userId])
+      ;[rows] = await pool.execute('SELECT * FROM user_settings WHERE user_id = ?', [req.userId])
+    }
+
     const row = rows[0]
+    if (!row) {
+      // 极端兜底：INSERT 后仍无行（理论上不该发生），返回 500 让上层排查
+      return res.status(500).json({ error: '设置读取失败' })
+    }
 
     res.json({
       soundEnabled: !!row.sound_enabled,

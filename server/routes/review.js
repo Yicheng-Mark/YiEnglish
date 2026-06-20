@@ -37,9 +37,8 @@ router.post('/add', authMiddleware, async (req, res, next) => {
     if (!wordName) return res.status(400).json({ error: '缺少单词名称' })
 
     await pool.execute(
-      `INSERT INTO user_review_cards (user_id, word_name, dict_id, next_review, interval_days, ease_factor, repetitions)
-       VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 1 DAY), 1.00, 2.50, 0)
-       ON DUPLICATE KEY UPDATE word_name = word_name`,
+      `INSERT IGNORE INTO user_review_cards (user_id, word_name, dict_id, next_review, interval_days, ease_factor, repetitions)
+       VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 1 DAY), 1.00, 2.50, 0)`,
       [req.userId, wordName, dictId || '']
     )
     res.json({ success: true })
@@ -56,14 +55,21 @@ router.post('/upsert', authMiddleware, async (req, res, next) => {
       return res.status(400).json({ error: '缺少 cards 数组' })
     }
 
-    const validCards = cards.filter(c => c.wordName)
+    const validCards = cards.filter((c) => c.wordName)
     if (validCards.length > 0) {
-      const placeholders = validCards.map(() => '(?, ?, ?, FROM_UNIXTIME(? / 1000), ?, ?, ?, FROM_UNIXTIME(? / 1000), ?)').join(', ')
-      const params = validCards.flatMap(c => [
-        req.userId, c.wordName, c.dictId || '',
+      const placeholders = validCards
+        .map(() => '(?, ?, ?, FROM_UNIXTIME(? / 1000), ?, ?, ?, FROM_UNIXTIME(? / 1000), ?)')
+        .join(', ')
+      const params = validCards.flatMap((c) => [
+        req.userId,
+        c.wordName,
+        c.dictId || '',
         c.nextReview,
-        c.interval, c.easeFactor, c.repetitions,
-        c.lastReviewAt, c.lastQuality,
+        c.interval,
+        c.easeFactor,
+        c.repetitions,
+        c.lastReviewAt,
+        c.lastQuality,
       ])
       await pool.execute(
         `INSERT INTO user_review_cards (user_id, word_name, dict_id, next_review, interval_days, ease_factor, repetitions, last_review_at, last_quality)

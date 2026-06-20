@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Bookmark, ChevronDown, FileText, MapPin } from 'lucide-react'
-import { getArticleById } from '../data/mockArticles'
 import { useReadingStore } from '../hooks/useReadingStore'
 import useStudyTracker from '../hooks/useStudyTracker'
 import { loadDictionary } from '../../../utils/loadDictionary.js'
@@ -11,9 +10,7 @@ import {
   removeFromReadingWordBook,
 } from '../../../utils/readingWordBook.js'
 import { findWordInMap } from '../../../utils/wordLookup.js'
-import {
-  tokenizeText,
-} from '../../../utils/wordTokenize.jsx'
+import { tokenizeText } from '../../../utils/wordTokenize.jsx'
 import WordPopup from '../../../components/WordPopup.jsx'
 
 const CATEGORY_TAG = {
@@ -30,7 +27,11 @@ const CATEGORY_TAG = {
 const renderParagraph = (text, paraIndex, onWordClick) => {
   if (!text || typeof text !== 'string') {
     console.warn(`[Reading] Paragraph ${paraIndex} is not string:`, text)
-    return <p className="article-paragraph" key={paraIndex}>{text}</p>
+    return (
+      <p className="article-paragraph" key={paraIndex}>
+        {text}
+      </p>
+    )
   }
 
   let decoded = text
@@ -51,7 +52,9 @@ const renderParagraph = (text, paraIndex, onWordClick) => {
     const index = match.index
 
     if (index > lastIndex) {
-      elements.push(...tokenizeText(decoded.slice(lastIndex, index), paraIndex, onWordClick, `out-${index}`))
+      elements.push(
+        ...tokenizeText(decoded.slice(lastIndex, index), paraIndex, onWordClick, `out-${index}`)
+      )
     }
 
     const innerElements = tokenizeText(content, paraIndex, onWordClick, `${tag}-${index}`)
@@ -62,22 +65,22 @@ const renderParagraph = (text, paraIndex, onWordClick) => {
   }
 
   if (lastIndex < decoded.length) {
-    elements.push(...tokenizeText(decoded.slice(lastIndex), paraIndex, onWordClick, `tail-${lastIndex}`))
+    elements.push(
+      ...tokenizeText(decoded.slice(lastIndex), paraIndex, onWordClick, `tail-${lastIndex}`)
+    )
   }
 
   return (
-    <p className="article-paragraph text-[17px] md:text-lg leading-[1.85] text-content dark:text-gray-200" key={paraIndex}>
+    <p
+      className="article-paragraph text-[17px] md:text-lg leading-[1.85] text-content dark:text-gray-200"
+      key={paraIndex}
+    >
       {elements}
     </p>
   )
 }
 
-function ParagraphBlock({
-  en,
-  zh,
-  index,
-  onWordClick,
-}) {
+function ParagraphBlock({ en, zh, index, onWordClick }) {
   const [showTrans, setShowTrans] = useState(false)
 
   return (
@@ -122,7 +125,6 @@ export default function ArticleDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const store = useReadingStore()
-  const article = useMemo(() => getArticleById(id), [id])
   const contentRef = useRef(null)
   const persistTimer = useRef(null)
 
@@ -133,6 +135,31 @@ export default function ArticleDetail() {
   const [popup, setPopup] = useState(null)
   const activeTokenRef = useRef(null)
 
+  // 文章库（约 285KB 静态数据）改为按需动态加载，分离出独立 chunk。
+  const [articles, setArticles] = useState(null) // null = 加载中；[] = 已加载但空
+
+  useEffect(() => {
+    let cancelled = false
+    import('../data/mockArticles')
+      .then((m) => {
+        if (cancelled) return
+        setArticles(m.mockArticles || m.default || [])
+      })
+      .catch((err) => {
+        if (cancelled) return
+        console.error('[Reading] 文章库加载失败', err)
+        setArticles([])
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const article = useMemo(
+    () => (articles ? articles.find((a) => a.id === id) : undefined),
+    [articles, id]
+  )
+
   useStudyTracker(article ? id : null)
 
   // Load all dictionaries for word lookup
@@ -140,14 +167,23 @@ export default function ArticleDetail() {
     let cancelled = false
     const loadAll = async () => {
       const dictIds = [
-        'junior', 'zhongkao', 'senior', 'gaokao',
-        'cet4', 'cet4freq', 'cet6', 'cet6freq',
-        'tem4', 'tem8', 'ielts', 'toefl', 'sat',
-        'postgraduate', 'programmer',
+        'junior',
+        'zhongkao',
+        'senior',
+        'gaokao',
+        'cet4',
+        'cet4freq',
+        'cet6',
+        'cet6freq',
+        'tem4',
+        'tem8',
+        'ielts',
+        'toefl',
+        'sat',
+        'postgraduate',
+        'programmer',
       ]
-      const results = await Promise.all(
-        dictIds.map((id) => loadDictionary(id).catch(() => null))
-      )
+      const results = await Promise.all(dictIds.map((id) => loadDictionary(id).catch(() => null)))
       if (cancelled) return
       const map = new Map()
       results.forEach((dict) => {
@@ -217,7 +253,10 @@ export default function ArticleDetail() {
   function handleWordClick(word, rect, tokenEl) {
     console.log('[Reading] Word clicked:', word, tokenEl)
     if (!word) return
-    const cleanWord = word.toLowerCase().trim().replace(/[^a-z'-]/g, '')
+    const cleanWord = word
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z'-]/g, '')
     if (!cleanWord) return
 
     if (activeTokenRef.current) {
@@ -264,6 +303,17 @@ export default function ArticleDetail() {
     setPopup(null)
   }
 
+  if (articles === null) {
+    // 文章库动态加载中
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center">
+        <p className="text-content-secondary dark:text-gray-300 mb-4 animate-pulse">
+          正在加载文章…
+        </p>
+      </div>
+    )
+  }
+
   if (!article) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center">
@@ -306,7 +356,11 @@ export default function ArticleDetail() {
                 : 'text-content-tertiary dark:text-gray-400 hover:text-amber-500 hover:bg-amber-50/60 dark:hover:bg-amber-500/10'
             }`}
           >
-            <Bookmark className="w-4 h-4" fill={isBookmarked ? 'currentColor' : 'none'} strokeWidth={2} />
+            <Bookmark
+              className="w-4 h-4"
+              fill={isBookmarked ? 'currentColor' : 'none'}
+              strokeWidth={2}
+            />
           </button>
         </div>
         {/* 顶部进度条 */}
@@ -323,12 +377,18 @@ export default function ArticleDetail() {
             window.scrollTo({ top: Math.max(0, targetScroll), behavior: 'smooth' })
           }}
         >
-          <div className="h-full bg-primary transition-[width] duration-150" style={{ width: `${progress}%` }} />
+          <div
+            className="h-full bg-primary transition-[width] duration-150"
+            style={{ width: `${progress}%` }}
+          />
         </div>
       </div>
 
       {/* 阅读区 */}
-      <article ref={contentRef} className="article-content max-w-3xl mx-auto px-4 md:px-6 py-8 md:py-12">
+      <article
+        ref={contentRef}
+        className="article-content max-w-3xl mx-auto px-4 md:px-6 py-8 md:py-12"
+      >
         {/* 分类标签 */}
         <div className="mb-4">
           <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${tagClass}`}>

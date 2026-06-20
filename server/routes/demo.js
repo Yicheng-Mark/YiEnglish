@@ -10,33 +10,50 @@ const {
   getClientIp,
   parseDeviceName,
   resolveDeviceId,
+  ensureDeviceCookie,
   validateUsername,
   validatePassword,
 } = require('../utils/tokens')
 
 const router = express.Router()
 
+// 同 IP 24 小时内最多领取体验码次数（宽松阈值，兼顾校园网/公司 NAT 共享出口）
+const DEMO_IP_DAILY_MAX = 5
+
 // --- 兑换体验码（无需认证） ---
 router.post('/redeem', async (req, res, next) => {
   try {
-    const { code, deviceId } = req.body
+    const { code } = req.body
     const ip = req.ip || req.headers['x-forwarded-for']?.split(',')[0]?.trim() || '127.0.0.1'
 
     if (!code || typeof code !== 'string' || !code.trim()) {
       return res.status(400).json({ error: '请输入体验码' })
     }
 
-    if (!deviceId || typeof deviceId !== 'string' || !deviceId.trim()) {
-      return res.status(400).json({ error: '设备识别失败，请刷新页面重试' })
-    }
-
-    // 简单限流：每个 IP 每分钟最多 5 次
+    // 简单限流：每个 IP 每分钟最多 5 次（防爆破/扫描）
     const [recent] = await pool.execute(
       `SELECT COUNT(*) AS cnt FROM login_attempts WHERE identifier = ? AND success = 0 AND created_at > DATE_SUB(NOW(), INTERVAL 1 MINUTE)`,
       [`demo_redeem:${ip}`]
     )
     if (recent[0].cnt >= 5) {
       return res.status(429).json({ error: '请求过于频繁，请稍后再试' })
+    }
+
+    // 设备标识：优先服务端签发的 HttpOnly cookie，缺失则现场生成并通过 Set-Cookie 下发。
+    // 这样清 localStorage 不会改变 deviceId（cookie 仍在），显著提高换设备重领试用的门槛。
+    const deviceId = ensureDeviceCookie(req, res, resolveDeviceId(req))
+
+    // IP 维度软限制：同 IP 24 小时内成功领取次数（success=1）上限 DEMO_IP_DAILY_MAX。
+    // 复用 login_attempts 表，与 1 分钟爆破计数共用 identifier（demo_redeem:${ip}），
+    // 仅以 success=1 + 24h 窗口区分语义。宽松阈值兼顾校园网/公司 NAT 共享出口，超限返回明确错误。
+    const [ipDaily] = await pool.execute(
+      `SELECT COUNT(*) AS cnt FROM login_attempts
+       WHERE identifier = ? AND success = 1 AND created_at > DATE_SUB(NOW(), INTERVAL 24 HOUR)`,
+      [`demo_redeem:${ip}`]
+    )
+    if (ipDaily[0].cnt >= DEMO_IP_DAILY_MAX) {
+      await logAttempt(`demo_redeem:${ip}`, ip, false)
+      return res.status(429).json({ error: '该网络今日领取次数已达上限，请明日再试' })
     }
 
     // 查找体验码
@@ -68,9 +85,9 @@ router.post('/redeem', async (req, res, next) => {
       return res.status(400).json({ error: '体验码已达使用上限' })
     }
 
-    // 每台设备只能体验一次：按 device_id 全局去重
+    // 每台设备只能体验一次：按 device_id 全局去重（device_id 已由 resolveDeviceId 去空白）
     const [dupDevice] = await pool.execute('SELECT 1 FROM trial_activations WHERE device_id = ?', [
-      deviceId.trim(),
+      deviceId,
     ])
     if (dupDevice.length > 0) {
       await logAttempt(`demo_redeem:${ip}`, ip, false)
@@ -113,7 +130,7 @@ router.post('/redeem', async (req, res, next) => {
 
       await conn.execute(
         'INSERT INTO trial_activations (user_id, code_id, device_id, expires_at) VALUES (?, ?, ?, ?)',
-        [userId, expCode.id, deviceId.trim(), trialExpiresAt]
+        [userId, expCode.id, deviceId, trialExpiresAt]
       )
 
       // 原子递增 + 守卫：current_uses < max_uses。affectedRows===0 说明并发下已被耗尽 → 整事务回滚
@@ -143,7 +160,7 @@ router.post('/redeem', async (req, res, next) => {
       userId,
       true,
       {
-        deviceId: deviceId.trim(),
+        deviceId,
         deviceName: parseDeviceName(req.headers['user-agent']),
         ip,
       },
@@ -239,7 +256,7 @@ router.post('/upgrade', authMiddleware, async (req, res, next) => {
     // 清除旧 refresh token，重新签发（去掉 isGuest 标记，写入设备信息）
     await pool.execute('DELETE FROM refresh_tokens WHERE user_id = ?', [req.userId])
     await issueTokens(res, req.userId, false, {
-      deviceId: resolveDeviceId(req),
+      deviceId: ensureDeviceCookie(req, res, resolveDeviceId(req)),
       deviceName: parseDeviceName(req.headers['user-agent']),
       ip: getClientIp(req),
     })

@@ -1,9 +1,14 @@
 import { memo, useMemo, useRef, useState, useCallback, useEffect } from 'react'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import { Play, Eye } from 'lucide-react'
 import { useCorpusContext } from '../../context/CorpusPlayerContext.jsx'
 import { ColorizedText } from '../ColorizedToken.jsx'
 import { buildPhonetic } from '../../utils/buildPhonetic.js'
-import { tokenizeEnglish, VOCAB_FILTER_KEYS, VOCAB_FILTER_GROUPS } from '../../utils/wordColorMap.js'
+import {
+  tokenizeEnglish,
+  VOCAB_FILTER_KEYS,
+  VOCAB_FILTER_GROUPS,
+} from '../../utils/wordColorMap.js'
 import { useAutoScrollList } from '../../hooks/useAutoScrollList.js'
 import WordBadge from '../WordBadge.jsx'
 import { getWordRect } from '../../../../utils/wordTokenize.jsx'
@@ -125,8 +130,104 @@ function getFirstMeaning(trans) {
     return first.replace(/^\s*\[[^\]]+\]\s*/, '').trim()
   }
   if (!Array.isArray(trans) || trans.length === 0) return ''
-  return String(trans[0] || '').replace(/^\s*\[[^\]]+\]\s*/, '').trim()
+  return String(trans[0] || '')
+    .replace(/^\s*\[[^\]]+\]\s*/, '')
+    .trim()
 }
+
+/* ── Vocab mode: virtualized word list (no auto-scroll; it's a word list, not a play cue list) ── */
+const VocabVirtualList = memo(function VocabVirtualList({ words, showPhonetic, onWordClick }) {
+  const parentRef = useRef(null)
+  const virtualizer = useVirtualizer({
+    count: words.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 64,
+    overscan: 8,
+  })
+
+  return (
+    <div
+      ref={parentRef}
+      className="flex-1 min-h-0 overflow-y-auto py-1"
+      style={{
+        overscrollBehaviorY: 'contain',
+        WebkitOverflowScrolling: 'touch',
+        scrollbarWidth: 'none',
+      }}
+    >
+      <div
+        style={{ height: `${virtualizer.getTotalSize()}px`, width: '100%', position: 'relative' }}
+      >
+        {virtualizer.getVirtualItems().map((virtualRow) => {
+          const idx = virtualRow.index
+          const item = words[idx]
+          const meaning = getFirstMeaning(item.wordData?.trans)
+          const phonetic =
+            item.wordData?.usphone ||
+            item.wordData?.us ||
+            item.wordData?.ukphone ||
+            item.wordData?.uk ||
+            ''
+          return (
+            <button
+              key={item.word}
+              type="button"
+              ref={virtualizer.measureElement}
+              data-index={idx}
+              onClick={(e) => {
+                e.stopPropagation()
+                onWordClick(item.word, getWordRect(e.currentTarget), e.currentTarget)
+              }}
+              className="w-full text-left flex items-center gap-3 px-4 py-2.5 transition-colors"
+              style={{
+                borderBottom: '1px solid var(--mobile-border)',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                transform: `translateY(${virtualRow.start}px)`,
+              }}
+            >
+              <span
+                className="shrink-0 w-6 text-right text-xs tabular-nums"
+                style={{ color: 'var(--mobile-text-secondary)' }}
+              >
+                {idx + 1}
+              </span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span
+                    className="text-sm font-semibold truncate"
+                    style={{ color: 'var(--mobile-text)' }}
+                  >
+                    {item.word}
+                  </span>
+                  {showPhonetic && phonetic && (
+                    <span
+                      className="text-[11px] font-mono truncate"
+                      style={{ color: 'var(--mobile-text-secondary)' }}
+                    >
+                      /{phonetic}/
+                    </span>
+                  )}
+                  <WordBadge dictId={item.primaryDictId} size="xs" />
+                </div>
+                {meaning && (
+                  <div
+                    className="text-xs truncate"
+                    style={{ color: 'var(--mobile-text-secondary)' }}
+                  >
+                    {meaning}
+                  </div>
+                )}
+              </div>
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+})
 
 /* ── Main card component with scrollable list ── */
 function MobileSentenceCardsInner({ focusMode }) {
@@ -149,8 +250,32 @@ function MobileSentenceCardsInner({ focusMode }) {
   }, [player.activeId])
   const effectiveActiveId = player.activeId ?? lastActiveIdRef.current
 
+  // id -> index 查找表（虚拟化自动滚动兜底用）
+  const idToIndex = useMemo(() => {
+    const m = new Map()
+    subtitles?.forEach((s, i) => m.set(s.id, i))
+    return m
+  }, [subtitles])
+
+  // 字幕列表虚拟化（bilingual / translate 模式共享）
+  const subScrollRef = useRef(null)
+  const subVirtualizer = useVirtualizer({
+    count: subtitles?.length || 0,
+    getScrollElement: () => subScrollRef.current,
+    estimateSize: () => 90,
+    overscan: 6,
+  })
+  const subScrollToIndex = useCallback(
+    (idx, opts) => subVirtualizer.scrollToIndex(idx, opts),
+    [subVirtualizer]
+  )
+
   // Auto-scroll to active subtitle
-  const { setItemRef, containerProps } = useAutoScrollList(effectiveActiveId, [subtitles], { scrollAlign: 'start' })
+  const { setItemRef, containerProps } = useAutoScrollList(effectiveActiveId, [subtitles], {
+    scrollAlign: 'start',
+    getVirtualIndex: (id) => (idToIndex.has(id) ? idToIndex.get(id) : null),
+    scrollToVirtualIndex: subScrollToIndex,
+  })
 
   // Swipe gesture state
   const [touchState, setTouchState] = useState({ startX: 0, tracking: false, delta: 0 })
@@ -161,11 +286,14 @@ function MobileSentenceCardsInner({ focusMode }) {
     setTouchState({ startX: t.clientX, tracking: true, delta: 0 })
   }, [])
 
-  const handleTouchMove = useCallback((e) => {
-    if (!touchState.tracking) return
-    const delta = e.touches[0].clientX - touchState.startX
-    setTouchState((s) => ({ ...s, delta }))
-  }, [touchState.tracking, touchState.startX])
+  const handleTouchMove = useCallback(
+    (e) => {
+      if (!touchState.tracking) return
+      const delta = e.touches[0].clientX - touchState.startX
+      setTouchState((s) => ({ ...s, delta }))
+    },
+    [touchState.tracking, touchState.startX]
+  )
 
   const handleTouchEnd = useCallback(() => {
     if (!touchState.tracking) return
@@ -236,7 +364,11 @@ function MobileSentenceCardsInner({ focusMode }) {
     return (
       <div
         className="flex-1 min-h-0 overflow-y-auto px-4 py-3 flex flex-col"
-        style={{ overscrollBehaviorY: 'contain', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}
+        style={{
+          overscrollBehaviorY: 'contain',
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+        }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -277,61 +409,91 @@ function MobileSentenceCardsInner({ focusMode }) {
 
     return (
       <div
+        ref={subScrollRef}
         className="flex-1 min-h-0 overflow-y-auto px-3 py-2"
-        style={{ overscrollBehaviorY: 'contain', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}
+        style={{
+          overscrollBehaviorY: 'contain',
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+        }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {subtitles.map((sub) => {
-          const isActive = effectiveActiveId
-            ? sub.id === effectiveActiveId
-            : sub.id === subtitles[0]?.id
-          const showEn = trRevealed.has(sub.id)
+        <div
+          style={{
+            height: `${subVirtualizer.getTotalSize()}px`,
+            width: '100%',
+            position: 'relative',
+          }}
+        >
+          {subVirtualizer.getVirtualItems().map((virtualRow) => {
+            const idx = virtualRow.index
+            const sub = subtitles[idx]
+            const isActive = effectiveActiveId
+              ? sub.id === effectiveActiveId
+              : sub.id === subtitles[0]?.id
+            const showEn = trRevealed.has(sub.id)
 
-          return (
-            <div
-              key={sub.id}
-              ref={setItemRef(sub.id)}
-              onClick={() => player.jumpToCue(sub.id)}
-              className={`mobile-sub-item ${isActive ? 'mobile-sub-item-active' : 'mobile-sub-item-inactive'} mb-1`}
-            >
-              <p
-                className={`leading-[1.7] ${isActive ? 'font-semibold text-base' : 'text-sm'}`}
-                style={{ color: 'var(--mobile-text)' }}
+            return (
+              <div
+                key={sub.id}
+                ref={(el) => {
+                  setItemRef(sub.id)(el)
+                  subVirtualizer.measureElement(el)
+                }}
+                data-index={idx}
+                onClick={() => player.jumpToCue(sub.id)}
+                className={`mobile-sub-item ${isActive ? 'mobile-sub-item-active' : 'mobile-sub-item-inactive'} mb-1`}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  transform: `translateY(${virtualRow.start}px)`,
+                }}
               >
-                {sub.zh || ''}
-              </p>
-              {!showEn && sub.en ? (
-                <button
-                  type="button"
-                  onClick={(e) => revealSentence(sub.id, e)}
-                  className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-md mt-1 transition-colors"
-                  style={{
-                    backgroundColor: 'var(--mobile-border)',
-                    color: 'var(--mobile-text-secondary)',
-                  }}
-                >
-                  <Eye className="w-3 h-3" />
-                  <span>显示英文</span>
-                </button>
-              ) : showEn && sub.en ? (
                 <p
-                  className="text-sm leading-snug mt-1"
-                  style={{ color: isActive ? 'var(--mobile-primary)' : 'var(--mobile-text-secondary)', wordBreak: 'break-word', overflowWrap: 'anywhere' }}
+                  className={`leading-[1.7] ${isActive ? 'font-semibold text-base' : 'text-sm'}`}
+                  style={{ color: 'var(--mobile-text)' }}
                 >
-                  <ColorizedText
-                    text={sub.en}
-                    paraKey={`tr-${sub.id}`}
-                    posMap={posMap}
-                    onWordClick={handleWordClick}
-                    showColor={settings?.posHighlight}
-                  />
+                  {sub.zh || ''}
                 </p>
-              ) : null}
-            </div>
-          )
-        })}
+                {!showEn && sub.en ? (
+                  <button
+                    type="button"
+                    onClick={(e) => revealSentence(sub.id, e)}
+                    className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-md mt-1 transition-colors"
+                    style={{
+                      backgroundColor: 'var(--mobile-border)',
+                      color: 'var(--mobile-text-secondary)',
+                    }}
+                  >
+                    <Eye className="w-3 h-3" />
+                    <span>显示英文</span>
+                  </button>
+                ) : showEn && sub.en ? (
+                  <p
+                    className="text-sm leading-snug mt-1"
+                    style={{
+                      color: isActive ? 'var(--mobile-primary)' : 'var(--mobile-text-secondary)',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'anywhere',
+                    }}
+                  >
+                    <ColorizedText
+                      text={sub.en}
+                      paraKey={`tr-${sub.id}`}
+                      posMap={posMap}
+                      onWordClick={handleWordClick}
+                      showColor={settings?.posHighlight}
+                    />
+                  </p>
+                ) : null}
+              </div>
+            )
+          })}
+        </div>
       </div>
     )
   }
@@ -381,61 +543,11 @@ function MobileSentenceCardsInner({ focusMode }) {
             </span>
           </div>
         ) : (
-          <div
-            className="flex-1 min-h-0 overflow-y-auto py-1"
-            style={{ overscrollBehaviorY: 'contain', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}
-          >
-            {filteredWords.map((item, idx) => {
-              const meaning = getFirstMeaning(item.wordData?.trans)
-              const phonetic = item.wordData?.usphone || item.wordData?.us || item.wordData?.ukphone || item.wordData?.uk || ''
-              return (
-                <button
-                  key={item.word}
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleWordClick(item.word, getWordRect(e.currentTarget), e.currentTarget)
-                  }}
-                  className="w-full text-left flex items-center gap-3 px-4 py-2.5 transition-colors"
-                  style={{ borderBottom: '1px solid var(--mobile-border)' }}
-                >
-                  <span
-                    className="shrink-0 w-6 text-right text-xs tabular-nums"
-                    style={{ color: 'var(--mobile-text-secondary)' }}
-                  >
-                    {idx + 1}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span
-                        className="text-sm font-semibold truncate"
-                        style={{ color: 'var(--mobile-text)' }}
-                      >
-                        {item.word}
-                      </span>
-                      {settings.showPhonetic && phonetic && (
-                        <span
-                          className="text-[11px] font-mono truncate"
-                          style={{ color: 'var(--mobile-text-secondary)' }}
-                        >
-                          /{phonetic}/
-                        </span>
-                      )}
-                      <WordBadge dictId={item.primaryDictId} size="xs" />
-                    </div>
-                    {meaning && (
-                      <div
-                        className="text-xs truncate"
-                        style={{ color: 'var(--mobile-text-secondary)' }}
-                      >
-                        {meaning}
-                      </div>
-                    )}
-                  </div>
-                </button>
-              )
-            })}
-          </div>
+          <VocabVirtualList
+            words={filteredWords}
+            showPhonetic={settings?.showPhonetic}
+            onWordClick={handleWordClick}
+          />
         )}
       </div>
     )
@@ -454,8 +566,13 @@ function MobileSentenceCardsInner({ focusMode }) {
 
   return (
     <div
+      ref={subScrollRef}
       className="flex-1 min-h-0 overflow-y-auto"
-      style={{ overscrollBehaviorY: 'contain', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}
+      style={{
+        overscrollBehaviorY: 'contain',
+        WebkitOverflowScrolling: 'touch',
+        scrollbarWidth: 'none',
+      }}
       onTouchStart={handleTouchStart}
       onTouchMove={(e) => {
         containerProps.onTouchMove(e)
@@ -474,63 +591,92 @@ function MobileSentenceCardsInner({ focusMode }) {
         </span>
       </div>
 
-      {/* Subtitle list */}
+      {/* Subtitle list (virtualized) */}
       <div className="px-3 py-1">
-        {subtitles.map((sub, idx) => {
-          const isActive = effectiveActiveId
-            ? sub.id === effectiveActiveId
-            : sub.id === subtitles[0]?.id
+        <div
+          style={{
+            height: `${subVirtualizer.getTotalSize()}px`,
+            width: '100%',
+            position: 'relative',
+          }}
+        >
+          {subVirtualizer.getVirtualItems().map((virtualRow) => {
+            const idx = virtualRow.index
+            const sub = subtitles[idx]
+            const isActive = effectiveActiveId
+              ? sub.id === effectiveActiveId
+              : sub.id === subtitles[0]?.id
 
-          return (
-            <div
-              key={sub.id}
-              ref={setItemRef(sub.id)}
-              onClick={() => player.jumpToCue(sub.id)}
-              className={`mobile-sub-item ${isActive ? 'mobile-sub-item-active' : 'mobile-sub-item-inactive'} mb-1`}
-            >
-              {showEn && phoneticArr && phoneticArr[idx] && (
-                <p
-                  className={`font-mono break-all ${isActive ? 'text-xs mb-0.5' : 'text-[10px] mb-0.5'}`}
-                  style={{ color: 'var(--mobile-text-secondary)', wordBreak: 'break-word', overflowWrap: 'anywhere' }}
-                >
-                  {phoneticArr[idx]}
-                </p>
-              )}
-              {showEn && sub.en && (
-                <p
-                  className={`leading-[1.7] ${isActive ? 'font-semibold text-base' : 'text-sm'}`}
-                  style={{ color: 'var(--mobile-text)', wordBreak: 'break-word', overflowWrap: 'anywhere' }}
-                >
-                  {mode === 'cloze' ? (
-                    <ClozeText
-                      text={sub.en}
-                      paraKey={`mobile-cloze-${sub.id}`}
-                      posMap={posMap}
-                      onWordClick={handleWordClick}
-                      showColor={showColor}
-                    />
-                  ) : (
-                    <ColorizedText
-                      text={sub.en}
-                      paraKey={`mobile-${sub.id}`}
-                      posMap={posMap}
-                      onWordClick={handleWordClick}
-                      showColor={showColor}
-                    />
-                  )}
-                </p>
-              )}
-              {showZh && sub.zh && (
-                <p
-                  className={`leading-[1.6] ${isActive ? 'text-sm mt-1' : 'text-xs mt-0.5'}`}
-                  style={{ color: 'var(--mobile-text-secondary)', wordBreak: 'break-word' }}
-                >
-                  {sub.zh}
-                </p>
-              )}
-            </div>
-          )
-        })}
+            return (
+              <div
+                key={sub.id}
+                ref={(el) => {
+                  setItemRef(sub.id)(el)
+                  subVirtualizer.measureElement(el)
+                }}
+                data-index={idx}
+                onClick={() => player.jumpToCue(sub.id)}
+                className={`mobile-sub-item ${isActive ? 'mobile-sub-item-active' : 'mobile-sub-item-inactive'} mb-1`}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  transform: `translateY(${virtualRow.start}px)`,
+                }}
+              >
+                {showEn && phoneticArr && phoneticArr[idx] && (
+                  <p
+                    className={`font-mono break-all ${isActive ? 'text-xs mb-0.5' : 'text-[10px] mb-0.5'}`}
+                    style={{
+                      color: 'var(--mobile-text-secondary)',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'anywhere',
+                    }}
+                  >
+                    {phoneticArr[idx]}
+                  </p>
+                )}
+                {showEn && sub.en && (
+                  <p
+                    className={`leading-[1.7] ${isActive ? 'font-semibold text-base' : 'text-sm'}`}
+                    style={{
+                      color: 'var(--mobile-text)',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'anywhere',
+                    }}
+                  >
+                    {mode === 'cloze' ? (
+                      <ClozeText
+                        text={sub.en}
+                        paraKey={`mobile-cloze-${sub.id}`}
+                        posMap={posMap}
+                        onWordClick={handleWordClick}
+                        showColor={showColor}
+                      />
+                    ) : (
+                      <ColorizedText
+                        text={sub.en}
+                        paraKey={`mobile-${sub.id}`}
+                        posMap={posMap}
+                        onWordClick={handleWordClick}
+                        showColor={showColor}
+                      />
+                    )}
+                  </p>
+                )}
+                {showZh && sub.zh && (
+                  <p
+                    className={`leading-[1.6] ${isActive ? 'text-sm mt-1' : 'text-xs mt-0.5'}`}
+                    style={{ color: 'var(--mobile-text-secondary)', wordBreak: 'break-word' }}
+                  >
+                    {sub.zh}
+                  </p>
+                )}
+              </div>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

@@ -105,7 +105,7 @@
 - 每日 15–20 分钟最小有效剂量学习计划
 
 ### 🔐 账号体系
-- **用户名 + 密码注册 / 登录**：bcrypt（12 轮）加盐哈希，JWT（access 3d）+ Refresh（7d）+ HttpOnly Cookie 双重鉴权
+- **用户名 + 密码注册 / 登录**：bcrypt（12 轮）加盐哈希，JWT（access 30m）+ Refresh（7d）+ HttpOnly Cookie 双重鉴权
 - **设备登录限制**：每账号最多 2 台设备同时在线，超出直接拒绝，支持设备管理（查看 / 踢出）
 - **激活码注册**：`/activate/<code>` 链接直达，粘贴完整链接自动提取码段
 - **体验码试用**：1 小时试用、设备级限流（一设备一码）、试用条引导升级，到期服务端 + 前端双重强制下线
@@ -189,7 +189,7 @@
 |:---|:---|
 | 框架 | Express 5（Node 20） |
 | 数据库 | MySQL 8.0（mysql2 连接池） |
-| 认证 | JWT（access 3d / refresh 7d）+ bcryptjs（12 轮）+ HttpOnly Cookie |
+| 认证 | JWT（access 30m / refresh 7d）+ bcryptjs（12 轮）+ HttpOnly Cookie |
 | 迁移 | 启动时自动幂等执行 `migrate_*.sql`，无需手动建表 |
 
 ### REST API

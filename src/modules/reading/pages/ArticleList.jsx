@@ -1,18 +1,6 @@
-import {
-  useCallback,
-  useDeferredValue,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Bookmark, BookOpen, Search } from 'lucide-react'
-import {
-  mockArticles,
-  categories,
-  years,
-} from '../data/mockArticles'
 import { useReadingStore } from '../hooks/useReadingStore'
 import { getReadingWordBookCount } from '../../../utils/readingWordBook.js'
 import ArticleCard from '../components/ArticleCard'
@@ -33,6 +21,37 @@ export default function ArticleList({ scrollRef }) {
   const deferredQuery = useDeferredValue(searchQuery)
   const [readingWordCount, setReadingWordCount] = useState(0)
 
+  // 文章库（约 285KB 静态数据）改为按需动态加载，分离出独立 chunk，
+  // 避免被打进 ArticleCard chunk。首次渲染显示 loading 骨架。
+  const [articlesData, setArticlesData] = useState({
+    articles: [],
+    categories: ['全部'],
+    years: ['全部'],
+    loaded: false,
+  })
+
+  useEffect(() => {
+    let cancelled = false
+    import('../data/mockArticles')
+      .then((m) => {
+        if (cancelled) return
+        setArticlesData({
+          articles: m.mockArticles || m.default || [],
+          categories: m.categories || ['全部'],
+          years: m.years || ['全部'],
+          loaded: true,
+        })
+      })
+      .catch((err) => {
+        if (cancelled) return
+        console.error('[Reading] 文章库加载失败', err)
+        setArticlesData((prev) => ({ ...prev, loaded: true }))
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   useEffect(() => {
     const top = scrollRef.current
     if (top <= 0) return
@@ -50,17 +69,14 @@ export default function ArticleList({ scrollRef }) {
   }, [])
 
   // bookmarks 数组转 Set，加速 has 查找并避免每次 filter/render 都遍历数组
-  const bookmarkSet = useMemo(
-    () => new Set(store.bookmarks),
-    [store.bookmarks]
-  )
+  const bookmarkSet = useMemo(() => new Set(store.bookmarks), [store.bookmarks])
 
   // 缓存 years.map(String)，避免每次渲染重建数组
-  const yearOptions = useMemo(() => years.map(String), [])
+  const yearOptions = useMemo(() => articlesData.years.map(String), [articlesData.years])
 
   const filtered = useMemo(() => {
     const q = deferredQuery.trim().toLowerCase()
-    const articles = mockArticles.filter((a) => {
+    const articles = articlesData.articles.filter((a) => {
       if (categoryFilter !== '全部' && a.category !== categoryFilter) return false
       if (yearFilter !== '全部' && String(a.year) !== yearFilter) return false
       if (bookmarkOnly && !bookmarkSet.has(a.id)) return false
@@ -80,7 +96,7 @@ export default function ArticleList({ scrollRef }) {
       return [{ id: '__grammar__' }, ...articles]
     }
     return articles
-  }, [categoryFilter, yearFilter, bookmarkOnly, deferredQuery, bookmarkSet])
+  }, [categoryFilter, yearFilter, bookmarkOnly, deferredQuery, bookmarkSet, articlesData])
 
   // 稳定的事件回调
   const handleArticleClick = useCallback(
@@ -98,21 +114,30 @@ export default function ArticleList({ scrollRef }) {
     [store]
   )
 
-  const handleCategoryChange = useCallback((value) => {
-    store.setFilters({ category: value })
-  }, [store])
+  const handleCategoryChange = useCallback(
+    (value) => {
+      store.setFilters({ category: value })
+    },
+    [store]
+  )
 
-  const handleYearChange = useCallback((value) => {
-    store.setFilters({ year: value })
-  }, [store])
+  const handleYearChange = useCallback(
+    (value) => {
+      store.setFilters({ year: value })
+    },
+    [store]
+  )
 
   const handleBookmarkOnlyToggle = useCallback(() => {
     store.setFilters({ bookmarkOnly: !store.filters.bookmarkOnly })
   }, [store])
 
-  const handleSearchChange = useCallback((e) => {
-    store.setFilters({ search: e.target.value })
-  }, [store])
+  const handleSearchChange = useCallback(
+    (e) => {
+      store.setFilters({ search: e.target.value })
+    },
+    [store]
+  )
 
   const handleNavigateWordBook = useCallback(() => {
     navigate('/dict/reading-word-book')
@@ -136,7 +161,9 @@ export default function ArticleList({ scrollRef }) {
   )
 
   return (
-    <div className={`bg-background dark:bg-transparent p-4 md:p-6 transition-colors duration-500 ${isRestoring.current ? '' : 'animate-page-fade-in'}`}>
+    <div
+      className={`bg-background dark:bg-transparent p-4 md:p-6 transition-colors duration-500 ${isRestoring.current ? '' : 'animate-page-fade-in'}`}
+    >
       <div className="max-w-6xl mx-auto px-2 md:px-6 w-full">
         {/* 顶部标题区 */}
         <div>
@@ -190,7 +217,7 @@ export default function ArticleList({ scrollRef }) {
                 <Dropdown
                   label="全部分类"
                   value={categoryFilter}
-                  options={categories}
+                  options={articlesData.categories}
                   onChange={handleCategoryChange}
                 />
               </div>
@@ -213,7 +240,13 @@ export default function ArticleList({ scrollRef }) {
         </div>
 
         {/* 卡片网格 - 虚拟滚动 */}
-        {filtered.length > 0 ? (
+        {!articlesData.loaded ? (
+          <div className="pb-28">
+            <div className="glass-card rounded-card p-12 text-center animate-pulse">
+              <p className="text-content-secondary dark:text-gray-300">正在加载文章库…</p>
+            </div>
+          </div>
+        ) : filtered.length > 0 ? (
           <div className="pb-28">
             <VirtualGrid
               ref={gridRef}

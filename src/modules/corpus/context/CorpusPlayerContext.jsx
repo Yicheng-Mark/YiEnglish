@@ -1,12 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { loadDictionary } from '../../../utils/loadDictionary.js'
 import {
   addToCorpusWordBook,
@@ -20,10 +12,21 @@ import { useWordExtractor } from '../hooks/useWordExtractor.js'
 import { parsePosFromTrans } from '../utils/wordColorMap.js'
 
 const DICT_IDS = [
-  'junior', 'zhongkao', 'senior', 'gaokao',
-  'cet4', 'cet4freq', 'cet6', 'cet6freq',
-  'tem4', 'tem8', 'ielts', 'toefl', 'sat',
-  'postgraduate', 'programmer',
+  'junior',
+  'zhongkao',
+  'senior',
+  'gaokao',
+  'cet4',
+  'cet4freq',
+  'cet6',
+  'cet6freq',
+  'tem4',
+  'tem8',
+  'ielts',
+  'toefl',
+  'sat',
+  'postgraduate',
+  'programmer',
 ]
 
 // 模块级缓存：避免页面切换时重复加载词典（约 15 个 JSON）
@@ -34,9 +37,7 @@ async function ensureDictLoaded() {
   if (DICT_CACHE) return DICT_CACHE
   if (DICT_LOADING) return DICT_LOADING
   DICT_LOADING = (async () => {
-    const dicts = await Promise.all(
-      DICT_IDS.map((id) => loadDictionary(id).catch(() => null))
-    )
+    const dicts = await Promise.all(DICT_IDS.map((id) => loadDictionary(id).catch(() => null)))
     const wordMap = new Map()
     const posMap = new Map()
     const dictSourcesMap = new Map()
@@ -68,7 +69,16 @@ async function ensureDictLoaded() {
   return DICT_LOADING
 }
 
-const CorpusPlayerContext = createContext(null)
+// 方案A：拆成两个 context。
+// - 稳定/低频 context：模式、视频引用、字幕、词典、设置、弹窗相关（不含 player）。
+//   变化来源只有字幕加载完成、模式切换、设置切换、弹窗开关——都是用户显式动作，频率低。
+// - player context：仅 player 对象（含 currentTime / activeId / isPlaying 等 timeupdate 高频字段）。
+//   这样不读 player 的消费者（ModeTabs / SettingsPanel / SubtitlePanel / 各字幕模式的稳定部分）
+//   不再随 timeupdate 全局重渲染。
+//
+// useCorpusContext() 仍返回扁平对象，签名完全兼容，消费方零改动。
+const CorpusStableContext = createContext(null)
+const CorpusPlayerOnlyContext = createContext(null)
 
 const MODES = ['bilingual', 'english', 'chinese', 'dictation', 'cloze', 'translate', 'vocab']
 
@@ -141,7 +151,10 @@ export function CorpusPlayerProvider({ video, children }) {
   const handleWordClick = useCallback(
     (word, rect, tokenEl) => {
       if (!word) return
-      const cleanWord = word.toLowerCase().trim().replace(/[^a-z'-]/g, '')
+      const cleanWord = word
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z'-]/g, '')
       if (!cleanWord) return
       if (activeTokenRef.current) {
         activeTokenRef.current.classList.remove('word-token-active')
@@ -188,7 +201,9 @@ export function CorpusPlayerProvider({ video, children }) {
     setPopup((prev) => (prev ? { ...prev, isSaved: false } : null))
   }, [popup])
 
-  const value = useMemo(
+  // 稳定/低频 context：不含 player。
+  // 依赖项都是用户显式动作（切模式、切设置、字幕加载完成、弹窗开关、词典加载完成），频率低。
+  const stableValue = useMemo(
     () => ({
       // 模式
       mode,
@@ -207,8 +222,6 @@ export function CorpusPlayerProvider({ video, children }) {
       posMap,
       dictSourcesMap,
       extractedWords,
-      // 播放器
-      player,
       // 设置
       settings,
       updateSetting,
@@ -223,13 +236,13 @@ export function CorpusPlayerProvider({ video, children }) {
     [
       mode,
       video,
+      videoCallbackRef,
       subtitles,
       loadError,
       wordMap,
       posMap,
       dictSourcesMap,
       extractedWords,
-      player,
       settings,
       updateSetting,
       toggleSetting,
@@ -241,13 +254,45 @@ export function CorpusPlayerProvider({ video, children }) {
     ]
   )
 
-  return <CorpusPlayerContext.Provider value={value}>{children}</CorpusPlayerContext.Provider>
+  // player 单独成 context：依赖只有 player，timeupdate 高频变化只重建这个 value。
+  const playerValue = useMemo(() => ({ player }), [player])
+
+  return (
+    <CorpusStableContext.Provider value={stableValue}>
+      <CorpusPlayerOnlyContext.Provider value={playerValue}>
+        {children}
+      </CorpusPlayerOnlyContext.Provider>
+    </CorpusStableContext.Provider>
+  )
 }
 
 export function useCorpusContext() {
-  const ctx = useContext(CorpusPlayerContext)
-  if (!ctx) {
+  const stable = useContext(CorpusStableContext)
+  const playerCtx = useContext(CorpusPlayerOnlyContext)
+  if (!stable || !playerCtx) {
     throw new Error('useCorpusContext must be used within CorpusPlayerProvider')
   }
+  // 返回扁平结构，与改造前完全一致；消费方零改动。
+  // 注：调用 useCorpusContext 的组件会在 stable 或 player 任一变化时重渲染，
+  // 这与改造前等价；真正受益的是未来用细粒度 hook 的消费方（见下）。
+  return useMemo(() => ({ ...stable, player: playerCtx.player }), [stable, playerCtx])
+}
+
+// 细粒度 hook（消费方未改动，但供未来优化使用）：
+// - useCorpusStable()：只订阅低频 context，不含 player，不随 timeupdate 重渲染。
+// - useCorpusPlayerState()：只订阅 player context。
+export function useCorpusStable() {
+  const ctx = useContext(CorpusStableContext)
+  if (!ctx) {
+    throw new Error('useCorpusStable must be used within CorpusPlayerProvider')
+  }
   return ctx
+}
+
+export function useCorpusPlayerState() {
+  const ctx = useContext(CorpusPlayerOnlyContext)
+  if (!ctx) {
+    throw new Error('useCorpusPlayerState must be used within CorpusPlayerProvider')
+  }
+  return ctx.player
 }

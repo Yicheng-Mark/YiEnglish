@@ -2,7 +2,16 @@ import { createContext, useContext, useState, useEffect, useCallback, useRef, us
 import { apiFetch } from '../lib/api'
 import { getDeviceId } from '../utils/getDeviceId'
 
-const AuthContext = createContext(null)
+// 方案A：拆成两个 context。
+// - 稳定方法 context：login / register / logout / updateProfile / changePassword /
+//   redeemDemoCode / upgradeAccount / recoverLookup / recoverReset / setNavigator。
+//   全部 useCallback 稳定，挂载后引用不变。
+// - 身份状态 context：user / loading。登录、登出、资料更新、会话刷新时才会变。
+//
+// useAuth() 仍返回扁平对象，签名完全兼容，消费方零改动；另提供细粒度 hook
+// useAuthActions() / useAuthUser() 供只读方法或只读身份的组件订阅，避免互相牵连重渲染。
+const AuthActionsContext = createContext(null)
+const AuthUserContext = createContext(null)
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
 const AUTH_ENABLED = import.meta.env.VITE_AUTH_ENABLED !== 'false'
@@ -14,7 +23,9 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(AUTH_ENABLED)
   const navigateRef = useRef(null)
 
-  const setNavigator = useCallback((nav) => { navigateRef.current = nav }, [])
+  const setNavigator = useCallback((nav) => {
+    navigateRef.current = nav
+  }, [])
 
   useEffect(() => {
     if (!AUTH_ENABLED) return
@@ -166,19 +177,65 @@ export function AuthProvider({ children }) {
     return data.user
   }, [])
 
-  const value = useMemo(() => ({
-    user, loading, login, register, logout, updateProfile, changePassword, redeemDemoCode, upgradeAccount, recoverLookup, recoverReset, setNavigator
-  }), [user, loading, login, register, logout, updateProfile, changePassword, redeemDemoCode, upgradeAccount, recoverLookup, recoverReset, setNavigator])
+  // 稳定方法 context：依赖全部是 useCallback 稳定引用，挂载后 value 永不重建。
+  // 这意味着只读方法（如 Login/Register/Recover/Demo/PersonalCenter/DemoProfile/App=setNavigator）
+  // 的消费者不再随 user/loading 变化重渲染。
+  const actionsValue = useMemo(
+    () => ({
+      login,
+      register,
+      logout,
+      updateProfile,
+      changePassword,
+      redeemDemoCode,
+      upgradeAccount,
+      recoverLookup,
+      recoverReset,
+      setNavigator,
+    }),
+    [
+      login,
+      register,
+      logout,
+      updateProfile,
+      changePassword,
+      redeemDemoCode,
+      upgradeAccount,
+      recoverLookup,
+      recoverReset,
+      setNavigator,
+    ]
+  )
+
+  // 身份状态 context：只在登录/登出/会话刷新/资料更新时变化。
+  const userValue = useMemo(() => ({ user, loading }), [user, loading])
 
   return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
+    <AuthActionsContext.Provider value={actionsValue}>
+      <AuthUserContext.Provider value={userValue}>{children}</AuthUserContext.Provider>
+    </AuthActionsContext.Provider>
   )
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider')
+  const actions = useContext(AuthActionsContext)
+  const userCtx = useContext(AuthUserContext)
+  if (!actions || !userCtx) throw new Error('useAuth must be used within AuthProvider')
+  // 返回扁平结构，字段与改造前完全一致；消费方零改动。
+  return useMemo(() => ({ ...userCtx, ...actions }), [userCtx, actions])
+}
+
+// 细粒度 hook（消费方未改动，供未来优化使用）：
+// - useAuthActions()：只订阅稳定方法，不随 user/loading 变化重渲染。
+// - useAuthUser()：只订阅身份状态。
+export function useAuthActions() {
+  const ctx = useContext(AuthActionsContext)
+  if (!ctx) throw new Error('useAuthActions must be used within AuthProvider')
+  return ctx
+}
+
+export function useAuthUser() {
+  const ctx = useContext(AuthUserContext)
+  if (!ctx) throw new Error('useAuthUser must be used within AuthProvider')
   return ctx
 }

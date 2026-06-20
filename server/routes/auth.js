@@ -132,6 +132,9 @@ router.post('/register', async (req, res, next) => {
         userId,
       ])
 
+      // 注册即建默认 settings 行，后续 GET /api/settings 可省去每次 INSERT IGNORE
+      await conn.execute('INSERT INTO user_settings (user_id) VALUES (?)', [userId])
+
       await conn.commit()
     } catch (err) {
       await conn.rollback().catch(() => {})
@@ -319,14 +322,15 @@ router.post('/logout', async (req, res, next) => {
 })
 
 // --- Me (requires auth) ---
+// 正式用户（is_guest=0）跳过 trial_activations JOIN，避免每请求无谓 JOIN。
+// 访客（is_guest=1）才查试用状态。字段结构保持兼容：非访客不带 isTrial/trialExpiresAt（与原行为一致）。
 router.get('/me', authMiddleware, async (req, res, next) => {
   try {
+    // 先只查 users（无 JOIN），拿到 is_guest 后再决定是否补充查 trial
     const [rows] = await pool.execute(
-      `SELECT u.id, u.username, u.nickname, u.avatar_url, u.daily_goal_minutes, u.signature, u.is_guest,
-              t.expires_at AS trial_expires_at
-       FROM users u
-       LEFT JOIN trial_activations t ON t.user_id = u.id
-       WHERE u.id = ?`,
+      `SELECT id, username, nickname, avatar_url, daily_goal_minutes, signature, is_guest
+       FROM users
+       WHERE id = ?`,
       [req.userId]
     )
     if (rows.length === 0) {
@@ -341,11 +345,15 @@ router.get('/me', authMiddleware, async (req, res, next) => {
       dailyGoalMinutes: u.daily_goal_minutes,
       signature: u.signature,
     }
+    // 仅访客额外查一次试用到期（单列查询，比每请求 LEFT JOIN 全表更省）
     if (u.is_guest) {
+      const [trialRows] = await pool.execute(
+        'SELECT expires_at FROM trial_activations WHERE user_id = ? LIMIT 1',
+        [req.userId]
+      )
+      const trialExpiresAt = trialRows[0]?.expires_at || null
       userObj.isTrial = true
-      userObj.trialExpiresAt = u.trial_expires_at
-        ? new Date(u.trial_expires_at).toISOString()
-        : null
+      userObj.trialExpiresAt = trialExpiresAt ? new Date(trialExpiresAt).toISOString() : null
     }
     res.json({ user: userObj })
   } catch (err) {
@@ -356,7 +364,7 @@ router.get('/me', authMiddleware, async (req, res, next) => {
 // --- Update profile (requires auth) ---
 router.patch('/profile', authMiddleware, async (req, res, next) => {
   try {
-    const { nickname, signature, dailyGoalMinutes } = req.body
+    const { nickname, signature, dailyGoalMinutes, avatarUrl } = req.body
     const sets = []
     const values = []
 
@@ -367,6 +375,15 @@ router.patch('/profile', authMiddleware, async (req, res, next) => {
       }
       sets.push('nickname = ?')
       values.push(trimmed)
+    }
+    if (avatarUrl !== undefined) {
+      // avatar_url 启用：支持 null（清空）或字符串（URL/标识符）。长度上限 500 防滥用。
+      const av = avatarUrl === null ? null : String(avatarUrl)
+      if (av !== null && av.length > 500) {
+        return res.status(400).json({ error: '头像标识过长' })
+      }
+      sets.push('avatar_url = ?')
+      values.push(av)
     }
     if (signature !== undefined) {
       const sig = String(signature)

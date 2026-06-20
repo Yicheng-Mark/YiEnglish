@@ -48,6 +48,16 @@ export default [
     },
   },
   {
+    // server 下的测试文件用 ESM（vitest 惯例：import { describe } from 'vitest'），
+    // 与 server 业务代码的 CommonJS 不同，单独按 module 解析，避免 import/export 报错。
+    files: ['server/**/*.test.js'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: { ...globals.node },
+    },
+  },
+  {
     // 维护脚本（.mjs，ESM + Node）：解析音标/校验字典/处理 OSS 视频等，需 node globals
     files: ['scripts/**/*.mjs'],
     languageOptions: {

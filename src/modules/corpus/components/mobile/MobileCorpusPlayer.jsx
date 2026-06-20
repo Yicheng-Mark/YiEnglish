@@ -1,22 +1,23 @@
-import { useRef, useState, useCallback, useEffect } from 'react'
+import { useRef, useState, useCallback } from 'react'
 import { useCorpusContext } from '../../context/CorpusPlayerContext.jsx'
 import MobileSentenceCards from './MobileSentenceCard.jsx'
 import MobileBottomControls from './MobileBottomControls.jsx'
 import './mobile-corpus.css'
 import MobileVideoCover from './MobileVideoCover.jsx'
 import WordPopup from '../../../../components/WordPopup.jsx'
+import useVirtualKeyboard from '../../../../hooks/useVirtualKeyboard.js'
 
 const DISPLAY_MODES = [
   { id: 'bilingual', label: '双语' },
-  { id: 'english',   label: '英语' },
-  { id: 'chinese',   label: '中文' },
-  { id: 'cloze',     label: '挖空' },
+  { id: 'english', label: '英语' },
+  { id: 'chinese', label: '中文' },
+  { id: 'cloze', label: '挖空' },
 ]
 
 const FIXED_TABS = [
   { id: 'dictation', label: '听写' },
   { id: 'translate', label: '中译英' },
-  { id: 'vocab',     label: '词卡' },
+  { id: 'vocab', label: '词卡' },
 ]
 
 export default function MobileCorpusPlayer({ video, onBack }) {
@@ -25,20 +26,7 @@ export default function MobileCorpusPlayer({ video, onBack }) {
 
   // Virtual keyboard handling
   const containerRef = useRef(null)
-  const [keyboardHeight, setKeyboardHeight] = useState(0)
-
-  useEffect(() => {
-    if (!window.visualViewport) return
-
-    const onResize = () => {
-      const vv = window.visualViewport
-      const kb = window.innerHeight - vv.height
-      setKeyboardHeight(kb > 150 ? kb : 0)
-    }
-
-    window.visualViewport.addEventListener('resize', onResize)
-    return () => window.visualViewport.removeEventListener('resize', onResize)
-  }, [])
+  const { keyboardHeight, viewportHeight } = useVirtualKeyboard({ threshold: 150 })
 
   const toggleFocus = useCallback(() => setFocusMode((v) => !v), [])
 
@@ -61,7 +49,7 @@ export default function MobileCorpusPlayer({ video, onBack }) {
         focusMode ? 'mobile-focus-active' : ''
       }`}
       style={{
-        height: keyboardHeight > 0 ? `${window.visualViewport?.height || window.innerHeight}px` : '100dvh',
+        height: keyboardHeight > 0 ? `${viewportHeight || window.innerHeight}px` : '100dvh',
         backgroundColor: 'var(--mobile-bg)',
       }}
     >
@@ -81,28 +69,28 @@ export default function MobileCorpusPlayer({ video, onBack }) {
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           <style>{`.mobile-play-modes::-webkit-scrollbar{display:none}`}</style>
-            {/* Cycling display mode pill */}
-            <button
-              type="button"
-              onClick={cycleDisplayMode}
-              className={`mode-pill shrink-0 ${isDisplayMode ? 'mode-pill-active' : 'mode-pill-default'}`}
-            >
-              {currentDisplay.label} <span style={{ fontSize: 10, marginLeft: 2 }}>▾</span>
-            </button>
-            {/* Fixed mode pills */}
-            {FIXED_TABS.map((t) => {
-              const active = mode === t.id
-              return (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => setMode(t.id)}
-                  className={`mode-pill shrink-0 ${active ? 'mode-pill-active' : 'mode-pill-default'}`}
-                >
-                  {t.label}
-                </button>
-              )
-            })}
+          {/* Cycling display mode pill */}
+          <button
+            type="button"
+            onClick={cycleDisplayMode}
+            className={`mode-pill shrink-0 ${isDisplayMode ? 'mode-pill-active' : 'mode-pill-default'}`}
+          >
+            {currentDisplay.label} <span style={{ fontSize: 10, marginLeft: 2 }}>▾</span>
+          </button>
+          {/* Fixed mode pills */}
+          {FIXED_TABS.map((t) => {
+            const active = mode === t.id
+            return (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setMode(t.id)}
+                className={`mode-pill shrink-0 ${active ? 'mode-pill-active' : 'mode-pill-default'}`}
+              >
+                {t.label}
+              </button>
+            )
+          })}
         </div>
       </div>
 
@@ -110,9 +98,7 @@ export default function MobileCorpusPlayer({ video, onBack }) {
       <MobileSentenceCards focusMode={focusMode} />
 
       {/* 4. Bottom controls — fixed (two rows) */}
-      {!hideFixedBars && (
-        <MobileBottomControls focusMode={focusMode} onToggleFocus={toggleFocus} />
-      )}
+      {!hideFixedBars && <MobileBottomControls focusMode={focusMode} onToggleFocus={toggleFocus} />}
 
       {/* Word popup overlay */}
       {popup && (

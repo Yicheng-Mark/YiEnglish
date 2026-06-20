@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
 const config = require('../config')
 const pool = require('../db')
+const logger = require('../utils/logger')
 
 async function authMiddleware(req, res, next) {
   const token = req.cookies?.lf_access_token
@@ -44,8 +45,10 @@ async function authMiddleware(req, res, next) {
         return res.status(401).json({ error: '体验时间已结束', code: 'TRIAL_EXPIRED' })
       }
     } catch (err) {
-      // DB 查询失败时放行（fail-open），避免临时故障误踢活跃体验用户
-      console.error('[auth] trial expiry check failed:', err.message)
+      // fail-open 是有意权衡：DB 故障时放行而非拒绝，防止基础设施抖动误踢活跃体验用户。
+      // 安全代价是「DB 故障期间过期试用用户可能短暂可访问」——影响小（试用用户少、故障窗口短），
+      // 收益是可用性（不因 DB 抖动全站踢人）。请勿改成 fail-closed。
+      logger.warn({ err: err.message }, '[trial-check] DB 故障，fail-open 放行')
     }
   }
 

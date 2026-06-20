@@ -1,10 +1,16 @@
-import React, { useEffect, useRef, useCallback, memo } from 'react';
-import { Volume2, Check, X } from 'lucide-react';
-import { VirtualList } from './virtual/VirtualList';
+import React, { useEffect, useRef, useCallback, memo } from 'react'
+import { Volume2, Check, X } from 'lucide-react'
+import { VirtualList } from './virtual/VirtualList'
 
-const WordListItem = memo(function WordListItem({ word, idx, currentIndex, onPlaySound, onJumpTo }) {
-  const isActive = idx === currentIndex;
-  const isDone = idx < currentIndex;
+const WordListItem = memo(function WordListItem({
+  word,
+  idx,
+  currentIndex,
+  onPlaySound,
+  onJumpTo,
+}) {
+  const isActive = idx === currentIndex
+  const isDone = idx < currentIndex
 
   return (
     <div
@@ -12,19 +18,22 @@ const WordListItem = memo(function WordListItem({ word, idx, currentIndex, onPla
       className={`
         group mx-2 px-3 py-2.5 rounded-lg cursor-pointer transition-all
         flex items-start justify-between gap-2
-        ${isActive
-          ? 'bg-indigo-50 dark:bg-indigo-500/15 border-l-2 border-indigo-500 dark:border-indigo-400'
-          : 'hover:bg-slate-50 dark:hover:bg-slate-700/30 border-l-2 border-transparent'
+        ${
+          isActive
+            ? 'bg-indigo-50 dark:bg-indigo-500/15 border-l-2 border-indigo-500 dark:border-indigo-400'
+            : 'hover:bg-slate-50 dark:hover:bg-slate-700/30 border-l-2 border-transparent'
         }
         ${isDone ? 'opacity-40' : ''}
       `}
     >
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
-          <span className={`
+          <span
+            className={`
             font-mono text-sm font-medium truncate
             ${isActive ? 'text-indigo-600 dark:text-indigo-300' : 'text-slate-700 dark:text-slate-300'}
-          `}>
+          `}
+          >
             {word.name}
           </span>
           {isDone && <Check className="w-3 h-3 text-emerald-500 shrink-0" />}
@@ -36,40 +45,57 @@ const WordListItem = memo(function WordListItem({ word, idx, currentIndex, onPla
 
       <button
         onClick={(e) => {
-          e.stopPropagation();
-          onPlaySound?.(word.name);
+          e.stopPropagation()
+          onPlaySound?.(word.name)
         }}
         className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-600 shrink-0"
       >
         <Volume2 className="w-3.5 h-3.5 text-slate-400 dark:text-slate-400" />
       </button>
     </div>
-  );
-});
+  )
+})
 
-const WordListPanel = memo(function WordListPanel({ words, currentIndex, onPlaySound, onJumpTo, onClose }) {
-  const listRef = useRef(null);
+const WordListPanel = memo(function WordListPanel({
+  words,
+  currentIndex,
+  onPlaySound,
+  onJumpTo,
+  onClose,
+}) {
+  const listRef = useRef(null)
+
+  // 用 ref 持有最新的 currentIndex，让 renderWord 回调引用稳定（不再随每次按键重建）。
+  // currentIndex 仍作为 prop 透传给 WordListItem，保证“当前词高亮 / 已完成置灰”正常更新——
+  // 由于 VirtualList 只渲染可视区的项，重渲染仅限可视区，不再被回调重建放大。
+  const currentIndexRef = useRef(currentIndex)
+  currentIndexRef.current = currentIndex
 
   useEffect(() => {
     if (listRef.current && currentIndex >= 0) {
-      listRef.current.scrollToIndex(currentIndex, { align: 'center', behavior: 'smooth' });
+      listRef.current.scrollToIndex(currentIndex, { align: 'center', behavior: 'smooth' })
     }
-  }, [currentIndex]);
+  }, [currentIndex])
+
+  // 用 ref 保存可能变化的回调引用，使 renderWord 依赖数组为空、引用永久稳定。
+  const callbacksRef = useRef({ onPlaySound, onJumpTo })
+  callbacksRef.current.onPlaySound = onPlaySound
+  callbacksRef.current.onJumpTo = onJumpTo
 
   const renderWord = useCallback(
     (word, idx) => (
       <WordListItem
         word={word}
         idx={idx}
-        currentIndex={currentIndex}
-        onPlaySound={onPlaySound}
-        onJumpTo={onJumpTo}
+        currentIndex={currentIndexRef.current}
+        onPlaySound={callbacksRef.current.onPlaySound}
+        onJumpTo={callbacksRef.current.onJumpTo}
       />
     ),
-    [currentIndex, onPlaySound, onJumpTo]
-  );
+    []
+  )
 
-  if (!words || words.length === 0) return null;
+  if (!words || words.length === 0) return null
 
   return (
     <div className="flex flex-col w-full h-full bg-white dark:bg-slate-800/50 backdrop-blur-sm border-r border-slate-200 dark:border-slate-700/50">
@@ -101,7 +127,7 @@ const WordListPanel = memo(function WordListPanel({ words, currentIndex, onPlayS
         />
       </div>
     </div>
-  );
-});
+  )
+})
 
-export default WordListPanel;
+export default WordListPanel

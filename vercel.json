@@ -1,6 +1,12 @@
 {
   "buildCommand": "VITE_AUTH_ENABLED=false VITE_API_BASE_URL=https://www.lingoforge.fun npm run build",
   "outputDirectory": "dist",
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    }
+  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/" }
   ]

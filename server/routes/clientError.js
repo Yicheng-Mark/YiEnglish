@@ -1,4 +1,5 @@
 const { Router } = require('express')
+const logger = require('../utils/logger')
 
 const router = Router()
 
@@ -10,15 +11,17 @@ function sanitizeControl(value, maxLen, keepNewline = false) {
   let out = ''
   for (let i = 0; i < value.length; i++) {
     const code = value.charCodeAt(i)
-    if (code === 13 || code === 10) {               // \r \n
+    if (code === 13 || code === 10) {
+      // \r \n
       if (keepNewline) out += '\n'
       continue
     }
-    if (code === 9 || code === 11 || code === 12) { // \t \v \f -> 空格
+    if (code === 9 || code === 11 || code === 12) {
+      // \t \v \f -> 空格
       out += ' '
       continue
     }
-    if (code < 32 || code === 127) continue         // 其余 C0 控制符 + DEL 丢弃
+    if (code < 32 || code === 127) continue // 其余 C0 控制符 + DEL 丢弃
     out += value[i]
   }
   return (keepNewline ? out : out.trim()).slice(0, maxLen)
@@ -40,10 +43,8 @@ router.post('/', (req, res) => {
     const href = sanitizeControl(raw.href, 300, false)
     const ua = sanitizeControl(raw.ua, 200, false)
     const stack = sanitizeControl(raw.stack, 1500, true)
-    console.warn(
-      `[client-error][${type}] ${message} | ${href} | ${ua}` +
-        (stack ? `\n${stack}` : '')
-    )
+    // sanitizeControl 已剥离 C0 控制符（防日志注入），此处仅切换输出通道。
+    logger.warn({ type, message, href, ua, stack: stack || undefined }, '[client-error]')
   } catch {
     // 永不返回 500，避免客户端上报链路影响业务
   }

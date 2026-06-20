@@ -1,5 +1,7 @@
+const logger = require('../utils/logger')
+
 function errorHandler(err, req, res, _next) {
-  console.error('[Error]', err.message || err)
+  logger.error({ msg: err.message || String(err), status: err.status || 500 }, '[Error]')
   const status = err.status || 500
   // 5xx 不回传内部错误细节（SQL 报错/栈片段等），仅记录服务端日志，防止信息泄漏
   if (status >= 500) {

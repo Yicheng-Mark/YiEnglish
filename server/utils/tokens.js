@@ -7,6 +7,11 @@ const pool = require('../db')
 
 const ACCESS_COOKIE = 'lf_access_token'
 const REFRESH_COOKIE = 'lf_refresh_token'
+// 服务端签发的设备标识 cookie：体验码去重以此为首选来源。
+// HttpOnly 使客户端 JS 无法读取/伪造，清 localStorage 不影响此 cookie，
+// 从而防止用户清 localStorage 换新 device_id 重复领取试用。
+const DEVICE_COOKIE = 'lf_device_id'
+const DEVICE_COOKIE_MAX_AGE = 365 * 24 * 60 * 60 * 1000 // 1 年
 
 // 将过期时间字符串（'30m'/'2h'/'3d' 或纯数字秒）解析为毫秒，与 jsonwebtoken expiresIn 语义一致
 function parseDuration(str, fallbackMs = 3 * 24 * 60 * 60 * 1000) {
@@ -117,10 +122,35 @@ function parseDeviceName(ua) {
   return `${browser} · ${os}`
 }
 
-// 从请求体取客户端设备标识；缺失时退化为服务端随机值，保证名额判定仍生效
+// 解析设备标识，优先级：服务端 cookie > 请求体 > 现场随机生成。
+// cookie 由服务端签发（HttpOnly），清 localStorage 不会改变它，显著提高换设备重领试用的门槛。
+// 若 cookie 缺失，ensureDeviceCookie 会现场签发并通过 Set-Cookie 下发，保证后续请求稳定。
 function resolveDeviceId(req) {
+  const fromCookie =
+    req.cookies && typeof req.cookies[DEVICE_COOKIE] === 'string'
+      ? req.cookies[DEVICE_COOKIE].trim()
+      : ''
+  if (fromCookie) return fromCookie
   const fromBody = req.body && typeof req.body.deviceId === 'string' ? req.body.deviceId.trim() : ''
   return fromBody || crypto.randomUUID()
+}
+
+// 确保响应带有 deviceId cookie：无则签发随机串并 Set-Cookie（HttpOnly, path=/, 1 年, sameSite=lax）。
+// 返回最终生效的 deviceId（供调用方写入 refresh_tokens / trial_activations，保持一致性）。
+function ensureDeviceCookie(req, res, deviceId) {
+  const existing =
+    req.cookies && typeof req.cookies[DEVICE_COOKIE] === 'string'
+      ? req.cookies[DEVICE_COOKIE].trim()
+      : ''
+  if (existing) return existing
+  res.cookie(DEVICE_COOKIE, deviceId, {
+    httpOnly: true,
+    secure: config.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: DEVICE_COOKIE_MAX_AGE,
+  })
+  return deviceId
 }
 
 function validateUsername(v) {
@@ -136,6 +166,7 @@ function validatePassword(v) {
 module.exports = {
   ACCESS_COOKIE,
   REFRESH_COOKIE,
+  DEVICE_COOKIE,
   parseDuration,
   ACCESS_MAX_AGE,
   REFRESH_MAX_AGE,
@@ -147,6 +178,7 @@ module.exports = {
   getClientIp,
   parseDeviceName,
   resolveDeviceId,
+  ensureDeviceCookie,
   validateUsername,
   validatePassword,
 }
