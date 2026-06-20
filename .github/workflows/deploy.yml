@@ -33,6 +33,7 @@ jobs:
             --exclude='.env.local' \
             --exclude='node_modules' \
             --exclude='.git' \
+            --exclude='*.map' \
             -e "ssh -i ~/.ssh/deploy_key" \
             ./ root@120.76.228.235:/home/lingoforge/
 

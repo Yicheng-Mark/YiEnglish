@@ -39,9 +39,13 @@ function cookieOptions(path, maxAge) {
 const ACCESS_COOKIE_OPTS = cookieOptions('/api', REFRESH_MAX_AGE)
 const REFRESH_COOKIE_OPTS = cookieOptions('/api/auth/refresh', REFRESH_MAX_AGE)
 
-function signAccessToken(userId, isGuest = false) {
+function signAccessToken(userId, isGuest = false, trialExp = null) {
   const payload = { userId }
-  if (isGuest) payload.isGuest = true
+  if (isGuest) {
+    payload.isGuest = true
+    // 内嵌试用截止时间（ISO）：中间件据此免查库判定试用是否到期，仅老 token 或格式异常时才回查 DB
+    if (trialExp) payload.trialExp = trialExp
+  }
   return jwt.sign(payload, config.JWT_SECRET, { expiresIn: config.JWT_ACCESS_EXPIRES })
 }
 
@@ -54,8 +58,8 @@ function hashToken(token) {
 }
 
 // 签发 access + refresh，写入 refresh_tokens（含设备信息用于设备管理/名额统计），并下发 cookie
-async function issueTokens(res, userId, isGuest = false, device = {}) {
-  const accessToken = signAccessToken(userId, isGuest)
+async function issueTokens(res, userId, isGuest = false, device = {}, trialExp = null) {
+  const accessToken = signAccessToken(userId, isGuest, trialExp)
   const refreshToken = signRefreshToken()
   const tokenHash = hashToken(refreshToken)
   const expiresAt = new Date(Date.now() + REFRESH_MAX_AGE)
@@ -63,7 +67,14 @@ async function issueTokens(res, userId, isGuest = false, device = {}) {
   await pool.execute(
     `INSERT INTO refresh_tokens (user_id, token_hash, expires_at, device_id, device_name, ip, last_active_at)
      VALUES (?, ?, ?, ?, ?, ?, NOW())`,
-    [userId, tokenHash, expiresAt, device.deviceId || '', device.deviceName || null, device.ip || null]
+    [
+      userId,
+      tokenHash,
+      expiresAt,
+      device.deviceId || '',
+      device.deviceName || null,
+      device.ip || null,
+    ]
   )
 
   res.cookie(ACCESS_COOKIE, accessToken, ACCESS_COOKIE_OPTS)

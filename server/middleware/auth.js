@@ -22,6 +22,17 @@ async function authMiddleware(req, res, next) {
 
   // 体验用户：试用到期则拒绝（强制下线，服务端兜底）
   if (req.isGuest) {
+    // 优先用 access token 内嵌的 trialExp 免查库（新 token）；
+    // 老 token 无该字段或格式异常时回查 DB，保持向后兼容与权威性。
+    // 权衡：trialExp 是签发时的快照，管理员中途缩短试用最多滞后一个 access 周期（refresh 时已查库校正）。
+    const tokenExpMs = decoded.trialExp ? new Date(decoded.trialExp).getTime() : NaN
+    if (!Number.isNaN(tokenExpMs)) {
+      if (tokenExpMs <= Date.now()) {
+        return res.status(401).json({ error: '体验时间已结束', code: 'TRIAL_EXPIRED' })
+      }
+      return next() // JWT 内 trialExp 有效且未过期 → 放行，省去每请求查库
+    }
+    // JWT 内无 trialExp 或格式异常 → 回查 DB
     try {
       const [rows] = await pool.execute(
         'SELECT expires_at FROM trial_activations WHERE user_id = ? LIMIT 1',

@@ -3,7 +3,11 @@ const bcrypt = require('bcryptjs')
 const pool = require('../db')
 const config = require('../config')
 const authMiddleware = require('../middleware/auth')
-const { checkLoginRateLimit, checkRegisterRateLimit, logAttempt } = require('../middleware/rateLimit')
+const {
+  checkLoginRateLimit,
+  checkRegisterRateLimit,
+  logAttempt,
+} = require('../middleware/rateLimit')
 const {
   issueTokens,
   clearCookies,
@@ -95,7 +99,8 @@ router.post('/register', async (req, res, next) => {
     }
 
     const hash = await bcrypt.hash(password, config.BCRYPT_ROUNDS)
-    const displayName = (typeof nickname === 'string' && nickname.trim()) ? nickname.trim().slice(0, 50) : username
+    const displayName =
+      typeof nickname === 'string' && nickname.trim() ? nickname.trim().slice(0, 50) : username
 
     // INSERT 用户 → 原子消费激活码 → 记录来源：整段包事务，保证一致性。
     // 并发同用户名时 INSERT 抛 ER_DUP_ENTRY 由下方 catch 捕获返回 400，不再 500。
@@ -122,10 +127,10 @@ router.post('/register', async (req, res, next) => {
       }
 
       // 记录激活码来源
-      await conn.execute(
-        'UPDATE users SET activation_code_id = ? WHERE id = ?',
-        [actCode.id, userId]
-      )
+      await conn.execute('UPDATE users SET activation_code_id = ? WHERE id = ?', [
+        actCode.id,
+        userId,
+      ])
 
       await conn.commit()
     } catch (err) {
@@ -201,7 +206,10 @@ router.post('/login', async (req, res, next) => {
     }
 
     // 替换本设备旧行：同一设备重复登录不占新名额
-    await pool.execute('DELETE FROM refresh_tokens WHERE user_id = ? AND device_id = ?', [user.id, deviceId])
+    await pool.execute('DELETE FROM refresh_tokens WHERE user_id = ? AND device_id = ?', [
+      user.id,
+      deviceId,
+    ])
 
     await issueTokens(res, user.id, false, device)
 
@@ -265,13 +273,23 @@ router.post('/refresh', async (req, res, next) => {
     }
 
     // rotation 时沿用原会话的设备标识/IP，刷新 last_active_at
-    await issueTokens(res, stored.user_id, isGuest, {
-      deviceId: stored.device_id,
-      deviceName: stored.device_name,
-      ip: stored.ip,
-    })
+    await issueTokens(
+      res,
+      stored.user_id,
+      isGuest,
+      {
+        deviceId: stored.device_id,
+        deviceName: stored.device_name,
+        ip: stored.ip,
+      },
+      isGuest && trialExpiresAt ? new Date(trialExpiresAt).toISOString() : null
+    )
 
-    const userObj = { id: userRows[0].id, username: userRows[0].username, nickname: userRows[0].nickname }
+    const userObj = {
+      id: userRows[0].id,
+      username: userRows[0].username,
+      nickname: userRows[0].nickname,
+    }
     if (isGuest) {
       userObj.isTrial = true
       userObj.trialExpiresAt = trialExpiresAt ? new Date(trialExpiresAt).toISOString() : null
@@ -289,7 +307,9 @@ router.post('/logout', async (req, res, next) => {
     const refreshToken = req.cookies?.[REFRESH_COOKIE]
     if (refreshToken) {
       const tokenHash = hashToken(refreshToken)
-      await pool.execute('DELETE FROM refresh_tokens WHERE token_hash = ?', [tokenHash]).catch(() => {})
+      await pool
+        .execute('DELETE FROM refresh_tokens WHERE token_hash = ?', [tokenHash])
+        .catch(() => {})
     }
     clearCookies(res)
     res.json({ ok: true })
@@ -323,7 +343,9 @@ router.get('/me', authMiddleware, async (req, res, next) => {
     }
     if (u.is_guest) {
       userObj.isTrial = true
-      userObj.trialExpiresAt = u.trial_expires_at ? new Date(u.trial_expires_at).toISOString() : null
+      userObj.trialExpiresAt = u.trial_expires_at
+        ? new Date(u.trial_expires_at).toISOString()
+        : null
     }
     res.json({ user: userObj })
   } catch (err) {
@@ -402,10 +424,7 @@ router.post('/change-password', authMiddleware, async (req, res, next) => {
       return res.status(400).json({ error: '新密码需 8-128 位，至少包含一个字母和一个数字' })
     }
 
-    const [rows] = await pool.execute(
-      'SELECT password_hash FROM users WHERE id = ?',
-      [req.userId]
-    )
+    const [rows] = await pool.execute('SELECT password_hash FROM users WHERE id = ?', [req.userId])
     if (rows.length === 0) {
       return res.status(404).json({ error: '用户不存在' })
     }
@@ -501,10 +520,10 @@ router.post('/recover-reset', async (req, res, next) => {
     const userId = rows[0].id
 
     // 唯一性预检（排除自身）
-    const [existing] = await pool.execute(
-      'SELECT id FROM users WHERE username = ? AND id != ?',
-      [username, userId]
-    )
+    const [existing] = await pool.execute('SELECT id FROM users WHERE username = ? AND id != ?', [
+      username,
+      userId,
+    ])
     if (existing.length > 0) {
       return res.status(409).json({ error: '用户名已被占用' })
     }
@@ -534,10 +553,9 @@ router.post('/recover-reset', async (req, res, next) => {
     })
     await logAttempt('recover:' + ip, ip, true)
 
-    const [updated] = await pool.execute(
-      'SELECT id, username, nickname FROM users WHERE id = ?',
-      [userId]
-    )
+    const [updated] = await pool.execute('SELECT id, username, nickname FROM users WHERE id = ?', [
+      userId,
+    ])
     res.json({ user: updated[0] })
   } catch (err) {
     next(err)
@@ -578,10 +596,10 @@ router.delete('/devices/:id', authMiddleware, async (req, res, next) => {
     if (!Number.isInteger(sessionId) || sessionId <= 0) {
       return res.status(400).json({ error: '无效的设备会话' })
     }
-    const [result] = await pool.execute(
-      'DELETE FROM refresh_tokens WHERE id = ? AND user_id = ?',
-      [sessionId, req.userId]
-    )
+    const [result] = await pool.execute('DELETE FROM refresh_tokens WHERE id = ? AND user_id = ?', [
+      sessionId,
+      req.userId,
+    ])
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: '设备会话不存在或已退出' })
     }

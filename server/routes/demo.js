@@ -69,10 +69,9 @@ router.post('/redeem', async (req, res, next) => {
     }
 
     // 每台设备只能体验一次：按 device_id 全局去重
-    const [dupDevice] = await pool.execute(
-      'SELECT 1 FROM trial_activations WHERE device_id = ?',
-      [deviceId.trim()]
-    )
+    const [dupDevice] = await pool.execute('SELECT 1 FROM trial_activations WHERE device_id = ?', [
+      deviceId.trim(),
+    ])
     if (dupDevice.length > 0) {
       await logAttempt(`demo_redeem:${ip}`, ip, false)
       return res.status(400).json({ error: '该设备已体验过' })
@@ -139,11 +138,17 @@ router.post('/redeem', async (req, res, next) => {
     await logAttempt(`demo_redeem:${ip}`, ip, true)
 
     // 发 token（复用 tokens.js，写入设备信息以便设备管理/名额统计）
-    await issueTokens(res, userId, true, {
-      deviceId: deviceId.trim(),
-      deviceName: parseDeviceName(req.headers['user-agent']),
-      ip,
-    })
+    await issueTokens(
+      res,
+      userId,
+      true,
+      {
+        deviceId: deviceId.trim(),
+        deviceName: parseDeviceName(req.headers['user-agent']),
+        ip,
+      },
+      trialExpiresAt.toISOString()
+    )
 
     res.json({
       user: {
@@ -194,10 +199,7 @@ router.post('/upgrade', authMiddleware, async (req, res, next) => {
     const { username, password, nickname } = req.body
 
     // 确认当前是访客用户
-    const [users] = await pool.execute(
-      'SELECT id, is_guest FROM users WHERE id = ?',
-      [req.userId]
-    )
+    const [users] = await pool.execute('SELECT id, is_guest FROM users WHERE id = ?', [req.userId])
     if (users.length === 0 || !users[0].is_guest) {
       return res.status(400).json({ error: '当前账号无需升级' })
     }
@@ -210,13 +212,17 @@ router.post('/upgrade', authMiddleware, async (req, res, next) => {
     }
 
     // 检查用户名唯一性
-    const [existing] = await pool.execute('SELECT id FROM users WHERE username = ? AND id != ?', [username, req.userId])
+    const [existing] = await pool.execute('SELECT id FROM users WHERE username = ? AND id != ?', [
+      username,
+      req.userId,
+    ])
     if (existing.length > 0) {
       return res.status(400).json({ error: '用户名已被占用' })
     }
 
     const hash = await bcrypt.hash(password, config.BCRYPT_ROUNDS)
-    const displayName = (typeof nickname === 'string' && nickname.trim()) ? nickname.trim().slice(0, 50) : username
+    const displayName =
+      typeof nickname === 'string' && nickname.trim() ? nickname.trim().slice(0, 50) : username
 
     // 更新为正式用户
     await pool.execute(
