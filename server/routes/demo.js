@@ -96,27 +96,45 @@ router.post('/redeem', async (req, res, next) => {
     const randomPassword = crypto.randomBytes(32).toString('hex')
     const hash = await bcrypt.hash(randomPassword, config.BCRYPT_ROUNDS)
 
-    // 创建访客用户
-    const [result] = await pool.execute(
-      'INSERT INTO users (username, is_guest, nickname, password_hash, email) VALUES (?, 1, ?, ?, NULL)',
-      [username, '体验用户', hash]
-    )
-    const userId = result.insertId
-
     // 计算试用到期时间
     const trialExpiresAt = new Date(Date.now() + expCode.trial_hours * 60 * 60 * 1000)
 
-    // 记录试用激活（含设备标识，用于"每台设备一次"去重）
-    await pool.execute(
-      'INSERT INTO trial_activations (user_id, code_id, device_id, expires_at) VALUES (?, ?, ?, ?)',
-      [userId, expCode.id, deviceId.trim(), trialExpiresAt]
-    )
+    // 创建访客用户 → 记录试用激活 → 原子消费体验码：整段包事务，
+    // 避免中途失败留下无试用记录的访客用户，或并发下 current_uses 超发。
+    const conn = await pool.getConnection()
+    let userId
+    try {
+      await conn.beginTransaction()
 
-    // 递增使用次数
-    await pool.execute(
-      'UPDATE experience_codes SET current_uses = current_uses + 1 WHERE id = ?',
-      [expCode.id]
-    )
+      const [result] = await conn.execute(
+        'INSERT INTO users (username, is_guest, nickname, password_hash, email) VALUES (?, 1, ?, ?, NULL)',
+        [username, '体验用户', hash]
+      )
+      userId = result.insertId
+
+      await conn.execute(
+        'INSERT INTO trial_activations (user_id, code_id, device_id, expires_at) VALUES (?, ?, ?, ?)',
+        [userId, expCode.id, deviceId.trim(), trialExpiresAt]
+      )
+
+      // 原子递增 + 守卫：current_uses < max_uses。affectedRows===0 说明并发下已被耗尽 → 整事务回滚
+      const [updateResult] = await conn.execute(
+        'UPDATE experience_codes SET current_uses = current_uses + 1 WHERE id = ? AND (max_uses = 0 OR current_uses < max_uses)',
+        [expCode.id]
+      )
+      if (updateResult.affectedRows === 0) {
+        await conn.rollback()
+        await logAttempt(`demo_redeem:${ip}`, ip, false)
+        return res.status(400).json({ error: '体验码已达使用上限' })
+      }
+
+      await conn.commit()
+    } catch (err) {
+      await conn.rollback().catch(() => {})
+      throw err
+    } finally {
+      conn.release()
+    }
 
     await logAttempt(`demo_redeem:${ip}`, ip, true)
 

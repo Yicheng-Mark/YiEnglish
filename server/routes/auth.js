@@ -97,28 +97,47 @@ router.post('/register', async (req, res, next) => {
     const hash = await bcrypt.hash(password, config.BCRYPT_ROUNDS)
     const displayName = (typeof nickname === 'string' && nickname.trim()) ? nickname.trim().slice(0, 50) : username
 
-    const [result] = await pool.execute(
-      'INSERT INTO users (username, nickname, password_hash, email) VALUES (?, ?, ?, NULL)',
-      [username, displayName, hash]
-    )
-    const userId = result.insertId
+    // INSERT 用户 → 原子消费激活码 → 记录来源：整段包事务，保证一致性。
+    // 并发同用户名时 INSERT 抛 ER_DUP_ENTRY 由下方 catch 捕获返回 400，不再 500。
+    const conn = await pool.getConnection()
+    let userId
+    try {
+      await conn.beginTransaction()
 
-    // 原子消费激活码（防竞态）
-    const [updateResult] = await pool.execute(
-      'UPDATE experience_codes SET current_uses = current_uses + 1 WHERE id = ? AND (max_uses = 0 OR current_uses < max_uses)',
-      [actCode.id]
-    )
-    if (updateResult.affectedRows === 0) {
-      // 码在并发下被耗尽，回滚删除刚创建的用户
-      await pool.execute('DELETE FROM users WHERE id = ?', [userId])
-      return res.status(400).json({ error: '激活码已达使用上限' })
+      const [result] = await conn.execute(
+        'INSERT INTO users (username, nickname, password_hash, email) VALUES (?, ?, ?, NULL)',
+        [username, displayName, hash]
+      )
+      userId = result.insertId
+
+      // 原子消费激活码（防竞态）
+      const [updateResult] = await conn.execute(
+        'UPDATE experience_codes SET current_uses = current_uses + 1 WHERE id = ? AND (max_uses = 0 OR current_uses < max_uses)',
+        [actCode.id]
+      )
+      if (updateResult.affectedRows === 0) {
+        // 码在并发下被耗尽 → 整事务回滚（含刚创建的用户行）
+        await conn.rollback()
+        return res.status(400).json({ error: '激活码已达使用上限' })
+      }
+
+      // 记录激活码来源
+      await conn.execute(
+        'UPDATE users SET activation_code_id = ? WHERE id = ?',
+        [actCode.id, userId]
+      )
+
+      await conn.commit()
+    } catch (err) {
+      await conn.rollback().catch(() => {})
+      // 并发同用户名：预检都通过、INSERT 触发唯一约束冲突 → 400 而非 500
+      if (err.code === 'ER_DUP_ENTRY') {
+        return res.status(400).json({ error: '注册失败，请稍后重试' })
+      }
+      throw err
+    } finally {
+      conn.release()
     }
-
-    // 记录激活码来源
-    await pool.execute(
-      'UPDATE users SET activation_code_id = ? WHERE id = ?',
-      [actCode.id, userId]
-    )
 
     await issueTokens(res, userId, false, {
       deviceId: resolveDeviceId(req),
