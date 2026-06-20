@@ -5,18 +5,16 @@ const pool = require('../db')
 const config = require('../config')
 const authMiddleware = require('../middleware/auth')
 const { logAttempt } = require('../middleware/rateLimit')
+const {
+  issueTokens,
+  getClientIp,
+  parseDeviceName,
+  resolveDeviceId,
+  validateUsername,
+  validatePassword,
+} = require('../utils/tokens')
 
 const router = express.Router()
-
-function validateUsername(v) {
-  if (typeof v !== 'string') return false
-  return /^[a-zA-Z0-9_一-鿿]{3,30}$/.test(v)
-}
-
-function validatePassword(v) {
-  if (typeof v !== 'string' || v.length < 8 || v.length > 128) return false
-  return /[a-zA-Z]/.test(v) && /\d/.test(v)
-}
 
 // --- 兑换体验码（无需认证） ---
 router.post('/redeem', async (req, res, next) => {
@@ -122,25 +120,12 @@ router.post('/redeem', async (req, res, next) => {
 
     await logAttempt(`demo_redeem:${ip}`, ip, true)
 
-    // 发 token（复用 auth.js 的逻辑）
-    const jwt = require('jsonwebtoken')
-    const accessToken = jwt.sign({ userId, isGuest: true }, config.JWT_SECRET, { expiresIn: config.JWT_ACCESS_EXPIRES })
-    const refreshToken = crypto.randomBytes(48).toString('hex')
-    const tokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex')
-    const refreshExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-
-    await pool.execute(
-      'INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)',
-      [userId, tokenHash, refreshExpiresAt]
-    )
-
-    const cookieOpts = {
-      httpOnly: true,
-      secure: config.NODE_ENV === 'production',
-      sameSite: 'lax',
-    }
-    res.cookie('lf_access_token', accessToken, { ...cookieOpts, path: '/api', maxAge: 3 * 24 * 60 * 60 * 1000 })
-    res.cookie('lf_refresh_token', refreshToken, { ...cookieOpts, path: '/api/auth/refresh', maxAge: 7 * 24 * 60 * 60 * 1000 })
+    // 发 token（复用 tokens.js，写入设备信息以便设备管理/名额统计）
+    await issueTokens(res, userId, true, {
+      deviceId: deviceId.trim(),
+      deviceName: parseDeviceName(req.headers['user-agent']),
+      ip,
+    })
 
     res.json({
       user: {
@@ -227,27 +212,13 @@ router.post('/upgrade', authMiddleware, async (req, res, next) => {
       [req.userId]
     )
 
-    // 重新签发 token（去掉 isGuest 标记）
-    const jwt = require('jsonwebtoken')
-    const accessToken = jwt.sign({ userId: req.userId }, config.JWT_SECRET, { expiresIn: config.JWT_ACCESS_EXPIRES })
-    const refreshToken = crypto.randomBytes(48).toString('hex')
-    const tokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex')
-    const refreshExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-
-    // 清除旧 refresh token，写入新的
+    // 清除旧 refresh token，重新签发（去掉 isGuest 标记，写入设备信息）
     await pool.execute('DELETE FROM refresh_tokens WHERE user_id = ?', [req.userId])
-    await pool.execute(
-      'INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)',
-      [req.userId, tokenHash, refreshExpiresAt]
-    )
-
-    const cookieOpts = {
-      httpOnly: true,
-      secure: config.NODE_ENV === 'production',
-      sameSite: 'lax',
-    }
-    res.cookie('lf_access_token', accessToken, { ...cookieOpts, path: '/api', maxAge: 3 * 24 * 60 * 60 * 1000 })
-    res.cookie('lf_refresh_token', refreshToken, { ...cookieOpts, path: '/api/auth/refresh', maxAge: 7 * 24 * 60 * 60 * 1000 })
+    await issueTokens(res, req.userId, false, {
+      deviceId: resolveDeviceId(req),
+      deviceName: parseDeviceName(req.headers['user-agent']),
+      ip: getClientIp(req),
+    })
 
     res.json({
       user: {

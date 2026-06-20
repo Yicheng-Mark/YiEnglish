@@ -1,111 +1,22 @@
 const express = require('express')
 const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
-const crypto = require('crypto')
 const pool = require('../db')
 const config = require('../config')
 const authMiddleware = require('../middleware/auth')
 const { checkLoginRateLimit, checkRegisterRateLimit, logAttempt } = require('../middleware/rateLimit')
+const {
+  issueTokens,
+  clearCookies,
+  hashToken,
+  getClientIp,
+  parseDeviceName,
+  resolveDeviceId,
+  validateUsername,
+  validatePassword,
+  REFRESH_COOKIE,
+} = require('../utils/tokens')
 
 const router = express.Router()
-
-const ACCESS_COOKIE = 'lf_access_token'
-const REFRESH_COOKIE = 'lf_refresh_token'
-
-function cookieOptions(path, maxAge) {
-  return {
-    httpOnly: true,
-    secure: config.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path,
-    maxAge,
-  }
-}
-
-const ACCESS_COOKIE_OPTS = cookieOptions('/api', 3 * 24 * 60 * 60 * 1000)
-const REFRESH_COOKIE_OPTS = cookieOptions('/api/auth/refresh', 7 * 24 * 60 * 60 * 1000)
-
-function signAccessToken(userId, isGuest = false) {
-  const payload = { userId }
-  if (isGuest) payload.isGuest = true
-  return jwt.sign(payload, config.JWT_SECRET, { expiresIn: config.JWT_ACCESS_EXPIRES })
-}
-
-function signRefreshToken() {
-  return crypto.randomBytes(48).toString('hex')
-}
-
-function hashToken(token) {
-  return crypto.createHash('sha256').update(token).digest('hex')
-}
-
-function getClientIp(req) {
-  return req.ip || req.headers['x-forwarded-for']?.split(',')[0]?.trim() || '127.0.0.1'
-}
-
-// 解析 User-Agent 为可读设备名，如 "Chrome · Windows" / "Safari · iPhone"
-function parseDeviceName(ua) {
-  if (!ua) return '未知设备'
-  const u = ua.toLowerCase()
-  let browser = '浏览器'
-  if (u.includes('micromessenger')) browser = '微信'
-  else if (u.includes('edg/')) browser = 'Edge'
-  else if (u.includes('chrome/') && !u.includes('chromium')) browser = 'Chrome'
-  else if (u.includes('firefox/')) browser = 'Firefox'
-  else if (u.includes('safari/') && !u.includes('chrome')) browser = 'Safari'
-
-  let os = '设备'
-  if (u.includes('iphone')) os = 'iPhone'
-  else if (u.includes('ipad')) os = 'iPad'
-  else if (u.includes('android')) os = 'Android'
-  else if (u.includes('windows')) os = 'Windows'
-  else if (u.includes('mac os') || u.includes('macintosh')) os = 'Mac'
-  else if (u.includes('linux')) os = 'Linux'
-
-  return `${browser} · ${os}`
-}
-
-// 从请求体取客户端设备标识；缺失时退化为服务端随机值，保证名额判定仍生效
-function resolveDeviceId(req) {
-  const fromBody = req.body && typeof req.body.deviceId === 'string' ? req.body.deviceId.trim() : ''
-  return fromBody || crypto.randomUUID()
-}
-
-function validateUsername(v) {
-  if (typeof v !== 'string') return false
-  return /^[a-zA-Z0-9_一-鿿]{3,30}$/.test(v)
-}
-
-function validatePassword(v) {
-  if (typeof v !== 'string' || v.length < 8 || v.length > 128) return false
-  return /[a-zA-Z]/.test(v) && /\d/.test(v)
-}
-
-async function issueTokens(res, userId, isGuest = false, device = {}) {
-  const accessToken = signAccessToken(userId, isGuest)
-  const refreshToken = signRefreshToken()
-  const tokenHash = hashToken(refreshToken)
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-
-  await pool.execute(
-    `INSERT INTO refresh_tokens (user_id, token_hash, expires_at, device_id, device_name, ip, last_active_at)
-     VALUES (?, ?, ?, ?, ?, ?, NOW())`,
-    [userId, tokenHash, expiresAt, device.deviceId || '', device.deviceName || null, device.ip || null]
-  )
-
-  res.cookie(ACCESS_COOKIE, accessToken, ACCESS_COOKIE_OPTS)
-  res.cookie(REFRESH_COOKIE, refreshToken, REFRESH_COOKIE_OPTS)
-}
-
-function clearCookies(res) {
-  const clearOpts = {
-    httpOnly: true,
-    secure: config.NODE_ENV === 'production',
-    sameSite: 'lax',
-  }
-  res.clearCookie(ACCESS_COOKIE, { ...clearOpts, path: '/api' })
-  res.clearCookie(REFRESH_COOKIE, { ...clearOpts, path: '/api/auth/refresh' })
-}
 
 // --- Validate activation code ---
 router.post('/validate-activation-code', async (req, res, next) => {
