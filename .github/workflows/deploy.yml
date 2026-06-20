@@ -69,7 +69,9 @@ jobs:
           ssh -i ~/.ssh/deploy_key root@120.76.228.235 'bash -s' << 'EOF'
             set -e
             cd /home/lingoforge
-            npm install --omit=dev
+            # --ignore-scripts 跳过 prepare(husky)：husky 是 devDep，生产 --omit=dev 下未安装，
+            # 不跳过会以 code 127 中断 npm install（与上方 CI 的 npm ci --ignore-scripts 同理）。
+            npm install --omit=dev --ignore-scripts
             if pm2 describe lingoforge > /dev/null 2>&1; then
               pm2 reload lingoforge --update-env
             else

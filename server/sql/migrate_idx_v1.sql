@@ -7,7 +7,8 @@
 --    新增 idx_experience_codes_type_active (type, is_active) 服务于按 type 的查询
 --
 -- 幂等：参考 migrate_auth_v3.sql 的 INFORMATION_SCHEMA + PREPARE/EXECUTE 风格。
--- 每条 SQL 以 ; 结尾；语句内部不含分号字面量（runMigrations 用 ; 朴素 split）。
+-- 每条 SQL 以分号结尾；语句内不含分号字面量。注释行也不要含裸 ASCII 分号 ——
+-- runMigrations 只在「单引号外」的分号处切分，不识别 -- 注释，注释里的裸分号会被误当语句边界。
 -- 注意：runMigrations 仅显式吞 ER_DUP_FIELDNAME，不吞 ER_DUP_KEYNAME，
 --       故不用裸 ALTER TABLE ADD INDEX（重复执行会刷 error 日志），
 --       而是先查 INFORMATION_SCHEMA.STATISTICS 判断索引是否存在，存在则跳过。
