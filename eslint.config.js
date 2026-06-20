@@ -8,7 +8,7 @@ import prettierConfig from 'eslint-config-prettier'
 // 规则以 warn 为主，不阻塞构建/部署；仅 hooks 误用设为 error。
 export default [
   {
-    ignores: ['dist/**', 'node_modules/**', 'scripts/**', 'deploy/**', '*.config.js', 'eslint.config.js'],
+    ignores: ['dist/**', 'node_modules/**', 'deploy/**', '*.config.js', 'eslint.config.js'],
   },
   js.configs.recommended,
   prettierConfig,
@@ -45,6 +45,20 @@ export default [
     rules: {
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       'no-empty': ['warn', { allowEmptyCatch: true }],
+    },
+  },
+  {
+    // 维护脚本（.mjs，ESM + Node）：解析音标/校验字典/处理 OSS 视频等，需 node globals
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: { ...globals.node },
+    },
+    rules: {
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      'no-empty': ['warn', { allowEmptyCatch: true }],
+      'no-console': 'off',
     },
   },
 ]
