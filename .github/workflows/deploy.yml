@@ -13,9 +13,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        # npm ci 按 lockfile 精确安装；--ignore-scripts 跳过 prepare(husky)，CI 不需要本地 git hooks
+        run: npm ci --ignore-scripts
+
+      - name: Lint
+        run: npm run lint
 
       - name: Build frontend
         run: npm run build
@@ -38,4 +43,16 @@ jobs:
             ./ root@120.76.228.235:/home/lingoforge/
 
       - name: Install deps and restart service
-        run: ssh -i ~/.ssh/deploy_key root@120.76.228.235 "cd /home/lingoforge && npm install --production && pm2 restart lingoforge || pm2 start deploy/ecosystem.config.js && pm2 save && echo '阿里云部署完成'"
+        run: |
+          ssh -i ~/.ssh/deploy_key root@120.76.228.235 'bash -s' << 'EOF'
+            set -e
+            cd /home/lingoforge
+            npm install --omit=dev
+            if pm2 describe lingoforge > /dev/null 2>&1; then
+              pm2 restart lingoforge
+            else
+              pm2 start deploy/ecosystem.config.js
+            fi
+            pm2 save
+            echo '阿里云部署完成'
+          EOF
