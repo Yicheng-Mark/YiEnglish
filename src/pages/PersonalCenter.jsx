@@ -12,6 +12,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { getErrorBookCount } from '../utils/errorBook'
 import { getReadingWordBookCount } from '../utils/readingWordBook'
 import { getCorpusWordBookCount } from '../utils/corpusWordBook'
+import { copyText } from '../utils/clipboard'
 
 function Modal({ open, onClose, title, children }) {
   if (!open) return null
@@ -277,9 +278,9 @@ export default function PersonalCenter() {
         <div className="space-y-2">
           {/* 微信 */}
           <button
-            onClick={() => {
-              navigator.clipboard.writeText('WarriorZYC')
-              toast('微信号已复制', { description: 'WarriorZYC' })
+            onClick={async () => {
+              const ok = await copyText('WarriorZYC')
+              toast(ok ? '微信号已复制' : '复制失败，请手动长按复制', { description: ok ? 'WarriorZYC' : undefined })
             }}
             className="w-full flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-white/[0.04] hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-colors text-left"
           >
@@ -299,9 +300,9 @@ export default function PersonalCenter() {
 
           {/* 抖音 */}
           <button
-            onClick={() => {
-              navigator.clipboard.writeText('WarriorZYC')
-              toast('抖音号已复制', { description: 'WarriorZYC' })
+            onClick={async () => {
+              const ok = await copyText('WarriorZYC')
+              toast(ok ? '抖音号已复制' : '复制失败，请手动长按复制', { description: ok ? 'WarriorZYC' : undefined })
             }}
             className="w-full flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-white/[0.04] hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-colors text-left"
           >
@@ -321,9 +322,9 @@ export default function PersonalCenter() {
 
           {/* 小红书 */}
           <button
-            onClick={() => {
-              navigator.clipboard.writeText('ambitionC666')
-              toast('小红书号已复制', { description: 'ambitionC666' })
+            onClick={async () => {
+              const ok = await copyText('ambitionC666')
+              toast(ok ? '小红书号已复制' : '复制失败，请手动长按复制', { description: ok ? 'ambitionC666' : undefined })
             }}
             className="w-full flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-white/[0.04] hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-colors text-left"
           >

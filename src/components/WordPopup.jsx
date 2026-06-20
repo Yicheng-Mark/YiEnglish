@@ -140,6 +140,24 @@ export default function WordPopup({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [handleClickOutside])
 
+  // 定位常量提前到 early return 之前，供下面的 useLayoutEffect 使用
+  const gap = 12
+  const padding = 16
+  const bottomNavHeight = 64
+
+  // 计算弹窗最终 top：渲染后用真实高度修正，避免溢出底部导航。
+  // 必须在 early return 之前调用以满足 hooks 规则；rect 为空时守卫返回。
+  useLayoutEffect(() => {
+    if (!rect) return
+    const el = popupRef.current
+    if (!el) return
+    const h = el.offsetHeight
+    const overflows = rect.bottom + h + gap > window.innerHeight - padding - bottomNavHeight
+    let t = overflows ? rect.top - h - gap : rect.bottom + gap
+    t += scrollYAtMount
+    setComputedTop(t)
+  }, [rect, scrollYAtMount])
+
   if (!wordData || !rect) return null
 
   const usphone = wordData.usphone || wordData.us
@@ -148,9 +166,6 @@ export default function WordPopup({
   const parsed = parseTrans(trans)
 
   const popupWidth = Math.min(360, window.innerWidth - 32)
-  const gap = 12
-  const padding = 16
-  const bottomNavHeight = 64 // 底部固定导航栏高度 h-14=56，留一点余量
 
   let left = rect.left + rect.width / 2 - popupWidth / 2
   left = Math.max(padding, Math.min(left, window.innerWidth - popupWidth - padding))
@@ -163,16 +178,6 @@ export default function WordPopup({
     : rect.bottom + gap
   // 转换为文档坐标，让弹窗在滚动时跟随单词
   initialTop += scrollYAtMount
-
-  useLayoutEffect(() => {
-    const el = popupRef.current
-    if (!el) return
-    const h = el.offsetHeight
-    const overflows = rect.bottom + h + gap > window.innerHeight - padding - bottomNavHeight
-    let t = overflows ? rect.top - h - gap : rect.bottom + gap
-    t += scrollYAtMount
-    setComputedTop(t)
-  }, [rect, scrollYAtMount])
 
   return (
     <div

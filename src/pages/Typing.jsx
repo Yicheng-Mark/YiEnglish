@@ -18,6 +18,7 @@ import WrongBookModal from '../components/WrongBookModal.jsx';
 import WordListPanel from '../components/WordListPanel.jsx';
 import NextWordPreview from '../components/NextWordPreview.jsx';
 import WordDisplay from '../components/WordDisplay.jsx';
+import EmptyState from '../components/EmptyState.jsx';
 import useIsMobile from '../hooks/useIsMobile.js';
 import { saveProgress } from '../lib/api.js';
 import { saveLocalProgress } from '../utils/localProgress.js';
@@ -563,34 +564,34 @@ export default function Typing() {
   );
 
   if (error) return (
-    <div className="h-[calc(100dvh-3rem)] md:h-[calc(100vh-4rem)] bg-background dark:bg-transparent flex items-center justify-center transition-colors duration-500">
-      <div className="text-center card p-8 shadow-lg dark:shadow-black/40 mx-4">
-        <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg className="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-        <p className="text-indigo-500 dark:text-violet-400 mb-6 font-medium">{error}</p>
-        <button onClick={() => isErrorBookMode || isWordBookMode || isReviewMode ? navigate('/word') : navigate(`/dict/${dictId}`)} className="px-5 py-2.5 bg-primary hover:opacity-90 text-white rounded-button font-medium transition shadow-lg shadow-primary/20">{isFavoriteWordBookMode || isReviewMode ? '返回词库' : '返回章节列表'}</button>
-      </div>
-    </div>
+    <EmptyState
+      iconBg="bg-indigo-50 dark:bg-indigo-500/10"
+      icon={
+        <svg className="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      }
+    >
+      <p className="text-indigo-500 dark:text-violet-400 mb-6 font-medium">{error}</p>
+      <button onClick={() => isErrorBookMode || isWordBookMode || isReviewMode ? navigate('/word') : navigate(`/dict/${dictId}`)} className="px-5 py-2.5 bg-primary hover:opacity-90 text-white rounded-button font-medium transition shadow-lg shadow-primary/20">{isFavoriteWordBookMode || isReviewMode ? '返回词库' : '返回章节列表'}</button>
+    </EmptyState>
   );
 
   if (words.length === 0) {
     if (isReviewMode) {
       return (
-        <div className="h-[calc(100dvh-3rem)] md:h-[calc(100vh-4rem)] bg-background dark:bg-transparent flex items-center justify-center transition-colors duration-500">
-          <div className="text-center card p-8 shadow-lg dark:shadow-black/40 mx-4">
-            <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <p className="text-emerald-600 dark:text-emerald-400 mb-2 font-medium text-xl">复习完成</p>
-            <p className="text-content-tertiary dark:text-gray-400 mb-6">所有待复习单词已练习完毕！</p>
-            <button onClick={() => navigate('/word')} className="px-5 py-2.5 bg-primary hover:opacity-90 text-white rounded-button font-medium transition shadow-lg shadow-primary/20">返回词库</button>
-          </div>
-        </div>
+        <EmptyState
+          iconBg="bg-emerald-50 dark:bg-emerald-500/10"
+          icon={
+            <svg className="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          }
+        >
+          <p className="text-emerald-600 dark:text-emerald-400 mb-2 font-medium text-xl">复习完成</p>
+          <p className="text-content-tertiary dark:text-gray-400 mb-6">所有待复习单词已练习完毕！</p>
+          <button onClick={() => navigate('/word')} className="px-5 py-2.5 bg-primary hover:opacity-90 text-white rounded-button font-medium transition shadow-lg shadow-primary/20">返回词库</button>
+        </EmptyState>
       );
     }
     if (isErrorBookMode || isWordBookMode) {
@@ -609,18 +610,18 @@ export default function Typing() {
         ? '所有积累的词汇都已练习完毕，去刷新的语料吧！'
         : '收藏的词汇都已练习完毕，去收藏新的单词吧！';
       return (
-        <div className="h-[calc(100dvh-3rem)] md:h-[calc(100vh-4rem)] bg-background dark:bg-transparent flex items-center justify-center transition-colors duration-500">
-          <div className="text-center card p-8 shadow-lg dark:shadow-black/40 mx-4">
-            <div className="w-16 h-16 bg-green-50 dark:bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <p className="text-green-600 dark:text-green-400 mb-2 font-medium text-xl">{emptyTitle}</p>
-            <p className="text-content-tertiary dark:text-gray-400 mb-6">{emptyDesc}</p>
-            <button onClick={() => navigate('/word')} className="px-5 py-2.5 bg-primary hover:opacity-90 text-white rounded-button font-medium transition shadow-lg shadow-primary/20">返回词库</button>
-          </div>
-        </div>
+        <EmptyState
+          iconBg="bg-green-50 dark:bg-green-500/10"
+          icon={
+            <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          }
+        >
+          <p className="text-green-600 dark:text-green-400 mb-2 font-medium text-xl">{emptyTitle}</p>
+          <p className="text-content-tertiary dark:text-gray-400 mb-6">{emptyDesc}</p>
+          <button onClick={() => navigate('/word')} className="px-5 py-2.5 bg-primary hover:opacity-90 text-white rounded-button font-medium transition shadow-lg shadow-primary/20">返回词库</button>
+        </EmptyState>
       );
     }
     return null;

@@ -120,65 +120,52 @@ function Home() {
   const wordSearchRef = useRef(null)
   const debouncedWordQuery = useDebounce(wordQuery, 300)
 
-  // 渐进式加载词库：先加载常用的，再分批加载其余
+  // 按需加载词库：仅在用户首次输入搜索词时才加载全部词库建索引（首屏不再预载 ~17MB）。
+  // loadDictionary 自带缓存，后续搜索即时；优先词库先加载，结果逐步补充。
+  const indexBuiltRef = useRef(false)
   useEffect(() => {
+    const q = debouncedWordQuery.trim()
+    if (!q) {
+      setWordResults([])
+      setShowWordResults(false)
+      return
+    }
+    setShowWordResults(true)
+    if (indexBuiltRef.current) return // 已加载，搜索交给下方 [wordIndex] effect
+    indexBuiltRef.current = true
     let cancelled = false
     const PRIORITY_IDS = ['cet4', 'cet6', 'gaokao', 'postgraduate', 'ielts']
-
     const loadBatch = async (ids) => {
       const results = await Promise.all(
         ids.map((id) => loadDictionary(id).catch(() => null))
       )
-      if (cancelled) return []
       return results.filter(Boolean)
     }
-
-    const loadAll = async () => {
-      // 第一批：优先加载常用词库
+    ;(async () => {
       const priorityDicts = await loadBatch(PRIORITY_IDS)
       if (cancelled) return
       setDictionaries(priorityDicts)
-
-      // 后续批次：分批加载剩余词库
-      const remaining = dictionaryMeta.filter(
-        (m) => !PRIORITY_IDS.includes(m.id)
-      )
+      const remaining = dictionaryMeta.filter((m) => !PRIORITY_IDS.includes(m.id))
       const BATCH_SIZE = 4
       for (let i = 0; i < remaining.length; i += BATCH_SIZE) {
         if (cancelled) return
-        await new Promise((r) => setTimeout(r, 300))
         const batch = remaining.slice(i, i + BATCH_SIZE)
         const batchResults = await loadBatch(batch.map((m) => m.id))
         if (cancelled) return
         setDictionaries((prev) => [...prev, ...batchResults])
       }
-    }
-
-    const ric = typeof window !== 'undefined' && window.requestIdleCallback
-    let idleHandle, timeoutHandle
-    if (ric) {
-      idleHandle = window.requestIdleCallback(loadAll, { timeout: 2000 })
-    } else {
-      timeoutHandle = setTimeout(loadAll, 200)
-    }
-    return () => {
-      cancelled = true
-      if (idleHandle && window.cancelIdleCallback) window.cancelIdleCallback(idleHandle)
-      if (timeoutHandle) clearTimeout(timeoutHandle)
-    }
-  }, [])
+    })()
+    return () => { cancelled = true }
+  }, [debouncedWordQuery])
 
   const wordIndex = useMemo(() => buildWordIndex(dictionaries), [dictionaries])
 
   useEffect(() => {
-    if (debouncedWordQuery.trim()) {
-      setWordResults(searchWordIndex(wordIndex, debouncedWordQuery, 10))
-      setShowWordResults(true)
-    } else {
-      setWordResults([])
-      setShowWordResults(false)
-    }
-  }, [debouncedWordQuery, wordIndex])
+    const q = debouncedWordQuery.trim()
+    // 词库尚未加载完时跳过，避免在空索引上误报"未找到"
+    if (!q || dictionaries.length === 0) return
+    setWordResults(searchWordIndex(wordIndex, q, 10))
+  }, [debouncedWordQuery, wordIndex, dictionaries.length])
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -311,9 +298,8 @@ function Home() {
                   value={wordQuery}
                   onChange={(e) => setWordQuery(e.target.value)}
                   onFocus={() => wordResults.length > 0 && setShowWordResults(true)}
-                  placeholder={dictionaries.length > 0 ? '搜索单词...' : '正在加载词库...'}
-                  className="input-field input-glow disabled:opacity-60"
-                  disabled={dictionaries.length === 0}
+                  placeholder="搜索单词..."
+                  className="input-field input-glow"
                 />
                 {wordQuery && (
                   <button
@@ -358,7 +344,7 @@ function Home() {
                       ))
                     ) : (
                       <div className="p-4 text-center text-sm text-content-secondary">
-                        未找到匹配的单词
+                        {dictionaries.length === 0 ? '正在加载词库，请稍候...' : '未找到匹配的单词'}
                       </div>
                     )}
                   </div>

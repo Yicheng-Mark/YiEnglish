@@ -1,5 +1,5 @@
 import { apiFetchReviewCards, apiUpsertReviewCards, apiAddReviewCard } from '../lib/api-review'
-import { idbPut, idbClear, idbBulkPut } from './idb.js'
+import { idbPut, idbClear, idbBulkPut, idbDelete } from './idb.js'
 
 const STORAGE_KEY = 'lingoforge_review_cards'
 const DAY_MS = 24 * 60 * 60 * 1000
