@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { playMediaSafe } from '../../../utils/playMediaSafe.js'
 
 export function useCorpusPlayer({ videoRef, subtitles, videoEl }) {
   const [activeId, setActiveId] = useState(null)
@@ -31,12 +32,24 @@ export function useCorpusPlayer({ videoRef, subtitles, videoEl }) {
   const hideSubtitleRightRef = useRef(false)
   const hideSubtitleBottomRef = useRef(false)
 
-  useEffect(() => { loopCountRef.current = loopCount }, [loopCount])
-  useEffect(() => { pauseAfterCueRef.current = pauseAfterCue }, [pauseAfterCue])
-  useEffect(() => { intervalGapRef.current = intervalGap }, [intervalGap])
-  useEffect(() => { subtitlesRef.current = subtitles }, [subtitles])
-  useEffect(() => { hideSubtitleRightRef.current = hideSubtitleRight }, [hideSubtitleRight])
-  useEffect(() => { hideSubtitleBottomRef.current = hideSubtitleBottom }, [hideSubtitleBottom])
+  useEffect(() => {
+    loopCountRef.current = loopCount
+  }, [loopCount])
+  useEffect(() => {
+    pauseAfterCueRef.current = pauseAfterCue
+  }, [pauseAfterCue])
+  useEffect(() => {
+    intervalGapRef.current = intervalGap
+  }, [intervalGap])
+  useEffect(() => {
+    subtitlesRef.current = subtitles
+  }, [subtitles])
+  useEffect(() => {
+    hideSubtitleRightRef.current = hideSubtitleRight
+  }, [hideSubtitleRight])
+  useEffect(() => {
+    hideSubtitleBottomRef.current = hideSubtitleBottom
+  }, [hideSubtitleBottom])
 
   // 退出全屏时解锁横屏
   useEffect(() => {
@@ -111,7 +124,7 @@ export function useCorpusPlayer({ videoRef, subtitles, videoEl }) {
                 vid.currentTime = cues2[idx + 1].start
                 activeIdRef.current = cues2[idx + 1].id
                 setActiveId(cues2[idx + 1].id)
-                vid.play()
+                playMediaSafe(vid)
               }
               // 否则为最后一句：保持暂停
             }, gap * 1000)
@@ -168,7 +181,7 @@ export function useCorpusPlayer({ videoRef, subtitles, videoEl }) {
               vid.currentTime = cues2[idx + 1].start
               activeIdRef.current = cues2[idx + 1].id
               setActiveId(cues2[idx + 1].id)
-              vid.play()
+              playMediaSafe(vid)
             }
             // 否则为最后一句：保持暂停
           }, gap * 1000)
@@ -212,7 +225,7 @@ export function useCorpusPlayer({ videoRef, subtitles, videoEl }) {
   }, [videoRef, videoEl])
 
   const play = useCallback(() => {
-    videoRef.current?.play()
+    playMediaSafe(videoRef.current)
   }, [videoRef])
 
   const pause = useCallback(() => {
@@ -225,7 +238,7 @@ export function useCorpusPlayer({ videoRef, subtitles, videoEl }) {
     if (v.paused) {
       // 用户主动恢复：取消等待中的间隔
       clearIntervalTimer()
-      v.play()
+      playMediaSafe(v)
     } else v.pause()
   }, [videoRef, clearIntervalTimer])
 
@@ -284,17 +297,20 @@ export function useCorpusPlayer({ videoRef, subtitles, videoEl }) {
     })
   }, [])
 
-  const setIntervalGap = useCallback((sec) => {
-    const next = Math.max(0, sec)
-    // 关闭时如果正处于间隔等待，立即取消并恢复播放
-    if (next === 0 && intervalTimerRef.current) {
-      clearTimeout(intervalTimerRef.current)
-      intervalTimerRef.current = null
-      const v = videoRef.current
-      if (v?.paused) v.play()
-    }
-    setIntervalGapState(next)
-  }, [videoRef])
+  const setIntervalGap = useCallback(
+    (sec) => {
+      const next = Math.max(0, sec)
+      // 关闭时如果正处于间隔等待，立即取消并恢复播放
+      if (next === 0 && intervalTimerRef.current) {
+        clearTimeout(intervalTimerRef.current)
+        intervalTimerRef.current = null
+        const v = videoRef.current
+        if (v?.paused) playMediaSafe(v)
+      }
+      setIntervalGapState(next)
+    },
+    [videoRef]
+  )
 
   const toggleHideSubtitleRight = useCallback(() => {
     setHideSubtitleRight((v) => !v)
@@ -328,7 +344,7 @@ export function useCorpusPlayer({ videoRef, subtitles, videoEl }) {
     if (document.fullscreenElement) {
       await document.exitFullscreen?.()
     } else {
-      await target.requestFullscreen?.() || await target.webkitRequestFullscreen?.()
+      ;(await target.requestFullscreen?.()) || (await target.webkitRequestFullscreen?.())
       screen.orientation?.lock?.('landscape').catch(() => {})
     }
   }, [videoRef])
@@ -344,7 +360,7 @@ export function useCorpusPlayer({ videoRef, subtitles, videoEl }) {
       setActiveId(id)
       lastPausedCueRef.current = null
       lastIntervalCueRef.current = null
-      if (v.paused) v.play()
+      if (v.paused) playMediaSafe(v)
     },
     [videoRef, clearIntervalTimer]
   )
@@ -364,9 +380,13 @@ export function useCorpusPlayer({ videoRef, subtitles, videoEl }) {
   }, [jumpToCue])
 
   // 句子进度：(当前是第几句, 总句数)
-  const cueIndex = activeId == null
-    ? 0
-    : Math.max(0, subtitles.findIndex((c) => c.id === activeId)) + 1
+  const cueIndex =
+    activeId == null
+      ? 0
+      : Math.max(
+          0,
+          subtitles.findIndex((c) => c.id === activeId)
+        ) + 1
   const cueTotal = subtitles?.length ?? 0
 
   return {

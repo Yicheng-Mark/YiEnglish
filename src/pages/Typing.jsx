@@ -2,6 +2,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { List } from 'lucide-react'
 import { loadDictionary } from '../utils/loadDictionary.js'
+import { playMediaSafe } from '../utils/playMediaSafe.js'
 import { getErrorBookCount, removeFromErrorBook } from '../utils/errorBook.js'
 import { getReadingWordBookCount, removeFromReadingWordBook } from '../utils/readingWordBook.js'
 import { getCorpusWordBookCount, removeFromCorpusWordBook } from '../utils/corpusWordBook.js'
@@ -527,7 +528,7 @@ export default function Typing() {
     const audio = new Audio(
       `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(word)}&type=2`
     )
-    audio.play().catch(() => {})
+    playMediaSafe(audio)
   }, [])
 
   const showPhonetic = useMemo(

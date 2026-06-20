@@ -12,6 +12,7 @@ import {
 import { useAutoScrollList } from '../../hooks/useAutoScrollList.js'
 import WordBadge from '../WordBadge.jsx'
 import { getWordRect } from '../../../../utils/wordTokenize.jsx'
+import { playMediaSafe } from '../../../../utils/playMediaSafe.js'
 
 /* ── Swipe direction animation class ── */
 let lastDirection = 'none'
@@ -33,7 +34,7 @@ function DictationCard({ current }) {
     const el = document.querySelector('.mobile-corpus-reset video')
     if (el && current?.start != null) {
       el.currentTime = current.start
-      el.play().catch(() => {})
+      playMediaSafe(el)
     }
   }
 
