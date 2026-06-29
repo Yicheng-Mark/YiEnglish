@@ -305,6 +305,10 @@ function Home() {
                 </h1>
                 <p className="text-content-tertiary text-body max-w-md">
                   从丰富的词库中选择，开启你的单词记忆之旅
+                  <br />
+                  <span className="text-lg font-semibold text-content-secondary">
+                    （请使用英文输入法）
+                  </span>
                 </p>
               </div>
               <div className="flex items-center gap-2">
