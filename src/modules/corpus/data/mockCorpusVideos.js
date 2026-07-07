@@ -9,7 +9,8 @@ export const mockCorpusVideos = [
     id: '1',
     title: 'How I Created OpenClaw, the Breakthrough AI Agent | Peter Steinberger | TED',
     subtitle: 'TED 演讲：创建突破性 AI 智能体的故事',
-    description: 'Peter Steinberger 分享他创建 OpenClaw 的经历——一个迅速走红、改变人们对 AI 认知的开源项目。从精疲力竭到重获激情，他讲述了 AI 智能体如何让非程序员也能成为创造者。',
+    description:
+      'Peter Steinberger 分享他创建 OpenClaw 的经历——一个迅速走红、改变人们对 AI 认知的开源项目。从精疲力竭到重获激情，他讲述了 AI 智能体如何让非程序员也能成为创造者。',
     speaker: 'Peter Steinberger',
     category: '演讲',
     tags: ['TED', 'AI', '演讲'],
@@ -27,7 +28,8 @@ export const mockCorpusVideos = [
     id: '2',
     title: 'Learn English Through My Trip to London 🇬🇧 | Comprehensible Input',
     subtitle: '伦敦旅行 Vlog：用可理解输入法学英语',
-    description: '跟随博主漫步伦敦——从地铁、伦敦眼、大本钟到诺丁山书店和国王十字车站,在真实的英式生活场景中学习地道英语词汇与表达。适合可理解输入(Comprehensible Input)学习法的英语学习者。',
+    description:
+      '跟随博主漫步伦敦——从地铁、伦敦眼、大本钟到诺丁山书店和国王十字车站,在真实的英式生活场景中学习地道英语词汇与表达。适合可理解输入(Comprehensible Input)学习法的英语学习者。',
     speaker: 'English by Jay - Sprout',
     category: '旅行',
     tags: ['英语学习', '伦敦', '旅行', 'Vlog'],
@@ -45,7 +47,8 @@ export const mockCorpusVideos = [
     id: '3',
     title: 'Backpacking for the first time | Packing, Prepping, & hiking!',
     subtitle: '背包旅行初体验：打包、准备与徒步',
-    description: '跟随博主第一次体验背包旅行——从准备食物、购买装备到穿越惠斯勒山脉的两天一夜冒险。在真实的户外场景中学习英语。',
+    description:
+      '跟随博主第一次体验背包旅行——从准备食物、购买装备到穿越惠斯勒山脉的两天一夜冒险。在真实的户外场景中学习英语。',
     speaker: 'Kate Brock',
     category: '旅行',
     tags: ['英语学习', '户外', '旅行', 'Vlog', '背包旅行'],
@@ -63,7 +66,8 @@ export const mockCorpusVideos = [
     id: '4',
     title: 'Coachella Vlog [gnarly] | A Wild Music Festival Experience',
     subtitle: '科切拉音乐节 Vlog：一场难忘的音乐节之旅',
-    description: '跟随博主 Clare 在期中考试结束后,踏上前往科切拉音乐节(Coachella)的公路旅行。从清洁汽车、品尝美食,到沙漠中的音乐狂欢与朋友相聚,在地道的美式日常对话中学习英语口语表达。',
+    description:
+      '跟随博主 Clare 在期中考试结束后,踏上前往科切拉音乐节(Coachella)的公路旅行。从清洁汽车、品尝美食,到沙漠中的音乐狂欢与朋友相聚,在地道的美式日常对话中学习英语口语表达。',
     speaker: 'Andrew Alexander',
     category: '生活',
     tags: ['英语学习', 'Vlog', '音乐节', 'Coachella', '生活'],
@@ -81,7 +85,8 @@ export const mockCorpusVideos = [
     id: '5',
     title: "Homebody in New York | What I Eat in a Day (comfort food I've been craving)",
     subtitle: '纽约居家 Vlog：一日三餐的舒适美食',
-    description: '跟随博主在纽约的家中,记录一天中所吃的美食——从韩式风味的切碎奶酪三明治、蒜香姜汁脆皮鸡饭,到 H Mart 的韩式小吃和自制 Chipotle 牛排碗。在地道的美式英语中学习日常烹饪与生活表达。',
+    description:
+      '跟随博主在纽约的家中,记录一天中所吃的美食——从韩式风味的切碎奶酪三明治、蒜香姜汁脆皮鸡饭,到 H Mart 的韩式小吃和自制 Chipotle 牛排碗。在地道的美式英语中学习日常烹饪与生活表达。',
     speaker: 'Michelle Choi',
     category: '美食',
     tags: ['英语学习', '美食', 'Vlog', '韩式料理', '纽约'],
@@ -99,7 +104,8 @@ export const mockCorpusVideos = [
     id: '6',
     title: 'Spring In London | A Solo Bike Ride Vlog',
     subtitle: '伦敦春日 Vlog：独自骑行的悠闲一天',
-    description: '跟随博主在春日的伦敦,从换装出门、骑车穿梭街头,到漫步 Turnham Green 与 Chiswick 街区,记录独自一人的悠闲一天。在地道的英式口语(jumper、mate 等)和日常生活场景中,学习自然轻松的英语表达。',
+    description:
+      '跟随博主在春日的伦敦,从换装出门、骑车穿梭街头,到漫步 Turnham Green 与 Chiswick 街区,记录独自一人的悠闲一天。在地道的英式口语(jumper、mate 等)和日常生活场景中,学习自然轻松的英语表达。',
     speaker: 'Cougiee',
     category: '生活',
     tags: ['英语学习', 'Vlog', '伦敦', '春天', '骑行'],
@@ -117,7 +123,8 @@ export const mockCorpusVideos = [
     id: '7',
     title: 'Flying to Japan to Bleach My Hair',
     subtitle: '飞去日本漂头发：Andrew 的东京造型之旅',
-    description: '跟随博主 Andrew 专程飞到日本漂头发——从理发店的紧张漂白过程、东京街头购物，到朋友见到新发型的惊喜反应。在真实的美式日常对话中学习地道英语口语表达。',
+    description:
+      '跟随博主 Andrew 专程飞到日本漂头发——从理发店的紧张漂白过程、东京街头购物，到朋友见到新发型的惊喜反应。在真实的美式日常对话中学习地道英语口语表达。',
     speaker: 'Andrew Alexander',
     category: '生活',
     tags: ['英语学习', 'Vlog', '日本', '美发', '生活'],
@@ -135,7 +142,8 @@ export const mockCorpusVideos = [
     id: '8',
     title: 'How To Order Coffee In English',
     subtitle: '星巴克点咖啡全攻略：实用英语口语教学',
-    description: '跟随 Ariannita la Gringa 走进星巴克，学习咖啡豆、烘焙程度、各种咖啡类型（美式、拿铁、卡布奇诺、摩卡等），以及如何用英语在柜台点单。从咖啡文化到实际对话，一站式掌握咖啡相关的英语表达。',
+    description:
+      '跟随 Ariannita la Gringa 走进星巴克，学习咖啡豆、烘焙程度、各种咖啡类型（美式、拿铁、卡布奇诺、摩卡等），以及如何用英语在柜台点单。从咖啡文化到实际对话，一站式掌握咖啡相关的英语表达。',
     speaker: 'Ariannita la Gringa',
     category: '生活',
     tags: ['英语学习', '咖啡', '星巴克', '口语', '生活'],
@@ -153,7 +161,8 @@ export const mockCorpusVideos = [
     id: '9',
     title: 'Pilates Class & Dinner With Girls From Around the World',
     subtitle: '普拉提课后与各国女孩聚餐：冰岛 Retreator 之旅',
-    description: '跟随冰岛博主 Birta Hlin 在普拉提课后与来自世界各地的女孩们共度夜晚——夏威夷、美国、德国、法国、瑞典、丹麦……在真实的日常英语对话中学习生活化表达。轻松自然的 Vlog 风格，适合练习口语听力。',
+    description:
+      '跟随冰岛博主 Birta Hlin 在普拉提课后与来自世界各地的女孩们共度夜晚——夏威夷、美国、德国、法国、瑞典、丹麦……在真实的日常英语对话中学习生活化表达。轻松自然的 Vlog 风格，适合练习口语听力。',
     speaker: 'Birta Hlin',
     category: '生活',
     tags: ['英语学习', 'Vlog', '普拉提', '冰岛', '生活'],
@@ -171,7 +180,8 @@ export const mockCorpusVideos = [
     id: '10',
     title: "what it's really like living in paris | getting settled + living alone",
     subtitle: '巴黎日记：独居生活的真实日常',
-    description: '跟随 Elena Taber 开启巴黎独居新生活——从初到巴黎的安顿、独自探索公园和书店，到在咖啡馆写作、逛二手店、与朋友漫步塞纳河畔。在真实的美式日常对话中感受独居生活的美好与挑战，学习地道英语表达。',
+    description:
+      '跟随 Elena Taber 开启巴黎独居新生活——从初到巴黎的安顿、独自探索公园和书店，到在咖啡馆写作、逛二手店、与朋友漫步塞纳河畔。在真实的美式日常对话中感受独居生活的美好与挑战，学习地道英语表达。',
     speaker: 'Elena Taber',
     category: '生活',
     tags: ['英语学习', 'Vlog', '巴黎', '生活', '独居'],
@@ -187,9 +197,11 @@ export const mockCorpusVideos = [
   },
   {
     id: '11',
-    title: 'Khloé Kardashian: My Side that Nobody Knows (Truth Behind Headlines, Divorce, Co-Parenting)',
+    title:
+      'Khloé Kardashian: My Side that Nobody Knows (Truth Behind Headlines, Divorce, Co-Parenting)',
     subtitle: '科勒·卡戴珊：走出至暗时刻，选择快乐与自我价值',
-    description: 'Khloé Kardashian 在 Jay Shetty Podcast 中坦诚分享自己的心路历程——社交媒体的负面声音如何让她陷入自我怀疑，以及她如何通过每天积极的心理暗示重塑自我价值感。她谈到在孩子面前树立积极心态的重要性，以及选择快乐是一种有意识的生活方式。适合学习关于心理健康、自我肯定和积极生活态度的地道英语表达。',
+    description:
+      'Khloé Kardashian 在 Jay Shetty Podcast 中坦诚分享自己的心路历程——社交媒体的负面声音如何让她陷入自我怀疑，以及她如何通过每天积极的心理暗示重塑自我价值感。她谈到在孩子面前树立积极心态的重要性，以及选择快乐是一种有意识的生活方式。适合学习关于心理健康、自我肯定和积极生活态度的地道英语表达。',
     speaker: 'Khloé Kardashian',
     category: '生活',
     tags: ['英语学习', '播客', '心理健康', '自我成长', 'Jay Shetty'],
@@ -207,7 +219,8 @@ export const mockCorpusVideos = [
     id: '12',
     title: 'The Optimism Bias',
     subtitle: '乐观偏见：为什么我们总是高估好事、低估坏事',
-    description: 'TED 演讲：Tali Sharot 解释了「乐观偏见」这一认知错觉——我们倾向于高估好事发生的概率，同时低估坏事的风险。她通过实验数据揭示这种偏见如何影响我们的决策，以及为什么它既是人类进步的动力，也可能导致危险的误判。适合学习关于认知心理学、行为经济学和决策科学的地道英语表达。',
+    description:
+      'TED 演讲：Tali Sharot 解释了「乐观偏见」这一认知错觉——我们倾向于高估好事发生的概率，同时低估坏事的风险。她通过实验数据揭示这种偏见如何影响我们的决策，以及为什么它既是人类进步的动力，也可能导致危险的误判。适合学习关于认知心理学、行为经济学和决策科学的地道英语表达。',
     speaker: 'Tali Sharot',
     category: '演讲',
     tags: ['TED', '心理学', '认知偏见', '演讲'],
@@ -225,7 +238,8 @@ export const mockCorpusVideos = [
     id: '13',
     title: 'The Neuroscience of Procrastination',
     subtitle: '拖延症背后的神经科学',
-    description: 'Olga Loiek 从认知神经科学角度解读拖延症——为什么我们明知道该做某事却总是迟迟不动手。她解释了大脑中的 limbic system 与 prefrontal cortex 之间的博弈，以及如何通过理解这个神经循环来打破拖延的惯性。适合学习关于神经科学、认知心理学和行为改变的地道英语表达。',
+    description:
+      'Olga Loiek 从认知神经科学角度解读拖延症——为什么我们明知道该做某事却总是迟迟不动手。她解释了大脑中的 limbic system 与 prefrontal cortex 之间的博弈，以及如何通过理解这个神经循环来打破拖延的惯性。适合学习关于神经科学、认知心理学和行为改变的地道英语表达。',
     speaker: 'Olga Loiek',
     category: '生活',
     tags: ['神经科学', '拖延症', '认知科学', '心理学'],
@@ -241,9 +255,10 @@ export const mockCorpusVideos = [
   },
   {
     id: '14',
-    title: 'Eileen Gu\'s Acceptance Speech at Gold Gala',
+    title: "Eileen Gu's Acceptance Speech at Gold Gala",
     subtitle: '谷爱凌在 Gold Gala 的获奖感言',
-    description: '谷爱凌（Eileen Gu）在 Gold House 举办的 Gold Gala 颁奖典礼上发表即兴获奖感言。她从"回家"的比喻出发，分享了对亚裔身份认同、家族历史传承以及未来影响力的思考。她讲述了祖母的移民故事、母亲灌输的"不要让别人定义你"的信念，以及她如何希望通过自己的影响力为下一代创造更包容的世界。适合学习关于身份认同、家族传承和社会影响力的高级英语表达。',
+    description:
+      '谷爱凌（Eileen Gu）在 Gold House 举办的 Gold Gala 颁奖典礼上发表即兴获奖感言。她从"回家"的比喻出发，分享了对亚裔身份认同、家族历史传承以及未来影响力的思考。她讲述了祖母的移民故事、母亲灌输的"不要让别人定义你"的信念，以及她如何希望通过自己的影响力为下一代创造更包容的世界。适合学习关于身份认同、家族传承和社会影响力的高级英语表达。',
     speaker: 'Gold House',
     category: '演讲',
     tags: ['演讲', '身份认同', '亚裔', '谷爱凌', 'Gold Gala'],
@@ -261,7 +276,8 @@ export const mockCorpusVideos = [
     id: '15',
     title: 'I Moved Across the World to Start Over in Berlin (+ apartment tour)',
     subtitle: '从温哥华搬到柏林：跨国搬家与公寓参观',
-    description: '跟随 Sean McRae 从加拿大温哥华岛搬到德国柏林——把所有家当塞进两个行李箱，在一座充满艺术与灵感的城市重新开始。他坦诚分享了搬迁带来的孤独、恐惧与兴奋，以及新公寓里经典柏林阳台、人字拼地板和 Star Wars 乐高的温馨角落。在真实的美式日常对话中学习关于跨国生活、自我重塑和冒险精神的地道英语表达。',
+    description:
+      '跟随 Sean McRae 从加拿大温哥华岛搬到德国柏林——把所有家当塞进两个行李箱，在一座充满艺术与灵感的城市重新开始。他坦诚分享了搬迁带来的孤独、恐惧与兴奋，以及新公寓里经典柏林阳台、人字拼地板和 Star Wars 乐高的温馨角落。在真实的美式日常对话中学习关于跨国生活、自我重塑和冒险精神的地道英语表达。',
     speaker: 'Sean McRae',
     category: '生活',
     tags: ['英语学习', 'Vlog', '柏林', '搬家', '生活'],
@@ -279,7 +295,8 @@ export const mockCorpusVideos = [
     id: '16',
     title: 'Body Image, Eating Disorders & Loving Yourself',
     subtitle: '身材焦虑与爱你自己：关于身体形象的坦诚对话',
-    description: 'Zach Sang 与嘉宾展开一场关于身材焦虑和饮食失调的坦诚对话——从社会对体型的压力、社交媒体的负面影响，到如何学会接纳和爱护自己的身体。在真实的英语对话中学习关于心理健康、身体自爱和自我接纳的地道表达。',
+    description:
+      'Zach Sang 与嘉宾展开一场关于身材焦虑和饮食失调的坦诚对话——从社会对体型的压力、社交媒体的负面影响，到如何学会接纳和爱护自己的身体。在真实的英语对话中学习关于心理健康、身体自爱和自我接纳的地道表达。',
     speaker: 'Zach Sang Show Clips',
     category: '生活',
     tags: ['心理健康', '身材焦虑', '身体自爱', '播客'],
@@ -295,9 +312,10 @@ export const mockCorpusVideos = [
   },
   {
     id: '17',
-    title: 'AI\'s Impact on Society',
+    title: "AI's Impact on Society",
     subtitle: '观点输出：AI对社会的影响',
-    description: 'Trevor Noah 分享他对人工智能社会影响的深刻思考——从 AI 技术如何改变就业市场、人际关系到整个社会结构，再到人们应如何应对这场技术变革。在真实的英语表达中学习关于科技、社会和未来思考的地道用语。',
+    description:
+      'Trevor Noah 分享他对人工智能社会影响的深刻思考——从 AI 技术如何改变就业市场、人际关系到整个社会结构，再到人们应如何应对这场技术变革。在真实的英语表达中学习关于科技、社会和未来思考的地道用语。',
     speaker: 'Trevor Noah',
     category: '演讲',
     tags: ['AI', '科技', '社会', '观点', '演讲'],
@@ -315,7 +333,8 @@ export const mockCorpusVideos = [
     id: '18',
     title: 'NYC Spring Shopping at Zara | Seasonal Fashion Haul',
     subtitle: '纽约春季换装逛街 Zara：春日时尚购物',
-    description: '跟随时尚博主 Alex Costa 在纽约春天的 Zara 逛街购物——从春季新款夹克、衬衫到休闲穿搭推荐，在真实的购物场景中学习日常英语口语表达和时尚相关词汇。',
+    description:
+      '跟随时尚博主 Alex Costa 在纽约春天的 Zara 逛街购物——从春季新款夹克、衬衫到休闲穿搭推荐，在真实的购物场景中学习日常英语口语表达和时尚相关词汇。',
     speaker: 'Alex Costa',
     category: '生活',
     tags: ['英语学习', 'Vlog', '纽约', '时尚', '购物', 'Zara'],
@@ -333,7 +352,8 @@ export const mockCorpusVideos = [
     id: '19',
     title: "Charles Leclerc's Cannes Red Carpet Experience | Vanity Fair",
     subtitle: 'Charles Leclerc 的戛纳红毯初体验',
-    description: '跟随 F1 车手 Charles Leclerc 为戛纳电影节做红毯准备——从挑选礼服、搭配配饰到踏上红毯的全程体验。在真实的明星生活场景中学习地道英语口语表达。',
+    description:
+      '跟随 F1 车手 Charles Leclerc 为戛纳电影节做红毯准备——从挑选礼服、搭配配饰到踏上红毯的全程体验。在真实的明星生活场景中学习地道英语口语表达。',
     speaker: 'Vanity Fair',
     category: '生活',
     tags: ['Vanity Fair', '戛纳', '红毯', 'F1', 'Charles Leclerc'],
@@ -351,7 +371,8 @@ export const mockCorpusVideos = [
     id: '20',
     title: 'Use Fear to Find Direction',
     subtitle: '用恐惧感找到行动方向',
-    description: 'Marcus Stadon 从情绪底层逻辑出发，剖析恐惧如何成为一切负面情绪的根源，以及修复与恐惧的关系如何改变人生轨迹。他提出将恐惧视为行动方向的指引，而非逃避的信号。在真实的英语表达中学习关于情绪管理、自我成长和行动力的地道用语。',
+    description:
+      'Marcus Stadon 从情绪底层逻辑出发，剖析恐惧如何成为一切负面情绪的根源，以及修复与恐惧的关系如何改变人生轨迹。他提出将恐惧视为行动方向的指引，而非逃避的信号。在真实的英语表达中学习关于情绪管理、自我成长和行动力的地道用语。',
     speaker: 'Marcus Stadon',
     category: '生活',
     tags: ['心理学', '恐惧', '情绪管理', '行动力', '自我成长'],
@@ -369,7 +390,8 @@ export const mockCorpusVideos = [
     id: '21',
     title: 'Making Japanese Gyudon at Home',
     subtitle: '自制日式肥牛饭：湖边归来的温馨晚餐',
-    description: '跟随 SebastianG 从湖边归来后，用薄切牛肉、日式黄瓜、洋葱、酱油、味醂和清酒，一步步制作一碗正宗的日式肥牛饭（Gyudon）。在真实的烹饪场景中学习关于食材、烹饪步骤和日常生活的地道英语表达。',
+    description:
+      '跟随 SebastianG 从湖边归来后，用薄切牛肉、日式黄瓜、洋葱、酱油、味醂和清酒，一步步制作一碗正宗的日式肥牛饭（Gyudon）。在真实的烹饪场景中学习关于食材、烹饪步骤和日常生活的地道英语表达。',
     speaker: 'SebastianG',
     category: '美食',
     tags: ['英语学习', 'Vlog', '日式料理', '烹饪', '肥牛饭'],
@@ -387,7 +409,8 @@ export const mockCorpusVideos = [
     id: '22',
     title: 'I Quit My Job and Moved to Australia',
     subtitle: '辞掉工作只身前往澳洲：一场说走就走的冒险',
-    description: '跟随 Bennett Luke 辞掉工作、只身飞往澳大利亚——只带了一个登机箱和一个背包，几乎没有什么计划，用两个月的时间环游半个地球。在真实的美式日常对话中学习关于旅行、冒险和人生选择的地道英语表达。',
+    description:
+      '跟随 Bennett Luke 辞掉工作、只身飞往澳大利亚——只带了一个登机箱和一个背包，几乎没有什么计划，用两个月的时间环游半个地球。在真实的美式日常对话中学习关于旅行、冒险和人生选择的地道英语表达。',
     speaker: 'Bennett Luke',
     category: '旅行',
     tags: ['英语学习', 'Vlog', '澳大利亚', '旅行', '辞职'],
@@ -403,9 +426,10 @@ export const mockCorpusVideos = [
   },
   {
     id: '23',
-    title: 'A New Vlogger\'s Personal Introduction',
+    title: "A New Vlogger's Personal Introduction",
     subtitle: '一个新Vlogger的个人介绍',
-    description: '跟随 Nathalia Montis 第一次录制 Vlog——从介绍自己的年龄、家乡到分享日常生活习惯、穿搭风格和妆容偏好。在真实的美式日常对话中学习关于自我介绍、生活方式和个人喜好的地道英语表达。',
+    description:
+      '跟随 Nathalia Montis 第一次录制 Vlog——从介绍自己的年龄、家乡到分享日常生活习惯、穿搭风格和妆容偏好。在真实的美式日常对话中学习关于自我介绍、生活方式和个人喜好的地道英语表达。',
     speaker: 'Nathalia Montis',
     category: '生活',
     tags: ['英语学习', 'Vlog', '个人介绍', '生活', '新手Vlogger'],
@@ -423,7 +447,8 @@ export const mockCorpusVideos = [
     id: '24',
     title: 'Sunday Home Cleaning and Spring/Summer Wardrobe Transition',
     subtitle: '周日居家整理和春夏穿搭',
-    description: '跟随 clarisseintheclouds 度过悠闲的周日——从早上的水果奶昔、待办清单开始，到整理房间、收拾衣橱迎接春夏，在真实的日常场景中学习关于居家整理、穿搭搭配和休闲生活的地道英语表达。',
+    description:
+      '跟随 clarisseintheclouds 度过悠闲的周日——从早上的水果奶昔、待办清单开始，到整理房间、收拾衣橱迎接春夏，在真实的日常场景中学习关于居家整理、穿搭搭配和休闲生活的地道英语表达。',
     speaker: 'clarisseintheclouds',
     category: '生活',
     tags: ['英语学习', 'Vlog', '居家', '整理', '穿搭', '春夏'],
@@ -439,9 +464,10 @@ export const mockCorpusVideos = [
   },
   {
     id: '25',
-    title: 'Tonight\'s Plan: Sharing Life Updates & Q&A',
+    title: "Tonight's Plan: Sharing Life Updates & Q&A",
     subtitle: '今晚的计划：分享生活近况与粉丝问答',
-    description: '跟随 Freya Tidy 回归 Vlog，做一期不一样的粉丝问答——从停更原因、生活变化到护肤心得和时尚分享。在真实的英式日常对话中学习关于生活分享和互动问答的地道英语表达。',
+    description:
+      '跟随 Freya Tidy 回归 Vlog，做一期不一样的粉丝问答——从停更原因、生活变化到护肤心得和时尚分享。在真实的英式日常对话中学习关于生活分享和互动问答的地道英语表达。',
     speaker: 'Freya Tidy',
     category: '生活',
     tags: ['英语学习', 'Vlog', '问答', '生活', '英式英语'],
@@ -459,7 +485,8 @@ export const mockCorpusVideos = [
     id: '26',
     title: 'Recent Reading Books Sharing',
     subtitle: '近日阅读书籍分享',
-    description: '跟随 Lauren Louise 分享最近的阅读书单——从 Naomi Klein 的《Doppelganger》到其他推荐书目，聊聊书中的话题与个人感受。在真实的英式日常对话中学习关于阅读、书籍推荐和分享心得的地道英语表达。',
+    description:
+      '跟随 Lauren Louise 分享最近的阅读书单——从 Naomi Klein 的《Doppelganger》到其他推荐书目，聊聊书中的话题与个人感受。在真实的英式日常对话中学习关于阅读、书籍推荐和分享心得的地道英语表达。',
     speaker: 'Lauren Louise',
     category: '生活',
     tags: ['英语学习', 'Vlog', '阅读', '书籍推荐', '生活'],
@@ -477,7 +504,8 @@ export const mockCorpusVideos = [
     id: '27',
     title: 'Learning English at a Restaurant in Kuala Lumpur',
     subtitle: '在吉隆坡的餐厅学英语',
-    description: '跟随 Rodica 走进吉隆坡一家叫 Damascus 的餐厅——从预约座位、排队入座到上楼找桌，在真实的餐厅场景中学习地道英语表达。涵盖 book a table、make a reservation、host stand、takeout、dine in、patio 等餐饮场景高频词汇。',
+    description:
+      '跟随 Rodica 走进吉隆坡一家叫 Damascus 的餐厅——从预约座位、排队入座到上楼找桌，在真实的餐厅场景中学习地道英语表达。涵盖 book a table、make a reservation、host stand、takeout、dine in、patio 等餐饮场景高频词汇。',
     speaker: 'Rodica - The Foreign Sun',
     category: '生活',
     tags: ['英语学习', 'Vlog', '餐厅', '吉隆坡', '生活'],
@@ -495,7 +523,8 @@ export const mockCorpusVideos = [
     id: '28',
     title: 'Learning English at a Supermarket & Korean Restaurant',
     subtitle: '逛超市吃韩餐学英语',
-    description: '跟随 English by Jay - Sprout 逛超市、品尝韩餐——在真实的购物和用餐场景中学习地道英语表达。涵盖超市购物、点餐、食物描述等日常场景高频词汇。',
+    description:
+      '跟随 English by Jay - Sprout 逛超市、品尝韩餐——在真实的购物和用餐场景中学习地道英语表达。涵盖超市购物、点餐、食物描述等日常场景高频词汇。',
     speaker: 'English by Jay - Sprout',
     category: '生活',
     tags: ['英语学习', 'Vlog', '超市', '韩餐', '生活'],
@@ -513,7 +542,8 @@ export const mockCorpusVideos = [
     id: '29',
     title: 'Solo Night in NYC | Late Night Heart-to-Heart',
     subtitle: '独居纽约的晚间谈心',
-    description: '跟随 Sydney Serena 在纽约独居的夜晚——从打扫房间、整理思绪到面对镜头倾诉心声。在真实的美式日常对话中学习关于独居生活、情绪表达和自我对话的地道英语表达。',
+    description:
+      '跟随 Sydney Serena 在纽约独居的夜晚——从打扫房间、整理思绪到面对镜头倾诉心声。在真实的美式日常对话中学习关于独居生活、情绪表达和自我对话的地道英语表达。',
     speaker: 'Sydney Serena',
     category: '生活',
     tags: ['英语学习', 'Vlog', '纽约', '独居', '生活'],
@@ -531,7 +561,8 @@ export const mockCorpusVideos = [
     id: '30',
     title: 'spring in copenhagen | decorating the apartment, breakfast recipe & dog sitting',
     subtitle: '哥本哈根春日：二手家具改造成新公寓',
-    description: '跟随冰岛博主 Birta Hlin 在哥本哈根的春日生活中——从 Facebook Marketplace 淘二手家具、装饰新公寓，到自制健康燕麦早餐、遛 Weimaraner 犬 Vigo，在真实的美式日常对话中学习关于家居装饰、烹饪和生活方式的地道英语表达。',
+    description:
+      '跟随冰岛博主 Birta Hlin 在哥本哈根的春日生活中——从 Facebook Marketplace 淘二手家具、装饰新公寓，到自制健康燕麦早餐、遛 Weimaraner 犬 Vigo，在真实的美式日常对话中学习关于家居装饰、烹饪和生活方式的地道英语表达。',
     speaker: 'Birta Hlin',
     category: '生活',
     tags: ['英语学习', 'Vlog', '哥本哈根', '家居装饰', '二手家具', '生活'],
@@ -549,7 +580,8 @@ export const mockCorpusVideos = [
     id: '31',
     title: "Jensen Huang's Commencement Speech at Carnegie Mellon University",
     subtitle: '黄仁勋在卡内基梅隆大学毕业典礼的演讲（完整版）',
-    description: 'NVIDIA 创始人兼 CEO 黄仁勋（Jensen Huang）在卡内基梅隆大学 2026 届毕业典礼上发表演讲。他从发明未来的大学精神出发，感恩家人与导师的一路支持，并勉励毕业生们拥抱 AI 时代，勇敢面对不确定性。在正式而富有感染力的演讲中学习关于毕业、感恩、科技与未来的高级英语表达。',
+    description:
+      'NVIDIA 创始人兼 CEO 黄仁勋（Jensen Huang）在卡内基梅隆大学 2026 届毕业典礼上发表演讲。他从发明未来的大学精神出发，感恩家人与导师的一路支持，并勉励毕业生们拥抱 AI 时代，勇敢面对不确定性。在正式而富有感染力的演讲中学习关于毕业、感恩、科技与未来的高级英语表达。',
     speaker: 'Carnegie Mellon University',
     category: '演讲',
     tags: ['演讲', '毕业典礼', '卡内基梅隆大学', '黄仁勋', 'NVIDIA'],
@@ -567,7 +599,8 @@ export const mockCorpusVideos = [
     id: '32',
     title: "Steve Jobs' Stanford Commencement Address",
     subtitle: '乔布斯在斯坦福大学毕业典礼的演讲（完整版）',
-    description: '苹果公司联合创始人史蒂夫·乔布斯（Steve Jobs）在斯坦福大学 2005 届毕业典礼上发表的经典演讲。他用三个故事串联人生：关于串联点滴、关于爱与失去、关于死亡。在充满智慧与感染力的演讲中学习关于人生选择、勇气与热爱的地道英语表达。',
+    description:
+      '苹果公司联合创始人史蒂夫·乔布斯（Steve Jobs）在斯坦福大学 2005 届毕业典礼上发表的经典演讲。他用三个故事串联人生：关于串联点滴、关于爱与失去、关于死亡。在充满智慧与感染力的演讲中学习关于人生选择、勇气与热爱的地道英语表达。',
     speaker: 'Stanford',
     category: '演讲',
     tags: ['演讲', '毕业典礼', '斯坦福大学', '乔布斯', 'Apple'],
@@ -583,9 +616,10 @@ export const mockCorpusVideos = [
   },
   {
     id: '33',
-    title: 'Obama\'s Back-to-School Speech for America\'s Students',
+    title: "Obama's Back-to-School Speech for America's Students",
     subtitle: '奥巴马面向美国中小学生的演讲',
-    description: '美国前总统巴拉克·奥巴马面向全国中小学生发表的开学演讲。他从自己童年的求学经历出发，讲述教育如何改变人生，鼓励每位学生承担起学习的责任，发掘自身潜能。在正式而充满激励的演讲中学习关于教育、责任与梦想的地道英语表达。',
+    description:
+      '美国前总统巴拉克·奥巴马面向全国中小学生发表的开学演讲。他从自己童年的求学经历出发，讲述教育如何改变人生，鼓励每位学生承担起学习的责任，发掘自身潜能。在正式而充满激励的演讲中学习关于教育、责任与梦想的地道英语表达。',
     speaker: 'The Obama White House',
     category: '演讲',
     tags: ['演讲', '奥巴马', '教育', '励志', '白宫'],
@@ -603,7 +637,8 @@ export const mockCorpusVideos = [
     id: '34',
     title: "Ginni Rometty, IBM's Former CEO",
     subtitle: 'IBM 前 CEO 金妮·罗曼提谈成长与舒适',
-    description: 'IBM 前董事长兼 CEO 金妮·罗曼提（Ginni Rometty）分享了她职业生涯中的核心理念——成长与舒适不可兼得。她讲述了自己如何从底层做起，在关键时刻做出勇敢选择，最终领导这家科技巨头完成战略转型。在简洁有力的演讲中学习关于领导力、勇气与个人成长的地道英语表达。',
+    description:
+      'IBM 前董事长兼 CEO 金妮·罗曼提（Ginni Rometty）分享了她职业生涯中的核心理念——成长与舒适不可兼得。她讲述了自己如何从底层做起，在关键时刻做出勇敢选择，最终领导这家科技巨头完成战略转型。在简洁有力的演讲中学习关于领导力、勇气与个人成长的地道英语表达。',
     speaker: 'MAKERS',
     category: '演讲',
     tags: ['演讲', 'IBM', 'CEO', '领导力', '女性', '励志'],
@@ -621,7 +656,8 @@ export const mockCorpusVideos = [
     id: '35',
     title: 'The Secret to Staying Young',
     subtitle: '保持年轻的秘诀',
-    description: '医生 Zeliha Akpinar 从自己健身的初衷讲起——曾只是为了身材好看而去健身房，直到成为医生后接触到许多比实际年龄年轻许多的老年患者，才真正意识到规律运动对健康和长寿的重要性。在轻松自然的讲述中学习关于健康、运动与生活方式的地道英语表达。',
+    description:
+      '医生 Zeliha Akpinar 从自己健身的初衷讲起——曾只是为了身材好看而去健身房，直到成为医生后接触到许多比实际年龄年轻许多的老年患者，才真正意识到规律运动对健康和长寿的重要性。在轻松自然的讲述中学习关于健康、运动与生活方式的地道英语表达。',
     speaker: 'Zeliha Akpinar',
     category: '生活',
     tags: ['英语学习', '健康', '运动', '医生', '生活方式'],
@@ -637,9 +673,10 @@ export const mockCorpusVideos = [
   },
   {
     id: '36',
-    title: 'An American Family\'s Life in Shenzhen, China',
+    title: "An American Family's Life in Shenzhen, China",
     subtitle: '一个美国家庭在深圳的真实生活感受',
-    description: '一位定居深圳的美国爸爸分享他在中国的日常生活——从超便宜又现代的地铁系统、学校地下商场，到接孩子放学时的电子签到系统。他谈到养育孩子的低成本和高度安全感，以及孩子们如何在三语（英语、法语、普通话）环境中成长。在真实的美式日常对话中学习关于城市生活、教育和家庭文化的地道英语表达。',
+    description:
+      '一位定居深圳的美国爸爸分享他在中国的日常生活——从超便宜又现代的地铁系统、学校地下商场，到接孩子放学时的电子签到系统。他谈到养育孩子的低成本和高度安全感，以及孩子们如何在三语（英语、法语、普通话）环境中成长。在真实的美式日常对话中学习关于城市生活、教育和家庭文化的地道英语表达。',
     speaker: 'CNBC Make It',
     category: '生活',
     tags: ['英语学习', 'Vlog', '深圳', '中国生活', '家庭', '跨文化'],
@@ -657,7 +694,8 @@ export const mockCorpusVideos = [
     id: '37',
     title: 'Cambridge CS Second Year Finding an Internship',
     subtitle: '剑桥CS大二生找实习',
-    description: '跟随 Hayden Young 体验剑桥大学计算机科学大二学生的求职之路——从一边准备考试一边投简历，到收到伦敦面试邀请后的紧张准备、入住豪华酒店、面试前的失眠，以及面试失利后的低落与自我反思。他还在朋友的怂恿下学会了扑克，把每周六的厨房牌局变成了全校社交活动。在真实的英式日常对话中学习关于求职、面试、大学生活和社交的地道英语表达。',
+    description:
+      '跟随 Hayden Young 体验剑桥大学计算机科学大二学生的求职之路——从一边准备考试一边投简历，到收到伦敦面试邀请后的紧张准备、入住豪华酒店、面试前的失眠，以及面试失利后的低落与自我反思。他还在朋友的怂恿下学会了扑克，把每周六的厨房牌局变成了全校社交活动。在真实的英式日常对话中学习关于求职、面试、大学生活和社交的地道英语表达。',
     speaker: 'Hayden Young',
     category: '生活',
     tags: ['英语学习', 'Vlog', '剑桥大学', '实习', '面试', '大学生活'],
@@ -675,7 +713,8 @@ export const mockCorpusVideos = [
     id: '38',
     title: 'Anything Goes 要暂停一下了',
     subtitle: 'Emma Chamberlain 宣布播客暂停：需要一段酝酿期',
-    description: 'Emma Chamberlain 在 Anything Goes 播客中坦诚宣布将暂停播客——她做了七年播客，从 Stupid Genius 到 Anything Goes，几乎从未间断。她谈到需要一段「酝酿期」（incubation phase），单纯地过自己的生活，而不是总想着怎么把生活变成节目内容。她强调自己不会从互联网上消失，反而可能会在其他平台上更活跃，并计划拓展更多元的娱乐内容。在真实的美式日常对话中学习关于创作、心理健康和人生方向的地道英语表达。',
+    description:
+      'Emma Chamberlain 在 Anything Goes 播客中坦诚宣布将暂停播客——她做了七年播客，从 Stupid Genius 到 Anything Goes，几乎从未间断。她谈到需要一段「酝酿期」（incubation phase），单纯地过自己的生活，而不是总想着怎么把生活变成节目内容。她强调自己不会从互联网上消失，反而可能会在其他平台上更活跃，并计划拓展更多元的娱乐内容。在真实的美式日常对话中学习关于创作、心理健康和人生方向的地道英语表达。',
     speaker: 'Anything Goes with Emma Chamberlain',
     category: '生活',
     tags: ['英语学习', '播客', 'Emma Chamberlain', '心理健康', '创作'],
@@ -693,10 +732,11 @@ export const mockCorpusVideos = [
     id: '39',
     title: "I Went to 10 of NYC's Most Famous Spots in One Day",
     subtitle: '纽约探店：一位93岁老人的糖果店',
-    description: '跟随 Taylor Bell 穿梭纽约经典地标——从布鲁克林大桥出发，途经 Russ & Daughters 百年犹太熟食店、Katz\'s Deli、Economy Candy 糖果店，再到东村的 Ray\'s Candy Store，听93岁伊朗移民 Ray Alvarez 讲述他从跳船游泳上岸到开店坚守半个世纪的传奇故事。社区曾多次通过众筹拯救这家店，是纽约社区精神的缩影。在真实的美式日常对话中学习关于纽约历史、移民故事和社区文化的地道英语表达。',
+    description:
+      "跟随 Taylor Bell 穿梭纽约经典地标——从布鲁克林大桥出发，途经 Russ & Daughters 百年犹太熟食店、Katz's Deli、Economy Candy 糖果店，再到东村的 Ray's Candy Store，听93岁伊朗移民 Ray Alvarez 讲述他从跳船游泳上岸到开店坚守半个世纪的传奇故事。社区曾多次通过众筹拯救这家店，是纽约社区精神的缩影。在真实的美式日常对话中学习关于纽约历史、移民故事和社区文化的地道英语表达。",
     speaker: 'Taylor Bell',
     category: '生活',
-    tags: ['英语学习', 'Vlog', '纽约', '美食', '探店', 'Ray\'s Candy Store'],
+    tags: ['英语学习', 'Vlog', '纽约', '美食', '探店', "Ray's Candy Store"],
     accent: '美音',
     durationSec: 176,
     sentenceCount: 61,
@@ -711,10 +751,11 @@ export const mockCorpusVideos = [
     id: '40',
     title: "Anne Hathaway's Interview with Harper's Bazaar",
     subtitle: '安妮·海瑟薇做客《时尚芭莎》专访',
-    description: '安妮·海瑟薇（Anne Hathaway）做客 Harper\'s Bazaar 的 Portrait Mode 栏目，从她收到剧本时的第一反应讲起——先是大笑不止，然后意识到"我要上新闻了"。她谈到自己在表演中的角色选择与突破，分享对时尚、公众形象和媒体关注的态度转变。在轻松自然的英语对谈中学习关于演艺生涯、个人成长和公众生活的地道英语表达。',
+    description:
+      '安妮·海瑟薇（Anne Hathaway）做客 Harper\'s Bazaar 的 Portrait Mode 栏目，从她收到剧本时的第一反应讲起——先是大笑不止，然后意识到"我要上新闻了"。她谈到自己在表演中的角色选择与突破，分享对时尚、公众形象和媒体关注的态度转变。在轻松自然的英语对谈中学习关于演艺生涯、个人成长和公众生活的地道英语表达。',
     speaker: "Harper's BAZAAR",
     category: '生活',
-    tags: ['英语学习', '专访', '安妮·海瑟薇', 'Harper\'s Bazaar', '演艺'],
+    tags: ['英语学习', '专访', '安妮·海瑟薇', "Harper's Bazaar", '演艺'],
     accent: '美音',
     durationSec: 495,
     sentenceCount: 148,
@@ -729,7 +770,8 @@ export const mockCorpusVideos = [
     id: '41',
     title: 'It Took Me 50 Years and Losing Almost Everything To Realize What...',
     subtitle: '50年与失去一切后才领悟的人生真谛',
-    description: 'UnshakableMe 创始人 Heidi Blackie 分享她用了50年、失去几乎一切后才领悟的人生智慧。她曾经不停地追逐成功、成就和完美生活，直到慢性病让她卧床十多年，失去了事业、成就和所有标签。在至暗时刻，她踏上了一段自我发现的旅程，学会了倾听身体的信号、活在当下。在真实而动人的讲述中学习关于人生反思、自我成长和活在当下的地道英语表达。',
+    description:
+      'UnshakableMe 创始人 Heidi Blackie 分享她用了50年、失去几乎一切后才领悟的人生智慧。她曾经不停地追逐成功、成就和完美生活，直到慢性病让她卧床十多年，失去了事业、成就和所有标签。在至暗时刻，她踏上了一段自我发现的旅程，学会了倾听身体的信号、活在当下。在真实而动人的讲述中学习关于人生反思、自我成长和活在当下的地道英语表达。',
     speaker: 'UnshakableMe',
     category: '生活',
     tags: ['英语学习', '人生感悟', '慢性病', '自我发现', '活在当下'],
@@ -747,7 +789,8 @@ export const mockCorpusVideos = [
     id: '42',
     title: 'Buying Groceries at the Market in Melbourne',
     subtitle: '在墨尔本的菜市场买菜',
-    description: '跟随 Everyday Australian English with Lauren 在墨尔本的菜市场买菜——从自带环保袋、挑选蔬菜水果，到结账付款，在真实的澳洲生活场景中学习地道英语表达。涵盖 grocery shopping、reusable bags、checkout 等日常购物高频词汇，适合学习澳大利亚英语口音和生活用语。',
+    description:
+      '跟随 Everyday Australian English with Lauren 在墨尔本的菜市场买菜——从自带环保袋、挑选蔬菜水果，到结账付款，在真实的澳洲生活场景中学习地道英语表达。涵盖 grocery shopping、reusable bags、checkout 等日常购物高频词汇，适合学习澳大利亚英语口音和生活用语。',
     speaker: 'Everyday Australian English with Lauren',
     category: '生活',
     tags: ['英语学习', 'Vlog', '墨尔本', '买菜', '澳洲英语', '生活'],
@@ -765,7 +808,8 @@ export const mockCorpusVideos = [
     id: '43',
     title: '独居生活感悟',
     subtitle: 'Lana Blakely 的独居生活感悟',
-    description: 'Lana Blakely 分享她对独居生活的深刻思考——她经历过多种居住方式，最终选择了一个人生活。从独立打理生活琐事到享受独处的宁静，她坦诚地聊了独居带来的成长与感悟。在真实的美式日常对话中学习关于独居、独立与生活态度的地道英语表达。',
+    description:
+      'Lana Blakely 分享她对独居生活的深刻思考——她经历过多种居住方式，最终选择了一个人生活。从独立打理生活琐事到享受独处的宁静，她坦诚地聊了独居带来的成长与感悟。在真实的美式日常对话中学习关于独居、独立与生活态度的地道英语表达。',
     speaker: 'Lana Blakely',
     category: '生活',
     tags: ['英语学习', '独居', '生活感悟', '独立', '生活方式'],
@@ -783,7 +827,8 @@ export const mockCorpusVideos = [
     id: '44',
     title: '把所学变成行动',
     subtitle: 'Mike and Matty：停止消费，开始创造',
-    description: 'Mike and Matty 从自身经历出发，剖析"流畅性错觉"（fluency illusion）——你以为自己掌握了，其实只是熟悉了。他讲述了做 EMT 时第一次给真人做 CPR 的震撼经历：在假人上练了无数次，真正面对倒下的病人时却完全不同。他呼吁：你已经吸收得够多了，是时候停止消费、开始创造了。在真实的美式英语讲述中学习关于行动力、学习与创造的地道表达。',
+    description:
+      'Mike and Matty 从自身经历出发，剖析"流畅性错觉"（fluency illusion）——你以为自己掌握了，其实只是熟悉了。他讲述了做 EMT 时第一次给真人做 CPR 的震撼经历：在假人上练了无数次，真正面对倒下的病人时却完全不同。他呼吁：你已经吸收得够多了，是时候停止消费、开始创造了。在真实的美式英语讲述中学习关于行动力、学习与创造的地道表达。',
     speaker: 'Mike and Matty',
     category: '生活',
     tags: ['英语学习', '行动力', '创造', '自我成长', '心理学'],
@@ -801,7 +846,8 @@ export const mockCorpusVideos = [
     id: '45',
     title: 'Taylor Swift Wins Artist of the Year',
     subtitle: 'Taylor Swift 获年度艺人奖：守护你的热爱',
-    description: 'Taylor Swift 在 iHeartRadio 颁奖典礼上获得"年度艺人"奖，她在获奖感言中回顾了自己从 12 岁开始写歌的心路历程——从爱好到热爱，从梦想到事业。她鼓励在场所有人守护自己的爱好与热情，给自己时间去犯错、去磨炼技艺，而不是急于把一切展示给互联网。在真实的美式英语演讲中学习关于梦想、坚持与自我成长的地道表达。',
+    description:
+      'Taylor Swift 在 iHeartRadio 颁奖典礼上获得"年度艺人"奖，她在获奖感言中回顾了自己从 12 岁开始写歌的心路历程——从爱好到热爱，从梦想到事业。她鼓励在场所有人守护自己的爱好与热情，给自己时间去犯错、去磨炼技艺，而不是急于把一切展示给互联网。在真实的美式英语演讲中学习关于梦想、坚持与自我成长的地道表达。',
     speaker: 'iHeartRadio',
     category: '演讲',
     tags: ['演讲', 'Taylor Swift', 'iHeartRadio', '颁奖', '梦想'],
@@ -819,7 +865,8 @@ export const mockCorpusVideos = [
     id: '46',
     title: 'We Went on a Date in LA',
     subtitle: '两个直男的洛杉矶约会',
-    description: 'Fred Liu 搬到洛杉矶后，邀请好友 Andrew Alexander 一起在洛杉矶来一场"兄弟约会"——从粉红墙打卡、排队买 Community Goods 抹茶，到 In-N-Out 汉堡和 Erewhon 超市的天价奶昔，两人一路互怼搞怪。在真实的美式日常对话中学习关于约会、洛杉矶生活方式和好友互动的地道英语表达。',
+    description:
+      'Fred Liu 搬到洛杉矶后，邀请好友 Andrew Alexander 一起在洛杉矶来一场"兄弟约会"——从粉红墙打卡、排队买 Community Goods 抹茶，到 In-N-Out 汉堡和 Erewhon 超市的天价奶昔，两人一路互怼搞怪。在真实的美式日常对话中学习关于约会、洛杉矶生活方式和好友互动的地道英语表达。',
     speaker: 'Fred Liu',
     category: '生活',
     tags: ['英语学习', 'Vlog', '洛杉矶', '约会', '生活', 'Fred Liu'],
@@ -837,7 +884,8 @@ export const mockCorpusVideos = [
     id: '47',
     title: 'Jensen Huang on What Young People Should Study',
     subtitle: '黄仁勋谈现在的年轻人该学什么',
-    description: 'NVIDIA 创始人兼 CEO 黄仁勋在 All-In Podcast 中回答关于年轻人该学什么的问题。他依然坚信深入的科学、数学和语言能力至关重要——因为语言已经成为 AI 的终极编程语言，英语专业的人反而可能成为最成功的那一批。他还用放射科医生的案例说明，AI 并不会取代人类，而是会放大人类的能力、创造更多需求。在真实的美式英语对话中学习关于教育、AI 与未来职业的地道表达。',
+    description:
+      'NVIDIA 创始人兼 CEO 黄仁勋在 All-In Podcast 中回答关于年轻人该学什么的问题。他依然坚信深入的科学、数学和语言能力至关重要——因为语言已经成为 AI 的终极编程语言，英语专业的人反而可能成为最成功的那一批。他还用放射科医生的案例说明，AI 并不会取代人类，而是会放大人类的能力、创造更多需求。在真实的美式英语对话中学习关于教育、AI 与未来职业的地道表达。',
     speaker: 'All-In Podcast',
     category: '生活',
     tags: ['英语学习', '播客', '黄仁勋', 'AI', '教育', '职业'],
@@ -855,7 +903,8 @@ export const mockCorpusVideos = [
     id: '48',
     title: 'Cape Town Morning: Penguins, Coffee & Sunshine',
     subtitle: '南非开普敦的晨间分享',
-    description: '跟随冰岛博主 Birta Hlin 在南非开普敦的早晨——住在 Scarborough 小村的 Airbnb，计划前往博尔德斯海滩看企鹅。她聊到 1986 年两只企鹅如何建立起整个企鹅群落，以及初到南非时发现的海边咖啡餐车和烤芝士三明治。在真实的美式日常对话中学习关于旅行、南非、企鹅和晨间生活的地道英语表达。',
+    description:
+      '跟随冰岛博主 Birta Hlin 在南非开普敦的早晨——住在 Scarborough 小村的 Airbnb，计划前往博尔德斯海滩看企鹅。她聊到 1986 年两只企鹅如何建立起整个企鹅群落，以及初到南非时发现的海边咖啡餐车和烤芝士三明治。在真实的美式日常对话中学习关于旅行、南非、企鹅和晨间生活的地道英语表达。',
     speaker: 'Birta Hlin',
     category: '生活',
     tags: ['英语学习', 'Vlog', '南非', '开普敦', '企鹅', '晨间分享'],
@@ -873,7 +922,8 @@ export const mockCorpusVideos = [
     id: '49',
     title: '新房入住！给你们介绍一下我的厨房',
     subtitle: '布鲁克林新公寓厨房参观',
-    description: '跟随 Taylor Bell 参观他在布鲁克林的新公寓厨房——从电磁炉灶台、农舍风水槽，到附近厨具店淘来的可爱调料罐和锅铲托，再到与室友共用的食品储藏柜里常备的希腊酸奶和网红菲达奶酪番茄食谱。他还分享了一个重要提醒：百合花对猫是剧毒，以及朋友爸爸在加拿大手工制作的木制摆件。在真实的美式日常对话中学习关于家居布置、厨具和公寓生活的地道英语表达。',
+    description:
+      '跟随 Taylor Bell 参观他在布鲁克林的新公寓厨房——从电磁炉灶台、农舍风水槽，到附近厨具店淘来的可爱调料罐和锅铲托，再到与室友共用的食品储藏柜里常备的希腊酸奶和网红菲达奶酪番茄食谱。他还分享了一个重要提醒：百合花对猫是剧毒，以及朋友爸爸在加拿大手工制作的木制摆件。在真实的美式日常对话中学习关于家居布置、厨具和公寓生活的地道英语表达。',
     speaker: 'Taylor Bell',
     category: '生活',
     tags: ['英语学习', 'Vlog', '布鲁克林', '公寓参观', '厨房', '家居'],
@@ -891,7 +941,8 @@ export const mockCorpusVideos = [
     id: '50',
     title: 'JENNIE：音乐与成长',
     subtitle: 'JENNIE 专访： solo 专辑 Ruby 背后的故事',
-    description: 'JENNIE（金珍妮）做客 Audacy Music 接受专访——聊到 solo 单曲 "like JENNIE" 意外爆红的惊喜、与 Dua Lipa 合作时的化学反应（"像完美的花生酱果冻三明治"），以及她在音乐创作中不断探索的心态。她坦言自己还需要更多时间在录音室中磨练，但遇到了许多优秀的合作者，正是他们的启发帮助她完成了这张专辑。她还分享了身边强大的女性团队如何教会她尊重与成长。在真实的美式英语对谈中学习关于音乐创作、合作与自我成长的地道表达。',
+    description:
+      'JENNIE（金珍妮）做客 Audacy Music 接受专访——聊到 solo 单曲 "like JENNIE" 意外爆红的惊喜、与 Dua Lipa 合作时的化学反应（"像完美的花生酱果冻三明治"），以及她在音乐创作中不断探索的心态。她坦言自己还需要更多时间在录音室中磨练，但遇到了许多优秀的合作者，正是他们的启发帮助她完成了这张专辑。她还分享了身边强大的女性团队如何教会她尊重与成长。在真实的美式英语对谈中学习关于音乐创作、合作与自我成长的地道表达。',
     speaker: 'Audacy Music',
     category: '生活',
     tags: ['英语学习', '专访', 'JENNIE', '音乐', 'BLACKPINK', 'Dua Lipa'],
@@ -909,7 +960,8 @@ export const mockCorpusVideos = [
     id: '51',
     title: 'Learning English in Singapore | Travel Vlog',
     subtitle: '跟Jay在新加坡旅行学英语',
-    description: '跟随 English by Jay - Sprout 抵达新加坡机场，在真实的旅行场景中学习地道英语表达。从机场入境、搭地铁到探索新加坡街头，在自然的英式口语中掌握旅行相关的高频词汇与日常表达。',
+    description:
+      '跟随 English by Jay - Sprout 抵达新加坡机场，在真实的旅行场景中学习地道英语表达。从机场入境、搭地铁到探索新加坡街头，在自然的英式口语中掌握旅行相关的高频词汇与日常表达。',
     speaker: 'English by Jay - Sprout',
     category: '旅行',
     tags: ['英语学习', 'Vlog', '新加坡', '旅行', '地铁'],
@@ -927,7 +979,8 @@ export const mockCorpusVideos = [
     id: '52',
     title: 'My 20s',
     subtitle: 'Sydney Serena 聊20多岁的真实感受',
-    description: 'Sydney Serena 坦诚分享20多岁的真实感受——她觉得没人聊过20多岁到底是什么样的，其实生活比看起来要难得多。从焦虑、迷茫到慢慢找到自己的节奏，在真实的美式日常对话中学习关于年龄、成长和生活感悟的地道英语表达。',
+    description:
+      'Sydney Serena 坦诚分享20多岁的真实感受——她觉得没人聊过20多岁到底是什么样的，其实生活比看起来要难得多。从焦虑、迷茫到慢慢找到自己的节奏，在真实的美式日常对话中学习关于年龄、成长和生活感悟的地道英语表达。',
     speaker: 'Sydney Serena',
     category: '生活',
     tags: ['英语学习', 'Vlog', '20多岁', '生活感悟', '成长'],
@@ -945,7 +998,8 @@ export const mockCorpusVideos = [
     id: '53',
     title: '为庆祝夜晚精心穿搭',
     subtitle: 'Birta Hlin 的庆祝之夜穿搭分享',
-    description: '跟随冰岛博主 Birta Hlin 为晚上的庆祝活动精心打扮——从挑选 Susamusa 品牌的黑色上衣，到穿上在墨尔本买的二合一可拆卸裤，再到展示百慕大短裤的巧妙设计。在真实的美式日常对话中学习关于穿搭、时尚和出门准备的地道英语表达。',
+    description:
+      '跟随冰岛博主 Birta Hlin 为晚上的庆祝活动精心打扮——从挑选 Susamusa 品牌的黑色上衣，到穿上在墨尔本买的二合一可拆卸裤，再到展示百慕大短裤的巧妙设计。在真实的美式日常对话中学习关于穿搭、时尚和出门准备的地道英语表达。',
     speaker: 'Birta Hlin',
     category: '生活',
     tags: ['英语学习', 'Vlog', '穿搭', '时尚', '墨尔本', '生活'],
@@ -963,7 +1017,8 @@ export const mockCorpusVideos = [
     id: '54',
     title: "Thailand's Last Day",
     subtitle: 'Tom Dickinson 的泰国最后一天',
-    description: '跟随博主 Tom Dickinson 在泰国龟岛度过最后一天——从清晨健身、海滩咖啡馆，到回顾潜水经历和复习课程。在真实的英语日常对话中学习关于旅行、潜水和告别的生活化表达。',
+    description:
+      '跟随博主 Tom Dickinson 在泰国龟岛度过最后一天——从清晨健身、海滩咖啡馆，到回顾潜水经历和复习课程。在真实的英语日常对话中学习关于旅行、潜水和告别的生活化表达。',
     speaker: 'Tom Dickinson',
     category: '旅行',
     tags: ['英语学习', 'Vlog', '泰国', '旅行', '潜水', '生活'],
@@ -981,7 +1036,8 @@ export const mockCorpusVideos = [
     id: '55',
     title: '超市采购与我的早餐',
     subtitle: 'Sydney Serena 的超市采购分享',
-    description: 'Sydney Serena 回家路上顺路去超市采购——从草莓柠檬水、香蕉片到鸡肉炒菜的食材，再到寻找新的早餐灵感：从酸奶浆果的循环中走出来，尝试隔夜燕麦配奇亚籽和坚果。她还分享了花生酱杯的口味测评和对早餐偏好的"周期性更替"。在真实的美式日常对话中学习关于超市购物、食材和早餐文化的地道英语表达。',
+    description:
+      'Sydney Serena 回家路上顺路去超市采购——从草莓柠檬水、香蕉片到鸡肉炒菜的食材，再到寻找新的早餐灵感：从酸奶浆果的循环中走出来，尝试隔夜燕麦配奇亚籽和坚果。她还分享了花生酱杯的口味测评和对早餐偏好的"周期性更替"。在真实的美式日常对话中学习关于超市购物、食材和早餐文化的地道英语表达。',
     speaker: 'Sydney Serena',
     category: '生活',
     tags: ['英语学习', 'Vlog', '超市', '采购', '早餐', '生活'],
@@ -999,7 +1055,8 @@ export const mockCorpusVideos = [
     id: '56',
     title: '新手养猫：那些踩过的坑',
     subtitle: 'Jasmine Le 的新手养猫经验分享',
-    description: 'Jasmine Le 坦诚分享新手养猫踩过的坑——从铃铛项圈对猫咪听力的伤害、自动猫砂盆的"真香"体验，到绝育后给猫咪穿连体衣结果被兽医说"太戏精"的搞笑经历。她还发现猫其实很简单：花大价钱买的猫爬架不如一个纸箱受欢迎。在真实的美式日常对话中学习关于养猫、宠物护理和生活趣事的地道英语表达。',
+    description:
+      'Jasmine Le 坦诚分享新手养猫踩过的坑——从铃铛项圈对猫咪听力的伤害、自动猫砂盆的"真香"体验，到绝育后给猫咪穿连体衣结果被兽医说"太戏精"的搞笑经历。她还发现猫其实很简单：花大价钱买的猫爬架不如一个纸箱受欢迎。在真实的美式日常对话中学习关于养猫、宠物护理和生活趣事的地道英语表达。',
     speaker: 'Jasmine Le',
     category: '生活',
     tags: ['英语学习', 'Vlog', '养猫', '宠物', '生活', '新手养猫'],
@@ -1017,7 +1074,8 @@ export const mockCorpusVideos = [
     id: '57',
     title: 'Getting My Brows Done in the West Village',
     subtitle: '在纽约西村修眉毛',
-    description: '跟随 Sydney Serena 在纽约西村的 Benefit 修眉吧做眉毛——从戴着面膜和眼罩等待，到分享小时候被修眉师"扯掉半边眉毛"的惨痛经历。她谈到自己对修眉的极致讲究，以及为什么要找固定的修眉师、蜡脱和线修的区别，还有被说服开始做眉毛染色（brow tint）的经历。在真实的美式日常对话中学习关于美容、修眉和个人护理的地道英语表达。',
+    description:
+      '跟随 Sydney Serena 在纽约西村的 Benefit 修眉吧做眉毛——从戴着面膜和眼罩等待，到分享小时候被修眉师"扯掉半边眉毛"的惨痛经历。她谈到自己对修眉的极致讲究，以及为什么要找固定的修眉师、蜡脱和线修的区别，还有被说服开始做眉毛染色（brow tint）的经历。在真实的美式日常对话中学习关于美容、修眉和个人护理的地道英语表达。',
     speaker: 'Sydney Serena',
     category: '生活',
     tags: ['英语学习', 'Vlog', '纽约', '修眉', '美容', '生活'],
@@ -1035,7 +1093,8 @@ export const mockCorpusVideos = [
     id: '58',
     title: '打扫厨房引发的感悟',
     subtitle: 'Santiago Weppler：做家务也是自我成长',
-    description: 'Santiago Weppler 从一次打扫厨房的经历出发，分享他对生活的深刻思考——他发现做看似琐碎的家务其实很有意义，甚至让他想起小时候父母打扫房间、自己无忧无虑的日子。他谈到做家务的治愈感，以及接受自己现状、勇敢说"我想改变"的重要性。在真实的美式日常对话中学习关于生活感悟、自我接纳和行动力的地道英语表达。',
+    description:
+      'Santiago Weppler 从一次打扫厨房的经历出发，分享他对生活的深刻思考——他发现做看似琐碎的家务其实很有意义，甚至让他想起小时候父母打扫房间、自己无忧无虑的日子。他谈到做家务的治愈感，以及接受自己现状、勇敢说"我想改变"的重要性。在真实的美式日常对话中学习关于生活感悟、自我接纳和行动力的地道英语表达。',
     speaker: 'Santiago Weppler',
     category: '生活',
     tags: ['英语学习', 'Vlog', '生活感悟', '家务', '自我成长', '行动力'],
@@ -1053,7 +1112,8 @@ export const mockCorpusVideos = [
     id: '59',
     title: '纽约晨间：热酱与工作',
     subtitle: 'Juan Marcel & Rhylan 的纽约晨间日常',
-    description: '跟随 Juan Marcel 和 Rhylan 在纽约 Airbnb 后院露台享用早餐——从辣椒酱的"吃货争论"到为接下来的忙碌工作日做准备。她吐槽他每次吃饭都要浇满 Frank\'s Red Hot 辣酱，他觉得不尊重做饭的辛苦，两人互相调侃。在真实的美式日常对话中学习关于早餐、辣酱和生活调侃的地道英语表达。',
+    description:
+      '跟随 Juan Marcel 和 Rhylan 在纽约 Airbnb 后院露台享用早餐——从辣椒酱的"吃货争论"到为接下来的忙碌工作日做准备。她吐槽他每次吃饭都要浇满 Frank\'s Red Hot 辣酱，他觉得不尊重做饭的辛苦，两人互相调侃。在真实的美式日常对话中学习关于早餐、辣酱和生活调侃的地道英语表达。',
     speaker: 'Juan Marcel & Rhylan',
     category: '生活',
     tags: ['英语学习', 'Vlog', '纽约', '早餐', '辣酱', '生活'],
@@ -1071,7 +1131,8 @@ export const mockCorpusVideos = [
     id: '60',
     title: 'London Rainy Day: Exploring the Finest Food Market',
     subtitle: '伦敦雨天探访顶级美食市集',
-    description: '跟随英国博主 Hannah Ricketts 在一个阴雨绵绵的周六探访伦敦顶级美食市集——从约克公爵广场出发，沿着国王大道漫步，了解这片始建于 1801 年的军事孤儿院如何在 90 年代变成高端购物区。她吐槽英国天气、分享对 Zara 旗舰店的执念，还推荐了经常免费的萨奇美术馆。在真实的英式日常对话中学习关于伦敦生活、天气吐槽和城市探索的地道英语表达。',
+    description:
+      '跟随英国博主 Hannah Ricketts 在一个阴雨绵绵的周六探访伦敦顶级美食市集——从约克公爵广场出发，沿着国王大道漫步，了解这片始建于 1801 年的军事孤儿院如何在 90 年代变成高端购物区。她吐槽英国天气、分享对 Zara 旗舰店的执念，还推荐了经常免费的萨奇美术馆。在真实的英式日常对话中学习关于伦敦生活、天气吐槽和城市探索的地道英语表达。',
     speaker: 'Hannah Ricketts',
     category: '美食',
     tags: ['英语学习', 'Vlog', '伦敦', '美食市集', '英式英语', '生活'],
@@ -1089,7 +1150,8 @@ export const mockCorpusVideos = [
     id: '61',
     title: 'Costco Grocery Run: Meal Prep Shopping',
     subtitle: 'Costco 超市采购：鸡胸肉与每日蛋白质计划',
-    description: '跟随 Noah Anderson 在 Costco 采购一周食材——从挑选鸡胸里脊肉、彩椒到找鸡蛋（却因禽流感断货），他分享了每磅 3.29 美元的蛋白质计算、70 克蛋白质的预制餐搭配（鸡肉、米饭、彩椒、洋葱），以及认真考虑自己养鸡的有趣想法。在真实的美式日常对话中学习关于超市采购、营养搭配和预制餐的地道英语表达。',
+    description:
+      '跟随 Noah Anderson 在 Costco 采购一周食材——从挑选鸡胸里脊肉、彩椒到找鸡蛋（却因禽流感断货），他分享了每磅 3.29 美元的蛋白质计算、70 克蛋白质的预制餐搭配（鸡肉、米饭、彩椒、洋葱），以及认真考虑自己养鸡的有趣想法。在真实的美式日常对话中学习关于超市采购、营养搭配和预制餐的地道英语表达。',
     speaker: 'Noah Anderson',
     category: '生活',
     tags: ['英语学习', 'Vlog', 'Costco', '超市', '采购', '预制餐'],
@@ -1107,7 +1169,8 @@ export const mockCorpusVideos = [
     id: '62',
     title: 'I Got a Cat!',
     subtitle: '我有猫了！Fred Liu 的猫咪寄养初体验',
-    description: 'Fred Liu 分享他第一次寄养猫咪 Simba 的经历——从发现 Simba 有点感冒和偏瘦，到请女朋友 Mina（寄养过11只猫的老手）当"猫咪导师"学习养猫知识。两人聊了猫的正常体重、干粮与湿粮的选择、纽约室内猫的安全问题，以及寄养过程中最难的部分——送走时的大哭。在真实的美式日常对话中学习关于养猫、宠物护理和寄养经验的地道英语表达。',
+    description:
+      'Fred Liu 分享他第一次寄养猫咪 Simba 的经历——从发现 Simba 有点感冒和偏瘦，到请女朋友 Mina（寄养过11只猫的老手）当"猫咪导师"学习养猫知识。两人聊了猫的正常体重、干粮与湿粮的选择、纽约室内猫的安全问题，以及寄养过程中最难的部分——送走时的大哭。在真实的美式日常对话中学习关于养猫、宠物护理和寄养经验的地道英语表达。',
     speaker: 'Fred Liu',
     category: '生活',
     tags: ['英语学习', 'Vlog', '养猫', '宠物', '寄养', 'Fred Liu'],
@@ -1121,8 +1184,26 @@ export const mockCorpusVideos = [
     subtitleUrl: '/corpus/subtitles/062.json',
     youtubeUrl: 'https://www.youtube.com/watch?v=8l7WbFn31jk',
   },
+  {
+    id: '63',
+    title: 'What Makes a Good Life?',
+    subtitle: 'TED 演讲：什么才是美好的人生？',
+    description:
+      'TED 演讲：基于哈佛大学成人发展研究——史上最长的人类幸福研究，跨越 75 年、追踪两代人——的发现。让我们一生健康幸福的，不是财富、名望或勤奋工作，而是良好的人际关系。亲密的社交联结让我们更快乐、更健康，孤独则有害身心。在正式而富有感染力的演讲中学习关于幸福、人际关系和人生意义的地道英语表达。',
+    speaker: 'TED',
+    category: '演讲',
+    tags: ['TED', '心理学', '人际关系', '幸福', '演讲'],
+    accent: '美音',
+    durationSec: 767,
+    sentenceCount: 208,
+    vocabCount: 383,
+    date: '2026-07-08',
+    videoUrl: `${OSS}/%E7%AC%AC61-75%E6%9C%9F/What%20Makes%20a%20Good%20Life.mp4`,
+    coverUrl: `${OSS}/%E7%AC%AC61-75%E6%9C%9F/What%20Makes%20a%20Good%20Life.jpg`,
+    subtitleUrl: '/corpus/subtitles/063.json',
+    youtubeUrl: 'https://www.youtube.com/watch?v=8KkKuTCFvzI',
+  },
 ]
-
 
 export const totalCount = mockCorpusVideos.length
 
@@ -1132,5 +1213,4 @@ export const TRIAL_EPISODE_COUNT = 5
 const allCategories = [...new Set(mockCorpusVideos.map((v) => v.category).filter(Boolean))].sort()
 export const categories = ['全部', ...allCategories]
 
-export const getVideoById = (id) =>
-  mockCorpusVideos.find((v) => v.id === id)
+export const getVideoById = (id) => mockCorpusVideos.find((v) => v.id === id)
