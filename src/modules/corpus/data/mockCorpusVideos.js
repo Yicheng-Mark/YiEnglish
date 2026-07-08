@@ -1222,6 +1222,25 @@ export const mockCorpusVideos = [
     subtitleUrl: '/corpus/subtitles/064.json',
     youtubeUrl: 'https://www.youtube.com/watch?v=apbSsILLh28',
   },
+  {
+    id: '65',
+    title: "There's more to life than being happy",
+    subtitle: 'TED 演讲：人生除了幸福，还有意义',
+    description:
+      'TED 演讲：作家 Emily Esfahani Smith 走访五年后发现，让人绝望的往往不是缺少幸福，而是缺少“意义”。她区分了转瞬即逝的“幸福感”与更深层的“人生意义”，指出意义的四大支柱——归属感、目的、超越与重述自己的故事，并引用心理学家维克多·弗兰克尔说明意义如何让人更具韧性。在正式而富有感染力的演讲中学习关于幸福、人生意义与心理学的地道英语表达。',
+    speaker: 'TED',
+    category: '演讲',
+    tags: ['TED', '心理学', '人生意义', '幸福', '演讲'],
+    accent: '美音',
+    durationSec: 733,
+    sentenceCount: 240,
+    vocabCount: 449,
+    date: '2026-07-08',
+    videoUrl: `${OSS}/%E7%AC%AC61-75%E6%9C%9F/There%27s%20more%20to%20life%20than%20being%20happy.mp4`,
+    coverUrl: `${OSS}/%E7%AC%AC61-75%E6%9C%9F/There%27s%20more%20to%20life%20than%20being%20happy.jpg`,
+    subtitleUrl: '/corpus/subtitles/065.json',
+    youtubeUrl: 'https://www.youtube.com/watch?v=y9Trdafp83U',
+  },
 ]
 
 export const totalCount = mockCorpusVideos.length

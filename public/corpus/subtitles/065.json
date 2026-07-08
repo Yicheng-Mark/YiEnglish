@@ -1,0 +1,1682 @@
+[
+  {
+    "start": 12.724,
+    "end": 14.003,
+    "en": "I used to think",
+    "zh": "我以前一直以为",
+    "id": 1
+  },
+  {
+    "start": 14.027,
+    "end": 17.761,
+    "en": "the whole purpose of life was pursuing happiness.",
+    "zh": "人生的全部意义就是追求幸福。",
+    "id": 2
+  },
+  {
+    "start": 18.5,
+    "end": 21.884,
+    "en": "Everyone said the path to happiness was success,",
+    "zh": "所有人都说，通往幸福的路就是成功，",
+    "id": 3
+  },
+  {
+    "start": 21.908,
+    "end": 24.406,
+    "en": "so I searched for that ideal job,",
+    "zh": "所以我去寻找那份理想的工作，",
+    "id": 4
+  },
+  {
+    "start": 24.43,
+    "end": 27.461,
+    "en": "that perfect boyfriend, that beautiful apartment.",
+    "zh": "那个完美的男朋友，还有那套漂亮的公寓。",
+    "id": 5
+  },
+  {
+    "start": 28.818,
+    "end": 31.816,
+    "en": "But instead of ever feeling fulfilled,",
+    "zh": "可我非但没有感到满足，",
+    "id": 6
+  },
+  {
+    "start": 31.84,
+    "end": 34.444,
+    "en": "I felt anxious and adrift.",
+    "zh": "反而感到焦虑又迷茫。",
+    "id": 7
+  },
+  {
+    "start": 35.015,
+    "end": 39.024,
+    "en": "And I wasn't alone; my friends -- they struggled with this, too.",
+    "zh": "而且不只是我一个人这样，我的朋友们也在经历同样的挣扎。",
+    "id": 8
+  },
+  {
+    "start": 40.54,
+    "end": 44.809,
+    "en": "Eventually, I decided to go to graduate school for positive psychology",
+    "zh": "最后，我决定去读积极心理学的研究生，",
+    "id": 9
+  },
+  {
+    "start": 44.833,
+    "end": 48.053,
+    "en": "to learn what truly makes people happy.",
+    "zh": "想弄明白到底是什么真正让人幸福。",
+    "id": 10
+  },
+  {
+    "start": 48.791,
+    "end": 51.447,
+    "en": "But what I discovered there changed my life.",
+    "zh": "但我在那里发现的东西，改变了我的人生。",
+    "id": 11
+  },
+  {
+    "start": 52.272,
+    "end": 56.882,
+    "en": "The data showed that chasing happiness can make people unhappy.",
+    "zh": "数据显示，追逐幸福反而会让人不幸福。",
+    "id": 12
+  },
+  {
+    "start": 57.787,
+    "end": 60.044,
+    "en": "And what really struck me was this:",
+    "zh": "而真正触动我的是这一点：",
+    "id": 13
+  },
+  {
+    "start": 60.878,
+    "end": 63.665,
+    "en": "the suicide rate has been rising around the world,",
+    "zh": "全球的自杀率一直在上升，",
+    "id": 14
+  },
+  {
+    "start": 63.689,
+    "end": 66.78,
+    "en": "and it recently reached a 30-year high in America.",
+    "zh": "而且最近在美国达到了30年来的最高点。",
+    "id": 15
+  },
+  {
+    "start": 67.573,
+    "end": 70.336,
+    "en": "Even though life is getting objectively better",
+    "zh": "尽管从客观上看，生活正在变得更好，",
+    "id": 16
+  },
+  {
+    "start": 70.36,
+    "end": 73.05,
+    "en": "by nearly every conceivable standard,",
+    "zh": "几乎从所有可以想到的标准来看都是如此，",
+    "id": 17
+  },
+  {
+    "start": 73.074,
+    "end": 75.273,
+    "en": "more people feel hopeless,",
+    "zh": "却有更多人感到绝望，",
+    "id": 18
+  },
+  {
+    "start": 75.297,
+    "end": 77.422,
+    "en": "depressed and alone.",
+    "zh": "感到抑郁和孤独。",
+    "id": 19
+  },
+  {
+    "start": 78.034,
+    "end": 80.847,
+    "en": "There's an emptiness gnawing away at people,",
+    "zh": "人们内心有一种空虚感在不断啃噬着他们，",
+    "id": 20
+  },
+  {
+    "start": 80.871,
+    "end": 84.141,
+    "en": "and you don't have to be clinically depressed to feel it.",
+    "zh": "而你并不需要达到临床抑郁的程度，也能感受到它。",
+    "id": 21
+  },
+  {
+    "start": 84.165,
+    "end": 87.065,
+    "en": "Sooner or later, I think we all wonder:",
+    "zh": "我想，迟早有一天，我们都会问自己：",
+    "id": 22
+  },
+  {
+    "start": 87.604,
+    "end": 89.836,
+    "en": "Is this all there is?",
+    "zh": "人生就只有这些了吗？",
+    "id": 23
+  },
+  {
+    "start": 90.987,
+    "end": 94.193,
+    "en": "And according to the research, what predicts this despair",
+    "zh": "而根据研究，真正预示这种绝望的，",
+    "id": 24
+  },
+  {
+    "start": 94.217,
+    "end": 96.044,
+    "en": "is not a lack of happiness.",
+    "zh": "并不是缺少幸福。",
+    "id": 25
+  },
+  {
+    "start": 96.068,
+    "end": 97.91,
+    "en": "It's a lack of something else,",
+    "zh": "而是缺少另一种东西，",
+    "id": 26
+  },
+  {
+    "start": 98.637,
+    "end": 101.575,
+    "en": "a lack of having meaning in life.",
+    "zh": "那就是缺少人生的意义感。",
+    "id": 27
+  },
+  {
+    "start": 102.782,
+    "end": 105.175,
+    "en": "But that raised some questions for me.",
+    "zh": "但这又让我产生了一些疑问。",
+    "id": 28
+  },
+  {
+    "start": 105.675,
+    "end": 108.274,
+    "en": "Is there more to life than being happy?",
+    "zh": "人生是否不只是快乐这么简单？",
+    "id": 29
+  },
+  {
+    "start": 109.036,
+    "end": 111.459,
+    "en": "And what's the difference between being happy",
+    "zh": "幸福",
+    "id": 30
+  },
+  {
+    "start": 111.483,
+    "end": 113.374,
+    "en": "and having meaning in life?",
+    "zh": "和拥有生命意义之间，到底有什么区别？",
+    "id": 31
+  },
+  {
+    "start": 114.699,
+    "end": 119.299,
+    "en": "Many psychologists define happiness as a state of comfort and ease,",
+    "zh": "许多心理学家把幸福定义为一种舒适、轻松的状态，",
+    "id": 32
+  },
+  {
+    "start": 119.323,
+    "end": 121.212,
+    "en": "feeling good in the moment.",
+    "zh": "也就是当下感觉良好。",
+    "id": 33
+  },
+  {
+    "start": 121.918,
+    "end": 123.576,
+    "en": "Meaning, though, is deeper.",
+    "zh": "但意义感要更深层。",
+    "id": 34
+  },
+  {
+    "start": 124.098,
+    "end": 126.662,
+    "en": "The renowned psychologist Martin Seligman says",
+    "zh": "著名心理学家 Martin Seligman 说，",
+    "id": 35
+  },
+  {
+    "start": 126.686,
+    "end": 131.333,
+    "en": "meaning comes from belonging to and serving something beyond yourself",
+    "zh": "意义来自归属于并服务于超越自身的事物，",
+    "id": 36
+  },
+  {
+    "start": 131.357,
+    "end": 134.04,
+    "en": "and from developing the best within you.",
+    "zh": "也来自发展出自己内在最好的部分。",
+    "id": 37
+  },
+  {
+    "start": 135.437,
+    "end": 138.032,
+    "en": "Our culture is obsessed with happiness,",
+    "zh": "我们的文化痴迷于幸福，",
+    "id": 38
+  },
+  {
+    "start": 138.056,
+    "end": 142.163,
+    "en": "but I came to see that seeking meaning is the more fulfilling path.",
+    "zh": "但我逐渐意识到，追寻意义才是更让人充实的道路。",
+    "id": 39
+  },
+  {
+    "start": 142.187,
+    "end": 145.116,
+    "en": "And the studies show that people who have meaning in life,",
+    "zh": "研究也表明，生活中有意义感的人，",
+    "id": 40
+  },
+  {
+    "start": 145.14,
+    "end": 146.55,
+    "en": "they're more resilient,",
+    "zh": "他们更有韧性，",
+    "id": 41
+  },
+  {
+    "start": 146.574,
+    "end": 149.131,
+    "en": "they do better in school and at work,",
+    "zh": "在学校和工作中的表现也更好，",
+    "id": 42
+  },
+  {
+    "start": 149.155,
+    "end": 150.762,
+    "en": "and they even live longer.",
+    "zh": "甚至寿命也更长。",
+    "id": 43
+  },
+  {
+    "start": 151.805,
+    "end": 153.826,
+    "en": "So this all made me wonder:",
+    "zh": "于是这一切让我开始思考：",
+    "id": 44
+  },
+  {
+    "start": 153.85,
+    "end": 156.324,
+    "en": "How can we each live more meaningfully?",
+    "zh": "我们每个人怎样才能活得更有意义？",
+    "id": 45
+  },
+  {
+    "start": 157.8,
+    "end": 161.478,
+    "en": "To find out, I spent five years interviewing hundreds of people",
+    "zh": "为了找到答案，我花了五年时间采访了数百人，",
+    "id": 46
+  },
+  {
+    "start": 161.502,
+    "end": 164.403,
+    "en": "and reading through thousands of pages of psychology,",
+    "zh": "还阅读了数千页有关心理学、",
+    "id": 47
+  },
+  {
+    "start": 164.427,
+    "end": 166.528,
+    "en": "neuroscience and philosophy.",
+    "zh": "神经科学和哲学的资料。",
+    "id": 48
+  },
+  {
+    "start": 167.186,
+    "end": 168.975,
+    "en": "Bringing it all together,",
+    "zh": "把这些内容整合起来之后，",
+    "id": 49
+  },
+  {
+    "start": 168.999,
+    "end": 174.34,
+    "en": "I found that there are what I call four pillars of a meaningful life.",
+    "zh": "我发现，有四个东西构成了我所说的有意义人生的四大支柱。",
+    "id": 50
+  },
+  {
+    "start": 174.364,
+    "end": 176.798,
+    "en": "And we can each create lives of meaning",
+    "zh": "而我们每个人都可以创造有意义的人生，",
+    "id": 51
+  },
+  {
+    "start": 176.822,
+    "end": 180.171,
+    "en": "by building some or all of these pillars in our lives.",
+    "zh": "方法就是在生活中建立其中一些，或全部这些支柱。",
+    "id": 52
+  },
+  {
+    "start": 181.248,
+    "end": 183.436,
+    "en": "The first pillar is belonging.",
+    "zh": "第一个支柱是归属感。",
+    "id": 53
+  },
+  {
+    "start": 184.198,
+    "end": 186.505,
+    "en": "Belonging comes from being in relationships",
+    "zh": "归属感来自人际关系，",
+    "id": 54
+  },
+  {
+    "start": 186.529,
+    "end": 189.234,
+    "en": "where you're valued for who you are intrinsically",
+    "zh": "在这种关系中，你因为真实的自己而被珍视，",
+    "id": 55
+  },
+  {
+    "start": 189.258,
+    "end": 191.371,
+    "en": "and where you value others as well.",
+    "zh": "同时你也同样珍视他人。",
+    "id": 56
+  },
+  {
+    "start": 192.038,
+    "end": 196.728,
+    "en": "But some groups and relationships deliver a cheap form of belonging;",
+    "zh": "但有些群体和关系提供的，只是一种廉价的归属感；",
+    "id": 57
+  },
+  {
+    "start": 196.752,
+    "end": 198.645,
+    "en": "you're valued for what you believe,",
+    "zh": "别人看重你，是因为你相信什么，",
+    "id": 58
+  },
+  {
+    "start": 198.669,
+    "end": 199.915,
+    "en": "for who you hate,",
+    "zh": "因为你仇恨谁，",
+    "id": 59
+  },
+  {
+    "start": 199.939,
+    "end": 201.484,
+    "en": "not for who you are.",
+    "zh": "而不是因为你是谁。",
+    "id": 60
+  },
+  {
+    "start": 202.24,
+    "end": 205.023,
+    "en": "True belonging springs from love.",
+    "zh": "真正的归属感源自爱。",
+    "id": 61
+  },
+  {
+    "start": 205.047,
+    "end": 208.032,
+    "en": "It lives in moments among individuals,",
+    "zh": "它存在于人与人之间的一个个瞬间，",
+    "id": 62
+  },
+  {
+    "start": 208.056,
+    "end": 211.901,
+    "en": "and it's a choice -- you can choose to cultivate belonging with others.",
+    "zh": "而且它是一种选择——你可以选择与他人一起培养归属感。",
+    "id": 63
+  },
+  {
+    "start": 212.481,
+    "end": 214.088,
+    "en": "Here's an example.",
+    "zh": "举个例子。",
+    "id": 64
+  },
+  {
+    "start": 214.112,
+    "end": 217.667,
+    "en": "Each morning, my friend Jonathan buys a newspaper",
+    "zh": "每天早上，我的朋友 Jonathan 都会买一份报纸，",
+    "id": 65
+  },
+  {
+    "start": 217.691,
+    "end": 219.909,
+    "en": "from the same street vendor in New York.",
+    "zh": "从纽约同一个街头报贩那里买。",
+    "id": 66
+  },
+  {
+    "start": 220.322,
+    "end": 222.602,
+    "en": "They don't just conduct a transaction, though.",
+    "zh": "不过，他们并不只是完成一笔交易。",
+    "id": 67
+  },
+  {
+    "start": 222.626,
+    "end": 225.309,
+    "en": "They take a moment to slow down, talk,",
+    "zh": "他们会花一点时间慢下来，聊几句，",
+    "id": 68
+  },
+  {
+    "start": 225.333,
+    "end": 227.239,
+    "en": "and treat each other like humans.",
+    "zh": "把彼此当作真正的人来对待。",
+    "id": 69
+  },
+  {
+    "start": 227.858,
+    "end": 231.252,
+    "en": "But one time, Jonathan didn't have the right change,",
+    "zh": "但有一次，Jonathan 没有合适的零钱，",
+    "id": 70
+  },
+  {
+    "start": 231.276,
+    "end": 232.496,
+    "en": "and the vendor said,",
+    "zh": "那个报贩就说，",
+    "id": 71
+  },
+  {
+    "start": 232.52,
+    "end": 234.04,
+    "en": "\"Don't worry about it.\"",
+    "zh": "没关系，不用给了。",
+    "id": 72
+  },
+  {
+    "start": 234.064,
+    "end": 236.551,
+    "en": "But Jonathan insisted on paying,",
+    "zh": "可 Jonathan 坚持要付钱，",
+    "id": 73
+  },
+  {
+    "start": 236.575,
+    "end": 239.587,
+    "en": "so he went to the store and bought something he didn't need",
+    "zh": "于是他跑去商店买了点自己并不需要的东西，",
+    "id": 74
+  },
+  {
+    "start": 239.611,
+    "end": 241.072,
+    "en": "to make change.",
+    "zh": "只为了把钱换开。",
+    "id": 75
+  },
+  {
+    "start": 241.812,
+    "end": 244.435,
+    "en": "But when he gave the money to the vendor,",
+    "zh": "但当他把钱递给报贩时，",
+    "id": 76
+  },
+  {
+    "start": 244.459,
+    "end": 245.981,
+    "en": "the vendor drew back.",
+    "zh": "报贩却往后退了一下。",
+    "id": 77
+  },
+  {
+    "start": 246.64,
+    "end": 247.918,
+    "en": "He was hurt.",
+    "zh": "他受伤了。",
+    "id": 78
+  },
+  {
+    "start": 248.535,
+    "end": 250.384,
+    "en": "He was trying to do something kind,",
+    "zh": "他本来是想做一件善意的事，",
+    "id": 79
+  },
+  {
+    "start": 250.408,
+    "end": 252.655,
+    "en": "but Jonathan had rejected him.",
+    "zh": "但 Jonathan 拒绝了他的好意。",
+    "id": 80
+  },
+  {
+    "start": 253.933,
+    "end": 258.084,
+    "en": "I think we all reject people in small ways like this without realizing it.",
+    "zh": "我想，我们都会在不经意间，用这样的小方式拒绝别人。",
+    "id": 81
+  },
+  {
+    "start": 258.108,
+    "end": 259.306,
+    "en": "I do.",
+    "zh": "我也会。",
+    "id": 82
+  },
+  {
+    "start": 259.33,
+    "end": 262.393,
+    "en": "I'll walk by someone I know and barely acknowledge them.",
+    "zh": "我会从认识的人身边走过，却几乎不打招呼。",
+    "id": 83
+  },
+  {
+    "start": 262.417,
+    "end": 265.064,
+    "en": "I'll check my phone when someone's talking to me.",
+    "zh": "别人跟我说话时，我会看手机。",
+    "id": 84
+  },
+  {
+    "start": 265.498,
+    "end": 267.427,
+    "en": "These acts devalue others.",
+    "zh": "这些行为会贬低他人。",
+    "id": 85
+  },
+  {
+    "start": 267.451,
+    "end": 270.204,
+    "en": "They make them feel invisible and unworthy.",
+    "zh": "它们会让别人觉得自己被忽视、不重要。",
+    "id": 86
+  },
+  {
+    "start": 270.95,
+    "end": 273.702,
+    "en": "But when you lead with love, you create a bond",
+    "zh": "但当你以爱为出发点时，你就会创造一种联结，",
+    "id": 87
+  },
+  {
+    "start": 273.726,
+    "end": 275.398,
+    "en": "that lifts each of you up.",
+    "zh": "这种联结会让你们彼此都被托举起来。",
+    "id": 88
+  },
+  {
+    "start": 276.85,
+    "end": 280.478,
+    "en": "For many people, belonging is the most essential source of meaning,",
+    "zh": "对很多人来说，归属感是意义最重要的来源，",
+    "id": 89
+  },
+  {
+    "start": 280.502,
+    "end": 282.5,
+    "en": "those bonds to family and friends.",
+    "zh": "也就是与家人和朋友之间的那些联结。",
+    "id": 90
+  },
+  {
+    "start": 282.996,
+    "end": 287.001,
+    "en": "For others, the key to meaning is the second pillar: purpose.",
+    "zh": "而对另一些人来说，意义的关键在于第二个支柱：目标感。",
+    "id": 91
+  },
+  {
+    "start": 287.664,
+    "end": 290.579,
+    "en": "Now, finding your purpose is not the same thing",
+    "zh": "找到你的目标，",
+    "id": 92
+  },
+  {
+    "start": 290.603,
+    "end": 292.851,
+    "en": "as finding that job that makes you happy.",
+    "zh": "并不等同于找到一份让你快乐的工作。",
+    "id": 93
+  },
+  {
+    "start": 293.34,
+    "end": 296.799,
+    "en": "Purpose is less about what you want than about what you give.",
+    "zh": "目标感更多关乎你能给予什么，而不是你想要什么。",
+    "id": 94
+  },
+  {
+    "start": 296.823,
+    "end": 301.311,
+    "en": "A hospital custodian told me her purpose is healing sick people.",
+    "zh": "一位医院清洁工告诉我，她的目标是治愈病人。",
+    "id": 95
+  },
+  {
+    "start": 301.335,
+    "end": 303.046,
+    "en": "Many parents tell me,",
+    "zh": "很多父母告诉我，",
+    "id": 96
+  },
+  {
+    "start": 303.07,
+    "end": 305.006,
+    "en": "\"My purpose is raising my children.\"",
+    "zh": "我的目标就是养育我的孩子。",
+    "id": 97
+  },
+  {
+    "start": 305.347,
+    "end": 309.391,
+    "en": "The key to purpose is using your strengths to serve others.",
+    "zh": "目标感的关键，是用你的优势去服务他人。",
+    "id": 98
+  },
+  {
+    "start": 310.201,
+    "end": 313.709,
+    "en": "Of course, for many of us, that happens through work.",
+    "zh": "当然，对我们很多人来说，这是通过工作实现的。",
+    "id": 99
+  },
+  {
+    "start": 313.733,
+    "end": 316.712,
+    "en": "That's how we contribute and feel needed.",
+    "zh": "这就是我们做出贡献，并感到被需要的方式。",
+    "id": 100
+  },
+  {
+    "start": 316.736,
+    "end": 320.596,
+    "en": "But that also means that issues like disengagement at work,",
+    "zh": "但这也意味着，像工作投入感低、",
+    "id": 101
+  },
+  {
+    "start": 320.62,
+    "end": 322.033,
+    "en": "unemployment,",
+    "zh": "失业、",
+    "id": 102
+  },
+  {
+    "start": 322.057,
+    "end": 324.284,
+    "en": "low labor force participation --",
+    "zh": "劳动参与率低——",
+    "id": 103
+  },
+  {
+    "start": 324.308,
+    "end": 327.999,
+    "en": "these aren't just economic problems, they're existential ones, too.",
+    "zh": "这些并不只是经济问题，它们也是存在层面的问题。",
+    "id": 104
+  },
+  {
+    "start": 328.641,
+    "end": 330.854,
+    "en": "Without something worthwhile to do,",
+    "zh": "如果没有值得去做的事情，",
+    "id": 105
+  },
+  {
+    "start": 330.878,
+    "end": 332.179,
+    "en": "people flounder.",
+    "zh": "人就会迷失。",
+    "id": 106
+  },
+  {
+    "start": 333.313,
+    "end": 335.929,
+    "en": "Of course, you don't have to find purpose at work,",
+    "zh": "当然，你并不一定要在工作中找到目标，",
+    "id": 107
+  },
+  {
+    "start": 335.953,
+    "end": 338.682,
+    "en": "but purpose gives you something to live for,",
+    "zh": "但目标感会给你一个活下去的理由，",
+    "id": 108
+  },
+  {
+    "start": 338.706,
+    "end": 340.786,
+    "en": "some \"why\" that drives you forward.",
+    "zh": "一个推动你向前的为什么。",
+    "id": 109
+  },
+  {
+    "start": 342.967,
+    "end": 346.267,
+    "en": "The third pillar of meaning is also about stepping beyond yourself,",
+    "zh": "意义的第三个支柱，同样关乎走出自我，",
+    "id": 110
+  },
+  {
+    "start": 346.291,
+    "end": 348.133,
+    "en": "but in a completely different way:",
+    "zh": "但它是以一种完全不同的方式：",
+    "id": 111
+  },
+  {
+    "start": 348.157,
+    "end": 349.744,
+    "en": "transcendence.",
+    "zh": "超越感。",
+    "id": 112
+  },
+  {
+    "start": 349.768,
+    "end": 352.145,
+    "en": "Transcendent states are those rare moments",
+    "zh": "超越状态指的是那些罕见的时刻，",
+    "id": 113
+  },
+  {
+    "start": 352.169,
+    "end": 355.581,
+    "en": "when you're lifted above the hustle and bustle of daily life,",
+    "zh": "你仿佛被提升到日常生活的喧嚣之上，",
+    "id": 114
+  },
+  {
+    "start": 355.605,
+    "end": 357.31,
+    "en": "your sense of self fades away,",
+    "zh": "自我感渐渐消退，",
+    "id": 115
+  },
+  {
+    "start": 357.334,
+    "end": 360.108,
+    "en": "and you feel connected to a higher reality.",
+    "zh": "你感到自己与某种更高层次的现实连接在一起。",
+    "id": 116
+  },
+  {
+    "start": 361.034,
+    "end": 364.724,
+    "en": "For one person I talked to, transcendence came from seeing art.",
+    "zh": "对我采访过的一个人来说，超越感来自欣赏艺术。",
+    "id": 117
+  },
+  {
+    "start": 364.748,
+    "end": 367.278,
+    "en": "For another person, it was at church.",
+    "zh": "对另一个人来说，它发生在教堂里。",
+    "id": 118
+  },
+  {
+    "start": 367.302,
+    "end": 370.856,
+    "en": "For me, I'm a writer, and it happens through writing.",
+    "zh": "对我来说，我是一名作家，而这种体验发生在写作中。",
+    "id": 119
+  },
+  {
+    "start": 370.88,
+    "end": 375.95,
+    "en": "Sometimes I get so in the zone that I lose all sense of time and place.",
+    "zh": "有时候我会完全进入状态，以至于失去了对时间和地点的感知。",
+    "id": 120
+  },
+  {
+    "start": 376.577,
+    "end": 379.723,
+    "en": "These transcendent experiences can change you.",
+    "zh": "这些超越性的体验可以改变你。",
+    "id": 121
+  },
+  {
+    "start": 379.747,
+    "end": 384.271,
+    "en": "One study had students look up at 200-feet-tall eucalyptus trees",
+    "zh": "有一项研究让学生仰望200英尺高的桉树，",
+    "id": 122
+  },
+  {
+    "start": 384.295,
+    "end": 385.496,
+    "en": "for one minute.",
+    "zh": "看一分钟。",
+    "id": 123
+  },
+  {
+    "start": 386.083,
+    "end": 388.237,
+    "en": "But afterwards they felt less self-centered,",
+    "zh": "但之后，他们会变得不那么以自我为中心，",
+    "id": 124
+  },
+  {
+    "start": 388.261,
+    "end": 390.205,
+    "en": "and they even behaved more generously",
+    "zh": "而且当有机会帮助别人时，",
+    "id": 125
+  },
+  {
+    "start": 390.229,
+    "end": 392.299,
+    "en": "when given the chance to help someone.",
+    "zh": "他们甚至表现得更加慷慨。",
+    "id": 126
+  },
+  {
+    "start": 393.402,
+    "end": 397.122,
+    "en": "Belonging, purpose, transcendence.",
+    "zh": "归属感、目标感、超越感。",
+    "id": 127
+  },
+  {
+    "start": 398.194,
+    "end": 400.917,
+    "en": "Now, the fourth pillar of meaning, I've found,",
+    "zh": "现在，我发现意义的第四个支柱，",
+    "id": 128
+  },
+  {
+    "start": 400.941,
+    "end": 402.696,
+    "en": "tends to surprise people.",
+    "zh": "往往会让人感到意外。",
+    "id": 129
+  },
+  {
+    "start": 403.186,
+    "end": 405.92,
+    "en": "The fourth pillar is storytelling,",
+    "zh": "第四个支柱是讲述故事，",
+    "id": 130
+  },
+  {
+    "start": 405.944,
+    "end": 408.809,
+    "en": "the story you tell yourself about yourself.",
+    "zh": "也就是你讲给自己听的、关于你自己的故事。",
+    "id": 131
+  },
+  {
+    "start": 409.436,
+    "end": 413.58,
+    "en": "Creating a narrative from the events of your life brings clarity.",
+    "zh": "把你生命中的经历组织成一个叙事，会带来清晰感。",
+    "id": 132
+  },
+  {
+    "start": 413.604,
+    "end": 416.64,
+    "en": "It helps you understand how you became you.",
+    "zh": "它帮助你理解自己是如何成为今天的自己的。",
+    "id": 133
+  },
+  {
+    "start": 417.489,
+    "end": 420.585,
+    "en": "But we don't always realize that we're the authors of our stories",
+    "zh": "但我们并不总是意识到，自己就是人生故事的作者，",
+    "id": 134
+  },
+  {
+    "start": 420.609,
+    "end": 422.772,
+    "en": "and can change the way we're telling them.",
+    "zh": "也可以改变讲述这个故事的方式。",
+    "id": 135
+  },
+  {
+    "start": 422.796,
+    "end": 425.287,
+    "en": "Your life isn't just a list of events.",
+    "zh": "你的人生并不只是一串事件清单。",
+    "id": 136
+  },
+  {
+    "start": 425.311,
+    "end": 428.527,
+    "en": "You can edit, interpret and retell your story,",
+    "zh": "你可以编辑、解读，并重新讲述自己的故事，",
+    "id": 137
+  },
+  {
+    "start": 428.551,
+    "end": 430.771,
+    "en": "even as you're constrained by the facts.",
+    "zh": "即使你仍然受事实本身的限制。",
+    "id": 138
+  },
+  {
+    "start": 431.501,
+    "end": 436.129,
+    "en": "I met a young man named Emeka, who'd been paralyzed playing football.",
+    "zh": "我认识了一个叫 Emeka 的年轻人，他在踢橄榄球时瘫痪了。",
+    "id": 139
+  },
+  {
+    "start": 436.74,
+    "end": 439.199,
+    "en": "After his injury, Emeka told himself,",
+    "zh": "受伤之后，Emeka 告诉自己，",
+    "id": 140
+  },
+  {
+    "start": 439.223,
+    "end": 441.928,
+    "en": "\"My life was great playing football,",
+    "zh": "我以前踢橄榄球的时候，人生那么美好，",
+    "id": 141
+  },
+  {
+    "start": 441.952,
+    "end": 444.076,
+    "en": "but now look at me.\"",
+    "zh": "可现在看看我。",
+    "id": 142
+  },
+  {
+    "start": 445.822,
+    "end": 448.114,
+    "en": "People who tell stories like this --",
+    "zh": "那些这样讲述自己人生故事的人——",
+    "id": 143
+  },
+  {
+    "start": 448.138,
+    "end": 450.662,
+    "en": "\"My life was good. Now it's bad.\" --",
+    "zh": "我的人生曾经很好。现在却变糟了。",
+    "id": 144
+  },
+  {
+    "start": 450.686,
+    "end": 453.508,
+    "en": "tend to be more anxious and depressed.",
+    "zh": "往往会更加焦虑和抑郁。",
+    "id": 145
+  },
+  {
+    "start": 453.532,
+    "end": 455.861,
+    "en": "And that was Emeka for a while.",
+    "zh": "Emeka 有一段时间就是这样。",
+    "id": 146
+  },
+  {
+    "start": 456.393,
+    "end": 459.784,
+    "en": "But with time, he started to weave a different story.",
+    "zh": "但随着时间推移，他开始编织一个不同的故事。",
+    "id": 147
+  },
+  {
+    "start": 460.235,
+    "end": 461.968,
+    "en": "His new story was,",
+    "zh": "他的新故事是：",
+    "id": 148
+  },
+  {
+    "start": 461.992,
+    "end": 465.259,
+    "en": "\"Before my injury, my life was purposeless.",
+    "zh": "受伤之前，我的人生没有目标。",
+    "id": 149
+  },
+  {
+    "start": 465.283,
+    "end": 468.536,
+    "en": "I partied a lot and was a pretty selfish guy.",
+    "zh": "我经常参加派对，而且是个挺自私的人。",
+    "id": 150
+  },
+  {
+    "start": 468.56,
+    "end": 472.268,
+    "en": "But my injury made me realize I could be a better man.\"",
+    "zh": "但我的伤让我意识到，我可以成为一个更好的人。",
+    "id": 151
+  },
+  {
+    "start": 473.308,
+    "end": 476.849,
+    "en": "That edit to his story changed Emeka's life.",
+    "zh": "这次对人生故事的改写，改变了 Emeka 的一生。",
+    "id": 152
+  },
+  {
+    "start": 476.873,
+    "end": 479.304,
+    "en": "After telling the new story to himself,",
+    "zh": "在他开始把这个新的故事讲给自己听之后，",
+    "id": 153
+  },
+  {
+    "start": 479.328,
+    "end": 481.25,
+    "en": "Emeka started mentoring kids,",
+    "zh": "Emeka 开始辅导孩子们，",
+    "id": 154
+  },
+  {
+    "start": 481.274,
+    "end": 483.64,
+    "en": "and he discovered what his purpose was:",
+    "zh": "他也发现了自己的人生目标：",
+    "id": 155
+  },
+  {
+    "start": 483.664,
+    "end": 485.054,
+    "en": "serving others.",
+    "zh": "服务他人。",
+    "id": 156
+  },
+  {
+    "start": 485.921,
+    "end": 489.299,
+    "en": "The psychologist Dan McAdams calls this a \"redemptive story,\"",
+    "zh": "心理学家 Dan McAdams 把这称为'救赎型故事'，",
+    "id": 157
+  },
+  {
+    "start": 489.323,
+    "end": 491.606,
+    "en": "where the bad is redeemed by the good.",
+    "zh": "也就是坏事被好事所弥补。",
+    "id": 158
+  },
+  {
+    "start": 492.447,
+    "end": 494.63,
+    "en": "People leading meaningful lives, he's found,",
+    "zh": "他发现，那些活得有意义的人，",
+    "id": 159
+  },
+  {
+    "start": 494.654,
+    "end": 496.585,
+    "en": "tend to tell stories about their lives",
+    "zh": "往往会讲述自己的人生故事，",
+    "id": 160
+  },
+  {
+    "start": 496.609,
+    "end": 499.631,
+    "en": "defined by redemption, growth and love.",
+    "zh": "而这些故事由救赎、成长和爱来定义。",
+    "id": 161
+  },
+  {
+    "start": 500.543,
+    "end": 503.005,
+    "en": "But what makes people change their stories?",
+    "zh": "但是什么会让人们改变自己的故事呢？",
+    "id": 162
+  },
+  {
+    "start": 503.545,
+    "end": 505.473,
+    "en": "Some people get help from a therapist,",
+    "zh": "有些人会从治疗师那里获得帮助，",
+    "id": 163
+  },
+  {
+    "start": 505.497,
+    "end": 507.307,
+    "en": "but you can do it on your own, too,",
+    "zh": "但你也可以自己做到，",
+    "id": 164
+  },
+  {
+    "start": 507.331,
+    "end": 510.091,
+    "en": "just by reflecting on your life thoughtfully,",
+    "zh": "只要认真地回顾自己的人生，",
+    "id": 165
+  },
+  {
+    "start": 510.115,
+    "end": 512.202,
+    "en": "how your defining experiences shaped you,",
+    "zh": "思考那些定义你的经历是如何塑造你的，",
+    "id": 166
+  },
+  {
+    "start": 512.226,
+    "end": 513.963,
+    "en": "what you lost, what you gained.",
+    "zh": "你失去了什么，又得到了什么。",
+    "id": 167
+  },
+  {
+    "start": 514.409,
+    "end": 515.943,
+    "en": "That's what Emeka did.",
+    "zh": "Emeka 就是这么做的。",
+    "id": 168
+  },
+  {
+    "start": 516.832,
+    "end": 518.878,
+    "en": "You won't change your story overnight;",
+    "zh": "你不可能一夜之间改写自己的故事；",
+    "id": 169
+  },
+  {
+    "start": 518.902,
+    "end": 521.247,
+    "en": "it could take years and be painful.",
+    "zh": "这可能需要很多年，也可能会很痛苦。",
+    "id": 170
+  },
+  {
+    "start": 521.271,
+    "end": 524.205,
+    "en": "After all, we've all suffered, and we all struggle.",
+    "zh": "毕竟，我们都受过苦，也都在挣扎。",
+    "id": 171
+  },
+  {
+    "start": 524.777,
+    "end": 529.116,
+    "en": "But embracing those painful memories can lead to new insights and wisdom,",
+    "zh": "但接纳那些痛苦的回忆，可能会带来新的洞见和智慧，",
+    "id": 172
+  },
+  {
+    "start": 529.14,
+    "end": 532.205,
+    "en": "to finding that good that sustains you.",
+    "zh": "让你找到那份支撑你继续走下去的美好。",
+    "id": 173
+  },
+  {
+    "start": 534.404,
+    "end": 538.937,
+    "en": "Belonging, purpose, transcendence, storytelling:",
+    "zh": "归属感、目标感、超越感和讲述故事：",
+    "id": 174
+  },
+  {
+    "start": 539.683,
+    "end": 542.414,
+    "en": "those are the four pillars of meaning.",
+    "zh": "这就是意义的四大支柱。",
+    "id": 175
+  },
+  {
+    "start": 543.446,
+    "end": 545.052,
+    "en": "When I was younger,",
+    "zh": "我年轻的时候，",
+    "id": 176
+  },
+  {
+    "start": 545.076,
+    "end": 548.714,
+    "en": "I was lucky enough to be surrounded by all of the pillars.",
+    "zh": "很幸运，身边就围绕着所有这些支柱。",
+    "id": 177
+  },
+  {
+    "start": 549.201,
+    "end": 553.741,
+    "en": "My parents ran a Sufi meetinghouse from our home in Montreal.",
+    "zh": "我的父母在我们蒙特利尔的家里经营着一个苏菲派聚会场所。",
+    "id": 178
+  },
+  {
+    "start": 554.506,
+    "end": 558.989,
+    "en": "Sufism is a spiritual practice associated with the whirling dervishes",
+    "zh": "苏菲派是一种灵性修行，常让人联想到旋转苦行僧，",
+    "id": 179
+  },
+  {
+    "start": 559.013,
+    "end": 560.406,
+    "en": "and the poet Rumi.",
+    "zh": "以及诗人 Rumi。",
+    "id": 180
+  },
+  {
+    "start": 561.25,
+    "end": 563.825,
+    "en": "Twice a week, Sufis would come to our home",
+    "zh": "每周两次，苏菲派信徒会来到我们家，",
+    "id": 181
+  },
+  {
+    "start": 563.849,
+    "end": 567.609,
+    "en": "to meditate, drink Persian tea, and share stories.",
+    "zh": "一起冥想，喝波斯茶，分享故事。",
+    "id": 182
+  },
+  {
+    "start": 568.029,
+    "end": 570.986,
+    "en": "Their practice also involved serving all of creation",
+    "zh": "他们的修行还包括服务世间万物，",
+    "id": 183
+  },
+  {
+    "start": 571.01,
+    "end": 572.82,
+    "en": "through small acts of love,",
+    "zh": "通过一个个微小的爱之举动，",
+    "id": 184
+  },
+  {
+    "start": 572.844,
+    "end": 576.185,
+    "en": "which meant being kind even when people wronged you.",
+    "zh": "这意味着即使别人伤害了你，也要保持善意。",
+    "id": 185
+  },
+  {
+    "start": 576.209,
+    "end": 579.363,
+    "en": "But it gave them a purpose: to rein in the ego.",
+    "zh": "但这也给了他们一个目标：约束自我。",
+    "id": 186
+  },
+  {
+    "start": 580.732,
+    "end": 583.348,
+    "en": "Eventually, I left home for college",
+    "zh": "后来，我离家去上大学，",
+    "id": 187
+  },
+  {
+    "start": 583.372,
+    "end": 587.074,
+    "en": "and without the daily grounding of Sufism in my life,",
+    "zh": "生活里不再有苏菲修行每日带来的安定感，",
+    "id": 188
+  },
+  {
+    "start": 587.098,
+    "end": 588.686,
+    "en": "I felt unmoored.",
+    "zh": "我感到漂泊无依。",
+    "id": 189
+  },
+  {
+    "start": 588.71,
+    "end": 592.298,
+    "en": "And I started searching for those things that make life worth living.",
+    "zh": "于是我开始寻找那些让人生值得活下去的东西。",
+    "id": 190
+  },
+  {
+    "start": 592.322,
+    "end": 594.435,
+    "en": "That's what set me on this journey.",
+    "zh": "正是这件事，让我踏上了这段旅程。",
+    "id": 191
+  },
+  {
+    "start": 594.832,
+    "end": 596.589,
+    "en": "Looking back, I now realize",
+    "zh": "现在回头看，我才意识到，",
+    "id": 192
+  },
+  {
+    "start": 596.613,
+    "end": 599.855,
+    "en": "that the Sufi house had a real culture of meaning.",
+    "zh": "那座苏菲之家确实有一种关于意义的文化。",
+    "id": 193
+  },
+  {
+    "start": 599.879,
+    "end": 602.385,
+    "en": "The pillars were part of the architecture,",
+    "zh": "这些支柱就是它的结构的一部分，",
+    "id": 194
+  },
+  {
+    "start": 602.409,
+    "end": 605.635,
+    "en": "and the presence of the pillars helped us all live more deeply.",
+    "zh": "而这些支柱的存在，也帮助我们所有人活得更深刻。",
+    "id": 195
+  },
+  {
+    "start": 606.234,
+    "end": 608.555,
+    "en": "Of course, the same principle applies",
+    "zh": "当然，同样的原则也适用于",
+    "id": 196
+  },
+  {
+    "start": 608.579,
+    "end": 610.78,
+    "en": "in other strong communities as well --",
+    "zh": "其他强大的社群——",
+    "id": 197
+  },
+  {
+    "start": 610.804,
+    "end": 612.826,
+    "en": "good ones and bad ones.",
+    "zh": "无论是好的，还是坏的。",
+    "id": 198
+  },
+  {
+    "start": 613.376,
+    "end": 615.405,
+    "en": "Gangs, cults:",
+    "zh": "帮派、邪教：",
+    "id": 199
+  },
+  {
+    "start": 615.429,
+    "end": 618.442,
+    "en": "these are cultures of meaning that use the pillars",
+    "zh": "这些也是意义的文化，它们利用这些支柱，",
+    "id": 200
+  },
+  {
+    "start": 618.466,
+    "end": 621.844,
+    "en": "and give people something to live and die for.",
+    "zh": "给人们某种值得为之生、为之死的东西。",
+    "id": 201
+  },
+  {
+    "start": 621.868,
+    "end": 624.735,
+    "en": "But that's exactly why we as a society",
+    "zh": "但这恰恰说明，作为一个社会，",
+    "id": 202
+  },
+  {
+    "start": 624.759,
+    "end": 626.868,
+    "en": "must offer better alternatives.",
+    "zh": "我们必须提供更好的替代选择。",
+    "id": 203
+  },
+  {
+    "start": 626.892,
+    "end": 630.643,
+    "en": "We need to build these pillars within our families and our institutions",
+    "zh": "我们需要在家庭和制度中建立这些支柱，",
+    "id": 204
+  },
+  {
+    "start": 630.667,
+    "end": 633.249,
+    "en": "to help people become their best selves.",
+    "zh": "帮助人们成为最好的自己。",
+    "id": 205
+  },
+  {
+    "start": 634.344,
+    "end": 636.93,
+    "en": "But living a meaningful life takes work.",
+    "zh": "但过有意义的人生需要努力。",
+    "id": 206
+  },
+  {
+    "start": 636.954,
+    "end": 638.829,
+    "en": "It's an ongoing process.",
+    "zh": "这是一个持续不断的过程。",
+    "id": 207
+  },
+  {
+    "start": 638.853,
+    "end": 642.582,
+    "en": "As each day goes by, we're constantly creating our lives,",
+    "zh": "每一天过去，我们都在不断创造自己的人生，",
+    "id": 208
+  },
+  {
+    "start": 642.606,
+    "end": 644.175,
+    "en": "adding to our story.",
+    "zh": "不断为自己的故事增添内容。",
+    "id": 209
+  },
+  {
+    "start": 644.651,
+    "end": 647.4,
+    "en": "And sometimes we can get off track.",
+    "zh": "有时候，我们也会偏离方向。",
+    "id": 210
+  },
+  {
+    "start": 648.182,
+    "end": 650.093,
+    "en": "Whenever that happens to me,",
+    "zh": "每当这种情况发生在我身上，",
+    "id": 211
+  },
+  {
+    "start": 650.117,
+    "end": 653.506,
+    "en": "I remember a powerful experience I had with my father.",
+    "zh": "我就会想起和父亲之间一次震撼人心的经历。",
+    "id": 212
+  },
+  {
+    "start": 655.641,
+    "end": 658.288,
+    "en": "Several months after I graduated from college,",
+    "zh": "大学毕业几个月后，",
+    "id": 213
+  },
+  {
+    "start": 658.312,
+    "end": 662.17,
+    "en": "my dad had a massive heart attack that should have killed him.",
+    "zh": "我父亲突发严重心脏病，本来足以夺走他的生命。",
+    "id": 214
+  },
+  {
+    "start": 662.853,
+    "end": 666.067,
+    "en": "He survived, and when I asked him what was going through his mind",
+    "zh": "他活了下来。后来我问他，在面对死亡时，",
+    "id": 215
+  },
+  {
+    "start": 666.091,
+    "end": 667.713,
+    "en": "as he faced death,",
+    "zh": "他脑子里在想什么，",
+    "id": 216
+  },
+  {
+    "start": 667.737,
+    "end": 670.42,
+    "en": "he said all he could think about was needing to live",
+    "zh": "他说，他唯一想到的就是自己必须活下去，",
+    "id": 217
+  },
+  {
+    "start": 670.444,
+    "end": 672.582,
+    "en": "so he could be there for my brother and me,",
+    "zh": "这样才能陪在我和弟弟身边，",
+    "id": 218
+  },
+  {
+    "start": 672.606,
+    "end": 675.195,
+    "en": "and this gave him the will to fight for life.",
+    "zh": "正是这个念头给了他为生命而战的意志。",
+    "id": 219
+  },
+  {
+    "start": 675.883,
+    "end": 679.181,
+    "en": "When he went under anesthesia for emergency surgery,",
+    "zh": "当他接受紧急手术、进入麻醉状态时，",
+    "id": 220
+  },
+  {
+    "start": 679.205,
+    "end": 681.535,
+    "en": "instead of counting backwards from 10,",
+    "zh": "他没有从 10 开始倒数，",
+    "id": 221
+  },
+  {
+    "start": 681.559,
+    "end": 684.729,
+    "en": "he repeated our names like a mantra.",
+    "zh": "而是像念诵咒语一样，一遍遍重复我们的名字。",
+    "id": 222
+  },
+  {
+    "start": 685.61,
+    "end": 689.421,
+    "en": "He wanted our names to be the last words he spoke on earth",
+    "zh": "如果他真的死去，他希望我们的名字，",
+    "id": 223
+  },
+  {
+    "start": 689.445,
+    "end": 690.67,
+    "en": "if he died.",
+    "zh": "能成为他在世上说出的最后几个字。",
+    "id": 224
+  },
+  {
+    "start": 692.853,
+    "end": 696.465,
+    "en": "My dad is a carpenter and a Sufi.",
+    "zh": "我父亲是一名木匠，也是一名苏菲派信徒。",
+    "id": 225
+  },
+  {
+    "start": 697.005,
+    "end": 698.552,
+    "en": "It's a humble life,",
+    "zh": "那是一种朴素的人生，",
+    "id": 226
+  },
+  {
+    "start": 698.576,
+    "end": 699.845,
+    "en": "but a good life.",
+    "zh": "但也是一种美好的人生。",
+    "id": 227
+  },
+  {
+    "start": 700.384,
+    "end": 704.296,
+    "en": "Lying there facing death, he had a reason to live:",
+    "zh": "躺在那里直面死亡时，他有一个活下去的理由：",
+    "id": 228
+  },
+  {
+    "start": 704.32,
+    "end": 705.728,
+    "en": "love.",
+    "zh": "爱。",
+    "id": 229
+  },
+  {
+    "start": 705.752,
+    "end": 708.203,
+    "en": "His sense of belonging within his family,",
+    "zh": "他在家庭中的归属感，",
+    "id": 230
+  },
+  {
+    "start": 708.227,
+    "end": 709.956,
+    "en": "his purpose as a dad,",
+    "zh": "他作为父亲的目标，",
+    "id": 231
+  },
+  {
+    "start": 709.98,
+    "end": 712.994,
+    "en": "his transcendent meditation, repeating our names --",
+    "zh": "他超越性的冥想，也就是重复我们的名字——",
+    "id": 232
+  },
+  {
+    "start": 713.018,
+    "end": 715.799,
+    "en": "these, he says, are the reasons why he survived.",
+    "zh": "他说，这些就是他活下来的原因。",
+    "id": 233
+  },
+  {
+    "start": 715.823,
+    "end": 718.262,
+    "en": "That's the story he tells himself.",
+    "zh": "这就是他讲给自己的故事。",
+    "id": 234
+  },
+  {
+    "start": 719.567,
+    "end": 721.717,
+    "en": "That's the power of meaning.",
+    "zh": "这就是意义的力量。",
+    "id": 235
+  },
+  {
+    "start": 722.463,
+    "end": 725.255,
+    "en": "Happiness comes and goes.",
+    "zh": "快乐来来去去。",
+    "id": 236
+  },
+  {
+    "start": 725.279,
+    "end": 727.128,
+    "en": "But when life is really good",
+    "zh": "但当生活真的很美好时，",
+    "id": 237
+  },
+  {
+    "start": 727.152,
+    "end": 729.041,
+    "en": "and when things are really bad,",
+    "zh": "也当一切真的很糟糕时，",
+    "id": 238
+  },
+  {
+    "start": 729.061,
+    "end": 732.114,
+    "en": "having meaning gives you something to hold on to.",
+    "zh": "拥有意义，会让你有所依靠。",
+    "id": 239
+  },
+  {
+    "start": 732.142,
+    "end": 733.366,
+    "en": "Thank you.",
+    "zh": "谢谢大家。",
+    "id": 240
+  }
+]
