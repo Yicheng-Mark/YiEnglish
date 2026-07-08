@@ -1203,6 +1203,25 @@ export const mockCorpusVideos = [
     subtitleUrl: '/corpus/subtitles/063.json',
     youtubeUrl: 'https://www.youtube.com/watch?v=8KkKuTCFvzI',
   },
+  {
+    id: '64',
+    title: 'What really matters at the end of life',
+    subtitle: 'TED 演讲：生命尽头真正重要的是什么',
+    description:
+      'TED 演讲：医生 BJ Miller 因少年时触电致残的经历，重新思考生命的终点。他从临终关怀（hospice）的视角出发，呼吁重新设计死亡体验——让临终不再只有仪器的冰冷与痛苦，而是回归尊严、联结与意义。在正式而富有感染力的演讲中学习关于生命、死亡、临终关怀与人生意义的地道英语表达。',
+    speaker: 'TED',
+    category: '演讲',
+    tags: ['TED', '生命', '临终关怀', '哲学', '演讲'],
+    accent: '美音',
+    durationSec: 1148,
+    sentenceCount: 288,
+    vocabCount: 643,
+    date: '2026-07-08',
+    videoUrl: `${OSS}/%E7%AC%AC61-75%E6%9C%9F/What%20really%20matters%20at%20the%20end%20of%20life.mp4`,
+    coverUrl: `${OSS}/%E7%AC%AC61-75%E6%9C%9F/What%20really%20matters%20at%20the%20end%20of%20life.jpg`,
+    subtitleUrl: '/corpus/subtitles/064.json',
+    youtubeUrl: 'https://www.youtube.com/watch?v=apbSsILLh28',
+  },
 ]
 
 export const totalCount = mockCorpusVideos.length

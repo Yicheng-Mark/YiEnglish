@@ -1,0 +1,2018 @@
+[
+  {
+    "start": 13.999,
+    "end": 17.008,
+    "en": "Well, we all need a reason to wake up.",
+    "zh": "每个人都需要一个早晨醒来的理由。",
+    "id": 1
+  },
+  {
+    "start": 18.898,
+    "end": 21.271,
+    "en": "For me, it just took 11,000 volts.",
+    "zh": "而对我来说，这个理由足足用了11000伏电压才让我明白。",
+    "id": 2
+  },
+  {
+    "start": 23.068,
+    "end": 24.742,
+    "en": "I know you're too polite to ask,",
+    "zh": "我知道你们太有礼貌，不会主动问我，",
+    "id": 3
+  },
+  {
+    "start": 24.766,
+    "end": 26.401,
+    "en": "so I will tell you.",
+    "zh": "所以我自己来告诉你们。",
+    "id": 4
+  },
+  {
+    "start": 27.354,
+    "end": 29.577,
+    "en": "One night, sophomore year of college,",
+    "zh": "大学二年级那年，",
+    "id": 5
+  },
+  {
+    "start": 29.601,
+    "end": 33.299,
+    "en": "just back from Thanksgiving holiday,",
+    "zh": "感恩节假期刚结束，",
+    "id": 6
+  },
+  {
+    "start": 33.323,
+    "end": 35.975,
+    "en": "a few of my friends and I were horsing around,",
+    "zh": "我和几个朋友正在打闹胡闹，",
+    "id": 7
+  },
+  {
+    "start": 35.999,
+    "end": 39.564,
+    "en": "and we decided to climb atop a parked commuter train.",
+    "zh": "然后我们决定爬上一列停着不动的通勤列车车顶。",
+    "id": 8
+  },
+  {
+    "start": 40.167,
+    "end": 43.281,
+    "en": "It was just sitting there, with the wires that run overhead.",
+    "zh": "它就停在那里，上方架着供电电线。",
+    "id": 9
+  },
+  {
+    "start": 43.305,
+    "end": 46.407,
+    "en": "Somehow, that seemed like a great idea at the time.",
+    "zh": "不知怎么的，当时我们觉得这主意特别棒。",
+    "id": 10
+  },
+  {
+    "start": 46.804,
+    "end": 49.286,
+    "en": "We'd certainly done stupider things.",
+    "zh": "毕竟我们以前干过更蠢的事。",
+    "id": 11
+  },
+  {
+    "start": 50.27,
+    "end": 53.291,
+    "en": "I scurried up the ladder on the back,",
+    "zh": "我顺着后面的梯子飞快爬了上去，",
+    "id": 12
+  },
+  {
+    "start": 53.315,
+    "end": 55.037,
+    "en": "and when I stood up,",
+    "zh": "就在我站起身的时候，",
+    "id": 13
+  },
+  {
+    "start": 55.061,
+    "end": 58.643,
+    "en": "the electrical current entered my arm,",
+    "zh": "电流从我的手臂进入身体，",
+    "id": 14
+  },
+  {
+    "start": 58.667,
+    "end": 61.207,
+    "en": "blew down and out my feet, and that was that.",
+    "zh": "一路轰穿我的身体，从双脚冲出体外，一切就在那一刻改变了。",
+    "id": 15
+  },
+  {
+    "start": 63.699,
+    "end": 66.288,
+    "en": "Would you believe that watch still works?",
+    "zh": "你们敢信吗？那块手表居然还能走。",
+    "id": 16
+  },
+  {
+    "start": 68.216,
+    "end": 69.423,
+    "en": "Takes a licking!",
+    "zh": "真是经得起折腾！",
+    "id": 17
+  },
+  {
+    "start": 70.502,
+    "end": 72.811,
+    "en": "My father wears it now in solidarity.",
+    "zh": "现在我父亲戴着它，以示与我同在。",
+    "id": 18
+  },
+  {
+    "start": 75.295,
+    "end": 81.318,
+    "en": "That night began my formal relationship with death -- my death --",
+    "zh": "那个夜晚，开启了我与死亡——与我自己的死亡——正式的关系。",
+    "id": 19
+  },
+  {
+    "start": 81.342,
+    "end": 85.15,
+    "en": "and it also began my long run as a patient.",
+    "zh": "同时，也开始了我漫长的病人生活。",
+    "id": 20
+  },
+  {
+    "start": 85.174,
+    "end": 86.328,
+    "en": "It's a good word.",
+    "zh": "这是个很有意思的词。",
+    "id": 21
+  },
+  {
+    "start": 86.352,
+    "end": 88.079,
+    "en": "It means one who suffers.",
+    "zh": "它的意思是承受痛苦的人。",
+    "id": 22
+  },
+  {
+    "start": 88.825,
+    "end": 90.266,
+    "en": "So I guess we're all patients.",
+    "zh": "这么说来，我想我们每个人都是病人。",
+    "id": 23
+  },
+  {
+    "start": 91.607,
+    "end": 93.973,
+    "en": "Now, the American health care system",
+    "zh": "如今，美国医疗体系",
+    "id": 24
+  },
+  {
+    "start": 93.997,
+    "end": 97.118,
+    "en": "has more than its fair share of dysfunction --",
+    "zh": "存在着不少问题和失灵之处——",
+    "id": 25
+  },
+  {
+    "start": 97.142,
+    "end": 99.202,
+    "en": "to match its brilliance, to be sure.",
+    "zh": "当然，与它卓越的一面同样突出。",
+    "id": 26
+  },
+  {
+    "start": 99.75,
+    "end": 104.202,
+    "en": "I'm a physician now, a hospice and palliative medicine doc,",
+    "zh": "现在我是一名医生，一名临终关怀与姑息治疗医生，",
+    "id": 27
+  },
+  {
+    "start": 104.226,
+    "end": 106.472,
+    "en": "so I've seen care from both sides.",
+    "zh": "因此我从两边都见识过医疗体系。",
+    "id": 28
+  },
+  {
+    "start": 107.076,
+    "end": 110.975,
+    "en": "And believe me: almost everyone who goes into healthcare",
+    "zh": "相信我：几乎所有投身医疗行业的人",
+    "id": 29
+  },
+  {
+    "start": 110.999,
+    "end": 114.136,
+    "en": "really means well -- I mean, truly.",
+    "zh": "本意都是真心想帮助别人——真的如此。",
+    "id": 30
+  },
+  {
+    "start": 114.874,
+    "end": 118.807,
+    "en": "But we who work in it are also unwitting agents",
+    "zh": "但我们这些身处其中的人，也在不知不觉间成为了",
+    "id": 31
+  },
+  {
+    "start": 118.831,
+    "end": 123.075,
+    "en": "for a system that too often does not serve.",
+    "zh": "一个常常无法真正服务于人的系统的执行者。",
+    "id": 32
+  },
+  {
+    "start": 123.999,
+    "end": 125.156,
+    "en": "Why?",
+    "zh": "为什么呢？",
+    "id": 33
+  },
+  {
+    "start": 125.624,
+    "end": 129.005,
+    "en": "Well, there's actually a pretty easy answer to that question,",
+    "zh": "其实这个问题的答案相当简单，",
+    "id": 34
+  },
+  {
+    "start": 129.029,
+    "end": 131.277,
+    "en": "and it explains a lot:",
+    "zh": "而且它能解释很多事情：",
+    "id": 35
+  },
+  {
+    "start": 131.301,
+    "end": 137.259,
+    "en": "because healthcare was designed with diseases, not people, at its center.",
+    "zh": "因为医疗体系的设计核心是疾病，而不是人。",
+    "id": 36
+  },
+  {
+    "start": 138.419,
+    "end": 141.325,
+    "en": "Which is to say, of course, it was badly designed.",
+    "zh": "换句话说，它从一开始就设计得不够好。",
+    "id": 37
+  },
+  {
+    "start": 142.158,
+    "end": 148.21,
+    "en": "And nowhere are the effects of bad design more heartbreaking",
+    "zh": "而糟糕设计造成的后果，最令人心碎的地方，",
+    "id": 38
+  },
+  {
+    "start": 148.234,
+    "end": 151.569,
+    "en": "or the opportunity for good design more compelling",
+    "zh": "以及优秀设计最能发挥价值的地方，",
+    "id": 39
+  },
+  {
+    "start": 151.593,
+    "end": 153.734,
+    "en": "than at the end of life,",
+    "zh": "莫过于生命的终点。",
+    "id": 40
+  },
+  {
+    "start": 153.758,
+    "end": 157.114,
+    "en": "where things are so distilled and concentrated.",
+    "zh": "因为在那里，一切都被浓缩到了极致。",
+    "id": 41
+  },
+  {
+    "start": 158.234,
+    "end": 160.02,
+    "en": "There are no do-overs.",
+    "zh": "没有重来的机会。",
+    "id": 42
+  },
+  {
+    "start": 162.073,
+    "end": 166.564,
+    "en": "My purpose today is to reach out across disciplines",
+    "zh": "今天我想跨越不同领域，",
+    "id": 43
+  },
+  {
+    "start": 166.588,
+    "end": 170.955,
+    "en": "and invite design thinking into this big conversation.",
+    "zh": "邀请设计思维加入这场重要的讨论。",
+    "id": 44
+  },
+  {
+    "start": 171.495,
+    "end": 176.852,
+    "en": "That is, to bring intention and creativity",
+    "zh": "也就是说，把有意识的思考与创造力",
+    "id": 45
+  },
+  {
+    "start": 176.876,
+    "end": 179.645,
+    "en": "to the experience of dying.",
+    "zh": "带入死亡这段经历之中。",
+    "id": 46
+  },
+  {
+    "start": 181.235,
+    "end": 185.268,
+    "en": "We have a monumental opportunity in front of us,",
+    "zh": "摆在我们面前的是一个巨大的机会，",
+    "id": 47
+  },
+  {
+    "start": 185.292,
+    "end": 189.633,
+    "en": "before one of the few universal issues",
+    "zh": "面对这个少数几个人人都会经历的问题之一，",
+    "id": 48
+  },
+  {
+    "start": 189.657,
+    "end": 192.967,
+    "en": "as individuals as well as a civil society:",
+    "zh": "无论作为个人还是作为社会整体：",
+    "id": 49
+  },
+  {
+    "start": 192.991,
+    "end": 196.907,
+    "en": "to rethink and redesign how it is we die.",
+    "zh": "重新思考并重新设计我们的死亡方式。",
+    "id": 50
+  },
+  {
+    "start": 199.489,
+    "end": 202.079,
+    "en": "So let's begin at the end.",
+    "zh": "那么，就让我们从终点开始谈起。",
+    "id": 51
+  },
+  {
+    "start": 203.611,
+    "end": 207.546,
+    "en": "For most people, the scariest thing about death isn't being dead,",
+    "zh": "对大多数人来说，死亡最可怕的并不是死去，",
+    "id": 52
+  },
+  {
+    "start": 207.57,
+    "end": 209.389,
+    "en": "it's dying, suffering.",
+    "zh": "而是死亡的过程，是痛苦。",
+    "id": 53
+  },
+  {
+    "start": 209.809,
+    "end": 211.184,
+    "en": "It's a key distinction.",
+    "zh": "这是一个关键区别。",
+    "id": 54
+  },
+  {
+    "start": 212.461,
+    "end": 214.629,
+    "en": "To get underneath this, it can be very helpful",
+    "zh": "为了真正理解这一点，",
+    "id": 55
+  },
+  {
+    "start": 214.653,
+    "end": 219.007,
+    "en": "to tease out suffering which is necessary as it is,",
+    "zh": "把那些不可避免的痛苦",
+    "id": 56
+  },
+  {
+    "start": 219.031,
+    "end": 221.696,
+    "en": "from suffering we can change.",
+    "zh": "和那些可以改变的痛苦区分开来会很有帮助。",
+    "id": 57
+  },
+  {
+    "start": 222.317,
+    "end": 227.553,
+    "en": "The former is a natural, essential part of life, part of the deal,",
+    "zh": "前者是生命自然且必不可少的一部分，是人生的一部分。",
+    "id": 58
+  },
+  {
+    "start": 227.577,
+    "end": 232.691,
+    "en": "and to this we are called to make space, adjust, grow.",
+    "zh": "面对它，我们需要学会接纳、调整并成长。",
+    "id": 59
+  },
+  {
+    "start": 235.013,
+    "end": 240.359,
+    "en": "It can be really good to realize forces larger than ourselves.",
+    "zh": "意识到有些力量远比我们自身更庞大，其实是一件好事。",
+    "id": 60
+  },
+  {
+    "start": 241.098,
+    "end": 244.222,
+    "en": "They bring proportionality,",
+    "zh": "它们会让我们获得尺度感，",
+    "id": 61
+  },
+  {
+    "start": 244.246,
+    "end": 246.565,
+    "en": "like a cosmic right-sizing.",
+    "zh": "仿佛宇宙帮我们重新校准了位置。",
+    "id": 62
+  },
+  {
+    "start": 248.779,
+    "end": 251.213,
+    "en": "After my limbs were gone,",
+    "zh": "失去四肢之后，",
+    "id": 63
+  },
+  {
+    "start": 251.237,
+    "end": 255.823,
+    "en": "that loss, for example, became fact, fixed --",
+    "zh": "那种失去变成了既定事实，无法改变——",
+    "id": 64
+  },
+  {
+    "start": 255.847,
+    "end": 259.16,
+    "en": "necessarily part of my life,",
+    "zh": "它必然成为我生命的一部分。",
+    "id": 65
+  },
+  {
+    "start": 259.184,
+    "end": 265.3,
+    "en": "and I learned that I could no more reject this fact than reject myself.",
+    "zh": "后来我明白，我无法拒绝这个事实，就像无法拒绝自己一样。",
+    "id": 66
+  },
+  {
+    "start": 267.173,
+    "end": 269.794,
+    "en": "It took me a while, but I learned it eventually.",
+    "zh": "这花了我一些时间，但最终我学会了。",
+    "id": 67
+  },
+  {
+    "start": 270.572,
+    "end": 273.016,
+    "en": "Now, another great thing about necessary suffering",
+    "zh": "而必要的痛苦还有另一个伟大的地方，",
+    "id": 68
+  },
+  {
+    "start": 273.04,
+    "end": 276.548,
+    "en": "is that it is the very thing",
+    "zh": "那就是它恰恰是",
+    "id": 69
+  },
+  {
+    "start": 276.572,
+    "end": 281.975,
+    "en": "that unites caregiver and care receiver --",
+    "zh": "照顾者与被照顾者之间共同拥有的东西——",
+    "id": 70
+  },
+  {
+    "start": 281.999,
+    "end": 283.252,
+    "en": "human beings.",
+    "zh": "那就是人性本身。",
+    "id": 71
+  },
+  {
+    "start": 285.089,
+    "end": 288.903,
+    "en": "This, we are finally realizing, is where healing happens.",
+    "zh": "而我们终于开始认识到，真正的疗愈正发生在这里。",
+    "id": 72
+  },
+  {
+    "start": 289.673,
+    "end": 293.193,
+    "en": "Yes, compassion -- literally, as we learned yesterday --",
+    "zh": "是的，同情心——正如我们昨天学到的那样——",
+    "id": 73
+  },
+  {
+    "start": 293.217,
+    "end": 294.645,
+    "en": "suffering together.",
+    "zh": "字面意思就是共同承受痛苦。",
+    "id": 74
+  },
+  {
+    "start": 296.672,
+    "end": 300.01,
+    "en": "Now, on the systems side, on the other hand,",
+    "zh": "而从系统层面来看，另一方面，",
+    "id": 75
+  },
+  {
+    "start": 300.034,
+    "end": 303.892,
+    "en": "so much of the suffering is unnecessary, invented.",
+    "zh": "大量痛苦其实是不必要的，是人为制造出来的。",
+    "id": 76
+  },
+  {
+    "start": 304.376,
+    "end": 306.65,
+    "en": "It serves no good purpose.",
+    "zh": "它们没有任何积极意义。",
+    "id": 77
+  },
+  {
+    "start": 306.674,
+    "end": 310.975,
+    "en": "But the good news is, since this brand of suffering is made up,",
+    "zh": "但好消息是，既然这种痛苦是人为创造的，",
+    "id": 78
+  },
+  {
+    "start": 310.999,
+    "end": 312.483,
+    "en": "well, we can change it.",
+    "zh": "那么我们就能够改变它。",
+    "id": 79
+  },
+  {
+    "start": 313.681,
+    "end": 316.335,
+    "en": "How we die is indeed something we can affect.",
+    "zh": "我们如何死亡，确实是能够被影响和改善的。",
+    "id": 80
+  },
+  {
+    "start": 318.446,
+    "end": 322.499,
+    "en": "Making the system sensitive to this fundamental distinction",
+    "zh": "让医疗系统真正意识到",
+    "id": 81
+  },
+  {
+    "start": 322.523,
+    "end": 325.975,
+    "en": "between necessary and unnecessary suffering",
+    "zh": "必要痛苦与非必要痛苦之间的根本区别，",
+    "id": 82
+  },
+  {
+    "start": 325.999,
+    "end": 329.689,
+    "en": "gives us our first of three design cues for the day.",
+    "zh": "就引出了今天第一个设计启示。",
+    "id": 83
+  },
+  {
+    "start": 330.299,
+    "end": 334.828,
+    "en": "After all, our role as caregivers, as people who care,",
+    "zh": "毕竟，作为照护者，作为关心他人的人，",
+    "id": 84
+  },
+  {
+    "start": 334.852,
+    "end": 339.514,
+    "en": "is to relieve suffering -- not add to the pile.",
+    "zh": "我们的职责是减轻痛苦，而不是增加痛苦。",
+    "id": 85
+  },
+  {
+    "start": 342.292,
+    "end": 344.163,
+    "en": "True to the tenets of palliative care,",
+    "zh": "遵循姑息治疗的理念，",
+    "id": 86
+  },
+  {
+    "start": 344.187,
+    "end": 347.86,
+    "en": "I function as something of a reflective advocate,",
+    "zh": "我既是一名倾听与反思的倡导者，",
+    "id": 87
+  },
+  {
+    "start": 347.884,
+    "end": 350.003,
+    "en": "as much as prescribing physician.",
+    "zh": "也是一名开药的医生。",
+    "id": 88
+  },
+  {
+    "start": 351.177,
+    "end": 357.198,
+    "en": "Quick aside: palliative care -- a very important field but poorly understood --",
+    "zh": "顺便解释一下：姑息治疗是一个非常重要却常被误解的领域——",
+    "id": 89
+  },
+  {
+    "start": 357.222,
+    "end": 360.176,
+    "en": "while it includes, it is not limited to end of life care.",
+    "zh": "它虽然包括临终关怀，但绝不仅限于此。",
+    "id": 90
+  },
+  {
+    "start": 360.2,
+    "end": 362.041,
+    "en": "It is not limited to hospice.",
+    "zh": "它也不等同于临终安宁疗护。",
+    "id": 91
+  },
+  {
+    "start": 362.811,
+    "end": 366.268,
+    "en": "It's simply about comfort and living well at any stage.",
+    "zh": "它本质上是在任何阶段帮助人们更舒适、更好地生活。",
+    "id": 92
+  },
+  {
+    "start": 366.999,
+    "end": 370.038,
+    "en": "So please know that you don't have to be dying anytime soon",
+    "zh": "所以请记住，你不需要即将离世",
+    "id": 93
+  },
+  {
+    "start": 370.062,
+    "end": 371.749,
+    "en": "to benefit from palliative care.",
+    "zh": "也能从姑息治疗中受益。",
+    "id": 94
+  },
+  {
+    "start": 373.45,
+    "end": 375.73,
+    "en": "Now, let me introduce you to Frank.",
+    "zh": "现在，让我向大家介绍Frank。",
+    "id": 95
+  },
+  {
+    "start": 377.768,
+    "end": 378.983,
+    "en": "Sort of makes this point.",
+    "zh": "他的故事正好说明这一点。",
+    "id": 96
+  },
+  {
+    "start": 379.007,
+    "end": 381.037,
+    "en": "I've been seeing Frank now for years.",
+    "zh": "这些年来，我一直在照顾Frank。",
+    "id": 97
+  },
+  {
+    "start": 381.061,
+    "end": 385.255,
+    "en": "He's living with advancing prostate cancer on top of long-standing HIV.",
+    "zh": "他患有不断进展的前列腺癌，同时长期与HIV共存。",
+    "id": 98
+  },
+  {
+    "start": 386.197,
+    "end": 388.183,
+    "en": "We work on his bone pain and his fatigue,",
+    "zh": "我们一起处理他的骨痛和疲劳问题，",
+    "id": 99
+  },
+  {
+    "start": 388.207,
+    "end": 392.921,
+    "en": "but most of the time we spend thinking out loud together about his life --",
+    "zh": "但大部分时间，我们都在一起大声思考人生——",
+    "id": 100
+  },
+  {
+    "start": 392.945,
+    "end": 394.31,
+    "en": "really, about our lives.",
+    "zh": "准确地说，是思考我们的人生。",
+    "id": 101
+  },
+  {
+    "start": 395.071,
+    "end": 396.731,
+    "en": "In this way, Frank grieves.",
+    "zh": "通过这种方式，Frank学会哀悼。",
+    "id": 102
+  },
+  {
+    "start": 397.207,
+    "end": 400.986,
+    "en": "In this way, he keeps up with his losses as they roll in,",
+    "zh": "通过这种方式，他一点点消化接连不断的失去，",
+    "id": 103
+  },
+  {
+    "start": 401.01,
+    "end": 404.159,
+    "en": "so that he's ready to take in the next moment.",
+    "zh": "从而准备好迎接下一个时刻。",
+    "id": 104
+  },
+  {
+    "start": 405.524,
+    "end": 409.695,
+    "en": "Loss is one thing, but regret, quite another.",
+    "zh": "失去是一回事，而遗憾则是另一回事。",
+    "id": 105
+  },
+  {
+    "start": 411.243,
+    "end": 413.2,
+    "en": "Frank has always been an adventurer --",
+    "zh": "Frank一直都是个冒险家——",
+    "id": 106
+  },
+  {
+    "start": 413.224,
+    "end": 416.065,
+    "en": "he looks like something out of a Norman Rockwell painting --",
+    "zh": "看上去就像Norman Rockwell画里走出来的人物——",
+    "id": 107
+  },
+  {
+    "start": 416.089,
+    "end": 417.653,
+    "en": "and no fan of regret.",
+    "zh": "而且他从不喜欢留下遗憾。",
+    "id": 108
+  },
+  {
+    "start": 418.566,
+    "end": 421.247,
+    "en": "So it wasn't surprising when he came into clinic one day,",
+    "zh": "所以有一天他来到诊所时，",
+    "id": 109
+  },
+  {
+    "start": 421.271,
+    "end": 424.007,
+    "en": "saying he wanted to raft down the Colorado River.",
+    "zh": "说自己想漂流穿越Colorado River，",
+    "id": 110
+  },
+  {
+    "start": 425.142,
+    "end": 426.817,
+    "en": "Was this a good idea?",
+    "zh": "我一点也不意外。",
+    "id": 111
+  },
+  {
+    "start": 427.268,
+    "end": 431.472,
+    "en": "With all the risks to his safety and his health, some would say no.",
+    "zh": "这真是个好主意吗？考虑到他健康和安全方面的风险，很多人会说不是。",
+    "id": 112
+  },
+  {
+    "start": 431.496,
+    "end": 435.062,
+    "en": "Many did, but he went for it, while he still could.",
+    "zh": "很多人确实这么说，但趁自己还做得到，他还是去了。",
+    "id": 113
+  },
+  {
+    "start": 435.999,
+    "end": 439.61,
+    "en": "It was a glorious, marvelous trip:",
+    "zh": "那是一趟壮丽而精彩的旅程：",
+    "id": 114
+  },
+  {
+    "start": 440.928,
+    "end": 446.25,
+    "en": "freezing water, blistering dry heat, scorpions, snakes,",
+    "zh": "刺骨的河水、灼热干燥的高温、蝎子、蛇，",
+    "id": 115
+  },
+  {
+    "start": 446.274,
+    "end": 451.705,
+    "en": "wildlife howling off the flaming walls of the Grand Canyon --",
+    "zh": "还有Grand Canyon火红峭壁间回荡的野生动物嚎叫声——",
+    "id": 116
+  },
+  {
+    "start": 451.729,
+    "end": 455.273,
+    "en": "all the glorious side of the world beyond our control.",
+    "zh": "这一切都是那个不受我们控制的世界最壮美的一面。",
+    "id": 117
+  },
+  {
+    "start": 456.492,
+    "end": 458.382,
+    "en": "Frank's decision, while maybe dramatic,",
+    "zh": "Frank的决定或许显得有些戏剧化，",
+    "id": 118
+  },
+  {
+    "start": 458.406,
+    "end": 460.693,
+    "en": "is exactly the kind so many of us would make,",
+    "zh": "但实际上，这正是许多人都会做出的选择，",
+    "id": 119
+  },
+  {
+    "start": 460.717,
+    "end": 466.914,
+    "en": "if we only had the support to figure out what is best for ourselves over time.",
+    "zh": "如果我们能得到足够支持，慢慢弄清什么对自己才最重要的话。",
+    "id": 120
+  },
+  {
+    "start": 469.291,
+    "end": 472.66,
+    "en": "So much of what we're talking about today is a shift in perspective.",
+    "zh": "所以，我们今天谈到的很多东西，其实都是视角的转变。",
+    "id": 121
+  },
+  {
+    "start": 474.723,
+    "end": 476.975,
+    "en": "After my accident, when I went back to college,",
+    "zh": "我出事之后，回到大学时，",
+    "id": 122
+  },
+  {
+    "start": 476.999,
+    "end": 479.365,
+    "en": "I changed my major to art history.",
+    "zh": "我把专业改成了艺术史。",
+    "id": 123
+  },
+  {
+    "start": 480.095,
+    "end": 484.395,
+    "en": "Studying visual art, I figured I'd learn something about how to see --",
+    "zh": "学习视觉艺术，我想我或许能学会一些关于如何观看的东西——",
+    "id": 124
+  },
+  {
+    "start": 485.705,
+    "end": 489.079,
+    "en": "a really potent lesson for a kid who couldn't change",
+    "zh": "对一个无法改变自己眼前许多景象的孩子来说，",
+    "id": 125
+  },
+  {
+    "start": 489.103,
+    "end": 491.144,
+    "en": "so much of what he was seeing.",
+    "zh": "这是一堂非常有力量的课。",
+    "id": 126
+  },
+  {
+    "start": 492.602,
+    "end": 496.34,
+    "en": "Perspective, that kind of alchemy we humans get to play with,",
+    "zh": "视角，就是我们人类得以玩味的那种炼金术，",
+    "id": 127
+  },
+  {
+    "start": 496.364,
+    "end": 498.874,
+    "en": "turning anguish into a flower.",
+    "zh": "把痛苦变成一朵花。",
+    "id": 128
+  },
+  {
+    "start": 501.999,
+    "end": 505.791,
+    "en": "Flash forward: now I work at an amazing place in San Francisco",
+    "zh": "时间快进到现在：我在 San Francisco 一个很棒的地方工作，",
+    "id": 129
+  },
+  {
+    "start": 505.815,
+    "end": 508.054,
+    "en": "called the Zen Hospice Project,",
+    "zh": "它叫 Zen Hospice Project，",
+    "id": 130
+  },
+  {
+    "start": 508.078,
+    "end": 511.698,
+    "en": "where we have a little ritual that helps with this shift in perspective.",
+    "zh": "在那里，我们有一个小小的仪式，帮助完成这种视角的转变。",
+    "id": 131
+  },
+  {
+    "start": 512.405,
+    "end": 515.466,
+    "en": "When one of our residents dies,",
+    "zh": "当我们的一位住客离世时，",
+    "id": 132
+  },
+  {
+    "start": 515.49,
+    "end": 519.96,
+    "en": "the mortuary men come, and as we're wheeling the body out through the garden,",
+    "zh": "殡仪人员会到来，而当我们推着遗体穿过花园、",
+    "id": 133
+  },
+  {
+    "start": 519.984,
+    "end": 522.014,
+    "en": "heading for the gate, we pause.",
+    "zh": "走向大门时，我们会停下来。",
+    "id": 134
+  },
+  {
+    "start": 522.038,
+    "end": 524.223,
+    "en": "Anyone who wants --",
+    "zh": "任何愿意的人——",
+    "id": 135
+  },
+  {
+    "start": 524.247,
+    "end": 526.971,
+    "en": "fellow residents, family, nurses, volunteers,",
+    "zh": "其他住客、家人、护士、志愿者，",
+    "id": 136
+  },
+  {
+    "start": 526.995,
+    "end": 529.439,
+    "en": "the hearse drivers too, now --",
+    "zh": "现在连灵车司机也会参与——",
+    "id": 137
+  },
+  {
+    "start": 529.463,
+    "end": 533.89,
+    "en": "shares a story or a song or silence,",
+    "zh": "会分享一个故事、一首歌，或是一段沉默，",
+    "id": 138
+  },
+  {
+    "start": 533.914,
+    "end": 536.702,
+    "en": "as we sprinkle the body with flower petals.",
+    "zh": "同时我们会把花瓣撒在遗体上。",
+    "id": 139
+  },
+  {
+    "start": 537.282,
+    "end": 539.586,
+    "en": "It takes a few minutes;",
+    "zh": "这只需要几分钟；",
+    "id": 140
+  },
+  {
+    "start": 539.61,
+    "end": 544.975,
+    "en": "it's a sweet, simple parting image to usher in grief with warmth,",
+    "zh": "它是一幅温柔而简单的告别画面，用温暖来迎接悲伤，",
+    "id": 141
+  },
+  {
+    "start": 544.999,
+    "end": 546.71,
+    "en": "rather than repugnance.",
+    "zh": "而不是用厌恶来面对死亡。",
+    "id": 142
+  },
+  {
+    "start": 548.06,
+    "end": 553.106,
+    "en": "Contrast that with the typical experience in the hospital setting,",
+    "zh": "这和医院里的典型经历形成鲜明对比，",
+    "id": 143
+  },
+  {
+    "start": 553.13,
+    "end": 557.994,
+    "en": "much like this -- floodlit room lined with tubes and beeping machines",
+    "zh": "差不多就是这样——被强光照亮的房间，四周都是管子和滴滴作响的机器，",
+    "id": 144
+  },
+  {
+    "start": 558.018,
+    "end": 562.186,
+    "en": "and blinking lights that don't stop even when the patient's life has.",
+    "zh": "还有不停闪烁的灯光，即使病人的生命已经停止，它们也不会停。",
+    "id": 145
+  },
+  {
+    "start": 563.419,
+    "end": 566.445,
+    "en": "Cleaning crew swoops in, the body's whisked away,",
+    "zh": "清洁人员迅速进来，遗体被匆匆推走，",
+    "id": 146
+  },
+  {
+    "start": 566.469,
+    "end": 571.497,
+    "en": "and it all feels as though that person had never really existed.",
+    "zh": "这一切让人感觉，那个人仿佛从未真正存在过。",
+    "id": 147
+  },
+  {
+    "start": 573.07,
+    "end": 575.693,
+    "en": "Well-intended, of course, in the name of sterility,",
+    "zh": "当然，这出发点是好的，是为了无菌，",
+    "id": 148
+  },
+  {
+    "start": 575.717,
+    "end": 579.213,
+    "en": "but hospitals tend to assault our senses,",
+    "zh": "但医院往往会冲击我们的感官，",
+    "id": 149
+  },
+  {
+    "start": 579.237,
+    "end": 584.741,
+    "en": "and the most we might hope for within those walls is numbness --",
+    "zh": "而在那些墙壁之内，我们最多只能指望麻木——",
+    "id": 150
+  },
+  {
+    "start": 584.765,
+    "end": 589.007,
+    "en": "anesthetic, literally the opposite of aesthetic.",
+    "zh": "anesthetic，也就是字面意义上 aesthetic 的反面。",
+    "id": 151
+  },
+  {
+    "start": 590.499,
+    "end": 594.804,
+    "en": "I revere hospitals for what they can do; I am alive because of them.",
+    "zh": "我敬重医院能做到的事；我能活下来，正是因为医院。",
+    "id": 152
+  },
+  {
+    "start": 596.096,
+    "end": 598.213,
+    "en": "But we ask too much of our hospitals.",
+    "zh": "但我们对医院要求得太多了。",
+    "id": 153
+  },
+  {
+    "start": 599.436,
+    "end": 603.029,
+    "en": "They are places for acute trauma and treatable illness.",
+    "zh": "它们是处理急性创伤和可治疗疾病的地方。",
+    "id": 154
+  },
+  {
+    "start": 603.053,
+    "end": 607.078,
+    "en": "They are no place to live and die; that's not what they were designed for.",
+    "zh": "它们不是生活和死亡的地方；它们本来就不是为此而设计的。",
+    "id": 155
+  },
+  {
+    "start": 610.078,
+    "end": 612.378,
+    "en": "Now mind you -- I am not giving up on the notion",
+    "zh": "不过请注意——我并不是放弃这样一个想法：",
+    "id": 156
+  },
+  {
+    "start": 612.402,
+    "end": 615.612,
+    "en": "that our institutions can become more humane.",
+    "zh": "我们的机构可以变得更有人性。",
+    "id": 157
+  },
+  {
+    "start": 616.057,
+    "end": 618.438,
+    "en": "Beauty can be found anywhere.",
+    "zh": "美可以在任何地方被发现。",
+    "id": 158
+  },
+  {
+    "start": 621.092,
+    "end": 623.364,
+    "en": "I spent a few months in a burn unit",
+    "zh": "我曾在烧伤病房住过几个月，",
+    "id": 159
+  },
+  {
+    "start": 623.388,
+    "end": 626.136,
+    "en": "at St. Barnabas Hospital in Livingston, New Jersey,",
+    "zh": "那是在 New Jersey 的 Livingston，St. Barnabas Hospital，",
+    "id": 160
+  },
+  {
+    "start": 626.16,
+    "end": 630.317,
+    "en": "where I got really great care at every turn,",
+    "zh": "在那里，我每一步都得到了非常好的照护，",
+    "id": 161
+  },
+  {
+    "start": 630.341,
+    "end": 632.538,
+    "en": "including good palliative care for my pain.",
+    "zh": "包括针对疼痛的良好缓和医疗。",
+    "id": 162
+  },
+  {
+    "start": 633.415,
+    "end": 636.26,
+    "en": "And one night, it began to snow outside.",
+    "zh": "有一天晚上，外面开始下雪。",
+    "id": 163
+  },
+  {
+    "start": 637.426,
+    "end": 641.341,
+    "en": "I remember my nurses complaining about driving through it.",
+    "zh": "我记得护士们抱怨要在雪里开车。",
+    "id": 164
+  },
+  {
+    "start": 642.103,
+    "end": 644.287,
+    "en": "And there was no window in my room,",
+    "zh": "我的病房里没有窗户，",
+    "id": 165
+  },
+  {
+    "start": 644.311,
+    "end": 647.617,
+    "en": "but it was great to just imagine it coming down all sticky.",
+    "zh": "但光是想象雪黏黏地落下来，就已经很美好了。",
+    "id": 166
+  },
+  {
+    "start": 649.299,
+    "end": 653.233,
+    "en": "Next day, one of my nurses smuggled in a snowball for me.",
+    "zh": "第二天，我的一位护士偷偷给我带进来一个雪球。",
+    "id": 167
+  },
+  {
+    "start": 653.257,
+    "end": 654.89,
+    "en": "She brought it in to the unit.",
+    "zh": "她把它带进了病区。",
+    "id": 168
+  },
+  {
+    "start": 656.731,
+    "end": 662.139,
+    "en": "I cannot tell you the rapture I felt holding that in my hand,",
+    "zh": "我无法形容，当我把它握在手里时，那种狂喜的感觉，",
+    "id": 169
+  },
+  {
+    "start": 662.163,
+    "end": 665.212,
+    "en": "and the coldness dripping onto my burning skin;",
+    "zh": "还有那股冰凉滴落在我灼烧般皮肤上的感觉；",
+    "id": 170
+  },
+  {
+    "start": 665.236,
+    "end": 667.546,
+    "en": "the miracle of it all,",
+    "zh": "这一切简直像奇迹，",
+    "id": 171
+  },
+  {
+    "start": 667.57,
+    "end": 671.329,
+    "en": "the fascination as I watched it melt and turn into water.",
+    "zh": "我看着它融化、变成水，感到无比着迷。",
+    "id": 172
+  },
+  {
+    "start": 675.293,
+    "end": 677.424,
+    "en": "In that moment,",
+    "zh": "在那一刻，",
+    "id": 173
+  },
+  {
+    "start": 677.448,
+    "end": 681.936,
+    "en": "just being any part of this planet in this universe mattered more to me",
+    "zh": "仅仅作为这个宇宙中这颗星球的一部分，就比我是否活着或死去",
+    "id": 174
+  },
+  {
+    "start": 681.96,
+    "end": 684.059,
+    "en": "than whether I lived or died.",
+    "zh": "更让我在意。",
+    "id": 175
+  },
+  {
+    "start": 684.083,
+    "end": 687.206,
+    "en": "That little snowball packed all the inspiration I needed",
+    "zh": "那个小小的雪球里，装着我所需要的一切激励，",
+    "id": 176
+  },
+  {
+    "start": 687.23,
+    "end": 690.435,
+    "en": "to both try to live and be OK if I did not.",
+    "zh": "让我既愿意努力活下去，也能够接受如果我活不成。",
+    "id": 177
+  },
+  {
+    "start": 691.176,
+    "end": 694.06,
+    "en": "In a hospital, that's a stolen moment.",
+    "zh": "在医院里，那是一个偷来的瞬间。",
+    "id": 178
+  },
+  {
+    "start": 696.356,
+    "end": 699.745,
+    "en": "In my work over the years, I've known many people",
+    "zh": "在这些年的工作中，我认识过许多人，",
+    "id": 179
+  },
+  {
+    "start": 699.769,
+    "end": 701.596,
+    "en": "who were ready to go, ready to die.",
+    "zh": "他们已经准备好离开，准备好死去。",
+    "id": 180
+  },
+  {
+    "start": 703.192,
+    "end": 707.975,
+    "en": "Not because they had found some final peace or transcendence,",
+    "zh": "不是因为他们找到了某种最终的平静或超脱，",
+    "id": 181
+  },
+  {
+    "start": 707.999,
+    "end": 712.308,
+    "en": "but because they were so repulsed by what their lives had become --",
+    "zh": "而是因为他们对自己的生活变成的样子感到极度排斥——",
+    "id": 182
+  },
+  {
+    "start": 714.553,
+    "end": 719.102,
+    "en": "in a word, cut off, or ugly.",
+    "zh": "一句话说，就是被隔绝，或者变得丑陋。",
+    "id": 183
+  },
+  {
+    "start": 723.394,
+    "end": 729.48,
+    "en": "There are already record numbers of us living with chronic and terminal illness,",
+    "zh": "如今，患有慢性病和终末期疾病的人数已经创下纪录，",
+    "id": 184
+  },
+  {
+    "start": 729.504,
+    "end": 730.956,
+    "en": "and into ever older age.",
+    "zh": "而且我们还活到越来越老。",
+    "id": 185
+  },
+  {
+    "start": 731.947,
+    "end": 736.747,
+    "en": "And we are nowhere near ready or prepared for this silver tsunami.",
+    "zh": "但对于这场'银发海啸'，我们远远没有准备好。",
+    "id": 186
+  },
+  {
+    "start": 739.335,
+    "end": 742.596,
+    "en": "We need an infrastructure dynamic enough to handle",
+    "zh": "我们需要一种足够灵活的基础体系，能够应对",
+    "id": 187
+  },
+  {
+    "start": 742.62,
+    "end": 746.684,
+    "en": "these seismic shifts in our population.",
+    "zh": "人口结构中的这些剧烈变化。",
+    "id": 188
+  },
+  {
+    "start": 747.637,
+    "end": 750.657,
+    "en": "Now is the time to create something new, something vital.",
+    "zh": "现在正是创造新事物、创造有生命力之物的时候。",
+    "id": 189
+  },
+  {
+    "start": 750.681,
+    "end": 753.041,
+    "en": "I know we can because we have to.",
+    "zh": "我知道我们能做到，因为我们必须做到。",
+    "id": 190
+  },
+  {
+    "start": 753.065,
+    "end": 755.087,
+    "en": "The alternative is just unacceptable.",
+    "zh": "另一种选择根本无法接受。",
+    "id": 191
+  },
+  {
+    "start": 755.651,
+    "end": 757.533,
+    "en": "And the key ingredients are known:",
+    "zh": "而关键要素其实已经清楚：",
+    "id": 192
+  },
+  {
+    "start": 757.557,
+    "end": 761.231,
+    "en": "policy, education and training,",
+    "zh": "政策、教育与培训，",
+    "id": 193
+  },
+  {
+    "start": 761.255,
+    "end": 763.317,
+    "en": "systems, bricks and mortar.",
+    "zh": "系统，以及实实在在的空间与建筑。",
+    "id": 194
+  },
+  {
+    "start": 764.642,
+    "end": 768.448,
+    "en": "We have tons of input for designers of all stripes to work with.",
+    "zh": "我们有大量信息，可以供各类设计者使用。",
+    "id": 195
+  },
+  {
+    "start": 769.123,
+    "end": 771.004,
+    "en": "We know, for example, from research",
+    "zh": "比如，我们从研究中知道，",
+    "id": 196
+  },
+  {
+    "start": 771.028,
+    "end": 774.514,
+    "en": "what's most important to people who are closer to death:",
+    "zh": "对接近死亡的人来说，最重要的是什么：",
+    "id": 197
+  },
+  {
+    "start": 774.538,
+    "end": 781.503,
+    "en": "comfort; feeling unburdened and unburdening to those they love;",
+    "zh": "舒适；感觉自己没有负担，也不会成为所爱之人的负担；",
+    "id": 198
+  },
+  {
+    "start": 781.527,
+    "end": 786.769,
+    "en": "existential peace; and a sense of wonderment and spirituality.",
+    "zh": "存在层面的安宁；以及一种惊叹感和灵性体验。",
+    "id": 199
+  },
+  {
+    "start": 788.896,
+    "end": 792.654,
+    "en": "Over Zen Hospice's nearly 30 years,",
+    "zh": "在 Zen Hospice 近 30 年的时间里，",
+    "id": 200
+  },
+  {
+    "start": 792.678,
+    "end": 796.321,
+    "en": "we've learned much more from our residents in subtle detail.",
+    "zh": "我们从住客身上学到了更多细腻入微的东西。",
+    "id": 201
+  },
+  {
+    "start": 797.662,
+    "end": 800.127,
+    "en": "Little things aren't so little.",
+    "zh": "小事并不小。",
+    "id": 202
+  },
+  {
+    "start": 801.499,
+    "end": 802.673,
+    "en": "Take Janette.",
+    "zh": "就拿 Janette 来说。",
+    "id": 203
+  },
+  {
+    "start": 802.697,
+    "end": 806.184,
+    "en": "She finds it harder to breathe one day to the next due to ALS.",
+    "zh": "因为 ALS，她一天比一天更难呼吸。",
+    "id": 204
+  },
+  {
+    "start": 806.208,
+    "end": 807.358,
+    "en": "Well, guess what?",
+    "zh": "可是，你猜怎么着？",
+    "id": 205
+  },
+  {
+    "start": 808.121,
+    "end": 811.499,
+    "en": "She wants to start smoking again --",
+    "zh": "她想重新开始抽烟——",
+    "id": 206
+  },
+  {
+    "start": 811.523,
+    "end": 814.451,
+    "en": "and French cigarettes, if you please.",
+    "zh": "而且还想抽法国产的香烟，劳驾。",
+    "id": 207
+  },
+  {
+    "start": 816.786,
+    "end": 819.009,
+    "en": "Not out of some self-destructive bent,",
+    "zh": "这并不是出于某种自毁倾向，",
+    "id": 208
+  },
+  {
+    "start": 819.033,
+    "end": 822.992,
+    "en": "but to feel her lungs filled while she has them.",
+    "zh": "而是在她还有肺的时候，想感受肺被填满。",
+    "id": 209
+  },
+  {
+    "start": 824.786,
+    "end": 825.983,
+    "en": "Priorities change.",
+    "zh": "优先级会改变。",
+    "id": 210
+  },
+  {
+    "start": 827.556,
+    "end": 830.027,
+    "en": "Or Kate -- she just wants to know",
+    "zh": "又比如 Kate——她只是想知道",
+    "id": 211
+  },
+  {
+    "start": 830.051,
+    "end": 834.086,
+    "en": "her dog Austin is lying at the foot of her bed,",
+    "zh": "她的狗 Austin 正趴在她床脚，",
+    "id": 212
+  },
+  {
+    "start": 834.11,
+    "end": 837.827,
+    "en": "his cold muzzle against her dry skin,",
+    "zh": "冰凉的鼻吻贴着她干燥的皮肤，",
+    "id": 213
+  },
+  {
+    "start": 837.851,
+    "end": 840.574,
+    "en": "instead of more chemotherapy coursing through her veins --",
+    "zh": "而不是让更多化疗药物在她血管里流淌——",
+    "id": 214
+  },
+  {
+    "start": 840.598,
+    "end": 841.779,
+    "en": "she's done that.",
+    "zh": "她已经受够了。",
+    "id": 215
+  },
+  {
+    "start": 842.849,
+    "end": 847.865,
+    "en": "Sensuous, aesthetic gratification, where in a moment, in an instant,",
+    "zh": "感官上的、审美上的满足，在某个片刻、某个瞬间，",
+    "id": 216
+  },
+  {
+    "start": 847.889,
+    "end": 851.241,
+    "en": "we are rewarded for just being.",
+    "zh": "让我们仅仅因为活着而得到奖赏。",
+    "id": 217
+  },
+  {
+    "start": 855.373,
+    "end": 859.655,
+    "en": "So much of it comes down to loving our time by way of the senses,",
+    "zh": "归根结底，其中很多都在于通过感官去热爱我们的时间，",
+    "id": 218
+  },
+  {
+    "start": 859.679,
+    "end": 864.971,
+    "en": "by way of the body -- the very thing doing the living and the dying.",
+    "zh": "通过身体去热爱我们的时间——而身体正是经历生与死的那个存在。",
+    "id": 219
+  },
+  {
+    "start": 866.258,
+    "end": 867.817,
+    "en": "Probably the most poignant room",
+    "zh": "Zen Hospice 客舍里",
+    "id": 220
+  },
+  {
+    "start": 867.841,
+    "end": 870.094,
+    "en": "in the Zen Hospice guest house is our kitchen,",
+    "zh": "最令人动容的房间，大概是我们的厨房，",
+    "id": 221
+  },
+  {
+    "start": 870.118,
+    "end": 872.155,
+    "en": "which is a little strange when you realize",
+    "zh": "这听起来有点奇怪，因为你会意识到，",
+    "id": 222
+  },
+  {
+    "start": 872.179,
+    "end": 875.992,
+    "en": "that so many of our residents can eat very little, if anything at all.",
+    "zh": "我们的许多住客几乎吃不了什么，甚至什么都吃不了。",
+    "id": 223
+  },
+  {
+    "start": 876.016,
+    "end": 881.886,
+    "en": "But we realize we are providing sustenance on several levels:",
+    "zh": "但我们明白，我们在多个层面提供滋养：",
+    "id": 224
+  },
+  {
+    "start": 881.91,
+    "end": 884.976,
+    "en": "smell, a symbolic plane.",
+    "zh": "气味，以及象征层面的滋养。",
+    "id": 225
+  },
+  {
+    "start": 886.356,
+    "end": 891.273,
+    "en": "Seriously, with all the heavy-duty stuff happening under our roof,",
+    "zh": "说真的，在我们屋檐下发生着这么多沉重的事情时，",
+    "id": 226
+  },
+  {
+    "start": 891.297,
+    "end": 895.031,
+    "en": "one of the most tried and true interventions we know of,",
+    "zh": "我们所知道的最经得起检验、最有效的干预方式之一，",
+    "id": 227
+  },
+  {
+    "start": 895.055,
+    "end": 898.548,
+    "en": "is to bake cookies.",
+    "zh": "就是烤饼干。",
+    "id": 228
+  },
+  {
+    "start": 910.144,
+    "end": 911.748,
+    "en": "As long as we have our senses --",
+    "zh": "只要我们还拥有感官——",
+    "id": 229
+  },
+  {
+    "start": 911.772,
+    "end": 913.784,
+    "en": "even just one --",
+    "zh": "哪怕只有一种——",
+    "id": 230
+  },
+  {
+    "start": 913.808,
+    "end": 917.217,
+    "en": "we have at least the possibility of accessing",
+    "zh": "我们至少仍然有可能触碰到",
+    "id": 231
+  },
+  {
+    "start": 917.241,
+    "end": 920.409,
+    "en": "what makes us feel human, connected.",
+    "zh": "那些让我们感到自己仍是人、仍与他人相连的东西。",
+    "id": 232
+  },
+  {
+    "start": 922.999,
+    "end": 925.785,
+    "en": "Imagine the ripples of this notion",
+    "zh": "想象一下这个观念会激起怎样的涟漪，",
+    "id": 233
+  },
+  {
+    "start": 925.809,
+    "end": 928.594,
+    "en": "for the millions of people living and dying with dementia.",
+    "zh": "对于数百万正在与痴呆共同生活、共同走向死亡的人而言。",
+    "id": 234
+  },
+  {
+    "start": 929.554,
+    "end": 933.819,
+    "en": "Primal sensorial delights that say the things we don't have words for,",
+    "zh": "那些原初的感官愉悦，说出了我们无法用语言表达的东西，",
+    "id": 235
+  },
+  {
+    "start": 933.843,
+    "end": 936.717,
+    "en": "impulses that make us stay present --",
+    "zh": "那些冲动让我们停留在当下——",
+    "id": 236
+  },
+  {
+    "start": 936.741,
+    "end": 939.546,
+    "en": "no need for a past or a future.",
+    "zh": "不需要过去，也不需要未来。",
+    "id": 237
+  },
+  {
+    "start": 942.28,
+    "end": 948.474,
+    "en": "So, if teasing unnecessary suffering out of the system was our first design cue,",
+    "zh": "所以，如果把系统中不必要的痛苦剥离出来，是我们的第一条设计提示，",
+    "id": 238
+  },
+  {
+    "start": 950.559,
+    "end": 953.263,
+    "en": "then tending to dignity by way of the senses,",
+    "zh": "那么通过感官来照料尊严，",
+    "id": 239
+  },
+  {
+    "start": 953.287,
+    "end": 957.079,
+    "en": "by way of the body -- the aesthetic realm --",
+    "zh": "通过身体来照料尊严——也就是审美领域——",
+    "id": 240
+  },
+  {
+    "start": 957.103,
+    "end": 958.96,
+    "en": "is design cue number two.",
+    "zh": "就是第二条设计提示。",
+    "id": 241
+  },
+  {
+    "start": 959.944,
+    "end": 963.75,
+    "en": "Now this gets us quickly to the third and final bit for today;",
+    "zh": "现在，这很快把我们带到今天的第三点，也是最后一点；",
+    "id": 242
+  },
+  {
+    "start": 963.774,
+    "end": 970.638,
+    "en": "namely, we need to lift our sights, to set our sights on well-being,",
+    "zh": "也就是说，我们需要抬高眼界，把目标放在福祉之上，",
+    "id": 243
+  },
+  {
+    "start": 970.662,
+    "end": 973.975,
+    "en": "so that life and health and healthcare",
+    "zh": "让生命、健康和医疗照护",
+    "id": 244
+  },
+  {
+    "start": 973.999,
+    "end": 976.384,
+    "en": "can become about making life more wonderful,",
+    "zh": "可以关乎如何让生命更加美好，",
+    "id": 245
+  },
+  {
+    "start": 976.408,
+    "end": 978.852,
+    "en": "rather than just less horrible.",
+    "zh": "而不只是让它不那么糟糕。",
+    "id": 246
+  },
+  {
+    "start": 980.196,
+    "end": 981.352,
+    "en": "Beneficence.",
+    "zh": "这就是行善。",
+    "id": 247
+  },
+  {
+    "start": 982.999,
+    "end": 985.134,
+    "en": "Here, this gets right at the distinction",
+    "zh": "在这里，这正触及了一个区别，",
+    "id": 248
+  },
+  {
+    "start": 985.158,
+    "end": 990.292,
+    "en": "between a disease-centered and a patient- or human-centered model of care,",
+    "zh": "即以疾病为中心的照护模式，和以病人或人本身为中心的照护模式之间的区别，",
+    "id": 249
+  },
+  {
+    "start": 990.316,
+    "end": 993.777,
+    "en": "and here is where caring becomes a creative, generative,",
+    "zh": "也正是在这里，照护变成了一种创造性的、生成性的，",
+    "id": 250
+  },
+  {
+    "start": 993.801,
+    "end": 995.643,
+    "en": "even playful act.",
+    "zh": "甚至带有游戏精神的行为。",
+    "id": 251
+  },
+  {
+    "start": 996.657,
+    "end": 998.657,
+    "en": "\"Play\" may sound like a funny word here.",
+    "zh": "'游戏'这个词用在这里也许听起来有点奇怪。",
+    "id": 252
+  },
+  {
+    "start": 999.687,
+    "end": 1002.591,
+    "en": "But it is also one of our highest forms of adaptation.",
+    "zh": "但它也是我们最高级的适应形式之一。",
+    "id": 253
+  },
+  {
+    "start": 1002.615,
+    "end": 1007.274,
+    "en": "Consider every major compulsory effort it takes to be human.",
+    "zh": "想想做人所必须面对的每一项重大需求。",
+    "id": 254
+  },
+  {
+    "start": 1007.298,
+    "end": 1009.801,
+    "en": "The need for food has birthed cuisine.",
+    "zh": "对食物的需求催生了烹饪。",
+    "id": 255
+  },
+  {
+    "start": 1009.825,
+    "end": 1012.413,
+    "en": "The need for shelter has given rise to architecture.",
+    "zh": "对住所的需求催生了建筑。",
+    "id": 256
+  },
+  {
+    "start": 1012.437,
+    "end": 1014.643,
+    "en": "The need for cover, fashion.",
+    "zh": "对遮蔽身体的需求催生了时尚。",
+    "id": 257
+  },
+  {
+    "start": 1014.667,
+    "end": 1017.398,
+    "en": "And for being subjected to the clock,",
+    "zh": "而因为我们受制于时钟，",
+    "id": 258
+  },
+  {
+    "start": 1017.422,
+    "end": 1020.949,
+    "en": "well, we invented music.",
+    "zh": "于是，我们发明了音乐。",
+    "id": 259
+  },
+  {
+    "start": 1023.766,
+    "end": 1026.975,
+    "en": "So, since dying is a necessary part of life,",
+    "zh": "所以，既然死亡是生命中不可避免的一部分，",
+    "id": 260
+  },
+  {
+    "start": 1026.999,
+    "end": 1029.63,
+    "en": "what might we create with this fact?",
+    "zh": "面对这个事实，我们又能创造出什么？",
+    "id": 261
+  },
+  {
+    "start": 1032.054,
+    "end": 1035.43,
+    "en": "By \"play\" I am in no way suggesting we take a light approach to dying",
+    "zh": "我说'游戏'，绝不是在暗示我们应该轻率地对待死亡，",
+    "id": 262
+  },
+  {
+    "start": 1035.454,
+    "end": 1038.093,
+    "en": "or that we mandate any particular way of dying.",
+    "zh": "也不是说我们要强制规定某一种死亡方式。",
+    "id": 263
+  },
+  {
+    "start": 1038.117,
+    "end": 1040.975,
+    "en": "There are mountains of sorrow that cannot move,",
+    "zh": "有些悲伤像山一样沉重，无法移动，",
+    "id": 264
+  },
+  {
+    "start": 1040.999,
+    "end": 1044.066,
+    "en": "and one way or another, we will all kneel there.",
+    "zh": "无论以哪种方式，我们终将跪倒在那里。",
+    "id": 265
+  },
+  {
+    "start": 1044.999,
+    "end": 1048.5,
+    "en": "Rather, I am asking that we make space --",
+    "zh": "相反，我是在请求我们腾出空间——",
+    "id": 266
+  },
+  {
+    "start": 1048.524,
+    "end": 1054.267,
+    "en": "physical, psychic room, to allow life to play itself all the way out --",
+    "zh": "物理上的空间，心理上的空间，让生命能够一路展开到最后——",
+    "id": 267
+  },
+  {
+    "start": 1054.291,
+    "end": 1057.648,
+    "en": "so that rather than just getting out of the way,",
+    "zh": "这样，衰老和死亡就不只是被我们让路、避开，",
+    "id": 268
+  },
+  {
+    "start": 1057.672,
+    "end": 1062.489,
+    "en": "aging and dying can become a process of crescendo through to the end.",
+    "zh": "而能够成为一个一路渐强、直至终点的过程。",
+    "id": 269
+  },
+  {
+    "start": 1064.931,
+    "end": 1068.772,
+    "en": "We can't solve for death.",
+    "zh": "我们无法解决死亡这个问题。",
+    "id": 270
+  },
+  {
+    "start": 1070.283,
+    "end": 1072.59,
+    "en": "I know some of you are working on this.",
+    "zh": "我知道你们当中有些人正在研究这个。",
+    "id": 271
+  },
+  {
+    "start": 1077.003,
+    "end": 1078.815,
+    "en": "Meanwhile, we can --",
+    "zh": "与此同时，我们可以——",
+    "id": 272
+  },
+  {
+    "start": 1080.879,
+    "end": 1083.185,
+    "en": "We can design towards it.",
+    "zh": "我们可以面向死亡去设计。",
+    "id": 273
+  },
+  {
+    "start": 1084.042,
+    "end": 1085.417,
+    "en": "Parts of me died early on,",
+    "zh": "我的一部分很早就死去了，",
+    "id": 274
+  },
+  {
+    "start": 1085.441,
+    "end": 1088.205,
+    "en": "and that's something we can all say one way or another.",
+    "zh": "而这件事，我们每个人都能以某种方式说出口。",
+    "id": 275
+  },
+  {
+    "start": 1088.583,
+    "end": 1091.224,
+    "en": "I got to redesign my life around this fact,",
+    "zh": "我得以围绕这个事实重新设计我的人生，",
+    "id": 276
+  },
+  {
+    "start": 1091.248,
+    "end": 1094.588,
+    "en": "and I tell you it has been a liberation",
+    "zh": "我可以告诉你，意识到这一点是一种解放：",
+    "id": 277
+  },
+  {
+    "start": 1094.612,
+    "end": 1097.767,
+    "en": "to realize you can always find a shock of beauty or meaning",
+    "zh": "在你剩下的人生里，你永远可以找到一阵突如其来的美或意义，",
+    "id": 278
+  },
+  {
+    "start": 1097.791,
+    "end": 1100.058,
+    "en": "in what life you have left,",
+    "zh": "无论那生命还剩多少，",
+    "id": 279
+  },
+  {
+    "start": 1100.082,
+    "end": 1102.846,
+    "en": "like that snowball lasting for a perfect moment,",
+    "zh": "就像那个雪球，在一个完美的瞬间存在着，",
+    "id": 280
+  },
+  {
+    "start": 1102.87,
+    "end": 1105.168,
+    "en": "all the while melting away.",
+    "zh": "同时又一直在融化消失。",
+    "id": 281
+  },
+  {
+    "start": 1106.7,
+    "end": 1112.719,
+    "en": "If we love such moments ferociously,",
+    "zh": "如果我们能够炽烈地爱着这样的瞬间，",
+    "id": 282
+  },
+  {
+    "start": 1112.743,
+    "end": 1115.015,
+    "en": "then maybe we can learn to live well --",
+    "zh": "那么也许我们就能学会好好活着——",
+    "id": 283
+  },
+  {
+    "start": 1115.039,
+    "end": 1117.126,
+    "en": "not in spite of death,",
+    "zh": "不是尽管有死亡，",
+    "id": 284
+  },
+  {
+    "start": 1117.15,
+    "end": 1118.736,
+    "en": "but because of it.",
+    "zh": "而是因为有死亡。",
+    "id": 285
+  },
+  {
+    "start": 1122.52,
+    "end": 1124.696,
+    "en": "Let death be what takes us,",
+    "zh": "让死亡带走我们，",
+    "id": 286
+  },
+  {
+    "start": 1124.72,
+    "end": 1127.582,
+    "en": "not lack of imagination.",
+    "zh": "而不是让想象力的匮乏带走我们。",
+    "id": 287
+  },
+  {
+    "start": 1128.868,
+    "end": 1130.02,
+    "en": "Thank you.",
+    "zh": "谢谢大家。",
+    "id": 288
+  }
+]
