@@ -52,7 +52,7 @@
         训练（听写 · 复习 · 五大功能词本）
                     │
                     ▼
-        应用（分级阅读 + 62 集真实语料）
+        应用（分级阅读 + 65 集真实语料）
                     │  生词一键收藏 ──► 阅读词本 / 语料词本 ──► 回流训练
                     ▼
         反馈（数据统计）
@@ -68,7 +68,7 @@
 - **23 本精准词库**：覆盖中学、大学、英专、留学、考研、船员考试、专业英语七大类，共 **93,644 词**
 - **25 词/章科学切分**：强制控制单次学习负荷，每章一个独立进度单元
 - **沉浸式逐字输入**：实时纠错高亮，肌肉记忆 + 视觉记忆双通道强化
-- **Web Audio 机械键盘音效**：纯代码合成真实机械键盘声 + 正确 / 错误 / 完成提示音，零音频文件依赖（见 `src/hooks/useTyping.js` + `src/utils/audioContext.js`）
+- **Web Audio 机械键盘音效**：纯代码合成真实机械键盘声 + 正确 / 错误 / 完成提示音，零音频文件依赖（见 [src/hooks/useTyping.js](src/hooks/useTyping.js) + [src/utils/audioContext.js](src/utils/audioContext.js)）
 - **听写模式**：隐藏单词，纯凭记忆与中文释义拼写
 - **可配重复次数**：1 / 3 / 5 / 8 / 无限次，按需强化
 - **错词智能分类**：自动识别双字母遗漏、元音混淆、相邻键误触等错误类型，沉淀进错题本
@@ -79,30 +79,30 @@
 - **错题本**：打字练习中出错的词，专项重练
 - **阅读词本**：分级阅读里点查收藏的生词
 - **语料词本**：视频字幕里点查收藏的生词
-- **复习计划**：SM-2 间隔重复调度，在「将要遗忘前」精准召回（实现见 `src/utils/reviewCards.js`）
+- **复习计划**：SM-2 间隔重复调度，在「将要遗忘前」精准召回（实现见 [src/utils/reviewCards.js](src/utils/reviewCards.js)）
 - **收藏词本**：练习中随手收藏的词，随时专项练习
 
 ### 📖 分级阅读
-- **点击即查**：即点即查，支持不规则动词、复数、时态等词形还原（`src/utils/wordLookup.js`）
+- **点击即查**：即点即查，支持不规则动词、复数、时态等词形还原（[src/utils/wordLookup.js](src/utils/wordLookup.js)）
 - **生词回流**：一键收藏至阅读词本，回到打字模块专项练习
 - **沉浸式阅读**：段落级中文翻译折叠，阅读进度持久化
 - **多维筛选**：分类、年份、搜索、收藏四维过滤
 
 ### 🎬 视频语料中心
-- **62 集精选语料**：TED 演讲、旅行 Vlog、生活播客、美食分享，美音英音兼备
+- **65 集精选语料**：TED 演讲、旅行 Vlog、生活播客、美食分享，美音英音兼备
 - **8 种字幕模式**：中英双语 · 纯英文 · 纯中文 · 完形填空 · 听写模式 · 阅读模式 · 中英互译 · 词汇卡片
 - **键盘快捷键**：空格暂停 / ← → 跳转 5s / ↑ ↓ 切换字幕 / L 循环
 - **字幕点词即查**：点击字幕任意单词即时查义并收藏至语料词本
-- **移动端专属播放器**：针对触屏优化的手势与布局（`src/modules/corpus/components/mobile/`）
-- **iOS Safari 兼容**：自定义 OSS 域名 + 内嵌播放 / 封面 / 全屏专项修复；AV1 片源已统一转码 H.264 + faststart
+- **移动端专属播放器**：针对触屏优化的手势与布局（[src/modules/corpus/components/mobile/](src/modules/corpus/components/mobile/)）
+- **iOS Safari 兼容**：自定义 OSS 域名 + 内嵌播放 / 封面 / 全屏专项修复；片源已统一转码 H.264 + faststart
 - **体验用户限流**：体验账号仅开放第 1–5 期，超出（含直链 / 历史 / 期号跳转）自动重定向至体验沙箱
 
 ### 📐 语法体系
 - **三阶进阶**：词性 → 时态 → 长难句，由词到句逐步构建语法框架
-- **八大词性**系统讲解 · **16 种时态**体系梳理 · **长难句**层层拆分
+- **八大词性**系统讲解 · **16 种时态**体系梳理 · **长难句**层层拆分（数据见 [src/data/english_grammar_system.json](src/data/english_grammar_system.json)）
 
 ### 💡 科学学习方法
-- 6 大高效学习法，按证据等级分级，附科学方法 vs 低效方法对比数据
+- 6 大高效学习法，按证据等级分级，附科学方法 vs 低效方法对比数据（[src/data/english_learning_methods_data.json](src/data/english_learning_methods_data.json)）
 - 每日 15–20 分钟最小有效剂量学习计划
 
 ### 🔐 账号体系
@@ -130,7 +130,7 @@
 | 🧠 SM-2 间隔重复 | 基于遗忘曲线在「将要遗忘前」召回，错题本 + 复习计划双驱动 |
 | ⌨️ Web Audio 合成音效 | 机械键盘声、正确 / 错误 / 完成提示音，纯代码合成零依赖 |
 | 🔍 词形还原查词 | 不规则动词、复数、时态、比较级等形态还原，查词无死角 |
-| 🎬 62 集真实语料 | 8 种字幕模式 + 字幕点词即查，OSS 自定义域名解决 iOS 内嵌播放 |
+| 🎬 65 集真实语料 | 8 种字幕模式 + 字幕点词即查，OSS 自定义域名解决 iOS 内嵌播放 |
 | 🔐 完整账号体系 | 每账号 2 设备 + 激活码 / 体验码 / 找回密码，到期双重强制下线 |
 | 🎨 4 套主题 + 星空动画 | Canvas 60fps 星空背景，闪光、星座线、流星雨效果 |
 | 📱 深度移动端适配 | UA + 触控 + 屏幕尺寸 + 指针类型多维检测，平板横竖屏自动切换（运行时分流，单构建产物） |
@@ -153,15 +153,15 @@
 | **船员考试** | 航海英语 | 1,565 |
 | **专业英语** | 程序员 · 轮机 · 商务 · 外贸 · 汽修 · 电工 · 厨师 | 20,582 |
 
-> 各词库均标注权威来源（如轮机英语依据《轮机英语词汇》国防工业出版社 2022、外贸英语依据外经贸大 880 万词语料库、汽修英语依据 GB/T 5624-2019 等 SAE 标准）。
+> 各词库均标注权威来源（如轮机英语依据《轮机英语词汇》国防工业出版社 2022、外贸英语依据外经贸大 880 万词语料库、汽修英语依据 GB/T 5624-2019 等 SAE 标准）。词库元数据见 [src/dictionaries/meta.js](src/dictionaries/meta.js)。
 
 ---
 
 ## 🎬 语料库
 
-62 集真实英语视频语料，覆盖 **演讲 / 旅行 / 生活 / 美食** 四大类，美音英音兼备。每集提供：
+65 集真实英语视频语料，覆盖 **演讲 / 旅行 / 生活 / 美食** 四大类，美音英音兼备。每集提供：
 
-- 完整中英字幕（时间轴对齐，`public/corpus/subtitles/`）
+- 完整中英字幕（时间轴对齐，[public/corpus/subtitles/](public/corpus/subtitles/)）
 - 句数、词汇量统计、口音标注
 - 字幕逐词点查 + 收藏至语料词本
 - YouTube 原始链接溯源
@@ -179,7 +179,7 @@
 | 框架 | React 18 + Vite 5（ESM） |
 | 样式 | Tailwind CSS 3 + CSS 变量主题系统（4 套主题，`darkMode: 'class'`） |
 | 路由 | React Router 6（懒加载 + 失败重试 `lazyRetry`） |
-| 虚拟列表 | @tanstack/react-virtual |
+| 虚拟列表 | @tanstack/react-virtual（[src/components/virtual/](src/components/virtual/)） |
 | 图表 | 纯 CSS/DOM 自绘（学习日历热力图 + 7 天趋势图，无第三方图表库） |
 | 图标 | lucide-react |
 | 通知 | sonner（toast） |
@@ -193,7 +193,7 @@
 | 数据库 | MySQL 8.0（mysql2 连接池，utf8mb4_unicode_ci） |
 | 认证 | JWT（access 30m / refresh 7d）+ bcryptjs（12 轮）+ HttpOnly Cookie |
 | 邮件 | resend（验证码 / 找回密码） |
-| 日志 | pino（生产 JSON 单行 / 开发 pino-pretty 彩色，`server/utils/logger.js`） |
+| 日志 | pino（生产 JSON 单行 / 开发 pino-pretty 彩色，[server/utils/logger.js](server/utils/logger.js)） |
 | 迁移 | 服务启动时自动幂等执行 `server/sql/migrate_*.sql`，无需手动建表 |
 
 ### REST API
@@ -210,7 +210,7 @@
 | 监控 | `/api/client-error` | 前端错误统一上报 |
 | 迁移 | `/api/migrate` | 一次性本地（localStorage）→ 服务端用户数据导入 |
 
-> 数据库 schema 迁移不由此端点触发，而是在**服务启动时自动幂等执行** `server/sql/migrate_*.sql`（`server/index.js runMigrations()`，含单引号感知的 SQL 切分器）。
+> 数据库 schema 迁移不由此端点触发，而是在**服务启动时自动幂等执行** `server/sql/migrate_*.sql`（[server/index.js](server/index.js) `runMigrations()`，含单引号感知的 SQL 切分器）。
 
 ---
 
@@ -220,13 +220,14 @@
 typing-word/
 ├── src/
 │   ├── modules/                  # 业务模块（按功能域懒加载）
-│   │   ├── corpus/               # 视频语料中心（字幕模式 / mobile/ 移动端组件）
+│   │   ├── corpus/               # 视频语料中心（字幕模式 / components/mobile/ 移动端组件）
 │   │   ├── reading/              # 分级阅读
 │   │   ├── grammar/              # 语法体系
 │   │   └── learning-methods/     # 科学学习方法
 │   ├── pages/                    # 顶层页面（打字 / 词本 / 统计 / 登录 / 设备 …）
-│   ├── components/               # 通用组件 + virtual/
+│   ├── components/               # 通用组件 + virtual/（VirtualList / VirtualGrid）
 │   ├── contexts/                 # Auth / Word 全局状态
+│   ├── data/                     # grammar / learning-methods 静态数据 JSON
 │   ├── hooks/                    # useTyping / useQuiz / useIsMobile / useTypingGestures …
 │   ├── dictionaries/meta.js      # 词库元数据（JSON 已移出 bundle，运行时 fetch）
 │   ├── utils/                    # reviewCards(SM-2) / wordLookup(词形还原) / audioContext / idb …
@@ -234,7 +235,7 @@ typing-word/
 ├── server/
 │   ├── routes/                   # 9 个 REST 路由模块
 │   ├── middleware/               # auth / rateLimit / errorHandler
-│   ├── sql/                      # schema.sql + 11 个幂等 migrate_*.sql
+│   ├── sql/                      # schema.sql + 幂等 migrate_*.sql
 │   ├── config.js  db.js
 │   ├── utils/logger.js           # pino 日志
 │   └── index.js                  # 入口 + 启动时自动迁移
@@ -242,7 +243,7 @@ typing-word/
 ├── deploy/                       # nginx.conf / ecosystem.config.js / setup.sh / deploy.sh
 ├── public/
 │   ├── dictionaries/             # 23 本词库 JSON（fetch 加载，不进 bundle）
-│   └── corpus/subtitles/         # 62 集字幕 JSON
+│   └── corpus/subtitles/         # 65 集字幕 JSON
 └── .github/workflows/            # CI/CD（push main 自动部署阿里云）
 ```
 
@@ -262,11 +263,14 @@ npm run dev
 npm run server
 ```
 
-**环境变量**（参考 `.env.example`）：
+> ⚠️ **MySQL80 须先以管理员权限启动**（系统服务或手动提权），否则后端起不来。
+
+**环境变量**（参考 [.env.example](.env.example)）：
 
 ```env
 PORT=3001
 DB_HOST=localhost
+DB_PORT=3306
 DB_NAME=lingoforge
 JWT_SECRET=<your-secret>
 JWT_ACCESS_EXPIRES=30m
@@ -274,8 +278,9 @@ JWT_REFRESH_EXPIRES=7d
 MAX_DEVICES_PER_USER=2
 FRONTEND_URL=http://localhost:5173
 ALLOWED_ORIGINS=http://localhost:5173
+VITE_API_BASE_URL=               # 本地留空走 Vite proxy
 VITE_OSS_BASE_URL=https://videos.lingoforge.fun
-VITE_AUTH_ENABLED=true        # 置 false 即为免登录体验构建
+VITE_AUTH_ENABLED=true           # 置 false 即为免登录体验构建（Vercel 演示站用）
 ```
 
 **词库维护脚本**：
@@ -289,7 +294,7 @@ npm run corpus:check-yt   # 语料 YouTube 去重
 ### 测试与质量
 
 ```bash
-npm run test:run          # vitest 一次性跑全量（114 用例：hooks + server supertest）
+npm run test:run          # vitest 一次性跑全量（hooks + utils + server supertest）
 npm test                  # vitest watch
 npm run lint              # eslint（flat config）
 npm run format            # prettier 格式化
@@ -321,13 +326,15 @@ npm run format            # prettier 格式化
    体验/演示 ──►  Vercel（VITE_AUTH_ENABLED=false 的免登录构建）
 ```
 
-- **主站（阿里云）**：Express(:3001) + PM2 单实例守护 + Nginx 反代 + MySQL，承载完整账号体系。
-- **媒体源（OSS）**：62 集视频与封面，自定义域名规避 iOS Safari `attachment` 头；片源统一 H.264 + faststart。
-- **体验站（Vercel）**：`VITE_AUTH_ENABLED=false` 免登录演示构建，`App.jsx` 据此裁剪鉴权路由，独立于主站。
+- **主站（阿里云）**：Express(:3001) + PM2 单实例守护 + Nginx 反代 + MySQL，承载完整账号体系。代码目录 `/home/lingoforge`，**非 git 仓库**，部署靠推送同步（见下 CI/CD），不在服务器上 `git pull`。
+- **媒体源（OSS）**：65 集视频与封面，自定义域名规避 iOS Safari `attachment` 头；片源统一 H.264 + faststart。
+- **体验站（Vercel）**：`VITE_AUTH_ENABLED=false` 免登录演示构建，[App.jsx](src/App.jsx) 据此裁剪鉴权路由，独立于主站。
 - **数据迁移**：服务启动时自动幂等执行 `server/sql/migrate_*.sql`，无需手动建表。
 - **前端错误闭环**：`/api/client-error` 收集客户端异常，pino 落盘，PM2 日志可检索。
 
-### CI/CD（`.github/workflows/deploy.yml`）
+> ℹ️ Vercel 域名 `lingoforge.vercel.app` 在国内被 GFW 污染（DNS + RST），国内 `curl` 必返回 HTTP 000，**这不是部署故障**；验证 Vercel 状态请看 Vercel 控制台。
+
+### CI/CD（[.github/workflows/deploy.yml](.github/workflows/deploy.yml)）
 
 push 到 `main` 自动触发，质量门禁失败即中止部署：
 
