@@ -240,6 +240,7 @@ typing-word/
 │   ├── utils/logger.js           # pino 日志
 │   └── index.js                  # 入口 + 启动时自动迁移
 ├── scripts/                      # 词库校验 / 语料 YouTube 去重 / OSS 编码与转码工具
+├── standards/                    # 权威词表（dict:levels 分级校验对照源：CET / TEM / 考研 / SAT 等）
 ├── deploy/                       # nginx.conf / ecosystem.config.js / setup.sh / deploy.sh
 ├── public/
 │   ├── dictionaries/             # 23 本词库 JSON（fetch 加载，不进 bundle）
@@ -365,3 +366,11 @@ push 到 `main` 自动触发，质量门禁失败即中止部署：
 **张艺城** —— 独立开发者
 
 > _Nothing is impossible._
+
+---
+
+## 📄 许可证
+
+[MIT License](LICENSE) © 2026 warri
+
+> 词库与语料内容仅用于学习目的，部分依据权威大纲 / 标准（详见各词库 description 标注的来源）；第三方素材（TED、YouTube 等）版权归原作者所有。
