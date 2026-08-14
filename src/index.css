@@ -135,17 +135,14 @@ html, body, #root {
   scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
 }
 
-/* 暗色 / 灰色 / 星空主题 — 滚动条对比度调整 */
-[data-theme="gray"] ::-webkit-scrollbar-thumb,
-[data-theme="star"] ::-webkit-scrollbar-thumb {
+/* 暗色 / 灰色主题 — 滚动条对比度调整 */
+[data-theme="gray"] ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.15);
 }
-[data-theme="gray"] ::-webkit-scrollbar-thumb:hover,
-[data-theme="star"] ::-webkit-scrollbar-thumb:hover {
+[data-theme="gray"] ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.25);
 }
-[data-theme="gray"] *,
-[data-theme="star"] * {
+[data-theme="gray"] * {
   scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
 
@@ -858,24 +855,6 @@ body[data-scrolling="true"] .glow-border-subtle:hover {
 }
 
 /* ============================================== */
-/*  Theme: Star (data-theme="star", dark class on) */
-/*  增强单词卡片在星空背景下的对比度              */
-/* ============================================== */
-[data-theme="star"] .reading-word-popup {
-  background: #252536;
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-[data-theme="star"] .mode-switch-glass {
-  background: rgba(37, 37, 54, 0.55);
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 4px 12px rgba(0, 0, 0, 0.4);
-}
-
-/* ============================================== */
 /*  Theme: Warm (data-theme="warm", no dark class) */
 /*  纸感温润：暖米背景 + 柔白卡片 + 棕色强调。     */
 /*  通过 CSS 变量驱动 bg-background / text-content  */
@@ -978,7 +957,7 @@ body[data-scrolling="true"] .glow-border-subtle:hover {
 /* ============================================== */
 /*  Corpus / 语料：词性着色 + Cloze + 动态字幕   */
 /*  - 词性颜色变量按主题分别定义                     */
-/*  - .dark 覆盖 gray + star（两者都有 dark 类）     */
+/*  - .dark 覆盖 gray                              */
 /*  - [data-theme="warm"] 单独覆盖                  */
 /* ============================================== */
 :root {

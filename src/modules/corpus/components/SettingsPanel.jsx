@@ -4,10 +4,21 @@ import { useCorpusContext } from '../context/CorpusPlayerContext.jsx'
 import { useUserConfig } from '../../../hooks/useUserConfig.js'
 
 const THEME_OPTIONS = [
-  { value: 'light', label: '明亮', activeClass: 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' },
-  { value: 'gray', label: '暗夜', activeClass: 'bg-gray-200 text-gray-700 dark:bg-white dark:text-gray-900' },
-  { value: 'star', label: '星空', activeClass: 'bg-amber-100 text-amber-700 dark:bg-white dark:text-gray-900' },
-  { value: 'warm', label: '暖光', activeClass: 'bg-orange-100 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400' },
+  {
+    value: 'light',
+    label: '明亮',
+    activeClass: 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400',
+  },
+  {
+    value: 'gray',
+    label: '暗夜',
+    activeClass: 'bg-gray-200 text-gray-700 dark:bg-white dark:text-gray-900',
+  },
+  {
+    value: 'warm',
+    label: '暖色',
+    activeClass: 'bg-orange-100 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400',
+  },
 ]
 
 function Section({ title, children }) {
@@ -28,9 +39,7 @@ function ToggleRow({ label, value, onChange, hint }) {
     <div className="flex items-center justify-between py-2">
       <div className="flex-1 min-w-0">
         <div className="text-sm text-content dark:text-gray-200">{label}</div>
-        {hint && (
-          <div className="text-xs text-content-tertiary dark:text-gray-500">{hint}</div>
-        )}
+        {hint && <div className="text-xs text-content-tertiary dark:text-gray-500">{hint}</div>}
       </div>
       <button
         type="button"
@@ -38,9 +47,7 @@ function ToggleRow({ label, value, onChange, hint }) {
         role="switch"
         aria-checked={value}
         className={`shrink-0 relative w-9 h-5 rounded-full transition-colors ${
-          value
-            ? 'bg-primary dark:bg-white'
-            : 'bg-gray-200 dark:bg-white/[0.1]'
+          value ? 'bg-primary dark:bg-white' : 'bg-gray-200 dark:bg-white/[0.1]'
         }`}
       >
         <span

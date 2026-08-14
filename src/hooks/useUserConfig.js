@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react'
 import { fetchSettings, updateSettings } from '../lib/api-settings'
 
 const DEFAULT_CONFIG = {
@@ -8,67 +8,74 @@ const DEFAULT_CONFIG = {
   hideEnglish: false,
   wordRepeatCount: 1,
   autoRemoveErrorWord: true,
-};
+}
 
-const VALID_THEMES = ['light', 'gray', 'star', 'warm'];
+const VALID_THEMES = ['light', 'gray', 'warm']
 
 function loadInitialTheme() {
-  if (typeof window === 'undefined') return 'light';
+  if (typeof window === 'undefined') return 'light'
   try {
-    const saved = localStorage.getItem('lingoforge-theme');
-    if (saved && VALID_THEMES.includes(saved)) return saved;
-    const legacy = localStorage.getItem('theme');
-    if (legacy === 'dark') return 'star';
-    if (legacy === 'light') return 'light';
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'star' : 'light';
+    const saved = localStorage.getItem('lingoforge-theme')
+    if (saved === 'star') return 'gray'
+    if (saved && VALID_THEMES.includes(saved)) return saved
+    const legacy = localStorage.getItem('theme')
+    if (legacy === 'dark') return 'gray'
+    if (legacy === 'light') return 'light'
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'gray' : 'light'
   } catch {
-    return 'light';
+    return 'light'
   }
 }
 
 function syncSettingUpdate(partial) {
-  updateSettings(partial).catch(e => console.warn('Sync settings failed:', e))
+  updateSettings(partial).catch((e) => console.warn('Sync settings failed:', e))
 }
 
 export function useUserConfig() {
   const [config, setConfig] = useState(() => {
     try {
-      const saved = localStorage.getItem('typingword_config');
-      return saved ? { ...DEFAULT_CONFIG, ...JSON.parse(saved) } : DEFAULT_CONFIG;
-    } catch { return DEFAULT_CONFIG; }
-  });
+      const saved = localStorage.getItem('typingword_config')
+      return saved ? { ...DEFAULT_CONFIG, ...JSON.parse(saved) } : DEFAULT_CONFIG
+    } catch {
+      return DEFAULT_CONFIG
+    }
+  })
 
-  const [theme, setThemeState] = useState(loadInitialTheme);
+  const [theme, setThemeState] = useState(loadInitialTheme)
 
   useEffect(() => {
-    const root = document.documentElement;
-    if (theme === 'gray' || theme === 'star') {
-      root.classList.add('dark');
+    const root = document.documentElement
+    if (theme === 'gray') {
+      root.classList.add('dark')
     } else {
-      root.classList.remove('dark');
+      root.classList.remove('dark')
     }
-    root.setAttribute('data-theme', theme);
-    try { localStorage.setItem('lingoforge-theme', theme); } catch {}
-  }, [theme]);
+    root.setAttribute('data-theme', theme)
+    try {
+      localStorage.setItem('lingoforge-theme', theme)
+    } catch {}
+  }, [theme])
 
   const setTheme = useCallback((next) => {
-    if (!VALID_THEMES.includes(next)) return;
-    setThemeState(next);
+    if (!VALID_THEMES.includes(next)) return
+    setThemeState(next)
     syncSettingUpdate({ theme: next })
-  }, []);
+  }, [])
 
   const updateConfig = (key, value) => {
-    setConfig(prev => {
-      const next = { ...prev, [key]: value };
-      try { localStorage.setItem('typingword_config', JSON.stringify(next)); } catch {}
+    setConfig((prev) => {
+      const next = { ...prev, [key]: value }
+      try {
+        localStorage.setItem('typingword_config', JSON.stringify(next))
+      } catch {}
       syncSettingUpdate({ [key]: value })
-      return next;
-    });
-  };
+      return next
+    })
+  }
 
-  const toggleConfig = (key) => updateConfig(key, !config[key]);
+  const toggleConfig = (key) => updateConfig(key, !config[key])
 
-  return { config, theme, setTheme, updateConfig, toggleConfig };
+  return { config, theme, setTheme, updateConfig, toggleConfig }
 }
 
 export async function syncSettingsFromServer() {

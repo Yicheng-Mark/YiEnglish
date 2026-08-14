@@ -4,7 +4,7 @@ const authMiddleware = require('../middleware/auth')
 
 const router = Router()
 
-const VALID_THEMES = ['light', 'gray', 'star', 'warm']
+const VALID_THEMES = ['light', 'gray', 'warm']
 const CLIENT_TO_DB = {
   soundEnabled: 'sound_enabled',
   showTranslation: 'show_translation',
