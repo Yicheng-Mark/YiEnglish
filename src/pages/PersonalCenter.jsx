@@ -1,9 +1,17 @@
-import { useState, useRef, useMemo } from 'react'
+import { useState, useRef, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
-  BookMarked, BookOpen, Headphones, Target,
-  Palette, ChevronRight, Pencil, X, Camera, ChartColumn,
+  BookMarked,
+  BookOpen,
+  Headphones,
+  Target,
+  Palette,
+  ChevronRight,
+  Pencil,
+  X,
+  Camera,
+  ChartColumn,
 } from 'lucide-react'
 import { useReadingStore } from '../modules/reading/hooks/useReadingStore'
 import { useUserConfig } from '../hooks/useUserConfig'
@@ -13,6 +21,17 @@ import { getErrorBookCount } from '../utils/errorBook'
 import { getReadingWordBookCount } from '../utils/readingWordBook'
 import { getCorpusWordBookCount } from '../utils/corpusWordBook'
 import { copyText } from '../utils/clipboard'
+import {
+  fetchStyles,
+  switchStyle,
+  updateCustomName,
+  updateGender,
+  updateCustomPrompt,
+  resetPersonality,
+  clearMemory,
+  isAIAssistantHidden,
+  setAIAssistantHidden,
+} from '../lib/ai-settings'
 
 function Modal({ open, onClose, title, children }) {
   if (!open) return null
@@ -21,7 +40,10 @@ function Modal({ open, onClose, title, children }) {
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-lg font-semibold text-content dark:text-gray-100">{title}</h3>
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors">
+          <button
+            onClick={onClose}
+            className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors"
+          >
             <X className="w-5 h-5 text-content-tertiary" />
           </button>
         </div>
@@ -36,7 +58,8 @@ export default function PersonalCenter() {
   const store = useReadingStore()
   const { theme, setTheme } = useUserConfig()
   const profile = useProfileStore()
-  const { logout } = useAuth()
+  const { logout, user } = useAuth()
+  const isTrial = !!user?.isTrial
 
   const [editModal, setEditModal] = useState(false)
   const [goalModal, setGoalModal] = useState(false)
@@ -44,9 +67,30 @@ export default function PersonalCenter() {
   const [helpModal, setHelpModal] = useState(false)
   const [nicknameInput, setNicknameInput] = useState(profile.nickname)
   const [signatureInput, setSignatureInput] = useState(profile.signature)
+  const [companionModal, setCompanionModal] = useState(false)
+  const [aiStyles, setAiStyles] = useState({ current: null, all: [] })
+  const [customNameInput, setCustomNameInput] = useState('')
+  const [editingName, setEditingName] = useState(false)
+  const [customPromptInput, setCustomPromptInput] = useState('')
+  const [editingPrompt, setEditingPrompt] = useState(false)
+  const [showResetPersonalityConfirm, setShowResetPersonalityConfirm] = useState(false)
+  const [showClearMemoryConfirm, setShowClearMemoryConfirm] = useState(false)
+  const [aiAssistantHidden, setAiAssistantHiddenState] = useState(isAIAssistantHidden)
   const avatarInputRef = useRef(null)
 
-  const wordCount = useMemo(() => getReadingWordBookCount() + getCorpusWordBookCount() + getErrorBookCount(), [])
+  // Load AI styles（体验用户禁用 AI 助手，不请求风格配置）
+  useEffect(() => {
+    if (isTrial) return
+    fetchStyles().then((data) => {
+      setAiStyles({ current: data.current, all: data.all })
+      setCustomPromptInput(data.current?.custom_prompt || '')
+    })
+  }, [])
+
+  const wordCount = useMemo(
+    () => getReadingWordBookCount() + getCorpusWordBookCount() + getErrorBookCount(),
+    []
+  )
   const completedArticles = useMemo(() => store.getCompletedArticleCount(), [])
   const listeningHours = useMemo(() => (store.getTotalListeningSeconds() / 3600).toFixed(1), [])
 
@@ -97,8 +141,7 @@ export default function PersonalCenter() {
   const themeOptions = [
     { key: 'light', label: '明亮', desc: '清新简洁' },
     { key: 'gray', label: '暗夜', desc: '沉稳深邃' },
-    { key: 'star', label: '星空', desc: '浩瀚星海' },
-    { key: 'warm', label: '暖光', desc: '温暖舒适' },
+    { key: 'warm', label: '暖色', desc: '温暖舒适' },
   ]
 
   const stats = [
@@ -108,6 +151,7 @@ export default function PersonalCenter() {
   ]
 
   const settingsItems = [
+    !isTrial && { label: 'AI 伙伴设置', emoji: '🤖', action: () => setCompanionModal(true) },
     { label: '学习方法', emoji: '💡', action: () => navigate('/learning-methods') },
     { label: '模式切换', emoji: '🎨', action: () => setThemeModal(true) },
     { label: '帮助与反馈', emoji: '💬', action: () => setHelpModal(true) },
@@ -116,7 +160,6 @@ export default function PersonalCenter() {
 
   return (
     <div className="min-h-[calc(100vh-3rem-3.5rem)] md:min-h-[calc(100vh-4rem-3.5rem)] max-w-5xl mx-auto px-4 md:px-8 py-6 md:py-8 animate-page-fade-in">
-
       {/* Profile Header */}
       <div className="flex items-center gap-4 mb-6 animate-card-enter">
         <div
@@ -132,15 +175,27 @@ export default function PersonalCenter() {
             <Camera className="w-5 h-5 text-white" />
           </div>
         </div>
-        <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+        <input
+          ref={avatarInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleAvatarUpload}
+        />
         <div className="flex-1 min-w-0">
-          <h2 className="text-xl font-bold text-content dark:text-gray-100 truncate">{profile.nickname}</h2>
+          <h2 className="text-xl font-bold text-content dark:text-gray-100 truncate">
+            {profile.nickname}
+          </h2>
           <p className="text-sm text-content-tertiary dark:text-gray-500 mt-0.5 truncate">
             {profile.signature || '这个人很懒，什么都没写~'}
           </p>
         </div>
         <button
-          onClick={() => { setNicknameInput(profile.nickname); setSignatureInput(profile.signature); setEditModal(true) }}
+          onClick={() => {
+            setNicknameInput(profile.nickname)
+            setSignatureInput(profile.signature)
+            setEditModal(true)
+          }}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium text-primary bg-primary/10 hover:bg-primary/20 transition-colors"
         >
           <Pencil className="w-3.5 h-3.5" />
@@ -149,10 +204,7 @@ export default function PersonalCenter() {
       </div>
 
       {/* Learning Data Card */}
-      <div
-        className="w-full card mb-4 animate-card-enter"
-        style={{ animationDelay: '0.05s' }}
-      >
+      <div className="w-full card mb-4 animate-card-enter" style={{ animationDelay: '0.05s' }}>
         <button
           onClick={() => navigate('/stats')}
           className="w-full py-6 flex items-center justify-center card-hover"
@@ -219,7 +271,9 @@ export default function PersonalCenter() {
           maxLength={20}
           autoFocus
         />
-        <label className="block text-sm text-content-secondary dark:text-gray-400 mb-2">个性签名</label>
+        <label className="block text-sm text-content-secondary dark:text-gray-400 mb-2">
+          个性签名
+        </label>
         <input
           className="input-field w-full mb-4"
           value={signatureInput}
@@ -228,19 +282,35 @@ export default function PersonalCenter() {
           placeholder="写点什么吧..."
         />
         <div className="flex gap-3 justify-end">
-          <button onClick={() => setEditModal(false)} className="btn-secondary px-4 py-2 rounded-button text-sm">取消</button>
-          <button onClick={handleSaveProfile} className="btn-primary px-4 py-2 rounded-button text-sm">保存</button>
+          <button
+            onClick={() => setEditModal(false)}
+            className="btn-secondary px-4 py-2 rounded-button text-sm"
+          >
+            取消
+          </button>
+          <button
+            onClick={handleSaveProfile}
+            className="btn-primary px-4 py-2 rounded-button text-sm"
+          >
+            保存
+          </button>
         </div>
       </Modal>
 
       {/* Daily Goal Modal */}
       <Modal open={goalModal} onClose={() => setGoalModal(false)} title="每日目标">
-        <p className="text-sm text-content-secondary dark:text-gray-400 mb-4">选择每天的最低学习时长</p>
+        <p className="text-sm text-content-secondary dark:text-gray-400 mb-4">
+          选择每天的最低学习时长
+        </p>
         <div className="grid grid-cols-4 gap-2">
           {goalPresets.map((mins) => (
             <button
               key={mins}
-              onClick={() => { profile.setDailyGoalMinutes(mins); setGoalModal(false); toast(`每日目标已设为 ${mins} 分钟`) }}
+              onClick={() => {
+                profile.setDailyGoalMinutes(mins)
+                setGoalModal(false)
+                toast(`每日目标已设为 ${mins} 分钟`)
+              }}
               className={`py-2.5 rounded-xl text-sm font-medium transition-colors ${
                 profile.dailyGoalMinutes === mins
                   ? 'bg-primary text-white shadow-sm'
@@ -255,12 +325,15 @@ export default function PersonalCenter() {
 
       {/* Theme Modal */}
       <Modal open={themeModal} onClose={() => setThemeModal(false)} title="模式切换">
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           {themeOptions.map((opt) => (
             <button
               key={opt.key}
-              onClick={() => { setTheme(opt.key); setThemeModal(false) }}
-              className={`p-4 rounded-xl text-left transition-all ${
+              onClick={() => {
+                setTheme(opt.key)
+                setThemeModal(false)
+              }}
+              className={`p-3 rounded-xl text-left transition-all ${
                 theme === opt.key
                   ? 'bg-primary/10 border-2 border-primary ring-1 ring-primary/20'
                   : 'bg-gray-50 dark:bg-white/[0.04] border-2 border-transparent hover:bg-gray-100 dark:hover:bg-white/[0.08]'
@@ -273,6 +346,354 @@ export default function PersonalCenter() {
         </div>
       </Modal>
 
+      {/* AI Companion Modal */}
+      <Modal
+        open={companionModal}
+        onClose={() => {
+          setCompanionModal(false)
+          setEditingName(false)
+          setEditingPrompt(false)
+          setShowResetPersonalityConfirm(false)
+          setShowClearMemoryConfirm(false)
+        }}
+        title="AI 伙伴设置"
+      >
+        <div className="-mx-2 -mt-1">
+          {/* Merged config card: toggle + name + gender */}
+          <div className="mb-3 p-2.5 rounded-xl bg-gray-50 dark:bg-white/[0.04]">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium text-content dark:text-gray-100">显示 AI 助手</p>
+                <p className="text-[11px] text-content-tertiary dark:text-gray-500">
+                  隐藏后浮球将不再显示
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={!aiAssistantHidden}
+                  onChange={() => {
+                    const next = !aiAssistantHidden
+                    setAiAssistantHiddenState(next)
+                    setAIAssistantHidden(next)
+                  }}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-5 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+              </label>
+            </div>
+
+            {/* Name + Gender in one row */}
+            {aiStyles.current && (
+              <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-200/50 dark:border-white/[0.04]">
+                <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                  <span className="text-[11px] text-content-tertiary dark:text-gray-500 flex-shrink-0">
+                    名称
+                  </span>
+                  {editingName ? (
+                    <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                      <input
+                        className="input-field flex-1 text-xs py-1"
+                        value={customNameInput}
+                        onChange={(e) => setCustomNameInput(e.target.value)}
+                        maxLength={12}
+                        autoFocus
+                        placeholder="给 TA 起个名字吧..."
+                        onKeyDown={async (e) => {
+                          if (e.key === 'Enter') {
+                            const trimmed = customNameInput.trim()
+                            if (!trimmed) return
+                            try {
+                              await updateCustomName(trimmed)
+                              setAiStyles((prev) => ({
+                                ...prev,
+                                current: { ...prev.current, custom_name: trimmed },
+                              }))
+                              toast('名称已更新')
+                              setEditingName(false)
+                            } catch (err) {
+                              toast('更新失败', { description: err.message })
+                            }
+                          }
+                          if (e.key === 'Escape') setEditingName(false)
+                        }}
+                      />
+                      <span className="text-[10px] text-content-tertiary flex-shrink-0">
+                        {customNameInput.length}/12
+                      </span>
+                      <button
+                        onClick={async () => {
+                          const trimmed = customNameInput.trim()
+                          if (!trimmed) return
+                          try {
+                            await updateCustomName(trimmed)
+                            setAiStyles((prev) => ({
+                              ...prev,
+                              current: { ...prev.current, custom_name: trimmed },
+                            }))
+                            toast('名称已更新')
+                            setEditingName(false)
+                          } catch (err) {
+                            toast('更新失败', { description: err.message })
+                          }
+                        }}
+                        className="btn-primary px-2 py-1 rounded-button text-[10px]"
+                      >
+                        确定
+                      </button>
+                      <button
+                        onClick={() => setEditingName(false)}
+                        className="btn-secondary px-2 py-1 rounded-button text-[10px]"
+                      >
+                        取消
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <span className="text-xs font-medium text-content dark:text-gray-100 truncate">
+                        {aiStyles.current.custom_name || '未命名'}
+                      </span>
+                      <button
+                        onClick={() => {
+                          setCustomNameInput(aiStyles.current.custom_name || '')
+                          setEditingName(true)
+                        }}
+                        className="text-[10px] text-primary hover:underline flex-shrink-0"
+                      >
+                        编辑
+                      </button>
+                    </div>
+                  )}
+                </div>
+                {/* Gender buttons inline */}
+                <div className="flex gap-1.5 ml-3 flex-shrink-0">
+                  {[
+                    { key: 'male', label: '男' },
+                    { key: 'female', label: '女' },
+                  ].map((g) => (
+                    <button
+                      key={g.key}
+                      onClick={async () => {
+                        try {
+                          await updateGender(g.key)
+                          setAiStyles((prev) => ({
+                            ...prev,
+                            current: { ...prev.current, gender: g.key },
+                          }))
+                          toast('性别已更新')
+                        } catch (err) {
+                          toast('更新失败', { description: err.message })
+                        }
+                      }}
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all ${
+                        aiStyles.current.gender === g.key
+                          ? 'bg-primary text-white'
+                          : 'bg-white dark:bg-white/[0.06] text-content-secondary dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.1]'
+                      }`}
+                    >
+                      {g.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Style pills */}
+          <p className="text-xs text-content-secondary dark:text-gray-400 mb-1.5">选择风格</p>
+          <div className="flex flex-wrap gap-1.5 mb-1">
+            {(aiStyles.all || []).map((s) => (
+              <button
+                key={s.style_key}
+                onClick={async () => {
+                  if (aiStyles.current?.style_key === s.style_key) return
+                  try {
+                    await switchStyle(s.style_key)
+                    setAiStyles((prev) => ({
+                      ...prev,
+                      current: {
+                        ...s,
+                        custom_name: prev.current?.custom_name,
+                        custom_prompt: prev.current?.custom_prompt,
+                      },
+                    }))
+                    toast(`已切换为 ${s.name}`)
+                    if (s.style_key === 'custom' && !aiStyles.current?.custom_prompt)
+                      setEditingPrompt(true)
+                  } catch (err) {
+                    toast('切换失败，请重试', { description: err.message })
+                  }
+                }}
+                className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  aiStyles.current?.style_key === s.style_key
+                    ? 'bg-primary text-white shadow-sm'
+                    : 'bg-gray-100 dark:bg-white/[0.06] text-content-secondary dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/[0.1]'
+                }`}
+              >
+                <span>{s.name}</span>
+                {aiStyles.current?.style_key === s.style_key && (
+                  <span className="w-1 h-1 rounded-full bg-white/80" />
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Custom Prompt Section — only visible when custom style is selected */}
+          {aiStyles.current?.style_key === 'custom' && (
+            <div className="mt-2 p-2.5 rounded-xl bg-gray-50 dark:bg-white/[0.04]">
+              <p className="text-[11px] text-content-tertiary dark:text-gray-500 mb-1.5">
+                自定义性格描述
+              </p>
+              {editingPrompt ? (
+                <div>
+                  <textarea
+                    className="w-full px-3 py-2 bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.06] rounded-xl text-sm text-content dark:text-gray-100 resize-none focus:outline-none focus:border-primary/50 transition-all"
+                    rows={3}
+                    value={customPromptInput}
+                    onChange={(e) => setCustomPromptInput(e.target.value)}
+                    maxLength={500}
+                    placeholder="描述你希望 AI 伙伴的性格、语气和交流方式..."
+                    autoFocus
+                  />
+                  <div className="flex items-center justify-between mt-1.5">
+                    <span className="text-[11px] text-content-tertiary">
+                      {customPromptInput.length}/500
+                    </span>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          setEditingPrompt(false)
+                          setCustomPromptInput(aiStyles.current?.custom_prompt || '')
+                        }}
+                        className="btn-secondary px-3 py-1 rounded-button text-xs"
+                      >
+                        取消
+                      </button>
+                      <button
+                        onClick={async () => {
+                          try {
+                            const result = await updateCustomPrompt(customPromptInput)
+                            setAiStyles((prev) => ({
+                              ...prev,
+                              current: { ...prev.current, custom_prompt: result.customPrompt },
+                            }))
+                            toast('自定义描述已更新')
+                            setEditingPrompt(false)
+                          } catch (err) {
+                            toast('更新失败', { description: err.message })
+                          }
+                        }}
+                        className="btn-primary px-3 py-1 rounded-button text-xs"
+                      >
+                        保存
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-content dark:text-gray-100 truncate flex-1">
+                    {aiStyles.current?.custom_prompt
+                      ? aiStyles.current.custom_prompt.length > 40
+                        ? aiStyles.current.custom_prompt.slice(0, 40) + '...'
+                        : aiStyles.current.custom_prompt
+                      : '未设置'}
+                  </span>
+                  <button
+                    onClick={() => setEditingPrompt(true)}
+                    className="text-[11px] text-primary hover:underline ml-2 flex-shrink-0"
+                  >
+                    {aiStyles.current?.custom_prompt ? '编辑' : '创建'}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Reset Section */}
+          <div className="mt-3 pt-2.5 border-t border-gray-100/60 dark:border-white/[0.06] flex flex-col gap-2">
+            {/* Reset personality — only for custom style */}
+            {aiStyles.current?.style_key === 'custom' &&
+              (showResetPersonalityConfirm ? (
+                <div className="flex items-center gap-3 p-2 rounded-lg bg-red-50 dark:bg-red-500/10">
+                  <p className="text-xs text-content-secondary flex-1">
+                    确定重置性格描述？将清除自定义性格描述。
+                  </p>
+                  <button
+                    onClick={async () => {
+                      try {
+                        await resetPersonality()
+                        setAiStyles((prev) =>
+                          prev.current
+                            ? { ...prev, current: { ...prev.current, custom_prompt: null } }
+                            : prev
+                        )
+                        setCustomPromptInput('')
+                        toast('性格描述已重置')
+                        setShowResetPersonalityConfirm(false)
+                      } catch (err) {
+                        toast('重置失败', { description: err.message })
+                      }
+                    }}
+                    className="px-3 py-1 rounded-button text-xs bg-red-500 text-white hover:bg-red-600 transition-colors"
+                  >
+                    确定
+                  </button>
+                  <button
+                    onClick={() => setShowResetPersonalityConfirm(false)}
+                    className="btn-secondary px-3 py-1 rounded-button text-xs"
+                  >
+                    取消
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowResetPersonalityConfirm(true)}
+                  className="text-xs text-red-400 hover:text-red-500 transition-colors w-fit"
+                >
+                  重置性格
+                </button>
+              ))}
+
+            {/* Clear memory */}
+            {showClearMemoryConfirm ? (
+              <div className="flex items-center gap-3 p-2 rounded-lg bg-red-50 dark:bg-red-500/10">
+                <p className="text-xs text-content-secondary flex-1">
+                  确定清除记忆？将删除所有聊天记录和 AI 记忆，不可恢复。
+                </p>
+                <button
+                  onClick={async () => {
+                    try {
+                      await clearMemory()
+                      toast('记忆已清除')
+                      setShowClearMemoryConfirm(false)
+                    } catch (err) {
+                      toast('清除失败', { description: err.message })
+                    }
+                  }}
+                  className="px-3 py-1 rounded-button text-xs bg-red-500 text-white hover:bg-red-600 transition-colors"
+                >
+                  确定
+                </button>
+                <button
+                  onClick={() => setShowClearMemoryConfirm(false)}
+                  className="btn-secondary px-3 py-1 rounded-button text-xs"
+                >
+                  取消
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowClearMemoryConfirm(true)}
+                className="text-xs text-red-400 hover:text-red-500 transition-colors w-fit"
+              >
+                清除记忆
+              </button>
+            )}
+          </div>
+        </div>
+      </Modal>
+
       {/* Help & Feedback Modal */}
       <Modal open={helpModal} onClose={() => setHelpModal(false)} title="帮助与反馈">
         <div className="space-y-2">
@@ -280,19 +701,26 @@ export default function PersonalCenter() {
           <button
             onClick={async () => {
               const ok = await copyText('WarriorZYC')
-              toast(ok ? '微信号已复制' : '复制失败，请手动长按复制', { description: ok ? 'WarriorZYC' : undefined })
+              toast(ok ? '微信号已复制' : '复制失败，请手动长按复制', {
+                description: ok ? 'WarriorZYC' : undefined,
+              })
             }}
             className="w-full flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-white/[0.04] hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-colors text-left"
           >
             <div className="flex items-center gap-3">
-              <span className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#07C160' }}>
+              <span
+                className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: '#07C160' }}
+              >
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="white">
                   <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361-.336a.722.722 0 0 1 .598.082l1.584.926a.272.272 0 0 0 .14.047c.134 0 .24-.111.24-.247 0-.06-.023-.12-.038-.177l-.327-1.233a.582.582 0 0 1-.023-.156.49.49 0 0 1 .201-.398C23.024 18.48 24 16.82 24 14.98c0-3.21-2.931-5.837-6.656-6.088V8.89c-.135-.01-.27-.027-.407-.03zm-2.53 3.274c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.97-.982zm4.844 0c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.969-.982z" />
                 </svg>
               </span>
               <div>
                 <p className="text-sm font-medium text-content dark:text-gray-100">微信</p>
-                <p className="text-xs text-content-tertiary dark:text-gray-500 mt-0.5">WarriorZYC</p>
+                <p className="text-xs text-content-tertiary dark:text-gray-500 mt-0.5">
+                  WarriorZYC
+                </p>
               </div>
             </div>
             <span className="text-xs text-primary font-medium">复制微信号</span>
@@ -302,19 +730,26 @@ export default function PersonalCenter() {
           <button
             onClick={async () => {
               const ok = await copyText('WarriorZYC')
-              toast(ok ? '抖音号已复制' : '复制失败，请手动长按复制', { description: ok ? 'WarriorZYC' : undefined })
+              toast(ok ? '抖音号已复制' : '复制失败，请手动长按复制', {
+                description: ok ? 'WarriorZYC' : undefined,
+              })
             }}
             className="w-full flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-white/[0.04] hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-colors text-left"
           >
             <div className="flex items-center gap-3">
-              <span className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#000000' }}>
+              <span
+                className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: '#000000' }}
+              >
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="white">
                   <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
                 </svg>
               </span>
               <div>
                 <p className="text-sm font-medium text-content dark:text-gray-100">抖音</p>
-                <p className="text-xs text-content-tertiary dark:text-gray-500 mt-0.5">WarriorZYC</p>
+                <p className="text-xs text-content-tertiary dark:text-gray-500 mt-0.5">
+                  WarriorZYC
+                </p>
               </div>
             </div>
             <span className="text-xs text-primary font-medium">复制抖音号</span>
@@ -324,26 +759,32 @@ export default function PersonalCenter() {
           <button
             onClick={async () => {
               const ok = await copyText('ambitionC666')
-              toast(ok ? '小红书号已复制' : '复制失败，请手动长按复制', { description: ok ? 'ambitionC666' : undefined })
+              toast(ok ? '小红书号已复制' : '复制失败，请手动长按复制', {
+                description: ok ? 'ambitionC666' : undefined,
+              })
             }}
             className="w-full flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-white/[0.04] hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-colors text-left"
           >
             <div className="flex items-center gap-3">
-              <span className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#FF2442' }}>
+              <span
+                className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: '#FF2442' }}
+              >
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="white">
                   <path d="M22.405 9.879c.002.016.01.02.07.019h.725a.797.797 0 0 0 .78-.972.794.794 0 0 0-.884-.618.795.795 0 0 0-.692.794c0 .101-.002.666.001.777zm-11.509 4.808c-.203.001-1.353.004-1.685.003a2.528 2.528 0 0 1-.766-.126.025.025 0 0 0-.03.014L7.7 16.127a.025.025 0 0 0 .01.032c.111.06.336.124.495.124.66.01 1.32.002 1.981 0 .01 0 .02-.006.023-.015l.712-1.545a.025.025 0 0 0-.024-.036zM.477 9.91c-.071 0-.076.002-.076.01a.834.834 0 0 0-.01.08c-.027.397-.038.495-.234 3.06-.012.24-.034.389-.135.607-.026.057-.033.042.003.112.046.092.681 1.523.787 1.74.008.015.011.02.017.02.008 0 .033-.026.047-.044.147-.187.268-.391.371-.606.306-.635.44-1.325.486-1.706.014-.11.021-.22.03-.33l.204-2.616.022-.293c.003-.029 0-.033-.03-.034zm7.203 3.757a1.427 1.427 0 0 1-.135-.607c-.004-.084-.031-.39-.235-3.06a.443.443 0 0 0-.01-.082c-.004-.011-.052-.008-.076-.008h-1.48c-.03.001-.034.005-.03.034l.021.293c.076.982.153 1.964.233 2.946.05.4.186 1.085.487 1.706.103.215.223.419.37.606.015.018.037.051.048.049.02-.003.742-1.642.804-1.765.036-.07.03-.055.003-.112zm3.861-.913h-.872a.126.126 0 0 1-.116-.178l1.178-2.625a.025.025 0 0 0-.023-.035l-1.318-.003a.148.148 0 0 1-.135-.21l.876-1.954a.025.025 0 0 0-.023-.035h-1.56c-.01 0-.02.006-.024.015l-.926 2.068c-.085.169-.314.634-.399.938a.534.534 0 0 0-.02.191.46.46 0 0 0 .23.378.981.981 0 0 0 .46.119h.59c.041 0-.688 1.482-.834 1.972a.53.53 0 0 0-.023.172.465.465 0 0 0 .23.398c.15.092.342.12.475.12l1.66-.001c.01 0 .02-.006.023-.015l.575-1.28a.025.025 0 0 0-.024-.035zm-6.93-4.937H3.1a.032.032 0 0 0-.034.033c0 1.048-.01 2.795-.01 6.829 0 .288-.269.262-.28.262h-.74c-.04.001-.044.004-.04.047.001.037.465 1.064.555 1.263.01.02.03.033.051.033.157.003.767.009.938-.014.153-.02.3-.06.438-.132.3-.156.49-.419.595-.765.052-.172.075-.353.075-.533.002-2.33 0-4.66-.007-6.991a.032.032 0 0 0-.032-.032zm11.784 6.896c0-.014-.01-.021-.024-.022h-1.465c-.048-.001-.049-.002-.05-.049v-4.66c0-.072-.005-.07.07-.07h.863c.08 0 .075.004.075-.074V8.393c0-.082.006-.076-.08-.076h-3.5c-.064 0-.075-.006-.075.073v1.445c0 .083-.006.077.08.077h.854c.075 0 .07-.004.07.07v4.624c0 .095.008.084-.085.084-.37 0-1.11-.002-1.304 0-.048.001-.06.03-.06.03l-.697 1.519s-.014.025-.008.036c.006.01.013.008.058.008 1.748.003 3.495.002 5.243.002.03-.001.034-.006.035-.033v-1.539zm4.177-3.43c0 .013-.007.023-.02.024-.346.006-.692.004-1.037.004-.014-.002-.022-.01-.022-.024-.005-.434-.007-.869-.01-1.303 0-.072-.006-.071.07-.07l.733-.003c.041 0 .081.002.12.015.093.025.16.107.165.204.006.431.002 1.153.001 1.153zm2.67.244a1.953 1.953 0 0 0-.883-.222h-.18c-.04-.001-.04-.003-.042-.04V10.21c0-.132-.007-.263-.025-.394a1.823 1.823 0 0 0-.153-.53 1.533 1.533 0 0 0-.677-.71 2.167 2.167 0 0 0-1-.258c-.153-.003-.567 0-.72 0-.07 0-.068.004-.068-.065V7.76c0-.031-.01-.041-.046-.039H17.93s-.016 0-.023.007c-.006.006-.008.012-.008.023v.546c-.008.036-.057.015-.082.022h-.95c-.022.002-.028.008-.03.032v1.481c0 .09-.004.082.082.082h.913c.082 0 .072.128.072.128V11.19s.003.117-.06.117h-1.482c-.068 0-.06.082-.06.082v1.445s-.01.068.064.068h1.457c.082 0 .076-.006.076.079v3.225c0 .088-.007.081.082.081h1.43c.09 0 .082.007.082-.08v-3.27c0-.029.006-.035.033-.035l2.323-.003c.098 0 .191.02.28.061a.46.46 0 0 1 .274.407c.008.395.003.79.003 1.185 0 .259-.107.367-.33.367h-1.218c-.023.002-.029.008-.028.033.184.437.374.871.57 1.303a.045.045 0 0 0 .04.026c.17.005.34.002.51.003.15-.002.517.004.666-.01a2.03 2.03 0 0 0 .408-.075c.59-.18.975-.698.976-1.313v-1.981c0-.128-.01-.254-.034-.38 0 .078-.029-.641-.724-.998z" />
                 </svg>
               </span>
               <div>
                 <p className="text-sm font-medium text-content dark:text-gray-100">小红书</p>
-                <p className="text-xs text-content-tertiary dark:text-gray-500 mt-0.5">ambitionC666</p>
+                <p className="text-xs text-content-tertiary dark:text-gray-500 mt-0.5">
+                  ambitionC666
+                </p>
               </div>
             </div>
             <span className="text-xs text-primary font-medium">复制小红书号</span>
           </button>
         </div>
       </Modal>
-
     </div>
   )
 }

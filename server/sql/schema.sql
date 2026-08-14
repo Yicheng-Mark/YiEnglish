@@ -13,6 +13,7 @@
 --   migrate_device_sessions refresh_tokens 设备级字段
 --   migrate_device_trial    trial_activations.device_id
 --   migrate_auth_v4         refresh_tokens.uk_token_hash
+--   migrate_ai_assistant     AI 助手：style_modes + user_style_settings + conversation_memory + chat_messages + ai_usage
 -- ============================================================
 
 CREATE DATABASE IF NOT EXISTS lingoforge
@@ -220,3 +221,81 @@ CREATE TABLE IF NOT EXISTS user_settings (
   UNIQUE KEY uk_user (user_id),
   CONSTRAINT fk_settings2_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
+-- ------------------------------------------------------------
+-- style_modes：AI 人设模式（内置四种，seed 随迁移写入）
+-- 来源：migrate_ai_assistant
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS style_modes (
+  id            INT AUTO_INCREMENT PRIMARY KEY,
+  style_key     VARCHAR(30) NOT NULL UNIQUE,
+  name          VARCHAR(50) NOT NULL,
+  avatar        VARCHAR(10) DEFAULT NULL,
+  system_prompt TEXT,
+  description   VARCHAR(255) DEFAULT NULL,
+  sort_order    SMALLINT DEFAULT 0,
+  is_active     TINYINT(1) DEFAULT 1,
+  created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ------------------------------------------------------------
+-- user_style_settings：用户 AI 人设设置（每用户一行）
+-- 来源：migrate_ai_assistant
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS user_style_settings (
+  id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id       BIGINT UNSIGNED NOT NULL UNIQUE,
+  style_key     VARCHAR(30) NOT NULL DEFAULT 'teacher',
+  custom_name   VARCHAR(12) DEFAULT NULL,
+  gender        VARCHAR(10) DEFAULT NULL,
+  custom_prompt TEXT,
+  created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (style_key) REFERENCES style_modes(style_key)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ------------------------------------------------------------
+-- conversation_memory：AI 长期记忆（从对话中启发式抽取）
+-- 来源：migrate_ai_assistant
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS conversation_memory (
+  id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id       BIGINT UNSIGNED NOT NULL,
+  category      VARCHAR(50) DEFAULT 'general',
+  content       TEXT,
+  source_msg_id BIGINT UNSIGNED DEFAULT NULL,
+  created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_mem_user (user_id),
+  INDEX idx_mem_user_cat (user_id, category),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ------------------------------------------------------------
+-- chat_messages：AI 对话历史（含深度推理内容）
+-- 来源：migrate_ai_assistant
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS chat_messages (
+  id                BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id           BIGINT UNSIGNED NOT NULL,
+  role              ENUM('user','assistant','system') NOT NULL,
+  content           TEXT NOT NULL,
+  reasoning_content MEDIUMTEXT DEFAULT NULL,
+  style_key         VARCHAR(30) DEFAULT NULL,
+  created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_chat_user_time (user_id, created_at),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ------------------------------------------------------------
+-- ai_usage：AI 每日对话用量（独立计数，每账号每天 10 次）
+-- 来源：migrate_ai_assistant
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS ai_usage (
+  id      BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT UNSIGNED NOT NULL,
+  date    DATE NOT NULL,
+  count   INT UNSIGNED NOT NULL DEFAULT 1,
+  UNIQUE KEY uq_ai_usage_user_date (user_id, date),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -98,6 +98,9 @@ const reviewRoutes = require('./routes/review')
 const authRoutes = require('./routes/auth')
 const demoRoutes = require('./routes/demo')
 const clientErrorRoutes = require('./routes/clientError')
+const chatRoutes = require('./routes/chat')
+const styleRoutes = require('./routes/style')
+const memoryRoutes = require('./routes/memory')
 
 const app = express()
 // 生产经 Nginx 反代：信任一层代理，从 X-Forwarded-For 正确解析客户端真实 IP（限流/设备 IP 都依赖 req.ip）
@@ -117,6 +120,8 @@ app.use(express.json({ limit: '1mb' }))
 const writeLimiter = createRateLimiter({ windowMs: 60 * 1000, max: 120 })
 // 错误上报限流：每 IP 每分钟 30 次（前端已做去重，防恶意刷爆 pm2 日志）
 const errorReportLimiter = createRateLimiter({ windowMs: 60 * 1000, max: 30 })
+// AI 助手限流：每 IP 每分钟 30 次（每次对话都是一次 DeepSeek 付费调用，另有账号级每日 10 次限额）
+const aiLimiter = createRateLimiter({ windowMs: 60 * 1000, max: 30 })
 
 app.use('/api/auth', authRoutes) // auth 有自己的 DB 登录限流，不重复挂
 app.use('/api/progress', writeLimiter, progressRoutes)
@@ -127,6 +132,9 @@ app.use('/api/migrate', writeLimiter, migrateRoutes)
 app.use('/api/review', writeLimiter, reviewRoutes)
 app.use('/api/demo', demoRoutes) // demo 有自己的体验码限流，不重复挂
 app.use('/api/client-error', errorReportLimiter, clientErrorRoutes)
+app.use('/api/chat', aiLimiter, chatRoutes) // chat 另有账号级每日 10 次限额
+app.use('/api/style', aiLimiter, styleRoutes)
+app.use('/api/memory', aiLimiter, memoryRoutes)
 
 // Serve static frontend in production
 const distPath = path.resolve(__dirname, '../dist')

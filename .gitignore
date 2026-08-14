@@ -31,6 +31,10 @@ dist-vercel-test/
 # 本地工具脚本（与项目无关）
 format_bp.py
 
+# 工具运行时缓存（hook 计划/报告）
+.mimosa/
+.zcode/
+
 # 调试截图和测试结果
 screenshot_*.png
 test-results/

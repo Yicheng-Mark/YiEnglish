@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { lazyRetry } from './utils/lazyRetry'
 import { useScrollingFlag } from './hooks/useScrollingFlag'
 import { Routes, Route, Navigate, Outlet, useNavigate, useLocation } from 'react-router-dom'
@@ -7,6 +7,7 @@ import Layout from './components/Layout'
 import PageLoading from './components/PageLoading'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { WordProvider } from './contexts/WordContext'
+import { isAIAssistantHidden } from './lib/ai-settings'
 import { migrateFromLocalStorage } from './utils/idb.js'
 
 const Home = lazyRetry(() => import('./pages/Home'))
@@ -31,6 +32,8 @@ const DemoWord = lazyRetry(() => import('./pages/demo/DemoWord'))
 const DemoReading = lazyRetry(() => import('./pages/demo/DemoReading'))
 const DemoCorpus = lazyRetry(() => import('./pages/demo/DemoCorpus'))
 const DemoProfile = lazyRetry(() => import('./pages/demo/DemoProfile'))
+const AIChatPage = lazyRetry(() => import('./pages/AIChatPage'))
+const AICircleFloat = lazyRetry(() => import('./components/AIAssistant/AICircleFloat'))
 
 // 预加载底部导航对应的模块 chunk，避免切换时闪"加载中"
 const moduleLoaders = [
@@ -45,8 +48,8 @@ function preloadModules() {
   preloaded = true
   // 等主线程空闲后再预加载，不影响首屏
   typeof requestIdleCallback === 'function'
-    ? requestIdleCallback(() => moduleLoaders.forEach(fn => fn()))
-    : setTimeout(() => moduleLoaders.forEach(fn => fn()), 200)
+    ? requestIdleCallback(() => moduleLoaders.forEach((fn) => fn()))
+    : setTimeout(() => moduleLoaders.forEach((fn) => fn()), 200)
 }
 
 function Navigator() {
@@ -81,6 +84,31 @@ function RegisterGuard() {
   return <Register />
 }
 
+// AI 悬浮球全局入口：登录/注册/体验/激活/找回页与体验用户隐藏；显隐由个人中心开关（localStorage + 事件）控制
+function AIAssistantGate() {
+  const { user } = useAuth()
+  const location = useLocation()
+  const [visible, setVisible] = useState(() => !isAIAssistantHidden())
+
+  useEffect(() => {
+    const onChange = () => setVisible(!isAIAssistantHidden())
+    window.addEventListener('ai-visibility-change', onChange)
+    return () => window.removeEventListener('ai-visibility-change', onChange)
+  }, [])
+
+  const p = location.pathname
+  const onAuthPage = ['/login', '/register', '/demo', '/activate', '/recover'].some(
+    (path) => p === path || p.startsWith(path + '/')
+  )
+  if (!visible || onAuthPage || user?.isTrial) return null
+
+  return (
+    <Suspense fallback={null}>
+      <AICircleFloat />
+    </Suspense>
+  )
+}
+
 function App() {
   useScrollingFlag()
   useEffect(preloadModules, [])
@@ -94,58 +122,74 @@ function App() {
   return (
     <AuthProvider>
       <WordProvider>
-      <Navigator />
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          style: {
-            background: 'var(--color-surface)',
-            color: 'var(--color-content)',
-            border: '1px solid rgba(0,0,0,0.1)',
-          },
-        }}
-      />
-      <Suspense fallback={<PageLoading />}>
-        <Routes>
-          {AUTH_ENABLED && <Route path="/login" element={<Login />} />}
-          {AUTH_ENABLED && <Route path="/register" element={<RegisterGuard />} />}
-          {AUTH_ENABLED && <Route path="/activate" element={<Activate />} />}
-          {AUTH_ENABLED && <Route path="/activate/:code" element={<Activate />} />}
-          {AUTH_ENABLED && <Route path="/recover" element={<Recover />} />}
-          {AUTH_ENABLED && <Route path="/recover/:code" element={<Recover />} />}
-          {/* Demo 路由（体验码输入 + demo 应用） */}
-          {AUTH_ENABLED && (
-            <Route path="/demo">
-              <Route index element={<Demo />} />
-              <Route element={<DemoLayout />}>
-                <Route path="home" element={<DemoWord />} />
-                <Route path="reading" element={<DemoReading />} />
-                <Route path="corpus" element={<DemoCorpus />} />
-                <Route path="profile" element={<DemoProfile />} />
+        <Navigator />
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            style: {
+              background: 'var(--color-surface)',
+              color: 'var(--color-content)',
+              border: '1px solid rgba(0,0,0,0.1)',
+            },
+          }}
+        />
+        <Suspense fallback={<PageLoading />}>
+          <Routes>
+            {AUTH_ENABLED && <Route path="/login" element={<Login />} />}
+            {AUTH_ENABLED && <Route path="/register" element={<RegisterGuard />} />}
+            {AUTH_ENABLED && <Route path="/activate" element={<Activate />} />}
+            {AUTH_ENABLED && <Route path="/activate/:code" element={<Activate />} />}
+            {AUTH_ENABLED && <Route path="/recover" element={<Recover />} />}
+            {AUTH_ENABLED && <Route path="/recover/:code" element={<Recover />} />}
+            {/* Demo 路由（体验码输入 + demo 应用） */}
+            {AUTH_ENABLED && (
+              <Route path="/demo">
+                <Route index element={<Demo />} />
+                <Route element={<DemoLayout />}>
+                  <Route path="home" element={<DemoWord />} />
+                  <Route path="reading" element={<DemoReading />} />
+                  <Route path="corpus" element={<DemoCorpus />} />
+                  <Route path="profile" element={<DemoProfile />} />
+                </Route>
+              </Route>
+            )}
+            <Route element={<ProtectedRoute />}>
+              {/* 主应用路由 */}
+              <Route element={<Layout />}>
+                <Route path="/" element={<Navigate to="/word" replace />} />
+                <Route
+                  path="/word"
+                  element={
+                    <TrialGuard>
+                      <Home />
+                    </TrialGuard>
+                  }
+                />
+                <Route
+                  path="/wordbooks"
+                  element={
+                    <TrialGuard>
+                      <WordBooks />
+                    </TrialGuard>
+                  }
+                />
+                <Route path="/read/*" element={<ReadingModule />} />
+                <Route path="/reading/*" element={<ReadingModule />} />
+                <Route path="/listening/*" element={<CorpusModule />} />
+                <Route path="/profile" element={<PersonalCenter />} />
+                <Route path="/profile/devices" element={<Devices />} />
+                <Route path="/stats" element={<Stats />} />
+                <Route path="/learning-methods/*" element={<LearningMethodsModule />} />
+                <Route path="/ai-assistant" element={<AIChatPage />} />
+                <Route path="/dict/:dictId" element={<ChapterSelect />} />
+                <Route path="/typing/:dictId/:chapterId" element={<Typing />} />
+                <Route path="/review/setup/:bookId" element={<ReviewSetup />} />
+                <Route path="/review/quiz/:bookId" element={<ReviewQuiz />} />
               </Route>
             </Route>
-          )}
-          <Route element={<ProtectedRoute />}>
-            {/* 主应用路由 */}
-            <Route element={<Layout />}>
-              <Route path="/" element={<Navigate to="/word" replace />} />
-              <Route path="/word" element={<TrialGuard><Home /></TrialGuard>} />
-              <Route path="/wordbooks" element={<TrialGuard><WordBooks /></TrialGuard>} />
-              <Route path="/read/*" element={<ReadingModule />} />
-              <Route path="/reading/*" element={<ReadingModule />} />
-              <Route path="/listening/*" element={<CorpusModule />} />
-              <Route path="/profile" element={<PersonalCenter />} />
-              <Route path="/profile/devices" element={<Devices />} />
-              <Route path="/stats" element={<Stats />} />
-              <Route path="/learning-methods/*" element={<LearningMethodsModule />} />
-              <Route path="/dict/:dictId" element={<ChapterSelect />} />
-              <Route path="/typing/:dictId/:chapterId" element={<Typing />} />
-              <Route path="/review/setup/:bookId" element={<ReviewSetup />} />
-              <Route path="/review/quiz/:bookId" element={<ReviewQuiz />} />
-            </Route>
-          </Route>
-        </Routes>
-      </Suspense>
+          </Routes>
+        </Suspense>
+        <AIAssistantGate />
       </WordProvider>
     </AuthProvider>
   )
