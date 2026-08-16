@@ -48,7 +48,7 @@ const WordListItem = memo(function WordListItem({
           e.stopPropagation()
           onPlaySound?.(word.name)
         }}
-        className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-600 shrink-0"
+        className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-slate-200 dark:hover:bg-white/[0.08] shrink-0"
       >
         <Volume2 className="w-3.5 h-3.5 text-slate-400 dark:text-slate-400" />
       </button>
@@ -98,9 +98,9 @@ const WordListPanel = memo(function WordListPanel({
   if (!words || words.length === 0) return null
 
   return (
-    <div className="flex flex-col w-full h-full bg-white dark:bg-slate-800/50 backdrop-blur-sm border-r border-slate-200 dark:border-slate-700/50">
+    <div className="flex flex-col w-full h-full bg-white dark:bg-surface-dark backdrop-blur-sm border-r border-slate-200 dark:border-white/[0.06]">
       {/* 头部 */}
-      <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700/50">
+      <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-white/[0.06]">
         <div>
           <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">本章单词</h2>
           <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">

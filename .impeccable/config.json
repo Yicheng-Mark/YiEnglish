@@ -1,0 +1,5 @@
+{
+  "detector": {
+    "ignoreRules": ["marquee", "cream-palette", "kicker-above-heading"]
+  }
+}

@@ -80,14 +80,14 @@ export default function Activate() {
             WebkitBackdropFilter: 'blur(24px)',
           }}
         >
-          <h1 className="text-2xl font-bold text-white text-center mb-8">加入 Nothing is impossible.</h1>
+          <h1 className="text-2xl font-bold text-white text-center mb-8">加入 Yi English</h1>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <input
                 type="text"
                 value={code}
-                onChange={e => setCode(extractCode(e.target.value))}
+                onChange={(e) => setCode(extractCode(e.target.value))}
                 placeholder="请输入注册链接"
                 autoComplete="off"
                 autoFocus

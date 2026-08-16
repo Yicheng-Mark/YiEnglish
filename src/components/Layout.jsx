@@ -28,7 +28,7 @@ function Layout() {
             to="/word"
             className="text-xl font-bold italic text-primary dark:text-primary-dark flex items-center gap-2 transition-all duration-300 hover:opacity-90 dark:hover:drop-shadow-[0_0_8px_rgba(129,140,248,0.4)]"
           >
-            Nothing is impossible.
+            Yi English
           </Link>
         </nav>
       )}

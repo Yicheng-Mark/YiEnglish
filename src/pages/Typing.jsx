@@ -741,7 +741,7 @@ export default function Typing() {
             ${
               isWordListOpen
                 ? 'opacity-0 pointer-events-none -translate-x-4'
-                : 'opacity-100 translate-x-0 bg-white/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700'
+                : 'opacity-100 translate-x-0 bg-white/80 dark:bg-elevated/80 text-slate-600 dark:text-gray-300 hover:bg-white dark:hover:bg-white/[0.12]'
             }
           `}
           title="章节单词列表"

@@ -13,25 +13,25 @@ import {
 import methodData from '../../../data/english_learning_methods_data.json'
 
 const evidenceColors = {
-  '最强': {
+  最强: {
     text: 'text-emerald-600 dark:text-emerald-300',
     bg: 'bg-emerald-100/70 dark:bg-emerald-500/15',
     bar: 'bg-gradient-to-r from-emerald-500 to-emerald-400 dark:from-emerald-400 dark:to-emerald-300',
     badgeBg: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300',
   },
-  '强': {
+  强: {
     text: 'text-sky-600 dark:text-sky-300',
     bg: 'bg-sky-100/70 dark:bg-sky-500/15',
     bar: 'bg-gradient-to-r from-sky-500 to-sky-400 dark:from-sky-400 dark:to-sky-300',
     badgeBg: 'bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300',
   },
-  '中强': {
+  中强: {
     text: 'text-amber-600 dark:text-amber-300',
     bg: 'bg-amber-100/70 dark:bg-amber-500/15',
     bar: 'bg-gradient-to-r from-amber-500 to-amber-400 dark:from-amber-400 dark:to-amber-300',
     badgeBg: 'bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300',
   },
-  '中': {
+  中: {
     text: 'text-slate-600 dark:text-slate-300',
     bg: 'bg-slate-100/70 dark:bg-slate-500/15',
     bar: 'bg-gradient-to-r from-slate-500 to-slate-400 dark:from-slate-400 dark:to-slate-300',
@@ -85,10 +85,14 @@ export default function MethodDetail() {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-3">
-          <div className={`w-12 h-12 rounded-xl ${colors.bg} ${colors.text} flex items-center justify-center`}>
+          <div
+            className={`w-12 h-12 rounded-xl ${colors.bg} ${colors.text} flex items-center justify-center`}
+          >
             <Icon className="w-6 h-6" strokeWidth={2} />
           </div>
-          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${colors.badgeBg}`}>
+          <span
+            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${colors.badgeBg}`}
+          >
             证据等级: {method.evidence_level}
           </span>
         </div>
@@ -116,10 +120,14 @@ export default function MethodDetail() {
                 <p className="text-xs text-content-tertiary dark:text-gray-500 mb-1">{d.metric}</p>
                 <p className={`text-2xl font-bold ${colors.text} mb-1`}>{d.value}</p>
                 {d.comparison && (
-                  <p className="text-xs text-content-secondary dark:text-gray-400">{d.comparison}</p>
+                  <p className="text-xs text-content-secondary dark:text-gray-400">
+                    {d.comparison}
+                  </p>
                 )}
                 {d.source && (
-                  <p className="text-[11px] text-content-tertiary/70 dark:text-gray-600 mt-1">— {d.source}</p>
+                  <p className="text-[11px] text-content-tertiary/70 dark:text-gray-600 mt-1">
+                    — {d.source}
+                  </p>
                 )}
               </div>
             ))}
@@ -131,15 +139,15 @@ export default function MethodDetail() {
       {method.neuroscience_basis && (
         <div className="mb-6">
           <h2 className="text-lg font-bold text-content dark:text-white mb-3">神经科学基础</h2>
-          <div className="p-5 rounded-2xl bg-indigo-50/60 dark:bg-indigo-500/5 border border-indigo-100 dark:border-indigo-500/10">
+          <div className="p-5 rounded-2xl bg-indigo-50/60 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/15">
             <p className="text-sm font-medium text-indigo-700 dark:text-indigo-400 mb-1">
               {method.neuroscience_basis.institution} · {method.neuroscience_basis.method}
             </p>
-            <p className="text-base text-indigo-600/80 dark:text-indigo-300/70 leading-relaxed">
+            <p className="text-base text-indigo-600/80 dark:text-indigo-300/90 leading-relaxed">
               {method.neuroscience_basis.finding}
             </p>
             {method.neuroscience_basis.correlation && (
-              <p className="text-sm text-indigo-500/70 dark:text-indigo-400/60 mt-2">
+              <p className="text-sm text-indigo-500/70 dark:text-indigo-400/80 mt-2">
                 {method.neuroscience_basis.correlation}
               </p>
             )}
@@ -187,7 +195,9 @@ export default function MethodDetail() {
                 key={i}
                 className="p-4 rounded-2xl bg-surface border border-content-tertiary/15 hover:border-primary/20 transition-colors"
               >
-                <span className="text-sm font-semibold text-primary dark:text-primary-dark">{s.channel}</span>
+                <span className="text-sm font-semibold text-primary dark:text-primary-dark">
+                  {s.channel}
+                </span>
                 <p className="text-sm text-content-secondary dark:text-gray-400 mt-1">{s.action}</p>
               </div>
             ))}
@@ -224,7 +234,9 @@ export default function MethodDetail() {
                 className="flex items-start gap-3 p-4 rounded-2xl bg-surface border border-content-tertiary/15 hover:border-primary/20 transition-colors"
               >
                 <CheckCircle2 className={`w-5 h-5 mt-0.5 shrink-0 ${colors.text}`} />
-                <span className="text-sm text-content-secondary dark:text-gray-400 leading-relaxed">{bp}</span>
+                <span className="text-sm text-content-secondary dark:text-gray-400 leading-relaxed">
+                  {bp}
+                </span>
               </div>
             ))}
           </div>
@@ -237,15 +249,19 @@ export default function MethodDetail() {
           <h2 className="text-lg font-bold text-content dark:text-white mb-3">示例对比</h2>
           <div className="space-y-3">
             {method.example.bad && (
-              <div className="p-4 rounded-2xl bg-red-50/60 dark:bg-red-500/5 border border-red-100 dark:border-red-500/10">
+              <div className="p-4 rounded-2xl bg-red-50/60 dark:bg-red-500/10 border border-red-100 dark:border-red-500/15">
                 <p className="text-xs font-medium text-red-600 dark:text-red-400 mb-1">低效方式</p>
-                <p className="text-sm text-red-600/80 dark:text-red-300/70">{method.example.bad}</p>
+                <p className="text-sm text-red-600/80 dark:text-red-300/90">{method.example.bad}</p>
               </div>
             )}
             {method.example.good && (
-              <div className="p-4 rounded-2xl bg-emerald-50/60 dark:bg-emerald-500/5 border border-emerald-100 dark:border-emerald-500/10">
-                <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400 mb-1">科学方式</p>
-                <p className="text-sm text-emerald-600/80 dark:text-emerald-300/70">{method.example.good}</p>
+              <div className="p-4 rounded-2xl bg-emerald-50/60 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/15">
+                <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400 mb-1">
+                  科学方式
+                </p>
+                <p className="text-sm text-emerald-600/80 dark:text-emerald-300/90">
+                  {method.example.good}
+                </p>
               </div>
             )}
           </div>

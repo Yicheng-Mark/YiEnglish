@@ -129,7 +129,7 @@ function App() {
             style: {
               background: 'var(--color-surface)',
               color: 'var(--color-content)',
-              border: '1px solid rgba(0,0,0,0.1)',
+              border: '1px solid var(--color-border-strong, rgba(0,0,0,0.1))',
             },
           }}
         />

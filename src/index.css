@@ -14,28 +14,19 @@ html, body, #root {
   --color-accent: #8b5cf6;
   --color-accent-soft: rgba(139, 92, 246, 0.12);
   --color-background: #f8fafc;
-  --color-background-dark: #04040a;
+  --color-background-dark: #000000;
   --color-surface: #ffffff;
-  --color-surface-dark: #0f0f18;
+  --color-surface-dark: #101214;
+  --color-elevated: #ffffff;
   --color-content: #0f172a;
   --color-content-secondary: #475569;
   --color-content-tertiary: #94a3b8;
 }
 
+/* 暗夜 token 的单一来源是 [data-theme="gray"] 段（html 上 .dark 与 data-theme="gray" 恒同时挂载）；
+   .dark 仅承担 color-scheme 与 Tailwind dark: 变体开关，不再重复定义颜色 token */
 .dark {
   color-scheme: dark;
-  --color-primary: #818cf8;
-  --color-primary-soft: rgba(99, 102, 241, 0.15);
-  --color-primary-dark: #818cf8;
-  --color-accent: #c4b5fd;
-  --color-accent-soft: rgba(196, 181, 253, 0.15);
-  --color-background: #0d0f18;
-  --color-background-dark: #0d0f18;
-  --color-surface: #181a24;
-  --color-surface-dark: #181a24;
-  --color-content: #e2e8f0;
-  --color-content-secondary: #94a3b8;
-  --color-content-tertiary: #64748b;
 }
 
 @keyframes shake {
@@ -173,7 +164,7 @@ html, body, #root {
     contain: layout paint;
   }
   .dark .card {
-    background: rgba(26, 27, 38, 0.88);
+    background: rgba(22, 24, 28, 0.88);
     border-color: rgba(255, 255, 255, 0.06);
   }
 
@@ -204,7 +195,7 @@ html, body, #root {
     box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
   }
   .dark .input-field {
-    background: rgba(26, 27, 38, 0.8);
+    background: rgba(22, 24, 28, 0.8);
     border-color: rgba(255, 255, 255, 0.06);
     color: #f3f4f6;
   }
@@ -225,7 +216,7 @@ html, body, #root {
     @apply bg-surface rounded-modal p-8 max-w-md w-full mx-4 shadow-modal-light border border-gray-200/60 animate-[slideUp_0.3s_ease-out] backdrop-blur-xl;
   }
   .dark .modal-content {
-    background: rgba(26, 27, 38, 0.9);
+    background: rgba(22, 24, 28, 0.9);
     border-color: rgba(255, 255, 255, 0.06);
     box-shadow: 0 24px 48px rgba(0, 0, 0, 0.40), 0 4px 16px rgba(0, 0, 0, 0.20);
   }
@@ -234,7 +225,7 @@ html, body, #root {
     @apply absolute right-0 mt-2 w-40 bg-surface border border-gray-200 rounded-button shadow-lg z-50 overflow-hidden backdrop-blur-xl;
   }
   .dark .dropdown-menu {
-    background: rgba(32, 33, 50, 0.95);
+    background: rgba(22, 24, 28, 0.96);
     border-color: rgba(255, 255, 255, 0.06);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
   }
@@ -301,7 +292,7 @@ html, body, #root {
   }
 
   .dark .glass-card {
-    background: rgba(26, 27, 38, 0.7);
+    background: rgba(22, 24, 28, 0.7);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.06);
     box-shadow: none;
@@ -318,7 +309,7 @@ html, body, #root {
   }
 
   .dark .mode-switch-glass {
-    background: rgba(28, 29, 38, 0.55);
+    background: rgba(22, 24, 28, 0.55);
     backdrop-filter: blur(12px) saturate(160%);
     -webkit-backdrop-filter: blur(12px) saturate(160%);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -552,25 +543,26 @@ body[data-scrolling="true"] .glow-border-subtle:hover {
 }
 
 /* ============================================== */
-/*  Theme: Gray —— "Obsidian" 高级黑                */
-/*  灵感：Linear / Vercel / Stripe Dashboard        */
-/*  - 多层背景：Body → Surface → Elevated           */
-/*  - 微冷调 (#0a0a0d)，避免廉价 #000               */
-/*  - 顶部内嵌 1px 高光勾勒边缘 → 玻璃质感          */
+/*  Theme: Gray —— "Lights Out" 纯黑               */
+/*  灵感：X (Twitter) Lights Out                    */
+/*  - 多层背景：#000 body → #16181c 卡片 → #202327 悬浮 */
+/*  - 中性微冷灰阶，无紫调；扁平纯黑，无渐晕        */
+/*  - 层级靠卡片自身提亮 + #2f3336 边框勾勒         */
 /*  - 紫色强调保留作为系统色                          */
 /* ============================================== */
 [data-theme="gray"] {
-  --color-background: #12131c;        /* L1 body：柔和深灰微冷 */
-  --color-background-dark: #0e0f17;
-  --color-surface: #1a1b26;            /* L2 卡片 */
-  --color-surface-dark: #1a1b26;
-  --color-elevated: #242533;           /* L3 悬浮 / 弹窗 */
-  --color-content: #ededf0;
-  --color-content-secondary: #9b9ba5;
-  --color-content-tertiary: #6b6b78;
-  --color-border-soft: rgba(255, 255, 255, 0.06);
-  --color-border-strong: rgba(255, 255, 255, 0.10);
-  --color-highlight-edge: rgba(255, 255, 255, 0.05);  /* 顶部 1px 高光 */
+  --color-background: #000000;        /* L1 body：X Lights Out 纯黑 */
+  --color-background-dark: #000000;
+  --color-surface: #16181c;           /* L2 卡片 */
+  --color-surface-dark: #101214;      /* L2a 深面板：卡片内嵌更深一档 */
+  --color-elevated: #202327;          /* L3 悬浮 / 弹窗 */
+  --color-content: #e7e9ea;
+  --color-content-secondary: #8b98a5;  /* AA：bg 7.0 / surface 5.7 */
+  --color-content-tertiary: #71767b;   /* X 标志性 meta 灰（bg 4.6） */
+  --color-border-soft: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(255, 255, 255, 0.14);
+  --color-highlight-edge: rgba(255, 255, 255, 0.04);        /* 顶部 1px 高光：E1/E2 常驻表面 */
+  --color-highlight-edge-strong: rgba(255, 255, 255, 0.06); /* 顶部 1px 高光：E3 悬浮层 */
   --color-primary: #a78bfa;
   --color-primary-soft: rgba(167, 139, 250, 0.14);
   --color-primary-dark: #a78bfa;
@@ -580,162 +572,202 @@ body[data-scrolling="true"] .glow-border-subtle:hover {
 
 /* Mobile corpus player — gray theme overrides */
 [data-theme="gray"] {
-  --mobile-bg: #111827;
-  --mobile-card-bg: #1c2438;
-  --mobile-card-shadow: rgba(0,0,0,0.4);
-  --mobile-text: #f1f5f9;
-  --mobile-text-secondary: #94a3b8;
-  --mobile-border: #232d3f;
+  --mobile-bg: #000000;
+  --mobile-card-bg: #16181c;
+  --mobile-card-shadow: rgba(0,0,0,0.5);
+  --mobile-text: #e7e9ea;
+  --mobile-text-secondary: #8b98a5;
+  --mobile-border: #2f3336;
   --mobile-primary: #818cf8;
-  --mobile-bottom-bg: #161d2f;
-  --mobile-control-text: #64748b;
-  --mobile-icon-color: #94a3b8;
+  --mobile-bottom-bg: #000000;
+  --mobile-control-text: #71767b;
+  --mobile-icon-color: #8b98a5;
   --mobile-recording-bg: #1c2d5a;
 }
 
-/* 全局背景：径向微弱渐晕 → 不再是单色铺板 */
+/* 全局背景：X Lights Out 扁平纯黑，无渐晕 */
 [data-theme="gray"] body {
-  background:
-    radial-gradient(1200px 800px at 80% -10%, rgba(124, 92, 255, 0.07), transparent 60%),
-    radial-gradient(900px 600px at 0% 100%, rgba(99, 102, 241, 0.06), transparent 60%),
-    #12131c;
+  background: #000000;
 }
 
-/* Gray: 硬编码 Tailwind 灰阶覆盖（Tailwind gray 偏蓝） */
+/* Gray: 硬编码 Tailwind 灰阶覆盖（中性 X 灰阶，无紫调） */
 [data-theme="gray"] .bg-gray-50,
-[data-theme="gray"] .bg-slate-50 { background-color: #1a1b26; }
+[data-theme="gray"] .bg-slate-50 { background-color: #16181c; }
 [data-theme="gray"] .bg-gray-100,
-[data-theme="gray"] .bg-slate-100 { background-color: #1d1e2a; }
+[data-theme="gray"] .bg-slate-100 { background-color: #1d1f23; }
 [data-theme="gray"] .bg-gray-200,
-[data-theme="gray"] .bg-slate-200 { background-color: #222330; }
+[data-theme="gray"] .bg-slate-200 { background-color: #202327; }
 [data-theme="gray"] .bg-gray-300,
-[data-theme="gray"] .bg-slate-300 { background-color: #2e2f3c; }
+[data-theme="gray"] .bg-slate-300 { background-color: #2f3336; }
 [data-theme="gray"] .bg-gray-400,
-[data-theme="gray"] .bg-slate-400 { background-color: #41424e; }
+[data-theme="gray"] .bg-slate-400 { background-color: #3e434a; }
 [data-theme="gray"] .bg-gray-500,
-[data-theme="gray"] .bg-slate-500 { background-color: #6e6e7b; }
+[data-theme="gray"] .bg-slate-500 { background-color: #6e767d; }
 [data-theme="gray"] .bg-gray-600,
-[data-theme="gray"] .bg-slate-600 { background-color: #4e4e5a; }
+[data-theme="gray"] .bg-slate-600 { background-color: #4d545b; }
 [data-theme="gray"] .bg-gray-700,
-[data-theme="gray"] .bg-slate-700 { background-color: #33333e; }
+[data-theme="gray"] .bg-slate-700 { background-color: #33363b; }
 [data-theme="gray"] .bg-gray-800,
-[data-theme="gray"] .bg-slate-800 { background-color: #1d1e2a; }
+[data-theme="gray"] .bg-slate-800 { background-color: #1c1f23; }
 [data-theme="gray"] .bg-gray-900,
-[data-theme="gray"] .bg-slate-900 { background-color: #12131c; }
+[data-theme="gray"] .bg-slate-900 { background-color: #000000; }
 
 [data-theme="gray"] .text-gray-100,
-[data-theme="gray"] .text-slate-100 { color: #ededf0; }
+[data-theme="gray"] .text-slate-100 { color: #e7e9ea; }
 [data-theme="gray"] .text-gray-200,
-[data-theme="gray"] .text-slate-200 { color: #d8d8de; }
+[data-theme="gray"] .text-slate-200 { color: #cfd9de; }
 [data-theme="gray"] .text-gray-300,
-[data-theme="gray"] .text-slate-300 { color: #c2c2cb; }
+[data-theme="gray"] .text-slate-300 { color: #b0b8bf; }
 [data-theme="gray"] .text-gray-400,
-[data-theme="gray"] .text-slate-400 { color: #9b9ba5; }
+[data-theme="gray"] .text-slate-400 { color: #8b98a5; }
 [data-theme="gray"] .text-gray-500,
-[data-theme="gray"] .text-slate-500 { color: #6b6b78; }
+[data-theme="gray"] .text-slate-500 { color: #71767b; }
 [data-theme="gray"] .text-gray-600,
-[data-theme="gray"] .text-slate-600 { color: #51515c; }
+[data-theme="gray"] .text-slate-600 { color: #5c646b; }
+
+/* Gray: dark: 变体类覆盖 —— 双轨写法（token 管亮色 + dark:text-gray-* 管暗色）下，
+   Tailwind 原生灰带蓝调且多档对比度不足（500=#6b7280 约3.8:1 / 600=#4b5563 约2.4:1 /
+   700=#374151 约1.9:1），与 X 中性灰梯并存会显脏；
+   remap 选择器匹配不到 dark:text-gray-*（类名不同），须单独以 (0,3,0) 复合选择器压过工具类。
+   注意：dark\:text-gray-900 不做覆盖 —— dark:bg-white dark:text-gray-900 反白 chip
+   （ThemeToggle / PlayerControls / SettingsPanel 等）是有意设计，改了会把浅字放上白底 */
+[data-theme="gray"].dark .dark\:text-gray-100,
+[data-theme="gray"].dark .dark\:text-slate-100 { color: #e7e9ea; }
+[data-theme="gray"].dark .dark\:text-gray-200,
+[data-theme="gray"].dark .dark\:text-slate-200 { color: #cfd9de; }
+[data-theme="gray"].dark .dark\:text-gray-300,
+[data-theme="gray"].dark .dark\:text-slate-300 { color: #b0b8bf; }
+[data-theme="gray"].dark .dark\:text-gray-400,
+[data-theme="gray"].dark .dark\:text-slate-400 { color: #8b98a5; }
+[data-theme="gray"].dark .dark\:text-gray-500,
+[data-theme="gray"].dark .dark\:text-slate-500 { color: #71767b; }
+[data-theme="gray"].dark .dark\:text-gray-600,
+[data-theme="gray"].dark .dark\:text-slate-600 { color: #5c646b; }
+[data-theme="gray"].dark .dark\:text-gray-700,
+[data-theme="gray"].dark .dark\:text-slate-700 { color: #5c646b; } /* 原生约1.9:1，钳到分隔符/meta 可读档 */
+
+[data-theme="gray"].dark .dark\:bg-gray-50,
+[data-theme="gray"].dark .dark\:bg-slate-50 { background-color: #16181c; }
+[data-theme="gray"].dark .dark\:bg-gray-100,
+[data-theme="gray"].dark .dark\:bg-slate-100 { background-color: #1d1f23; }
+[data-theme="gray"].dark .dark\:bg-gray-200,
+[data-theme="gray"].dark .dark\:bg-slate-200 { background-color: #202327; }
+[data-theme="gray"].dark .dark\:bg-gray-300,
+[data-theme="gray"].dark .dark\:bg-slate-300 { background-color: #2f3336; }
+[data-theme="gray"].dark .dark\:bg-gray-400,
+[data-theme="gray"].dark .dark\:bg-slate-400 { background-color: #3e434a; }
+[data-theme="gray"].dark .dark\:bg-gray-500,
+[data-theme="gray"].dark .dark\:bg-slate-500 { background-color: #6e767d; }
+[data-theme="gray"].dark .dark\:bg-gray-600,
+[data-theme="gray"].dark .dark\:bg-slate-600 { background-color: #4d545b; }
+[data-theme="gray"].dark .dark\:bg-gray-700,
+[data-theme="gray"].dark .dark\:bg-slate-700 { background-color: #33363b; }
+[data-theme="gray"].dark .dark\:bg-gray-800,
+[data-theme="gray"].dark .dark\:bg-slate-800 { background-color: #1c1f23; }
+[data-theme="gray"].dark .dark\:bg-gray-900,
+[data-theme="gray"].dark .dark\:bg-slate-900 { background-color: #000000; }
+
+[data-theme="gray"].dark .dark\:border-gray-100,
+[data-theme="gray"].dark .dark\:border-slate-100 { border-color: rgba(255,255,255,0.06); }
+[data-theme="gray"].dark .dark\:border-gray-200,
+[data-theme="gray"].dark .dark\:border-slate-200 { border-color: rgba(255,255,255,0.09); }
+[data-theme="gray"].dark .dark\:border-gray-300,
+[data-theme="gray"].dark .dark\:border-slate-300 { border-color: rgba(255,255,255,0.13); }
+[data-theme="gray"].dark .dark\:border-gray-700,
+[data-theme="gray"].dark .dark\:border-slate-700 { border-color: rgba(255,255,255,0.13); }
+[data-theme="gray"].dark .dark\:border-gray-800,
+[data-theme="gray"].dark .dark\:border-slate-800 { border-color: rgba(255,255,255,0.06); }
 [data-theme="gray"] .text-gray-700,
-[data-theme="gray"] .text-slate-700 { color: #3d3d48; }
+[data-theme="gray"] .text-slate-700 { color: #3a3f45; }
 [data-theme="gray"] .text-gray-800,
-[data-theme="gray"] .text-slate-800 { color: #2a2a33; }
+[data-theme="gray"] .text-slate-800 { color: #272b30; }
 [data-theme="gray"] .text-gray-900,
-[data-theme="gray"] .text-slate-900 { color: #1b1b22; }
+[data-theme="gray"] .text-slate-900 { color: #17191c; }
 
 [data-theme="gray"] .border-gray-100,
-[data-theme="gray"] .border-slate-100 { border-color: rgba(255,255,255,0.05); }
+[data-theme="gray"] .border-slate-100 { border-color: rgba(255,255,255,0.06); }
 [data-theme="gray"] .border-gray-200,
-[data-theme="gray"] .border-slate-200 { border-color: rgba(255,255,255,0.07); }
+[data-theme="gray"] .border-slate-200 { border-color: rgba(255,255,255,0.09); }
 [data-theme="gray"] .border-gray-300,
-[data-theme="gray"] .border-slate-300 { border-color: rgba(255,255,255,0.10); }
+[data-theme="gray"] .border-slate-300 { border-color: rgba(255,255,255,0.13); }
 [data-theme="gray"] .border-gray-700,
-[data-theme="gray"] .border-slate-700 { border-color: rgba(255,255,255,0.07); }
+[data-theme="gray"] .border-slate-700 { border-color: rgba(255,255,255,0.09); }
 [data-theme="gray"] .border-gray-800,
-[data-theme="gray"] .border-slate-800 { border-color: rgba(255,255,255,0.05); }
+[data-theme="gray"] .border-slate-800 { border-color: rgba(255,255,255,0.06); }
 
-/* Gray: 玻璃卡片 — 顶部 1px 内嵌高光勾勒 + 深阴影,展示层级 */
+/* Gray: 玻璃卡片 — 扁平深色玻璃 + 顶部 1px 内嵌高光勾勒 */
 [data-theme="gray"] .glass-card {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.025) 0%, transparent 50%),
-    rgba(28, 29, 38, 0.72);
+  background: rgba(22, 24, 28, 0.82);
   backdrop-filter: blur(24px) saturate(140%);
   -webkit-backdrop-filter: blur(24px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.09);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 1px 2px rgba(0, 0, 0, 0.4),
-    0 8px 32px rgba(0, 0, 0, 0.35);
+    inset 0 1px 0 var(--color-highlight-edge),
+    0 1px 2px rgba(0, 0, 0, 0.5),
+    0 8px 32px rgba(0, 0, 0, 0.55);
 }
 
 [data-theme="gray"] .mode-switch-glass {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.025) 0%, transparent 60%),
-    rgba(28, 29, 38, 0.6);
-  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(22, 24, 28, 0.68);
+  border-color: rgba(255, 255, 255, 0.09);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 2px 8px rgba(0, 0, 0, 0.35);
+    inset 0 1px 0 var(--color-highlight-edge),
+    0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
+/* Gray: X 式卡片 — 纯黑底上靠自身提亮分层，扁平无光泽 */
 [data-theme="gray"] .card {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 60%),
-    #1a1b26;
-  border-color: rgba(255, 255, 255, 0.07);
+  background: #16181c;
+  border-color: rgba(255, 255, 255, 0.09);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.035),
-    0 1px 2px rgba(0, 0, 0, 0.35);
+    inset 0 1px 0 var(--color-highlight-edge),
+    0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
 [data-theme="gray"] .card-hover:hover {
-  border-color: rgba(255, 255, 255, 0.11);
+  border-color: rgba(255, 255, 255, 0.14);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 8px 24px rgba(0, 0, 0, 0.45),
-    0 0 0 1px rgba(167, 139, 250, 0.05);
+    inset 0 1px 0 var(--color-highlight-edge-strong),
+    0 8px 24px rgba(0, 0, 0, 0.7);
 }
 
 [data-theme="gray"] .dropdown-menu {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 50%),
-    rgba(34, 35, 46, 0.96);
+  background: rgba(0, 0, 0, 0.92);
   backdrop-filter: blur(28px) saturate(150%);
   -webkit-backdrop-filter: blur(28px) saturate(150%);
-  border-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.13);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 12px 40px rgba(0, 0, 0, 0.55),
-    0 4px 12px rgba(0, 0, 0, 0.35);
+    inset 0 1px 0 var(--color-highlight-edge-strong),
+    0 12px 40px rgba(0, 0, 0, 0.8),
+    0 4px 12px rgba(0, 0, 0, 0.6);
 }
 
 [data-theme="gray"] .modal-content {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 60%),
-    rgba(28, 29, 38, 0.95);
+  background: rgba(0, 0, 0, 0.92);
   backdrop-filter: blur(28px) saturate(150%);
   -webkit-backdrop-filter: blur(28px) saturate(150%);
-  border-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.13);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 24px 64px rgba(0, 0, 0, 0.65),
-    0 8px 24px rgba(0, 0, 0, 0.45);
+    inset 0 1px 0 var(--color-highlight-edge-strong),
+    0 24px 64px rgba(0, 0, 0, 0.8),
+    0 8px 24px rgba(0, 0, 0, 0.6);
 }
 
 [data-theme="gray"] .input-field {
-  background: rgba(28, 29, 38, 0.6);
-  border-color: rgba(255, 255, 255, 0.07);
-  color: #ededf0;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  background: rgba(32, 35, 39, 0.65);
+  border-color: rgba(255, 255, 255, 0.10);
+  color: #e7e9ea;
+  box-shadow: inset 0 1px 0 var(--color-highlight-edge);
 }
 [data-theme="gray"] .input-field::placeholder {
-  color: #6b6b78;
+  color: #71767b;
 }
 [data-theme="gray"] .input-field:focus {
   border-color: rgba(167, 139, 250, 0.45);
-  background: rgba(28, 29, 38, 0.8);
+  background: rgba(32, 35, 39, 0.9);
   --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) rgba(167, 139, 250, 0.14);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    inset 0 1px 0 var(--color-highlight-edge),
     var(--tw-ring-offset-shadow),
     var(--tw-ring-shadow),
     var(--tw-shadow, 0 0 #0000);
@@ -757,7 +789,7 @@ body[data-scrolling="true"] .glow-border-subtle:hover {
     linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%);
   color: #c2c2cb;
   border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 1px 0 var(--color-highlight-edge);
 }
 [data-theme="gray"] .btn-secondary:hover {
   background:
@@ -784,7 +816,7 @@ body[data-scrolling="true"] .glow-border-subtle:hover {
     linear-gradient(180deg, rgba(255,255,255,0.025) 0%, transparent 60%),
     rgba(255, 255, 255, 0.018);
   border-color: rgba(255, 255, 255, 0.06);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  box-shadow: inset 0 1px 0 var(--color-highlight-edge);
 }
 
 /* Gray: 滚动条 */
@@ -844,14 +876,12 @@ body[data-scrolling="true"] .glow-border-subtle:hover {
 }
 
 [data-theme="gray"] .reading-word-popup {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.04) 0%, transparent 60%),
-    #242533;
-  border-color: rgba(255, 255, 255, 0.10);
+  background: #202327;
+  border-color: rgba(255, 255, 255, 0.13);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 16px 48px rgba(0, 0, 0, 0.6),
-    0 4px 12px rgba(0, 0, 0, 0.4);
+    inset 0 1px 0 var(--color-highlight-edge-strong),
+    0 16px 48px rgba(0, 0, 0, 0.7),
+    0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 /* ============================================== */
@@ -1080,7 +1110,7 @@ body[data-scrolling="true"] .glow-border-subtle:hover {
   inset: 0;
   background:
     linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 60%),
-    #0f0f18;
+    #0f1114;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -31,6 +31,7 @@ export default {
           DEFAULT: 'var(--color-surface)',
           dark: 'var(--color-surface-dark)',
         },
+        elevated: 'var(--color-elevated)',
         content: {
           DEFAULT: 'var(--color-content)',
           secondary: 'var(--color-content-secondary)',

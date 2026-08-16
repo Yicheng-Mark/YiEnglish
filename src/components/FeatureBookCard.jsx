@@ -9,43 +9,40 @@
  * 类字符串预先声明出来，保证主题切换与 JIT purge 都正常工作。
  */
 
-// 颜色 token -> 该颜色涉及的全部 className 映射。
+// 颜色 token -> 该颜色涉及的 className 映射（只管亮色模式的淡彩渐变身份）。
+// 暗夜走「中性化」：卡片统一 #16181c 中性面 + 白α 边框，色彩不参与静止态，
+// 由组件模板里的 dark: 类统一接管（hover 交给 glow-border-subtle 的紫色光边）。
 // 新增颜色只需在此处追加一项，并在调用方传 color="xxx"。
 const COLOR_TOKENS = {
   violet: {
-    border:
-      'border-violet-200 hover:border-violet-300 dark:border-violet-900/40 dark:hover:border-violet-700/60 dark:hover:shadow-violet-900/20',
-    gradient:
-      'bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950/30 dark:to-purple-950/20',
-    topBar: 'bg-violet-500',
-    iconWrap: 'bg-violet-100 text-violet-600 dark:bg-violet-500/15 dark:text-violet-400',
-    title: 'text-violet-900 dark:text-violet-200',
-    subtitle: 'text-violet-600/80 dark:text-violet-400/70',
-    badge: 'bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300',
-    desc: 'text-violet-600/70 dark:text-violet-400/60',
+    border: 'border-violet-200 hover:border-violet-300',
+    gradient: 'bg-gradient-to-br from-violet-50 to-purple-50',
+    topBar: 'bg-violet-500 dark:hidden',
+    iconWrap: 'bg-violet-100 text-violet-600',
+    title: 'text-violet-900',
+    subtitle: 'text-violet-600/80',
+    badge: 'bg-violet-100 text-violet-700',
+    desc: 'text-violet-600/70',
   },
   cyan: {
-    border:
-      'border-cyan-200 hover:border-cyan-300 dark:border-cyan-900/40 dark:hover:border-cyan-700/60 dark:hover:shadow-cyan-900/20',
-    gradient: 'bg-gradient-to-br from-cyan-50 to-sky-50 dark:from-cyan-950/30 dark:to-sky-950/20',
-    topBar: 'bg-cyan-500',
-    iconWrap: 'bg-cyan-100 text-cyan-600 dark:bg-cyan-500/15 dark:text-cyan-400',
-    title: 'text-cyan-900 dark:text-cyan-200',
-    subtitle: 'text-cyan-600/80 dark:text-cyan-400/70',
-    badge: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-500/15 dark:text-cyan-300',
-    desc: 'text-cyan-600/70 dark:text-cyan-400/60',
+    border: 'border-cyan-200 hover:border-cyan-300',
+    gradient: 'bg-gradient-to-br from-cyan-50 to-sky-50',
+    topBar: 'bg-cyan-500 dark:hidden',
+    iconWrap: 'bg-cyan-100 text-cyan-600',
+    title: 'text-cyan-900',
+    subtitle: 'text-cyan-600/80',
+    badge: 'bg-cyan-100 text-cyan-700',
+    desc: 'text-cyan-600/70',
   },
   amber: {
-    border:
-      'border-amber-200 hover:border-amber-300 dark:border-amber-900/40 dark:hover:border-amber-700/60 dark:hover:shadow-amber-900/20',
-    gradient:
-      'bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-950/30 dark:to-yellow-950/20',
-    topBar: 'bg-amber-500',
-    iconWrap: 'bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400',
-    title: 'text-amber-900 dark:text-amber-200',
-    subtitle: 'text-amber-600/80 dark:text-amber-400/70',
-    badge: 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300',
-    desc: 'text-amber-600/70 dark:text-amber-400/60',
+    border: 'border-amber-200 hover:border-amber-300',
+    gradient: 'bg-gradient-to-br from-amber-50 to-yellow-50',
+    topBar: 'bg-amber-500 dark:hidden',
+    iconWrap: 'bg-amber-100 text-amber-600',
+    title: 'text-amber-900',
+    subtitle: 'text-amber-600/80',
+    badge: 'bg-amber-100 text-amber-700',
+    desc: 'text-amber-600/70',
   },
 }
 
@@ -77,30 +74,34 @@ export default function FeatureBookCard({
   return (
     <div
       onClick={onClick}
-      className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border-2 p-6 cursor-pointer hover:shadow-lg animate-card-enter glow-border-subtle transition-all duration-150 active:scale-[0.98] ${c.border} ${c.gradient}`}
+      className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border-2 dark:border p-6 cursor-pointer hover:shadow-lg animate-card-enter glow-border-subtle transition-all duration-150 active:scale-[0.98] dark:bg-surface dark:from-transparent dark:to-transparent dark:border-white/[0.09] ${c.border} ${c.gradient}`}
     >
-      {/* 顶部色条 */}
+      {/* 顶部色条（仅亮色模式；暗夜中性化后隐藏） */}
       <div className={`absolute top-0 left-0 w-full h-1 opacity-80 ${c.topBar}`} />
 
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${c.iconWrap}`}>
+          <div
+            className={`flex h-10 w-10 items-center justify-center rounded-xl dark:bg-white/[0.06] dark:text-gray-300 ${c.iconWrap}`}
+          >
             {icon}
           </div>
           <div>
-            <h3 className={`text-lg font-bold ${c.title}`}>{title}</h3>
-            <p className={`text-sm ${c.subtitle}`}>{subtitle}</p>
+            <h3 className={`text-lg font-bold dark:text-gray-100 ${c.title}`}>{title}</h3>
+            <p className={`text-sm dark:text-gray-400 ${c.subtitle}`}>{subtitle}</p>
           </div>
         </div>
       </div>
 
       <div className="mt-4">
         <div
-          className={`inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-medium ${c.badge}`}
+          className={`inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-medium dark:bg-white/[0.06] dark:text-gray-300 ${c.badge}`}
         >
           {badge}
         </div>
-        <p className={`mt-2 text-sm ${c.desc}`}>{count > 0 ? countText(count) : emptyText}</p>
+        <p className={`mt-2 text-sm dark:text-gray-500 ${c.desc}`}>
+          {count > 0 ? countText(count) : emptyText}
+        </p>
       </div>
     </div>
   )

@@ -19,7 +19,7 @@ export default function Demo() {
     setLoading(true)
     try {
       await redeemDemoCode(code.trim())
-      toast.success('欢迎使用 LingoForge！')
+      toast.success('欢迎使用 Yi English！')
       navigate('/demo/home', { replace: true })
     } catch (err) {
       toast.error(err.message)
@@ -39,7 +39,7 @@ export default function Demo() {
             animation: 'titleFadeIn 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards',
           }}
         >
-          Nothing is impossible.
+          Yi English
         </p>
         <div
           className="w-full max-w-sm border border-white/20 rounded-2xl shadow-2xl p-8"
@@ -51,16 +51,14 @@ export default function Demo() {
           }}
         >
           <h1 className="text-2xl font-bold text-white text-center mb-8">体验</h1>
-          <p className="text-sm text-white/50 text-center mb-6">
-            输入体验码，免费试用 1 小时
-          </p>
+          <p className="text-sm text-white/50 text-center mb-6">输入体验码，免费试用 1 小时</p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <input
                 type="text"
                 value={code}
-                onChange={e => setCode(e.target.value)}
+                onChange={(e) => setCode(e.target.value)}
                 placeholder="体验码"
                 autoComplete="off"
                 className="w-full border-b border-white/30 py-3 px-1 outline-none focus:border-white transition-colors text-sm"

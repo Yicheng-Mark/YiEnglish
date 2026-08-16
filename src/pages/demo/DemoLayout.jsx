@@ -10,7 +10,8 @@ const demoNavItems = [
   { to: '/demo/home', label: '单词', icon: <Keyboard className="w-5 h-5" /> },
   { to: '/demo/reading', label: '阅读', icon: <BookOpen className="w-5 h-5" /> },
   {
-    to: '/demo/corpus', label: '语料',
+    to: '/demo/corpus',
+    label: '语料',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <rect x="2" y="3" width="20" height="14" rx="2" ry="2" strokeWidth={2} />
@@ -20,10 +21,16 @@ const demoNavItems = [
     ),
   },
   {
-    to: '/demo/profile', label: '我的',
+    to: '/demo/profile',
+    label: '我的',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+        />
       </svg>
     ),
   },
@@ -57,8 +64,11 @@ export default function DemoLayout() {
 
       {/* 顶部导航 */}
       <nav className="h-12 md:h-16 shrink-0 glass-card border-b border-gray-200/80 dark:border-white/[0.06] flex items-center justify-between px-4 md:px-6 sticky top-0 z-50 nav-glow transition-shadow duration-500">
-        <Link to="/demo/home" className="text-xl font-bold italic text-primary dark:text-primary-dark flex items-center gap-2 transition-all duration-300 hover:opacity-90 dark:hover:drop-shadow-[0_0_8px_rgba(129,140,248,0.4)]">
-          Nothing is impossible.
+        <Link
+          to="/demo/home"
+          className="text-xl font-bold italic text-primary dark:text-primary-dark flex items-center gap-2 transition-all duration-300 hover:opacity-90 dark:hover:drop-shadow-[0_0_8px_rgba(129,140,248,0.4)]"
+        >
+          Yi English
         </Link>
         <span className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 px-2 py-1 rounded-full font-medium">
           体验版

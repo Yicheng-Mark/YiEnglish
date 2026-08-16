@@ -15,10 +15,10 @@ const TIME_FRAME_LABEL = {
 }
 
 const ASPECT_ROW_COLORS = [
-  'bg-emerald-50 dark:bg-emerald-500/5',
-  'bg-sky-50 dark:bg-sky-500/5',
-  'bg-amber-50 dark:bg-amber-500/5',
-  'bg-violet-50 dark:bg-violet-500/5',
+  'bg-emerald-50 dark:bg-emerald-500/10',
+  'bg-sky-50 dark:bg-sky-500/10',
+  'bg-amber-50 dark:bg-amber-500/10',
+  'bg-violet-50 dark:bg-violet-500/10',
 ]
 
 const ASPECT_LABELS = ['Simple', 'Continuous', 'Perfect', 'Perfect Continuous']
@@ -43,9 +43,7 @@ function TenseOverview({ navigate }) {
             <Clock className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-content dark:text-gray-100 mb-1">
-              时态概述
-            </h2>
+            <h2 className="text-lg font-bold text-content dark:text-gray-100 mb-1">时态概述</h2>
             <p className="text-sm text-content-secondary dark:text-gray-300 leading-relaxed">
               {overview.definition}
             </p>
@@ -58,15 +56,21 @@ function TenseOverview({ navigate }) {
         {/* Quick stats */}
         <div className="flex flex-wrap gap-3 mt-4">
           <div className="px-3 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-center">
-            <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">{overview.totalTenses}</p>
+            <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+              {overview.totalTenses}
+            </p>
             <p className="text-[10px] text-emerald-600/70 dark:text-emerald-400/70">基本时态</p>
           </div>
           <div className="px-3 py-2 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-center">
-            <p className="text-xl font-bold text-blue-600 dark:text-blue-400">{overview.timeDimensions.length}</p>
+            <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
+              {overview.timeDimensions.length}
+            </p>
             <p className="text-[10px] text-blue-600/70 dark:text-blue-400/70">时间维度</p>
           </div>
           <div className="px-3 py-2 rounded-xl bg-amber-50 dark:bg-amber-500/10 text-center">
-            <p className="text-xl font-bold text-amber-600 dark:text-amber-400">{overview.aspectDimensions.length}</p>
+            <p className="text-xl font-bold text-amber-600 dark:text-amber-400">
+              {overview.aspectDimensions.length}
+            </p>
             <p className="text-[10px] text-amber-600/70 dark:text-amber-400/70">体维度</p>
           </div>
         </div>
@@ -74,9 +78,7 @@ function TenseOverview({ navigate }) {
 
       {/* Tense Matrix */}
       <section className="mb-8">
-        <h3 className="text-base font-bold text-content dark:text-gray-100 mb-3">
-          时态矩阵
-        </h3>
+        <h3 className="text-base font-bold text-content dark:text-gray-100 mb-3">时态矩阵</h3>
         <div className="overflow-x-auto -mx-4 px-4">
           <table className="w-full min-w-[420px] border-collapse text-sm">
             <thead>
@@ -99,10 +101,16 @@ function TenseOverview({ navigate }) {
             <tbody>
               {ASPECT_KEYS.map((key, rowIdx) => (
                 <tr key={key} className="border-t border-gray-100 dark:border-white/[0.04]">
-                  <td className={`p-2.5 text-xs font-medium ${ASPECT_ROW_COLORS[rowIdx]} rounded-l-lg`}>
-                    <span className="text-content dark:text-gray-200">{ASPECT_LABELS_ZH[rowIdx]}</span>
+                  <td
+                    className={`p-2.5 text-xs font-medium ${ASPECT_ROW_COLORS[rowIdx]} rounded-l-lg`}
+                  >
+                    <span className="text-content dark:text-gray-200">
+                      {ASPECT_LABELS_ZH[rowIdx]}
+                    </span>
                     <br />
-                    <span className="text-content-tertiary dark:text-gray-400 text-[10px]">{ASPECT_LABELS[rowIdx]}</span>
+                    <span className="text-content-tertiary dark:text-gray-400 text-[10px]">
+                      {ASPECT_LABELS[rowIdx]}
+                    </span>
                   </td>
                   {TIME_LABELS.map((time, colIdx) => (
                     <td
@@ -123,9 +131,7 @@ function TenseOverview({ navigate }) {
 
       {/* Tense List */}
       <section>
-        <h3 className="text-base font-bold text-content dark:text-gray-100 mb-3">
-          全部时态
-        </h3>
+        <h3 className="text-base font-bold text-content dark:text-gray-100 mb-3">全部时态</h3>
         <div className="space-y-3">
           {tenseList.map((tense, index) => (
             <button
@@ -185,12 +191,8 @@ function TenseDetail({ tense, navigate }) {
             {tense.aspect}
           </span>
         </div>
-        <h1 className="text-2xl font-bold text-content dark:text-gray-100">
-          {tense.name}
-        </h1>
-        <p className="text-sm text-content-tertiary dark:text-gray-400 mt-0.5">
-          {tense.nameEn}
-        </p>
+        <h1 className="text-2xl font-bold text-content dark:text-gray-100">{tense.name}</h1>
+        <p className="text-sm text-content-tertiary dark:text-gray-400 mt-0.5">{tense.nameEn}</p>
       </div>
 
       {/* Structure */}
@@ -214,7 +216,8 @@ function TenseDetail({ tense, navigate }) {
               question: 'Question',
             }[type]
             const typeColor = {
-              affirmative: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
+              affirmative:
+                'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
               negative: 'bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300',
               question: 'bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-300',
             }[type]
@@ -327,7 +330,7 @@ function TenseDetail({ tense, navigate }) {
             {tense.commonErrors.map((err, idx) => (
               <div
                 key={idx}
-                className="rounded-xl border border-rose-200 dark:border-rose-500/15 bg-rose-50/50 dark:bg-rose-500/5 p-4"
+                className="rounded-xl border border-rose-200 dark:border-rose-500/15 bg-rose-50/50 dark:bg-rose-500/10 p-4"
               >
                 <div className="flex items-start gap-2 mb-2">
                   <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />

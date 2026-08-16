@@ -2,9 +2,24 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowRight, BookOpen, Type, Clock, MessageSquareText } from 'lucide-react'
 
 const modules = [
-  { icon: Type, label: '词性', en: 'Parts of Speech', color: 'bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-300' },
-  { icon: Clock, label: '时态', en: 'Tenses', color: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300' },
-  { icon: MessageSquareText, label: '句子精解', en: 'Sentence Analysis', color: 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-300' },
+  {
+    icon: Type,
+    label: '词性',
+    en: 'Parts of Speech',
+    color: 'bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-300',
+  },
+  {
+    icon: Clock,
+    label: '时态',
+    en: 'Tenses',
+    color: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300',
+  },
+  {
+    icon: MessageSquareText,
+    label: '句子精解',
+    en: 'Sentence Analysis',
+    color: 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-300',
+  },
 ]
 
 export default function GrammarOverview() {
@@ -12,7 +27,7 @@ export default function GrammarOverview() {
   return (
     <div
       onClick={() => navigate('/reading/grammar')}
-      className="group card card-hover relative overflow-hidden cursor-pointer glow-border-subtle active:scale-[0.98] transition-transform duration-150 flex flex-col min-h-[280px] h-full bg-white dark:bg-white/[0.03] rounded-xl shadow-sm"
+      className="group card card-hover relative overflow-hidden cursor-pointer glow-border-subtle active:scale-[0.98] transition-transform duration-150 flex flex-col min-h-[280px] h-full rounded-xl shadow-sm"
     >
       {/* 右下角装饰 */}
       <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-gradient-to-br from-primary/5 to-violet-500/5 dark:from-primary/10 dark:to-violet-500/10 rounded-full blur-2xl group-hover:from-primary/10 group-hover:to-violet-500/10 transition-all duration-500" />
@@ -52,9 +67,7 @@ export default function GrammarOverview() {
         <div className="mt-auto">
           <div className="border-t border-gray-200/70 dark:border-white/[0.06]" />
           <div className="flex items-center justify-between pt-3">
-            <span className="text-xs text-content-tertiary dark:text-gray-500">
-              3 大模块
-            </span>
+            <span className="text-xs text-content-tertiary dark:text-gray-500">3 大模块</span>
             <span className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/[0.06] text-content-secondary dark:text-gray-300 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors duration-200">
               <ArrowRight className="w-4 h-4" />
             </span>

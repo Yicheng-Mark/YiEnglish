@@ -542,11 +542,11 @@ function Home() {
                     match(['功能词本']) && (
                       <div
                         onClick={() => saveScrollAndNavigate('/wordbooks')}
-                        className="group relative flex items-center justify-between overflow-hidden rounded-2xl border-2 border-indigo-200 bg-gradient-to-r from-indigo-50 via-violet-50 to-purple-50 p-5 cursor-pointer hover:shadow-lg hover:border-indigo-300 dark:border-indigo-900/40 dark:from-indigo-950/30 dark:via-violet-950/20 dark:to-purple-950/20 dark:hover:border-indigo-700/60 dark:hover:shadow-indigo-900/20 animate-card-enter glow-border-subtle transition-all duration-150 active:scale-[0.98]"
+                        className="group relative flex items-center justify-between overflow-hidden rounded-2xl border-2 border-indigo-200 bg-gradient-to-r from-indigo-50 via-violet-50 to-purple-50 p-5 cursor-pointer hover:shadow-lg hover:border-indigo-300 dark:border dark:border-white/[0.09] dark:bg-surface dark:from-transparent dark:via-transparent dark:to-transparent animate-card-enter glow-border-subtle transition-all duration-150 active:scale-[0.98]"
                       >
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-violet-500 to-amber-500 opacity-80" />
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-violet-500 to-amber-500 opacity-80 dark:hidden" />
                         <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-400">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 dark:bg-white/[0.06] dark:text-gray-300">
                             <svg
                               className="w-5 h-5"
                               fill="none"
@@ -562,10 +562,10 @@ function Home() {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-indigo-900 dark:text-indigo-200">
+                            <h3 className="text-lg font-bold text-indigo-900 dark:text-gray-100">
                               功能词本
                             </h3>
-                            <p className="text-sm text-indigo-600/70 dark:text-indigo-400/60">
+                            <p className="text-sm text-indigo-600/70 dark:text-gray-400">
                               复习计划 · 错题本 · 阅读词本 · 语料词本 · 收藏词本
                             </p>
                           </div>
@@ -707,7 +707,7 @@ function Home() {
                         style={{ animationDelay: `${(index + 2) * 0.05}s` }}
                       >
                         <div
-                          className={`absolute top-0 left-0 w-full h-1 ${getCategoryColor(dict.name)} opacity-80`}
+                          className={`absolute top-0 left-0 w-full h-1 ${getCategoryColor(dict.name)} opacity-80 dark:hidden`}
                         />
                         <button
                           onClick={(e) => {

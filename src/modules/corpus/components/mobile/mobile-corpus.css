@@ -23,16 +23,16 @@
 
 /* ── Dark theme ── */
 .dark {
-  --mobile-bg: #111827;
-  --mobile-card-bg: #1c2438;
-  --mobile-card-shadow: rgba(0,0,0,0.4);
-  --mobile-text: #f1f5f9;
-  --mobile-text-secondary: #94a3b8;
-  --mobile-border: #232d3f;
+  --mobile-bg: #000000;
+  --mobile-card-bg: #16181c;
+  --mobile-card-shadow: rgba(0,0,0,0.5);
+  --mobile-text: #e7e9ea;
+  --mobile-text-secondary: #8b98a5;
+  --mobile-border: #2f3336;
   --mobile-primary: #f59e0b;
-  --mobile-bottom-bg: #161d2f;
-  --mobile-control-text: #64748b;
-  --mobile-icon-color: #94a3b8;
+  --mobile-bottom-bg: #000000;
+  --mobile-control-text: #71767b;
+  --mobile-icon-color: #8b98a5;
   --mobile-recording-bg: #1c2d5a;
   --mobile-answer-bg: rgba(245,158,11,0.08);
   --mobile-answer-border: rgba(245,158,11,0.2);
@@ -42,16 +42,16 @@
 
 /* ── Gray theme ── */
 [data-theme="gray"] {
-  --mobile-bg: #111827;
-  --mobile-card-bg: #1c2438;
-  --mobile-card-shadow: rgba(0,0,0,0.4);
-  --mobile-text: #f1f5f9;
-  --mobile-text-secondary: #94a3b8;
-  --mobile-border: #232d3f;
+  --mobile-bg: #000000;
+  --mobile-card-bg: #16181c;
+  --mobile-card-shadow: rgba(0,0,0,0.5);
+  --mobile-text: #e7e9ea;
+  --mobile-text-secondary: #8b98a5;
+  --mobile-border: #2f3336;
   --mobile-primary: #f59e0b;
-  --mobile-bottom-bg: #161d2f;
-  --mobile-control-text: #64748b;
-  --mobile-icon-color: #94a3b8;
+  --mobile-bottom-bg: #000000;
+  --mobile-control-text: #71767b;
+  --mobile-icon-color: #8b98a5;
   --mobile-recording-bg: #1c2d5a;
   --mobile-answer-bg: rgba(245,158,11,0.08);
   --mobile-answer-border: rgba(245,158,11,0.2);

@@ -42,7 +42,7 @@ export default function Login() {
             animation: 'titleFadeIn 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards',
           }}
         >
-          Nothing is impossible.
+          Yi English
         </p>
         <div
           className="w-full max-w-sm border border-white/20 rounded-2xl shadow-2xl p-8"
@@ -60,7 +60,7 @@ export default function Login() {
               <input
                 type="text"
                 value={username}
-                onChange={e => setUsername(e.target.value)}
+                onChange={(e) => setUsername(e.target.value)}
                 placeholder="用户名"
                 autoComplete="username"
                 className="w-full border-b border-white/30 py-3 px-1 outline-none focus:border-white transition-colors text-sm"
@@ -71,7 +71,7 @@ export default function Login() {
               <input
                 type="password"
                 value={password}
-                onChange={e => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="密码"
                 autoComplete="current-password"
                 className="w-full border-b border-white/30 py-3 px-1 outline-none focus:border-white transition-colors text-sm"
