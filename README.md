@@ -1,6 +1,10 @@
 <h1 align="center">Yi English</h1>
 
 <p align="center">
+  <img src="public/images/yi-english-banner-light.png" alt="Yi English" width="480" />
+</p>
+
+<p align="center">
   <b>Yi English · 面向中国学习者的英语学习闭环平台</b><br/>
   <sub>输入 · 规则 · 记忆 · 训练 · 应用 · 反馈 —— 让背过的每个词都回到语境里被使用、被检测、被复习</sub>
 </p>
@@ -8,6 +12,7 @@
 <p align="center">
   <a href="https://www.lingoforge.fun/">🌐 线上体验</a> ·
   <a href="#-产品定位">产品定位</a> ·
+  <a href="#-主题外观">主题外观</a> ·
   <a href="#-学习闭环">学习闭环</a> ·
   <a href="#-核心功能">核心功能</a> ·
   <a href="#-词库数据">词库数据</a> ·
@@ -34,6 +39,25 @@
 绝大多数背单词 App 只解决「输入 + 记忆」两层，背过的词没有出口、没有反馈，更没有真正的「活英语」。本项目的核心论点是：**背过的词必须回到语境里被使用、被检测、被复习，记忆才能真正留存**。因此五大功能词本（错题本 / 阅读词本 / 语料词本 / 复习计划 / 收藏词本）会把阅读、语料、练习中积累的词汇自动回流到打字训练，形成自驱的闭环。
 
 > 不卖词库，卖方法；不堆功能，做闭环。
+
+---
+
+## 🎨 主题外观
+
+三套主题共用一套设计 token，全局一键切换：
+
+| 明亮 | 暗夜 | 暖色 |
+|:---:|:---:|:---:|
+| <img src="public/images/yi-english-banner-light.png" alt="明亮主题" width="270" /> | <img src="public/images/yi-english-banner-dark.png" alt="暗夜主题" width="270" /> | <img src="public/images/yi-english-banner-warm.png" alt="暖色主题" width="270" /> |
+
+<details>
+<summary><b>品牌标识设计稿</b></summary>
+<br/>
+
+<img src="public/images/yi-english-logo-design.png" alt="Yi English Logo 设计稿" width="420" />
+
+应用图标（`public/logo.png`）取自设计稿中的方形 Y 标方案。
+</details>
 
 ---
 
