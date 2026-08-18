@@ -4,16 +4,17 @@ export default function ErrorBookCard({ count, onClick }) {
   return (
     <div
       onClick={onClick}
+      style={{ '--card-glow': 'rgba(239, 68, 68, 0.11)' }}
       className="
-        group relative flex flex-col justify-between overflow-hidden
+        feature-card group relative flex flex-col justify-between overflow-hidden
         rounded-2xl border-2 p-6
         animate-card-enter glow-border-subtle
         transition-all duration-150 active:scale-[0.98]
         border-red-200 bg-gradient-to-br from-red-50 to-orange-50 cursor-pointer hover:shadow-lg hover:border-red-300
-        dark:border dark:bg-surface dark:from-transparent dark:to-transparent dark:border-white/[0.09]
+        dark:border dark:bg-surface dark:border-white/[0.09]
       "
     >
-      {/* 顶部红色条（仅亮色模式；暗夜中性化后隐藏） */}
+      {/* 顶部色条：仅亮色模式（暗夜的色彩由 .feature-card 顶部辉光承担） */}
       <div className="absolute top-0 left-0 w-full h-1 bg-red-500 opacity-80 dark:hidden" />
 
       <div className="flex items-start justify-between">

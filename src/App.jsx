@@ -113,9 +113,12 @@ function App() {
   useScrollingFlag()
   useEffect(preloadModules, [])
   useEffect(() => {
-    // 空闲时执行 localStorage → IndexedDB 迁移
+    // 空闲时执行 localStorage → IndexedDB 迁移；
+    // 不支持 requestIdleCallback 的浏览器（Safari）降级为 setTimeout，否则迁移永远不执行
     if (typeof requestIdleCallback === 'function') {
       requestIdleCallback(() => migrateFromLocalStorage().catch(console.warn))
+    } else {
+      setTimeout(() => migrateFromLocalStorage().catch(console.warn), 2000)
     }
   }, [])
 

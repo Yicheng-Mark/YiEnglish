@@ -10,7 +10,7 @@ import { getFavoriteWordsCount, removeFromFavoriteWords } from '../utils/favorit
 import { getMeta } from '../dictionaries/meta.js'
 import useTyping from '../hooks/useTyping.js'
 import { useUserConfig } from '../hooks/useUserConfig.js'
-import { useReadingStore } from '../modules/reading/hooks/useReadingStore.js'
+import { getReadingStoreActions } from '../modules/reading/hooks/useReadingStore.js'
 import StatsPanel from '../components/StatsPanel.jsx'
 import ResultModal from '../components/ResultModal.jsx'
 import TypingToolbar from '../components/TypingToolbar.jsx'
@@ -69,11 +69,15 @@ export default function Typing() {
   const { onError: onErrorTracking } = useErrorTracking()
 
   useEffect(() => {
+    // 竞态防护：快速切换词书/章节时，旧 dictId 的慢响应后到会覆盖新数据，
+    // 页面显示 A 的单词但 URL 是 B，后续进度会记到错误的词书名下
+    let cancelled = false
     setLoading(true)
     setError(null)
     hasJumpedRef.current = false
     loadDictionary(dictId)
       .then((dict) => {
+        if (cancelled) return
         if (!dict) {
           setError('加载失败')
           setLoading(false)
@@ -96,9 +100,13 @@ export default function Typing() {
         setLoading(false)
       })
       .catch(() => {
+        if (cancelled) return
         setError('加载失败')
         setLoading(false)
       })
+    return () => {
+      cancelled = true
+    }
   }, [dictId, chapterId, isErrorBookMode, isFavoriteWordBookMode, isReviewMode, reloadKey])
 
   const dictName = useMemo(() => getMeta(dictId)?.name || dictId, [dictId])
@@ -175,7 +183,7 @@ export default function Typing() {
     setCurrentWord(currentWord)
     return () => setCurrentWord(null)
   }, [currentWord, setCurrentWord])
-  const studyStore = useReadingStore()
+  const addTypingSeconds = getReadingStoreActions().addTypingSeconds
   const typingAccumulatedRef = useRef(0)
   const lastFlushRef = useRef(0)
 
@@ -217,11 +225,13 @@ export default function Typing() {
   }, [loading, words, targetWordIndex, jumpTo])
 
   // 记录单词打字学习时间
+  // addTypingSeconds 是模块级稳定引用，避免 studyStore 这类每渲染必变
+  // 的对象进依赖数组导致每次按键都拆掉重建 interval
   useEffect(() => {
     if (!startTime || isFinished) {
       if (typingAccumulatedRef.current > lastFlushRef.current) {
         const delta = typingAccumulatedRef.current - lastFlushRef.current
-        studyStore.addTypingSeconds(delta)
+        addTypingSeconds(delta)
         lastFlushRef.current = typingAccumulatedRef.current
       }
       return
@@ -232,7 +242,7 @@ export default function Typing() {
       typingAccumulatedRef.current = elapsed
       const delta = elapsed - lastFlushRef.current
       if (delta >= 30) {
-        studyStore.addTypingSeconds(delta)
+        addTypingSeconds(delta)
         lastFlushRef.current = elapsed
       }
     }, 1000)
@@ -243,11 +253,11 @@ export default function Typing() {
       typingAccumulatedRef.current = elapsed
       const delta = elapsed - lastFlushRef.current
       if (delta > 0) {
-        studyStore.addTypingSeconds(delta)
+        addTypingSeconds(delta)
         lastFlushRef.current = elapsed
       }
     }
-  }, [startTime, isFinished, studyStore])
+  }, [startTime, isFinished, addTypingSeconds])
 
   // IME 合成处理与输入代理（机械抽离自原内联代码，逻辑逐行对应）
   const {
@@ -357,7 +367,8 @@ export default function Typing() {
       // 用原生 e.isComposing 检测：如果浏览器认为合成已结束，立即重置 ref
       if (!e.isComposing) isComposingRef.current = false
       if (isComposingRef.current) return
-      if (isWordListOpen) return
+      // 词表/错题本弹窗打开时不响应打字，避免弹窗内每键重渲染全部错题行
+      if (isWordListOpen || showWrongBook) return
       if (
         (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') &&
         e.target !== hiddenInputRef.current
@@ -403,6 +414,7 @@ export default function Typing() {
     isMobile,
     isFinished,
     isWordListOpen,
+    showWrongBook,
     handleBackspace,
     handleCharacterInput,
     wordIndex,
@@ -508,6 +520,11 @@ export default function Typing() {
       return prev.filter((w) => w.name !== wordName)
     })
   }, [])
+
+  // 稳定引用配合 WrongBookModal 的 memo，避免每键渲染时弹窗整树重建
+  const closeWrongBook = useCallback(() => setShowWrongBook(false), [])
+  const openWrongBook = useCallback(() => setShowWrongBook(true), [])
+  const closeWordList = useCallback(() => setIsWordListOpen(false), [])
 
   const handleJumpToWord = useCallback(
     (index) => {
@@ -700,7 +717,7 @@ export default function Typing() {
           currentIndex={wordIndex}
           onPlaySound={handlePlaySound}
           onJumpTo={handleJumpToWord}
-          onClose={() => setIsWordListOpen(false)}
+          onClose={closeWordList}
         />
       </div>
 
@@ -821,7 +838,7 @@ export default function Typing() {
             updateConfig={updateConfig}
             theme={theme}
             setTheme={setTheme}
-            onOpenWrongBook={() => setShowWrongBook(true)}
+            onOpenWrongBook={openWrongBook}
             isErrorBookMode={isErrorBookMode}
             isReadingWordBookMode={isReadingWordBookMode}
             isCorpusWordBookMode={isCorpusWordBookMode}
@@ -936,7 +953,7 @@ export default function Typing() {
         )}
         {showWrongBook && (
           <WrongBookModal
-            onClose={() => setShowWrongBook(false)}
+            onClose={closeWrongBook}
             onWordRemoved={
               isErrorBookMode || isWordBookMode ? handleWordRemovedFromModal : undefined
             }

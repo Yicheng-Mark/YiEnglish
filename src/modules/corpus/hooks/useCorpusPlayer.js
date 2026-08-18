@@ -344,7 +344,13 @@ export function useCorpusPlayer({ videoRef, subtitles, videoEl }) {
     if (document.fullscreenElement) {
       await document.exitFullscreen?.()
     } else {
-      ;(await target.requestFullscreen?.()) || (await target.webkitRequestFullscreen?.())
+      // requestFullscreen() 的 resolve 值是 undefined，不能用作短路条件，
+      // 否则标准浏览器成功进入全屏后仍会再调 webkit 分支；按特性检测二选一
+      if (typeof target.requestFullscreen === 'function') {
+        await target.requestFullscreen()
+      } else if (typeof target.webkitRequestFullscreen === 'function') {
+        await target.webkitRequestFullscreen()
+      }
       screen.orientation?.lock?.('landscape').catch(() => {})
     }
   }, [videoRef])
@@ -379,14 +385,9 @@ export function useCorpusPlayer({ videoRef, subtitles, videoEl }) {
     else if (idx === -1 && cues.length) jumpToCue(cues[0].id)
   }, [jumpToCue])
 
-  // 句子进度：(当前是第几句, 总句数)
-  const cueIndex =
-    activeId == null
-      ? 0
-      : Math.max(
-          0,
-          subtitles.findIndex((c) => c.id === activeId)
-        ) + 1
+  // 句子进度：(当前是第几句, 总句数)；activeId 不在字幕里（如切视频后的残留态）时不算第几句
+  const activeIdx = activeId == null ? -1 : subtitles.findIndex((c) => c.id === activeId)
+  const cueIndex = activeIdx >= 0 ? activeIdx + 1 : 0
   const cueTotal = subtitles?.length ?? 0
 
   return {

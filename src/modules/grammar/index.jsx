@@ -3,8 +3,10 @@ import GrammarHome from './pages/GrammarHome'
 import PartsOfSpeech from './pages/PartsOfSpeech'
 import Tenses from './pages/Tenses'
 import SentenceAnalysis from './pages/SentenceAnalysis'
+import useStudyTracker from '../reading/hooks/useStudyTracker'
 
 export default function GrammarModule() {
+  useStudyTracker('grammar')
   return (
     <Routes>
       <Route index element={<GrammarHome />} />

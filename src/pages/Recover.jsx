@@ -83,7 +83,7 @@ export default function Recover() {
   }
 
   return (
-    <div className="fixed inset-0 bg-black">
+    <div className="auth-shell fixed inset-0 bg-black">
       <div className="min-h-screen flex items-center justify-center px-4 py-8">
         <div
           className="w-full max-w-sm backdrop-blur-xl bg-black/30 border border-white/20 rounded-2xl shadow-2xl p-8 max-h-[90vh] overflow-y-auto"
@@ -93,14 +93,12 @@ export default function Recover() {
 
           {step === 1 ? (
             <form onSubmit={handleLookup} className="space-y-5">
-              <p className="text-center text-sm text-white/60">
-                输入你的注册链接以定位账号
-              </p>
+              <p className="text-center text-sm text-white/60">输入你的注册链接以定位账号</p>
               <div>
                 <input
                   type="text"
                   value={code}
-                  onChange={e => setCode(extractCode(e.target.value))}
+                  onChange={(e) => setCode(extractCode(e.target.value))}
                   placeholder="请输入注册链接"
                   autoComplete="off"
                   autoFocus
@@ -131,7 +129,7 @@ export default function Recover() {
                 <input
                   type="text"
                   value={username}
-                  onChange={e => setUsername(e.target.value)}
+                  onChange={(e) => setUsername(e.target.value)}
                   placeholder="新用户名（3-30 位，字母/数字/下划线/中文）"
                   autoComplete="username"
                   className="w-full bg-transparent border-b border-white/30 text-white placeholder-white/40 py-3 px-1 outline-none focus:border-white transition-colors text-sm"
@@ -141,7 +139,7 @@ export default function Recover() {
                 <input
                   type="password"
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="新密码（8+ 位，含字母和数字）"
                   autoComplete="new-password"
                   className="w-full bg-transparent border-b border-white/30 text-white placeholder-white/40 py-3 px-1 outline-none focus:border-white transition-colors text-sm"
@@ -151,7 +149,7 @@ export default function Recover() {
                 <input
                   type="password"
                   value={confirmPassword}
-                  onChange={e => setConfirmPassword(e.target.value)}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="确认新密码"
                   autoComplete="new-password"
                   className="w-full bg-transparent border-b border-white/30 text-white placeholder-white/40 py-3 px-1 outline-none focus:border-white transition-colors text-sm"

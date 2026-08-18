@@ -32,7 +32,7 @@ export default function Login() {
   }
 
   return (
-    <div className="fixed inset-0 bg-black">
+    <div className="auth-shell fixed inset-0 bg-black">
       <div className="min-h-screen flex flex-col items-center justify-center px-4 pt-[10vh] pb-[10vh]">
         <p
           className="text-4xl md:text-5xl lg:text-6xl font-light italic tracking-[0.25em] mb-20 md:mb-28"

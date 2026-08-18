@@ -81,7 +81,7 @@ export default function DemoLayout() {
       </div>
 
       {/* 底部导航 */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 glass-card border-t border-gray-200/80 dark:border-white/[0.06] backdrop-blur-md">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 glass-card border-t border-gray-200/80 dark:border-white/[0.06]">
         <div className="max-w-4xl mx-auto flex justify-around items-center h-14">
           {demoNavItems.map((item) => (
             <Link

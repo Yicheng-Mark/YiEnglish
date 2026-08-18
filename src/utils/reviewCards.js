@@ -1,5 +1,6 @@
 import { apiFetchReviewCards, apiUpsertReviewCards, apiAddReviewCard } from '../lib/api-review'
 import { idbPut, idbClear, idbBulkPut, idbDelete } from './idb.js'
+import { buildDictWordMap } from './dictWordMap.js'
 
 const STORAGE_KEY = 'lingoforge_review_cards'
 const DAY_MS = 24 * 60 * 60 * 1000
@@ -30,7 +31,19 @@ function getCards() {
   }
   try {
     const saved = localStorage.getItem(STORAGE_KEY)
-    return saved ? JSON.parse(saved) : { cards: {} }
+    if (!saved) return { cards: {} }
+    const data = JSON.parse(saved)
+    // 老版本格式/半损坏数据可能是数组或缺 cards 字段：兜底为空表，
+    // 否则消费端 Object.values(undefined) 抛 TypeError 会让 Home 整页崩
+    const cards =
+      data &&
+      typeof data === 'object' &&
+      !Array.isArray(data) &&
+      data.cards &&
+      typeof data.cards === 'object'
+        ? data.cards
+        : {}
+    return { cards }
   } catch {
     return { cards: {} }
   }
@@ -40,46 +53,6 @@ function saveCards(data) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
   } catch {}
-}
-
-let dictWordMap = null
-
-async function buildDictWordMap() {
-  if (dictWordMap) return dictWordMap
-  dictWordMap = new Map()
-  const dictIds = [
-    'junior',
-    'zhongkao',
-    'senior',
-    'gaokao',
-    'cet4',
-    'cet4freq',
-    'cet6',
-    'cet6freq',
-    'tem4',
-    'tem8',
-    'ielts',
-    'toefl',
-    'sat',
-    'postgraduate',
-    'postgraduateCore',
-    'programmer',
-  ]
-  for (const id of dictIds) {
-    try {
-      const res = await fetch(`${import.meta.env.BASE_URL}dictionaries/${id}.json`)
-      if (!res.ok) continue
-      const dict = await res.json()
-      dict.chapters?.forEach((ch) => {
-        ch.words?.forEach((w) => {
-          if (w?.name) dictWordMap.set(w.name.toLowerCase(), w)
-        })
-      })
-    } catch {
-      /* ignore */
-    }
-  }
-  return dictWordMap
 }
 
 export function addWordToReview(wordName, dictId) {
@@ -120,13 +93,13 @@ export function updateReviewCard(wordName, quality) {
     const card = data.cards[wordName]
     if (!card) return
 
-    let { interval, easeFactor, repetitions } = card
+    // legacy 卡片可能缺字段，解构补默认值避免 NaN 扩散
+    let { interval = 0, easeFactor = 2.5, repetitions = 0 } = card
 
     if (quality >= 3) {
       repetitions += 1
-      if (quality === 5) {
-        easeFactor = Math.max(1.3, easeFactor + 0.1)
-      }
+      // 标准 SM-2 EF 更新：q=5 → +0.1，q=4 → 不变，q=3 → -0.14，下限 1.3
+      easeFactor = Math.max(1.3, easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)))
       if (repetitions === 1) interval = 1
       else if (repetitions === 2) interval = 6
       else interval = Math.round(interval * easeFactor)

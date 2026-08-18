@@ -9,39 +9,49 @@
  * 类字符串预先声明出来，保证主题切换与 JIT purge 都正常工作。
  */
 
-// 颜色 token -> 该颜色涉及的 className 映射（只管亮色模式的淡彩渐变身份）。
-// 暗夜走「中性化」：卡片统一 #16181c 中性面 + 白α 边框，色彩不参与静止态，
-// 由组件模板里的 dark: 类统一接管（hover 交给 glow-border-subtle 的紫色光边）。
+// 颜色 token -> 该颜色涉及的 className 映射。
+// 亮色：淡彩渐变 + 实色顶条；暗夜：色彩单层化——卡片挂 .feature-card，glow 值经
+// inline style 注入 --card-glow，由 CSS 在卡片顶部晕开同色辉光（无边框色条、
+// 无全卡渐变，避免同色系多层叠加糊成一片）。
 // 新增颜色只需在此处追加一项，并在调用方传 color="xxx"。
 const COLOR_TOKENS = {
   violet: {
     border: 'border-violet-200 hover:border-violet-300',
     gradient: 'bg-gradient-to-br from-violet-50 to-purple-50',
+    glow: 'rgba(139, 92, 246, 0.13)',
     topBar: 'bg-violet-500 dark:hidden',
     iconWrap: 'bg-violet-100 text-violet-600',
+    iconWrapDark: 'dark:bg-violet-500/10 dark:text-violet-300',
     title: 'text-violet-900',
     subtitle: 'text-violet-600/80',
     badge: 'bg-violet-100 text-violet-700',
+    badgeDark: 'dark:bg-violet-500/10 dark:text-violet-300',
     desc: 'text-violet-600/70',
   },
   cyan: {
     border: 'border-cyan-200 hover:border-cyan-300',
     gradient: 'bg-gradient-to-br from-cyan-50 to-sky-50',
+    glow: 'rgba(6, 182, 212, 0.12)',
     topBar: 'bg-cyan-500 dark:hidden',
     iconWrap: 'bg-cyan-100 text-cyan-600',
+    iconWrapDark: 'dark:bg-cyan-500/10 dark:text-cyan-300',
     title: 'text-cyan-900',
     subtitle: 'text-cyan-600/80',
     badge: 'bg-cyan-100 text-cyan-700',
+    badgeDark: 'dark:bg-cyan-500/10 dark:text-cyan-300',
     desc: 'text-cyan-600/70',
   },
   amber: {
     border: 'border-amber-200 hover:border-amber-300',
     gradient: 'bg-gradient-to-br from-amber-50 to-yellow-50',
+    glow: 'rgba(245, 158, 11, 0.11)',
     topBar: 'bg-amber-500 dark:hidden',
     iconWrap: 'bg-amber-100 text-amber-600',
+    iconWrapDark: 'dark:bg-amber-500/10 dark:text-amber-300',
     title: 'text-amber-900',
     subtitle: 'text-amber-600/80',
     badge: 'bg-amber-100 text-amber-700',
+    badgeDark: 'dark:bg-amber-500/10 dark:text-amber-300',
     desc: 'text-amber-600/70',
   },
 }
@@ -74,15 +84,16 @@ export default function FeatureBookCard({
   return (
     <div
       onClick={onClick}
-      className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border-2 dark:border p-6 cursor-pointer hover:shadow-lg animate-card-enter glow-border-subtle transition-all duration-150 active:scale-[0.98] dark:bg-surface dark:from-transparent dark:to-transparent dark:border-white/[0.09] ${c.border} ${c.gradient}`}
+      style={{ '--card-glow': c.glow }}
+      className={`feature-card group relative flex flex-col justify-between overflow-hidden rounded-2xl border-2 dark:border p-6 cursor-pointer hover:shadow-lg animate-card-enter glow-border-subtle transition-all duration-150 active:scale-[0.98] dark:bg-surface dark:border-white/[0.09] ${c.border} ${c.gradient}`}
     >
-      {/* 顶部色条（仅亮色模式；暗夜中性化后隐藏） */}
+      {/* 顶部色条：仅亮色模式（暗夜的色彩由 .feature-card 顶部辉光承担） */}
       <div className={`absolute top-0 left-0 w-full h-1 opacity-80 ${c.topBar}`} />
 
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           <div
-            className={`flex h-10 w-10 items-center justify-center rounded-xl dark:bg-white/[0.06] dark:text-gray-300 ${c.iconWrap}`}
+            className={`flex h-10 w-10 items-center justify-center rounded-xl ${c.iconWrapDark} ${c.iconWrap}`}
           >
             {icon}
           </div>
@@ -95,7 +106,7 @@ export default function FeatureBookCard({
 
       <div className="mt-4">
         <div
-          className={`inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-medium dark:bg-white/[0.06] dark:text-gray-300 ${c.badge}`}
+          className={`inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-medium ${c.badgeDark} ${c.badge}`}
         >
           {badge}
         </div>

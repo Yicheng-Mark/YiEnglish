@@ -6,10 +6,14 @@ import ErrorBookCard from '../../components/ErrorBookCard'
 import { loadDictionary } from '../../utils/loadDictionary.js'
 
 const tagColors = {
-  'warm-coral': { text: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-500/10', top: 'bg-indigo-500' },
+  'warm-coral': {
+    text: 'text-indigo-600 dark:text-indigo-400',
+    bg: 'bg-indigo-50 dark:bg-indigo-500/10',
+    top: 'bg-indigo-500',
+  },
 }
 
-const juniorDict = dictionaryMeta.find(d => d.id === 'junior')
+const juniorDict = dictionaryMeta.find((d) => d.id === 'junior')
 
 export default function DemoWord() {
   const navigate = useNavigate()
@@ -34,14 +38,21 @@ export default function DemoWord() {
           {juniorDict && (
             <div
               onClick={() => navigate(`/dict/${juniorDict.id}`)}
-              onMouseEnter={() => { loadDictionary(juniorDict.id).catch(() => {}); import('../ChapterSelect') }}
+              onMouseEnter={() => {
+                loadDictionary(juniorDict.id).catch(() => {})
+                import('../ChapterSelect')
+              }}
               className="group card card-hover p-6 cursor-pointer relative overflow-hidden animate-card-enter glow-border-subtle active:scale-[0.98] transition-transform duration-150"
             >
-              <div className="absolute top-0 left-0 w-full h-1 bg-green-500 opacity-80" />
+              <div className="absolute top-0 left-0 w-full h-1 bg-green-500 opacity-80 dark:hidden" />
               <div className="flex items-start justify-between mb-3">
-                <h2 className="text-title text-content dark:text-gray-100 group-hover:text-primary transition-colors pr-10">{juniorDict.name}</h2>
+                <h2 className="text-title text-content dark:text-gray-100 group-hover:text-primary transition-colors pr-10">
+                  {juniorDict.name}
+                </h2>
               </div>
-              <p className="text-body text-content-tertiary dark:text-gray-400 mb-4 leading-relaxed">{juniorDict.description}</p>
+              <p className="text-body text-content-tertiary dark:text-gray-400 mb-4 leading-relaxed">
+                {juniorDict.description}
+              </p>
               <div className="flex items-center justify-between">
                 <span className="bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400 px-2.5 py-1 rounded-lg text-xs font-medium">
                   {juniorDict.category}

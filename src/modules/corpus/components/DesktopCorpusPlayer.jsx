@@ -27,8 +27,7 @@ function SettingsLauncher() {
 }
 
 export default function DesktopCorpusPlayer({ video, posterUrl, onBack }) {
-  const { player, popup, closePopup, saveWord, removeWord } =
-    useCorpusContext()
+  const { player, popup, closePopup, saveWord, removeWord } = useCorpusContext()
 
   // 键盘快捷键
   useEffect(() => {
@@ -59,9 +58,9 @@ export default function DesktopCorpusPlayer({ video, posterUrl, onBack }) {
   }, [player])
 
   return (
-    <div className="h-[100dvh] flex flex-col overflow-hidden bg-background dark:bg-[#0f0f13] transition-colors duration-500 animate-page-fade-in">
+    <div className="h-[100dvh] flex flex-col overflow-hidden bg-background dark:bg-black transition-colors duration-500 animate-page-fade-in">
       {/* 顶栏 */}
-      <div className="shrink-0 bg-white dark:bg-[#0f0f13] border-b border-gray-200/70 dark:border-white/[0.06]">
+      <div className="shrink-0 bg-white dark:bg-black border-b border-gray-200/70 dark:border-white/[0.06]">
         <div className="w-full px-6 h-16 flex items-center gap-4">
           <button
             onClick={onBack}
@@ -88,7 +87,9 @@ export default function DesktopCorpusPlayer({ video, posterUrl, onBack }) {
             type="button"
             onClick={player.toggleAllSubtitles}
             aria-pressed={player.hideSubtitleRight && player.hideSubtitleBottom}
-            aria-label={player.hideSubtitleRight && player.hideSubtitleBottom ? '显示字幕' : '隐藏字幕'}
+            aria-label={
+              player.hideSubtitleRight && player.hideSubtitleBottom ? '显示字幕' : '隐藏字幕'
+            }
             title={player.hideSubtitleRight && player.hideSubtitleBottom ? '显示字幕' : '隐藏字幕'}
             className={`w-9 h-9 flex items-center justify-center rounded-full transition-colors shrink-0 ${
               player.hideSubtitleRight && player.hideSubtitleBottom
@@ -96,7 +97,11 @@ export default function DesktopCorpusPlayer({ video, posterUrl, onBack }) {
                 : 'text-content-secondary dark:text-gray-300 hover:bg-gray-100/60 dark:hover:bg-white/[0.06]'
             }`}
           >
-            {player.hideSubtitleRight && player.hideSubtitleBottom ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            {player.hideSubtitleRight && player.hideSubtitleBottom ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4" />
+            )}
           </button>
           <SettingsLauncher />
         </div>

@@ -4,13 +4,14 @@ export default function ReviewCard({ dueCount, totalCount, onClick }) {
   return (
     <div
       onClick={onClick}
+      style={{ '--card-glow': 'rgba(16, 185, 129, 0.12)' }}
       className="
-        group relative flex flex-col justify-between overflow-hidden
+        feature-card group relative flex flex-col justify-between overflow-hidden
         rounded-2xl border-2 p-6
         animate-card-enter glow-border-subtle
         transition-all duration-150 active:scale-[0.98]
         border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 cursor-pointer hover:shadow-lg hover:border-emerald-300
-        dark:border dark:bg-surface dark:from-transparent dark:to-transparent dark:border-white/[0.09]
+        dark:border dark:bg-surface dark:border-white/[0.09]
       "
     >
       <div className="absolute top-0 left-0 w-full h-1 bg-emerald-500 opacity-80 dark:hidden" />

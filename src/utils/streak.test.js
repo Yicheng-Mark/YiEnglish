@@ -70,3 +70,59 @@ describe('calculateStreak', () => {
     expect(r.longest).toBeGreaterThanOrEqual(r.current)
   })
 })
+
+describe('calculateStreak · 自然周宽限', () => {
+  // TODAY = 2026-06-20 周六，本周为 06-15（周一）~ 06-21（周日）
+  it('今天没学但本周只缺今天 → 宽限一天，streak 续算到昨天', () => {
+    vi.setSystemTime(TODAY)
+    const map = {
+      '2026-06-15': 100,
+      '2026-06-16': 100,
+      '2026-06-17': 100,
+      '2026-06-18': 100,
+      '2026-06-19': 100,
+    }
+    const r = calculateStreak(map, 30)
+    expect(r.current).toBe(5) // 从 06-19 往回连数 5 天
+    expect(r.longest).toBe(5) // 宽限值与实际连续段一致，不虚高
+  })
+
+  it('本周已缺两天（今天 + 早前某天）→ 宽限不适用，current 归零', () => {
+    vi.setSystemTime(TODAY)
+    const map = {
+      '2026-06-16': 100,
+      '2026-06-17': 100,
+      '2026-06-18': 100,
+      '2026-06-19': 100,
+    }
+    const r = calculateStreak(map, 30) // 缺 06-15 与 06-20 两天
+    expect(r.current).toBe(0)
+    expect(r.longest).toBe(4) // 06-16~06-19 的历史最长段仍被统计
+  })
+})
+
+describe('calculateStreak · longest 与 weeklyDots', () => {
+  it('longest 统计与 current 无关的历史最长段', () => {
+    vi.setSystemTime(TODAY)
+    const map = {
+      '2026-06-01': 100,
+      '2026-06-02': 100,
+      '2026-06-03': 100,
+      '2026-06-04': 100,
+      '2026-06-05': 100,
+      '2026-06-19': 100,
+      '2026-06-20': 100,
+    }
+    const r = calculateStreak(map, 30)
+    expect(r.current).toBe(2)
+    expect(r.longest).toBe(5)
+  })
+
+  it('weeklyDots 按周一到周日映射本周打卡（今天之后的日期恒为 false）', () => {
+    vi.setSystemTime(TODAY)
+    const map = { '2026-06-15': 100, '2026-06-17': 100, '2026-06-20': 100 }
+    const r = calculateStreak(map, 30)
+    // 周一✓ 周二✗ 周三✓ 周四✗ 周五✗ 周六(今天)✓ 周日(未来)✗
+    expect(r.weeklyDots).toEqual([true, false, true, false, false, true, false])
+  })
+})

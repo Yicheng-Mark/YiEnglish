@@ -15,12 +15,7 @@ import {
 } from 'lucide-react'
 import { useCorpusContext } from '../context/CorpusPlayerContext.jsx'
 
-const RATE_OPTIONS = [
-  0.3, 0.4, 0.5, 0.6,
-  0.7, 0.8, 0.9, 1,
-  1.1, 1.2, 1.3, 1.4,
-  1.5, 2,
-]
+const RATE_OPTIONS = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 2]
 const INTERVAL_OPTIONS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 const LOOP_OPTIONS = [1, 2, 3, 4, 5, 10, -1] // -1 = 无限
 
@@ -115,42 +110,43 @@ function RateMenu({ rate, onChange }) {
           倍速
         </span>
       </button>
-      {open && createPortal(
-        <div
-          ref={panelRef}
-          style={{
-            position: 'fixed',
-            left: pos.left,
-            top: pos.top,
-            visibility: pos.ready ? 'visible' : 'hidden',
-          }}
-          className="z-[100] rounded-xl p-3 bg-surface dark:bg-[#1a1a24] border border-gray-200 dark:border-white/[0.08] shadow-xl"
-        >
-          <div className="text-[11px] text-content-tertiary dark:text-gray-400 text-center mb-2">
-            播放倍速
-          </div>
-          <div className="grid grid-cols-4 gap-2">
-            {RATE_OPTIONS.map((r) => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => {
-                  onChange(r)
-                  setOpen(false)
-                }}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium tabular-nums transition-colors ${
-                  rate === r
-                    ? 'bg-primary text-white dark:bg-white dark:text-gray-900'
-                    : 'bg-gray-100 text-content-secondary hover:bg-gray-200 dark:bg-white/[0.06] dark:text-gray-200 dark:hover:bg-white/[0.12]'
-                }`}
-              >
-                {r}x
-              </button>
-            ))}
-          </div>
-        </div>,
-        document.body
-      )}
+      {open &&
+        createPortal(
+          <div
+            ref={panelRef}
+            style={{
+              position: 'fixed',
+              left: pos.left,
+              top: pos.top,
+              visibility: pos.ready ? 'visible' : 'hidden',
+            }}
+            className="z-[100] rounded-xl p-3 bg-surface dark:bg-elevated border border-gray-200 dark:border-white/[0.08] shadow-xl"
+          >
+            <div className="text-[11px] text-content-tertiary dark:text-gray-400 text-center mb-2">
+              播放倍速
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+              {RATE_OPTIONS.map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => {
+                    onChange(r)
+                    setOpen(false)
+                  }}
+                  className={`px-3 py-1.5 rounded-md text-xs font-medium tabular-nums transition-colors ${
+                    rate === r
+                      ? 'bg-primary text-white dark:bg-white dark:text-gray-900'
+                      : 'bg-gray-100 text-content-secondary hover:bg-gray-200 dark:bg-white/[0.06] dark:text-gray-200 dark:hover:bg-white/[0.12]'
+                  }`}
+                >
+                  {r}x
+                </button>
+              ))}
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   )
 }
@@ -215,42 +211,44 @@ function IntervalMenu({ value, onChange }) {
           {active ? `${value}s` : '间隔'}
         </span>
       </button>
-      {open && anchor && createPortal(
-        <div
-          ref={panelRef}
-          style={{
-            position: 'fixed',
-            left: anchor.x,
-            top: anchor.y + 8,
-            transform: 'translate(-50%, 0)',
-          }}
-          className="z-[100] min-w-[120px] rounded-xl py-1.5 bg-surface dark:bg-[#1a1a24] border border-gray-200 dark:border-white/[0.12] shadow-xl"
-        >
-          <div className="text-[11px] text-content-tertiary dark:text-gray-400 text-center mb-2 px-3">
-            单句间隔
-          </div>
-          <div className="grid grid-cols-4 gap-2">
-            {INTERVAL_OPTIONS.map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => {
-                  onChange(s)
-                  setOpen(false)
-                }}
-                className={`h-9 rounded-md text-xs font-medium tabular-nums transition-colors flex items-center justify-center ${
-                  value === s
-                    ? 'bg-primary text-white dark:bg-white dark:text-gray-900'
-                    : 'bg-gray-100 text-content-secondary hover:bg-gray-200 dark:bg-white/[0.06] dark:text-gray-200 dark:hover:bg-white/[0.12]'
-                }`}
-              >
-                {s === 0 ? '关闭' : `${s}s`}
-              </button>
-            ))}
-          </div>
-        </div>,
-        document.body
-      )}
+      {open &&
+        anchor &&
+        createPortal(
+          <div
+            ref={panelRef}
+            style={{
+              position: 'fixed',
+              left: anchor.x,
+              top: anchor.y + 8,
+              transform: 'translate(-50%, 0)',
+            }}
+            className="z-[100] min-w-[120px] rounded-xl py-1.5 bg-surface dark:bg-elevated border border-gray-200 dark:border-white/[0.12] shadow-xl"
+          >
+            <div className="text-[11px] text-content-tertiary dark:text-gray-400 text-center mb-2 px-3">
+              单句间隔
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+              {INTERVAL_OPTIONS.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => {
+                    onChange(s)
+                    setOpen(false)
+                  }}
+                  className={`h-9 rounded-md text-xs font-medium tabular-nums transition-colors flex items-center justify-center ${
+                    value === s
+                      ? 'bg-primary text-white dark:bg-white dark:text-gray-900'
+                      : 'bg-gray-100 text-content-secondary hover:bg-gray-200 dark:bg-white/[0.06] dark:text-gray-200 dark:hover:bg-white/[0.12]'
+                  }`}
+                >
+                  {s === 0 ? '关闭' : `${s}s`}
+                </button>
+              ))}
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   )
 }
@@ -316,42 +314,44 @@ function LoopCountMenu({ value, onChange }) {
           {label}
         </span>
       </button>
-      {open && anchor && createPortal(
-        <div
-          ref={panelRef}
-          style={{
-            position: 'fixed',
-            left: anchor.x,
-            top: anchor.y + 8,
-            transform: 'translate(-50%, 0)',
-          }}
-          className="z-[100] rounded-xl p-3 bg-surface dark:bg-[#1a1a24] border border-gray-200 dark:border-white/[0.08] shadow-xl"
-        >
-          <div className="text-[11px] text-content-tertiary dark:text-gray-400 text-center mb-2">
-            设置单句循环次数
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            {LOOP_OPTIONS.map((opt) => (
-              <button
-                key={opt}
-                type="button"
-                onClick={() => {
-                  onChange(opt)
-                  setOpen(false)
-                }}
-                className={`w-10 h-10 rounded-md text-xs font-medium tabular-nums transition-colors flex items-center justify-center ${
-                  value === opt
-                    ? 'bg-primary text-white dark:bg-white dark:text-gray-900'
-                    : 'bg-gray-100 text-content-secondary hover:bg-gray-200 dark:bg-white/[0.06] dark:text-gray-200 dark:hover:bg-white/[0.12]'
-                }`}
-              >
-                {opt === -1 ? '无限' : opt}
-              </button>
-            ))}
-          </div>
-        </div>,
-        document.body
-      )}
+      {open &&
+        anchor &&
+        createPortal(
+          <div
+            ref={panelRef}
+            style={{
+              position: 'fixed',
+              left: anchor.x,
+              top: anchor.y + 8,
+              transform: 'translate(-50%, 0)',
+            }}
+            className="z-[100] rounded-xl p-3 bg-surface dark:bg-elevated border border-gray-200 dark:border-white/[0.08] shadow-xl"
+          >
+            <div className="text-[11px] text-content-tertiary dark:text-gray-400 text-center mb-2">
+              设置单句循环次数
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {LOOP_OPTIONS.map((opt) => (
+                <button
+                  key={opt}
+                  type="button"
+                  onClick={() => {
+                    onChange(opt)
+                    setOpen(false)
+                  }}
+                  className={`w-10 h-10 rounded-md text-xs font-medium tabular-nums transition-colors flex items-center justify-center ${
+                    value === opt
+                      ? 'bg-primary text-white dark:bg-white dark:text-gray-900'
+                      : 'bg-gray-100 text-content-secondary hover:bg-gray-200 dark:bg-white/[0.06] dark:text-gray-200 dark:hover:bg-white/[0.12]'
+                  }`}
+                >
+                  {opt === -1 ? '无限' : opt}
+                </button>
+              ))}
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   )
 }
@@ -388,11 +388,7 @@ export default function PlayerControls() {
         label="隐藏视频"
         ariaLabel={settings.hideVideo ? '显示视频' : '隐藏视频'}
       >
-        {settings.hideVideo ? (
-          <VideoOff className="w-4 h-4" />
-        ) : (
-          <Video className="w-4 h-4" />
-        )}
+        {settings.hideVideo ? <VideoOff className="w-4 h-4" /> : <Video className="w-4 h-4" />}
       </LabeledBtn>
       <LabeledBtn onClick={requestFullscreen} label="全屏">
         <Maximize className="w-4 h-4" />
@@ -436,11 +432,7 @@ export default function PlayerControls() {
 
       <IntervalMenu value={intervalGap} onChange={setIntervalGap} />
 
-      <LabeledBtn
-        active={pauseAfterCue}
-        onClick={togglePauseAfterCue}
-        label="单句暂停"
-      >
+      <LabeledBtn active={pauseAfterCue} onClick={togglePauseAfterCue} label="单句暂停">
         <PauseCircle className="w-4 h-4" />
       </LabeledBtn>
       <LabeledBtn

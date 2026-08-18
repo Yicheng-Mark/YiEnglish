@@ -19,10 +19,12 @@ function createNoiseBuffer(ctx) {
 function playKeySound(noiseBufferRef) {
   const audioCtx = getAudioContext()
   if (!audioCtx) return
-  if (!noiseBufferRef.current) {
-    noiseBufferRef.current = createNoiseBuffer(audioCtx)
+  // audioContext.js 重建 ctx（close→new）后，缓存的 buffer 仍属于已关闭的 ctx，
+  // Safari 上播放会抛错（被 catch 吞掉）导致之后按键一直静音：ctx 不一致时重建 buffer
+  if (!noiseBufferRef.current || noiseBufferRef.current.ctx !== audioCtx) {
+    noiseBufferRef.current = { ctx: audioCtx, buffer: createNoiseBuffer(audioCtx) }
   }
-  const noiseBuffer = noiseBufferRef.current
+  const noiseBuffer = noiseBufferRef.current.buffer
   if (!noiseBuffer) return
   try {
     const ctx = audioCtx
@@ -168,6 +170,16 @@ export default function useTyping(
   // 收集 setTimeout 引用，组件卸载时统一清理
   const timeoutsRef = useRef([])
 
+  // 错字后 300ms 自动清空输入的定时器句柄：
+  // 跳词/切章/退格/重打时必须先取消，否则到点会把新上下文里已敲的输入清掉
+  const wrongResetTimerRef = useRef(null)
+  const clearWrongResetTimer = useCallback(() => {
+    if (wrongResetTimerRef.current) {
+      clearTimeout(wrongResetTimerRef.current)
+      wrongResetTimerRef.current = null
+    }
+  }, [])
+
   const audioCacheRef = useRef(new Map())
 
   const getOrCreateAudio = useCallback((word) => {
@@ -259,6 +271,10 @@ export default function useTyping(
     prevWordsRef.current = words
 
     return () => {
+      if (wrongResetTimerRef.current) {
+        clearTimeout(wrongResetTimerRef.current)
+        wrongResetTimerRef.current = null
+      }
       timeoutsRef.current.forEach(clearTimeout)
       timeoutsRef.current = []
       audioCacheRef.current.forEach((audio) => {
@@ -305,6 +321,9 @@ export default function useTyping(
   const handleInput = useCallback(
     (key) => {
       if (isFinished || !currentWord) return
+      // 任何新输入（含退格）都使先前错字触发的 300ms 自动清空作废，
+      // 连错时也避免定时器堆叠
+      clearWrongResetTimer()
       if (!startTime) setStartTime(Date.now())
       if (key === 'Backspace') {
         setCurrentInput((prev) => {
@@ -390,7 +409,9 @@ export default function useTyping(
           })
         }
 
-        setTimeout(() => {
+        clearWrongResetTimer()
+        wrongResetTimerRef.current = setTimeout(() => {
+          wrongResetTimerRef.current = null
           currentInputRef.current = ''
           setCurrentInput('')
           setIsWrong(false)
@@ -411,12 +432,14 @@ export default function useTyping(
       dictName,
       autoRemoveErrorWord,
       onAutoRemove,
+      clearWrongResetTimer,
     ]
   )
 
   const jumpTo = useCallback(
     (index) => {
       if (index < 0 || index >= wordsRef.current.length) return
+      clearWrongResetTimer()
       setWordIndex(index)
       currentInputRef.current = ''
       setCurrentInput('')
@@ -429,10 +452,11 @@ export default function useTyping(
         preloadWord(wordsRef.current[index + 1]?.name)
       }
     },
-    [soundEnabled, speakWord, preloadWord]
+    [soundEnabled, speakWord, preloadWord, clearWrongResetTimer]
   )
 
   const reset = useCallback(() => {
+    clearWrongResetTimer()
     setWordIndex(0)
     currentInputRef.current = ''
     setCurrentInput('')
@@ -452,7 +476,7 @@ export default function useTyping(
       speakWord(wordsRef.current[0]?.name)
       preloadWord(wordsRef.current[1]?.name)
     }
-  }, [soundEnabled, speakWord, preloadWord])
+  }, [soundEnabled, speakWord, preloadWord, clearWrongResetTimer])
 
   return {
     currentWord,

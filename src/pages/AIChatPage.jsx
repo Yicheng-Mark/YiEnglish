@@ -3,8 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { ArrowLeft, Send, Square, Trash2, Bot } from 'lucide-react'
 import { createChatStream } from '../lib/chat-engine'
 import { fetchStyles, fetchChatHistory, fetchChatUsage, deriveUsageUI } from '../lib/ai-settings'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+import MessageBubble from '../components/AIAssistant/MessageBubble'
 import styles from '../components/AIAssistant/AICircleFloat.module.css'
 
 export default function AIChatPage() {
@@ -41,14 +40,29 @@ export default function AIChatPage() {
   }, [usage])
 
   useEffect(() => {
-    fetchStyles().then((data) => {
-      setCurrentStyle(data.current)
-    })
-    fetchChatUsage().then(setUsage)
-    if (passedMessages === undefined) {
-      fetchChatHistory().then((history) => {
-        setMessages(history)
+    fetchStyles()
+      .then((data) => {
+        setCurrentStyle(data.current)
       })
+      .catch(() => {})
+    fetchChatUsage()
+      .then(setUsage)
+      .catch(() => setUsage({ status: 'error' }))
+    if (passedMessages === undefined) {
+      fetchChatHistory()
+        .then((history) => {
+          // 历史晚到时本地可能已有用户刚发出的消息：整体覆盖会踩掉进行中的对话
+          // （含流式输出），此时跳过——服务端历史下次进入页面再加载
+          if (messagesRef.current.length === 0) setMessages(history)
+        })
+        .catch(() => {})
+    }
+  }, [])
+
+  // 卸载时中止进行中的流：离开页面后不再消耗网络与服务端用量
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort()
     }
   }, [])
 
@@ -93,12 +107,12 @@ export default function AIChatPage() {
       const sr = streamingRef.current
       setCurrentReasoning(sr.reasoning)
       setMessages((prev) => {
-        const next = [...prev]
-        const last = next[next.length - 1]
-        if (last?.role === 'assistant') {
-          last.content = sr.content
-          last.reasoningContent = sr.reasoning
-        }
+        const last = prev[prev.length - 1]
+        if (last?.role !== 'assistant') return prev
+        // 用新对象替换最后一条（而非原地改写），让 MessageBubble 的 memo
+        // 只对正在流式输出的这一条重渲染
+        const next = prev.slice(0, -1)
+        next.push({ ...last, content: sr.content, reasoningContent: sr.reasoning })
         return next
       })
       messagesEndRef.current?.scrollIntoView({ behavior: 'instant' })
@@ -202,25 +216,7 @@ export default function AIChatPage() {
             !msg.reasoningContent &&
             idx === messages.length - 1
           if (isStreamingEmpty) return null
-          return (
-            <div key={idx} className={`${styles.message} ${styles[msg.role]}`}>
-              <div className={styles.bubble}>
-                {msg.reasoningContent && (
-                  <details className={styles.thinkingBlock}>
-                    <summary>💭 思考过程</summary>
-                    <div className={styles.thinkingContent}>{msg.reasoningContent}</div>
-                  </details>
-                )}
-                {msg.role === 'assistant' ? (
-                  <div className={styles.markdown}>
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
-                  </div>
-                ) : (
-                  <div>{msg.content}</div>
-                )}
-              </div>
-            </div>
-          )
+          return <MessageBubble key={idx} msg={msg} />
         })}
         {streaming && !currentReasoning && (
           <div className={styles.typingIndicator}>

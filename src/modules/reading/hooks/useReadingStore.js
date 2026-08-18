@@ -29,13 +29,27 @@ function loadFromStorage() {
     if (!raw) return { ...defaultState }
     const parsed = JSON.parse(raw)
     return {
-      readProgress: parsed.readProgress && typeof parsed.readProgress === 'object' ? parsed.readProgress : {},
-      lastReadAt: parsed.lastReadAt && typeof parsed.lastReadAt === 'object' ? parsed.lastReadAt : {},
+      readProgress:
+        parsed.readProgress && typeof parsed.readProgress === 'object' ? parsed.readProgress : {},
+      lastReadAt:
+        parsed.lastReadAt && typeof parsed.lastReadAt === 'object' ? parsed.lastReadAt : {},
       bookmarks: Array.isArray(parsed.bookmarks) ? parsed.bookmarks : [],
-      dailyReadingSeconds: parsed.dailyReadingSeconds && typeof parsed.dailyReadingSeconds === 'object' ? parsed.dailyReadingSeconds : {},
-      dailyTypingSeconds: parsed.dailyTypingSeconds && typeof parsed.dailyTypingSeconds === 'object' ? parsed.dailyTypingSeconds : {},
-      dailyListeningSeconds: parsed.dailyListeningSeconds && typeof parsed.dailyListeningSeconds === 'object' ? parsed.dailyListeningSeconds : {},
-      filters: parsed.filters && typeof parsed.filters === 'object' ? { ...defaultFilters, ...parsed.filters } : { ...defaultFilters },
+      dailyReadingSeconds:
+        parsed.dailyReadingSeconds && typeof parsed.dailyReadingSeconds === 'object'
+          ? parsed.dailyReadingSeconds
+          : {},
+      dailyTypingSeconds:
+        parsed.dailyTypingSeconds && typeof parsed.dailyTypingSeconds === 'object'
+          ? parsed.dailyTypingSeconds
+          : {},
+      dailyListeningSeconds:
+        parsed.dailyListeningSeconds && typeof parsed.dailyListeningSeconds === 'object'
+          ? parsed.dailyListeningSeconds
+          : {},
+      filters:
+        parsed.filters && typeof parsed.filters === 'object'
+          ? { ...defaultFilters, ...parsed.filters }
+          : { ...defaultFilters },
     }
   } catch {
     return { ...defaultState }
@@ -46,15 +60,64 @@ let cache = loadFromStorage()
 let bookmarksSet = new Set(cache.bookmarks)
 const listeners = new Set()
 
-function persist() {
-  if (typeof window !== 'undefined') {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cache))
-    } catch {
-      /* ignore quota errors */
-    }
-  }
+// 时长累计每秒都在发生，但不需要即时落盘：内存先记，
+// 节流写盘（至多每 30s 一次），页面隐藏/关闭时同步 flush 兜底。
+// 注意仍需 notify() 广播——实时显示学习时长的组件靠它重渲染，否则数值会冻结。
+const TIME_PERSIST_INTERVAL_MS = 30 * 1000
+let timePersistTimer = null
+let timePersistDirty = false
+
+function notify() {
   listeners.forEach((fn) => fn())
+}
+
+function writeStorage() {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cache))
+  } catch {
+    /* ignore quota errors */
+  }
+}
+
+function flushTimePersist() {
+  if (!timePersistDirty) return
+  timePersistDirty = false
+  if (timePersistTimer) {
+    clearTimeout(timePersistTimer)
+    timePersistTimer = null
+  }
+  writeStorage()
+}
+
+function scheduleTimePersist() {
+  timePersistDirty = true
+  if (timePersistTimer || typeof window === 'undefined') return
+  timePersistTimer = setTimeout(() => {
+    timePersistTimer = null
+    flushTimePersist()
+  }, TIME_PERSIST_INTERVAL_MS)
+}
+
+if (typeof window !== 'undefined') {
+  const flushOnLeave = () => flushTimePersist()
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') flushTimePersist()
+  })
+  window.addEventListener('pagehide', flushOnLeave)
+  window.addEventListener('beforeunload', flushOnLeave)
+}
+
+function persist() {
+  // 即时写盘 + 广播：用于真正驱动 UI 的数据变更（进度/书签/筛选）。
+  // 顺带清掉时长累计的待写标记，避免重复写。
+  timePersistDirty = false
+  if (timePersistTimer) {
+    clearTimeout(timePersistTimer)
+    timePersistTimer = null
+  }
+  writeStorage()
+  notify()
 }
 
 // Module-level helper functions for time tracking
@@ -67,7 +130,8 @@ function _addTypingSeconds(seconds) {
     ...cache,
     dailyTypingSeconds: { ...cache.dailyTypingSeconds, [key]: prev + sec },
   }
-  persist()
+  scheduleTimePersist()
+  notify()
 }
 
 function _addReadingSeconds(seconds) {
@@ -79,7 +143,8 @@ function _addReadingSeconds(seconds) {
     ...cache,
     dailyReadingSeconds: { ...cache.dailyReadingSeconds, [key]: prev + sec },
   }
-  persist()
+  scheduleTimePersist()
+  notify()
 }
 
 function _addListeningSeconds(seconds) {
@@ -91,7 +156,8 @@ function _addListeningSeconds(seconds) {
     ...cache,
     dailyListeningSeconds: { ...cache.dailyListeningSeconds, [key]: prev + sec },
   }
-  persist()
+  scheduleTimePersist()
+  notify()
 }
 
 export function getReadingStoreActions() {
@@ -133,8 +199,10 @@ export function useReadingStore() {
     setProgress(id, percent) {
       const clamped = Math.max(0, Math.min(100, Math.round(percent)))
       const prev = cache.readProgress[id] || 0
-      // Only update if percent grew, or first read
-      if (clamped <= prev && cache.lastReadAt[id]) {
+      // Only update if percent grew, or first read.
+      // 老数据可能只有 readProgress 没有 lastReadAt，也算已有记录，
+      // 否则重访时较低的进度会覆盖已有的较高进度
+      if (clamped <= prev && (cache.lastReadAt[id] || prev > 0)) {
         // still update lastReadAt to reflect re-visit
         cache = {
           ...cache,

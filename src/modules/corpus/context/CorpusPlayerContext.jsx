@@ -66,6 +66,11 @@ async function ensureDictLoaded() {
     DICT_LOADING = null
     return DICT_CACHE
   })()
+  // 虽然单个词典失败已被 .catch(() => null) 吸收，构造过程仍可能因其他异常 reject；
+  // 失败时必须清掉 DICT_LOADING，否则 rejected promise 被永久缓存，之后再也进不了重试
+  DICT_LOADING.catch(() => {
+    DICT_LOADING = null
+  })
   return DICT_LOADING
 }
 
@@ -129,9 +134,14 @@ export function CorpusPlayerProvider({ video, children }) {
       setDicts(DICT_CACHE)
       return
     }
-    ensureDictLoaded().then((d) => {
-      if (!cancelled) setDicts(d)
-    })
+    ensureDictLoaded()
+      .then((d) => {
+        if (!cancelled) setDicts(d)
+      })
+      .catch(() => {
+        // 词典加载失败：置 null 走各消费端的降级路径，避免 unhandled rejection
+        if (!cancelled) setDicts(null)
+      })
     return () => {
       cancelled = true
     }

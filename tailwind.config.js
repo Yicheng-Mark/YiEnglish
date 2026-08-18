@@ -19,6 +19,10 @@ export default {
           DEFAULT: 'var(--color-accent)',
           soft: 'var(--color-accent-soft)',
         },
+        secondary: {
+          DEFAULT: 'var(--color-secondary)',
+          soft: 'var(--color-secondary-soft)',
+        },
         cream: '#f7f5f0',
         sand: '#f0ebe3',
         charcoal: '#1a1a1a',
@@ -60,6 +64,7 @@ export default {
         'modal-dark': '0 24px 48px rgba(0, 0, 0, 0.40), 0 4px 16px rgba(0, 0, 0, 0.20)',
         'glow-primary': '0 0 20px rgba(129, 140, 248, 0.15)',
         'glow-accent': '0 0 20px rgba(196, 181, 253, 0.12)',
+        'glow-secondary': '0 0 20px rgba(34, 211, 238, 0.18)',
       },
       transitionDuration: {
         '400': '400ms',

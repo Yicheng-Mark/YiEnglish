@@ -6,6 +6,7 @@ import {
 } from '../lib/api-wordbooks'
 import { idbPut, idbDelete, idbClear, idbBulkPut } from './idb.js'
 import { findWordInMap } from './wordLookup.js'
+import { buildDictWordMap } from './dictWordMap.js'
 
 const STORAGE_KEY = 'lingoforge_reading_words'
 
@@ -24,48 +25,6 @@ function ensureCache() {
   } catch {
     _cache = []
   }
-}
-
-let dictWordMap = null
-
-async function buildDictWordMap() {
-  if (dictWordMap) return dictWordMap
-  dictWordMap = new Map()
-  const dictIds = [
-    'junior',
-    'zhongkao',
-    'senior',
-    'gaokao',
-    'cet4',
-    'cet4freq',
-    'cet6',
-    'cet6freq',
-    'tem4',
-    'tem8',
-    'ielts',
-    'toefl',
-    'sat',
-    'postgraduate',
-    'postgraduateCore',
-    'programmer',
-  ]
-  for (const id of dictIds) {
-    try {
-      const res = await fetch(`${import.meta.env.BASE_URL}dictionaries/${id}.json`)
-      if (!res.ok) continue
-      const dict = await res.json()
-      dict.chapters?.forEach((ch) => {
-        ch.words?.forEach((w) => {
-          if (w?.name) {
-            dictWordMap.set(w.name.toLowerCase(), w)
-          }
-        })
-      })
-    } catch {
-      // ignore missing dictionaries
-    }
-  }
-  return dictWordMap
 }
 
 export async function enrichReadingWordBook() {

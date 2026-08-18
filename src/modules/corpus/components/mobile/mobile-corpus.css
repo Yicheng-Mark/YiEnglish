@@ -23,14 +23,14 @@
 
 /* ── Dark theme ── */
 .dark {
-  --mobile-bg: #000000;
-  --mobile-card-bg: #16181c;
+  --mobile-bg: #06060b;
+  --mobile-card-bg: #16151e;
   --mobile-card-shadow: rgba(0,0,0,0.5);
   --mobile-text: #e7e9ea;
   --mobile-text-secondary: #8b98a5;
-  --mobile-border: #2f3336;
+  --mobile-border: #2f2e3c;
   --mobile-primary: #f59e0b;
-  --mobile-bottom-bg: #000000;
+  --mobile-bottom-bg: #06060b;
   --mobile-control-text: #71767b;
   --mobile-icon-color: #8b98a5;
   --mobile-recording-bg: #1c2d5a;
@@ -42,14 +42,14 @@
 
 /* ── Gray theme ── */
 [data-theme="gray"] {
-  --mobile-bg: #000000;
-  --mobile-card-bg: #16181c;
+  --mobile-bg: #06060b;
+  --mobile-card-bg: #16151e;
   --mobile-card-shadow: rgba(0,0,0,0.5);
   --mobile-text: #e7e9ea;
   --mobile-text-secondary: #8b98a5;
-  --mobile-border: #2f3336;
+  --mobile-border: #2f2e3c;
   --mobile-primary: #f59e0b;
-  --mobile-bottom-bg: #000000;
+  --mobile-bottom-bg: #06060b;
   --mobile-control-text: #71767b;
   --mobile-icon-color: #8b98a5;
   --mobile-recording-bg: #1c2d5a;

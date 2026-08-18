@@ -65,7 +65,7 @@ export default function Register() {
   }
 
   return (
-    <div className="fixed inset-0 bg-black">
+    <div className="auth-shell fixed inset-0 bg-black">
       <div className="min-h-screen flex items-center justify-center px-4 py-8">
         <div
           className="w-full max-w-sm backdrop-blur-xl bg-black/30 border border-white/20 rounded-2xl shadow-2xl p-8 max-h-[90vh] overflow-y-auto"
@@ -78,7 +78,7 @@ export default function Register() {
               <input
                 type="text"
                 value={activationCode}
-                onChange={e => setActivationCode(e.target.value)}
+                onChange={(e) => setActivationCode(e.target.value)}
                 placeholder="激活码"
                 autoComplete="off"
                 readOnly
@@ -89,7 +89,7 @@ export default function Register() {
               <input
                 type="text"
                 value={username}
-                onChange={e => setUsername(e.target.value)}
+                onChange={(e) => setUsername(e.target.value)}
                 placeholder="用户名（3-30 位，字母/数字/下划线/中文）"
                 autoComplete="username"
                 className="w-full bg-transparent border-b border-white/30 text-white placeholder-white/40 py-3 px-1 outline-none focus:border-white transition-colors text-sm"
@@ -99,7 +99,7 @@ export default function Register() {
               <input
                 type="text"
                 value={nickname}
-                onChange={e => setNickname(e.target.value)}
+                onChange={(e) => setNickname(e.target.value)}
                 placeholder="昵称（选填，默认同用户名）"
                 className="w-full bg-transparent border-b border-white/30 text-white placeholder-white/40 py-3 px-1 outline-none focus:border-white transition-colors text-sm"
               />
@@ -108,7 +108,7 @@ export default function Register() {
               <input
                 type="password"
                 value={password}
-                onChange={e => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="密码（8+ 位，含字母和数字）"
                 autoComplete="new-password"
                 className="w-full bg-transparent border-b border-white/30 text-white placeholder-white/40 py-3 px-1 outline-none focus:border-white transition-colors text-sm"
@@ -118,7 +118,7 @@ export default function Register() {
               <input
                 type="password"
                 value={confirmPassword}
-                onChange={e => setConfirmPassword(e.target.value)}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="确认密码"
                 autoComplete="new-password"
                 className="w-full bg-transparent border-b border-white/30 text-white placeholder-white/40 py-3 px-1 outline-none focus:border-white transition-colors text-sm"

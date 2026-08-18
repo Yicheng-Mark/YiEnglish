@@ -486,3 +486,92 @@ describe('POST /api/auth/refresh', () => {
     expect(access).toBeTruthy()
   })
 })
+
+// =====================================================================
+// 找回密码：POST /api/auth/recover-reset（凭激活码重置用户名与密码）
+// =====================================================================
+describe('POST /api/auth/recover-reset', () => {
+  const validBody = { code: 'CODE1', username: 'newname1', password: VALID_PASSWORD }
+
+  it('入口先过 code 维度限流（回归：修复前 recover-reset 失败不计次，可无限爆破激活码接管账号）', async () => {
+    const rateErr = new Error('登录尝试过于频繁，请稍后再试')
+    rateErr.status = 429
+    fakeRateLimit.checkLoginRateLimit.mockRejectedValueOnce(rateErr)
+    const app = makeApp()
+    const res = await supertest(app).post('/api/auth/recover-reset').send(validBody)
+    expect(res.status).toBe(429)
+    expect(fakeRateLimit.checkLoginRateLimit).toHaveBeenCalledWith(
+      'recover:CODE1',
+      expect.any(String)
+    )
+  })
+
+  it('code 无关联账号 → 404 且按 code 维度记失败', async () => {
+    setExecuteHandlers([{ match: ['JOIN experience_codes'], returns: [] }])
+    const app = makeApp()
+    const res = await supertest(app).post('/api/auth/recover-reset').send(validBody)
+    expect(res.status).toBe(404)
+    expect(fakeRateLimit.logAttempt).toHaveBeenCalledWith(
+      'recover:CODE1',
+      expect.any(String),
+      false
+    )
+  })
+
+  it('重置成功 → 200，按 code 维度记成功并踢掉所有旧登录态', async () => {
+    setExecuteHandlers([
+      { match: ['JOIN experience_codes'], returns: [{ id: 5, username: 'oldname1' }] },
+      { match: ['FROM users WHERE username'], returns: [] }, // 新用户名可用
+      { match: ['UPDATE users SET username'], returns: { affectedRows: 1 } },
+      { match: ['DELETE FROM refresh_tokens WHERE user_id'], returns: { affectedRows: 1 } },
+      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 1, affectedRows: 1 } },
+      {
+        match: ['SELECT id, username, nickname FROM users'],
+        returns: [{ id: 5, username: 'newname1', nickname: null }],
+      },
+    ])
+    const app = makeApp()
+    const res = await supertest(app).post('/api/auth/recover-reset').send(validBody)
+    expect(res.status).toBe(200)
+    expect(res.body.user).toMatchObject({ id: 5, username: 'newname1' })
+    expect(fakeRateLimit.logAttempt).toHaveBeenCalledWith('recover:CODE1', expect.any(String), true)
+    expect(
+      mockExecute.mock.calls.some(([sql]) =>
+        String(sql).includes('DELETE FROM refresh_tokens WHERE user_id')
+      )
+    ).toBe(true)
+  })
+})
+
+// =====================================================================
+// 注册：激活码爆破防护（register-code 维度计数）
+// =====================================================================
+describe('POST /api/auth/register · 激活码爆破防护', () => {
+  it('激活码无效 → 400 且按 code 维度记失败（回归：修复前失败不计次，探测无成本）', async () => {
+    setExecuteHandlers([{ match: ['experience_codes WHERE code'], returns: [] }])
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/register')
+      .send({ username: VALID_USER, password: VALID_PASSWORD, activationCode: 'GUESS1' })
+    expect(res.status).toBe(400)
+    expect(fakeRateLimit.logAttempt).toHaveBeenCalledWith(
+      'register-code:GUESS1',
+      expect.any(String),
+      false
+    )
+  })
+
+  it('IP 限流先于激活码查询（429 时不发起 code 查询）', async () => {
+    const rateErr = new Error('注册尝试过于频繁，请稍后再试')
+    rateErr.status = 429
+    fakeRateLimit.checkRegisterRateLimit.mockRejectedValueOnce(rateErr)
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/register')
+      .send({ username: VALID_USER, password: VALID_PASSWORD, activationCode: 'CODE1' })
+    expect(res.status).toBe(429)
+    expect(mockExecute.mock.calls.some(([sql]) => String(sql).includes('experience_codes'))).toBe(
+      false
+    )
+  })
+})

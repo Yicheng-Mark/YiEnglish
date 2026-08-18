@@ -2,6 +2,10 @@
 // 注意：清缓存 / 无痕模式 / 换浏览器会丢失，是 localStorage 方案的已知上限。
 const KEY = 'lf_device_id'
 
+// localStorage 不可用（隐私模式等）时的会话级回退：
+// 不固定的话每次调用都会生成新值，同一次访问会被当成多台设备
+let fallbackId = null
+
 export function getDeviceId() {
   try {
     let id = localStorage.getItem(KEY)
@@ -14,7 +18,9 @@ export function getDeviceId() {
     }
     return id
   } catch {
-    // localStorage 不可用（隐私模式等）——退化为随机值，不阻塞兑换
-    return `d_${Date.now()}_${Math.random().toString(36).slice(2)}`
+    if (!fallbackId) {
+      fallbackId = `d_${Date.now()}_${Math.random().toString(36).slice(2)}`
+    }
+    return fallbackId
   }
 }

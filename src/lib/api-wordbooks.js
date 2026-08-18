@@ -5,10 +5,12 @@ export async function fetchWordBook(bookType) {
   return res.json()
 }
 
-export async function addWordToBook(bookType, wordInfo) {
+export async function addWordToBook(bookType, wordInfo, { keepalive = false } = {}) {
   const res = await apiFetch(`/api/wordbooks/${bookType}`, {
     method: 'POST',
     body: JSON.stringify(wordInfo),
+    // 卸载兜底 flush 时浏览器不保证普通 fetch 完成，keepalive 让请求存活到页面关闭后
+    ...(keepalive ? { keepalive: true } : {}),
   })
   return res.json()
 }

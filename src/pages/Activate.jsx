@@ -69,7 +69,7 @@ export default function Activate() {
   }
 
   return (
-    <div className="fixed inset-0 bg-black">
+    <div className="auth-shell fixed inset-0 bg-black">
       <div className="min-h-screen flex items-center justify-center px-4 py-8">
         <div
           className="w-full max-w-sm border border-white/20 rounded-2xl shadow-2xl p-8"

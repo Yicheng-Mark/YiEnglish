@@ -95,7 +95,10 @@ function parseTrans(trans) {
   if (!trans) return []
   // 字符串格式："[n,v] 锻炼" 或 "[n] 锻炼; [v] 练习"
   if (typeof trans === 'string') {
-    const items = trans.split(';').map(s => s.trim()).filter(Boolean)
+    const items = trans
+      .split(';')
+      .map((s) => s.trim())
+      .filter(Boolean)
     return items.map((t) => {
       const match = t.match(/^\s*\[([^\]]+)\]\s*(.*)$/)
       if (match) return { pos: match[1].trim(), meaning: match[2].trim() }
@@ -172,17 +175,16 @@ export default function WordPopup({
 
   // 优先显示在单词下方；下方空间不足时再放到上方
   const estimatedHeight = 170 + Math.max(1, parsed.length) * 28
-  const overflowsBelow = rect.bottom + estimatedHeight + gap > window.innerHeight - padding - bottomNavHeight
-  let initialTop = overflowsBelow
-    ? rect.top - estimatedHeight - gap
-    : rect.bottom + gap
+  const overflowsBelow =
+    rect.bottom + estimatedHeight + gap > window.innerHeight - padding - bottomNavHeight
+  let initialTop = overflowsBelow ? rect.top - estimatedHeight - gap : rect.bottom + gap
   // 转换为文档坐标，让弹窗在滚动时跟随单词
   initialTop += scrollYAtMount
 
   return (
     <div
       ref={popupRef}
-      className="absolute z-[100] reading-word-popup bg-white dark:bg-[#1a1a24] rounded-2xl shadow-xl border border-gray-100 dark:border-white/[0.06] overflow-hidden"
+      className="absolute z-[100] reading-word-popup bg-white dark:bg-elevated rounded-2xl shadow-xl border border-gray-100 dark:border-white/[0.06] overflow-hidden"
       style={{ left, top: computedTop ?? initialTop, width: popupWidth }}
     >
       {/* Header */}
@@ -203,7 +205,9 @@ export default function WordPopup({
 
       {/* Dictionary info */}
       <div className="px-5 pb-4">
-        <p className="text-xs font-medium text-content-tertiary dark:text-gray-500 mb-2.5">词典信息</p>
+        <p className="text-xs font-medium text-content-tertiary dark:text-gray-500 mb-2.5">
+          词典信息
+        </p>
 
         {/* Phonetic */}
         <div className="flex items-center gap-4 mb-3">

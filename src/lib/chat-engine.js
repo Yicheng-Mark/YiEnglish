@@ -2,7 +2,13 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
 
 export function createChatStream({ messages, styleKey, onToken, onReasoning, onDone, onError }) {
   const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 120000)
+  // 区分两种 abort：120s 超时 vs 用户主动点"停止"。
+  // 不区分的话用户每次停止都会收到一条假的"请求超时"错误气泡
+  let timedOut = false
+  const timeout = setTimeout(() => {
+    timedOut = true
+    controller.abort()
+  }, 120000)
 
   const headers = {
     'Content-Type': 'application/json',
@@ -95,7 +101,8 @@ export function createChatStream({ messages, styleKey, onToken, onReasoning, onD
     .catch((err) => {
       clearTimeout(timeout)
       if (err.name === 'AbortError') {
-        onError(new Error('请求超时，请检查网络后重试'))
+        // 仅超时中断才提示重试；用户主动停止静默结束（已收到的内容保留）
+        if (timedOut) onError(new Error('请求超时，请检查网络后重试'))
         return
       }
       onError(err)

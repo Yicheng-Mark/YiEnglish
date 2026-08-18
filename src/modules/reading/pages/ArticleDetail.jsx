@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Bookmark, ChevronDown, FileText, MapPin } from 'lucide-react'
 import { useReadingStore } from '../hooks/useReadingStore'
@@ -80,8 +80,16 @@ const renderParagraph = (text, paraIndex, onWordClick) => {
   )
 }
 
-function ParagraphBlock({ en, zh, index, onWordClick }) {
+// memo + 稳定的 onWordClick：滚动进度、每秒 tick 等父级重渲染
+// 不再导致整篇文章的分词 span 树重建
+const ParagraphBlock = memo(function ParagraphBlock({ en, zh, index, onWordClick }) {
   const [showTrans, setShowTrans] = useState(false)
+
+  // 分词 + 内联标签解析只在段落文本变化时重算（切换翻译等局部状态不再重算）
+  const paragraphContent = useMemo(
+    () => renderParagraph(en, index, onWordClick),
+    [en, index, onWordClick]
+  )
 
   return (
     <div
@@ -89,7 +97,7 @@ function ParagraphBlock({ en, zh, index, onWordClick }) {
       className="group mb-4 rounded-2xl p-5 md:p-6 transition-colors bg-[#e8e6e1] dark:bg-white/[0.05]"
     >
       <div className="flex-1 min-w-0">
-        {renderParagraph(en, index, onWordClick)}
+        {paragraphContent}
 
         {/* 翻译切换 */}
         <div className="mt-3">
@@ -119,7 +127,7 @@ function ParagraphBlock({ en, zh, index, onWordClick }) {
       </div>
     </div>
   )
-}
+})
 
 export default function ArticleDetail() {
   const { id } = useParams()
@@ -232,7 +240,8 @@ export default function ArticleDetail() {
       let pct = ((readEnd - articleStart) / (articleEnd - articleStart)) * 100
       if (!Number.isFinite(pct)) pct = 0
       pct = Math.max(0, Math.min(100, Math.round(pct)))
-      setProgress(pct)
+      // 同值短路：滚动中整数百分比没变就不触发渲染
+      setProgress((prev) => (prev === pct ? prev : pct))
       if (persistTimer.current) clearTimeout(persistTimer.current)
       persistTimer.current = setTimeout(() => {
         store.setProgress(id, pct)
@@ -250,35 +259,38 @@ export default function ArticleDetail() {
   }, [id, article])
 
   // 单词点击：直接弹出查词面板
-  function handleWordClick(word, rect, tokenEl) {
-    console.log('[Reading] Word clicked:', word, tokenEl)
-    if (!word) return
-    const cleanWord = word
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z'-]/g, '')
-    if (!cleanWord) return
+  // useCallback 保持引用稳定，否则 ParagraphBlock 的 memo 会被打穿
+  const handleWordClick = useCallback(
+    function handleWordClick(word, rect, tokenEl) {
+      if (!word) return
+      const cleanWord = word
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z'-]/g, '')
+      if (!cleanWord) return
 
-    if (activeTokenRef.current) {
-      activeTokenRef.current.classList.remove('word-token-active')
-    }
-    if (tokenEl) {
-      tokenEl.classList.add('word-token-active')
-      activeTokenRef.current = tokenEl
-    }
+      if (activeTokenRef.current) {
+        activeTokenRef.current.classList.remove('word-token-active')
+      }
+      if (tokenEl) {
+        tokenEl.classList.add('word-token-active')
+        activeTokenRef.current = tokenEl
+      }
 
-    const wordData = findWordInMap(cleanWord, wordMap) || {
-      name: cleanWord,
-      usphone: '',
-      ukphone: '',
-      trans: [],
-    }
-    setPopup({
-      wordData,
-      rect,
-      isSaved: isInReadingWordBook(wordData.name),
-    })
-  }
+      const wordData = findWordInMap(cleanWord, wordMap) || {
+        name: cleanWord,
+        usphone: '',
+        ukphone: '',
+        trans: [],
+      }
+      setPopup({
+        wordData,
+        rect,
+        isSaved: isInReadingWordBook(wordData.name),
+      })
+    },
+    [wordMap]
+  )
 
   function handleSaveWord() {
     if (!popup?.wordData) return
@@ -333,7 +345,7 @@ export default function ArticleDetail() {
   return (
     <div className="min-h-screen bg-background dark:bg-transparent transition-colors duration-500 animate-page-fade-in">
       {/* 顶部返回栏 */}
-      <div className="sticky top-12 md:top-16 z-40 glass-card border-b border-gray-200/70 dark:border-white/[0.06] backdrop-blur-md">
+      <div className="sticky top-12 md:top-16 z-40 glass-card border-b border-gray-200/70 dark:border-white/[0.06]">
         <div className="max-w-3xl mx-auto px-4 md:px-6 h-12 flex items-center justify-between gap-3">
           <button
             onClick={() => navigate('/reading')}

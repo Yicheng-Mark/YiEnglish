@@ -139,6 +139,10 @@ app.use('/api/memory', aiLimiter, memoryRoutes)
 // Serve static frontend in production
 const distPath = path.resolve(__dirname, '../dist')
 app.use(express.static(distPath))
+// 未知 API 路径直接 404：不落进下面的 SPA 通配（通配会返回 index.html + 200，掩盖前端调用错误）
+app.use('/api', (req, res) => {
+  res.status(404).json({ error: 'API not found' })
+})
 app.get('{*path}', (req, res) => {
   res.sendFile(path.join(distPath, 'index.html'))
 })

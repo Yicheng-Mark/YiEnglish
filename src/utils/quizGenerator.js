@@ -205,9 +205,11 @@ export function generateQuestion(word, allWords, type) {
  * @returns {Question[]}
  */
 export function generateQuestions(words, allWords, questionTypes, count) {
+  // 题型池为空时随机取样会得到 undefined 并静默落入 cn2en，这里回退到默认题型
+  const types = Array.isArray(questionTypes) && questionTypes.length > 0 ? questionTypes : ['en2cn']
   const sampled = shuffle(words).slice(0, count)
   return sampled.map((word) => {
-    const type = questionTypes[Math.floor(Math.random() * questionTypes.length)]
+    const type = types[Math.floor(Math.random() * types.length)]
     return generateQuestion(word, allWords, type)
   })
 }

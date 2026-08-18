@@ -309,6 +309,7 @@
 :global(.dark) .markdown pre { background: rgba(255,255,255,0.06); }
 :global(.dark) .markdown th, :global(.dark) .markdown td { border-color: rgba(255,255,255,0.1); }
 :global(.dark) .markdown th { background: rgba(255,255,255,0.06); }
+:global(.dark) .markdown hr { border-top-color: rgba(255,255,255,0.1); }
 
 /* ===== 消息气泡 ===== */
 .message {

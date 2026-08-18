@@ -3,9 +3,15 @@ import { ChevronLeft, ChevronRight, Check } from 'lucide-react'
 
 const WEEKDAYS = ['一', '二', '三', '四', '五', '六', '日']
 
-function pad(n) { return String(n).padStart(2, '0') }
-function dateKey(y, m, d) { return `${y}-${pad(m + 1)}-${pad(d)}` }
-function daysInMonth(y, m) { return new Date(y, m + 1, 0).getDate() }
+function pad(n) {
+  return String(n).padStart(2, '0')
+}
+function dateKey(y, m, d) {
+  return `${y}-${pad(m + 1)}-${pad(d)}`
+}
+function daysInMonth(y, m) {
+  return new Date(y, m + 1, 0).getDate()
+}
 
 export default function StudyCalendar({ store }) {
   const today = new Date()
@@ -58,49 +64,82 @@ export default function StudyCalendar({ store }) {
   const studyMap = useMemo(() => {
     const map = {}
     for (const cell of days) {
-      const sec = store.getDailySeconds(cell.key) + store.getDailyTypingSeconds(cell.key) + store.getDailyListeningSeconds(cell.key)
+      const sec =
+        store.getDailySeconds(cell.key) +
+        store.getDailyTypingSeconds(cell.key) +
+        store.getDailyListeningSeconds(cell.key)
       map[cell.key] = Math.round(sec / 60)
     }
     return map
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [store.dailyReadingSeconds, store.dailyTypingSeconds, store.dailyListeningSeconds, viewYear, viewMonth])
+  }, [
+    store.dailyReadingSeconds,
+    store.dailyTypingSeconds,
+    store.dailyListeningSeconds,
+    viewYear,
+    viewMonth,
+  ])
 
   const prevMonth = () => {
-    if (viewMonth === 0) { setViewMonth(11); setViewYear(y => y - 1) }
-    else setViewMonth(m => m - 1)
+    if (viewMonth === 0) {
+      setViewMonth(11)
+      setViewYear((y) => y - 1)
+    } else setViewMonth((m) => m - 1)
   }
   const nextMonth = () => {
-    if (viewMonth === 11) { setViewMonth(0); setViewYear(y => y + 1) }
-    else setViewMonth(m => m + 1)
+    if (viewMonth === 11) {
+      setViewMonth(0)
+      setViewYear((y) => y + 1)
+    } else setViewMonth((m) => m + 1)
   }
 
   const handleClick = (key) => {
-    setSelectedKey(prev => prev === key ? null : key)
+    setSelectedKey((prev) => (prev === key ? null : key))
   }
 
   const selectedMinutes = selectedKey ? studyMap[selectedKey] : null
   const selectedDay = selectedKey ? parseInt(selectedKey.split('-')[2]) : null
   const selectedMonth = selectedKey ? parseInt(selectedKey.split('-')[1]) : null
 
+  // 学习强度着色：紫 (#a78bfa) → 青 (#22d3ee) 按当日分钟数插值，强度越高越亮
+  const maxMinutes = Math.max(1, ...Object.values(studyMap))
+  const heatStyle = (minutes) => {
+    if (!minutes) return undefined
+    const t = Math.min(1, minutes / maxMinutes)
+    const r = Math.round(167 + (34 - 167) * t)
+    const g = Math.round(139 + (211 - 139) * t)
+    const b = Math.round(250 + (238 - 250) * t)
+    return { backgroundColor: `rgba(${r}, ${g}, ${b}, ${(0.1 + 0.16 * t).toFixed(3)})` }
+  }
+
   return (
-    <div className="bg-surface dark:bg-surface-dark rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100/80 dark:border-white/[0.06]">
+    <div className="relative overflow-hidden bg-surface dark:bg-surface-dark rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100/80 dark:border-white/[0.06] card-aurora">
       {/* Month navigation */}
       <div className="flex items-center justify-between mb-5">
-        <button onClick={prevMonth} className="p-1.5 rounded-lg text-content-secondary dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors">
+        <button
+          onClick={prevMonth}
+          className="p-1.5 rounded-lg text-content-secondary dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors"
+        >
           <ChevronLeft className="w-5 h-5" />
         </button>
         <h3 className="text-base font-semibold text-content dark:text-gray-100">
           {viewYear}年{viewMonth + 1}月
         </h3>
-        <button onClick={nextMonth} className="p-1.5 rounded-lg text-content-secondary dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors">
+        <button
+          onClick={nextMonth}
+          className="p-1.5 rounded-lg text-content-secondary dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors"
+        >
           <ChevronRight className="w-5 h-5" />
         </button>
       </div>
 
       {/* Weekday headers */}
       <div className="grid grid-cols-7 mb-2">
-        {WEEKDAYS.map(w => (
-          <div key={w} className="text-center text-xs text-content-tertiary dark:text-gray-500 font-medium py-1">
+        {WEEKDAYS.map((w) => (
+          <div
+            key={w}
+            className="text-center text-xs text-content-tertiary dark:text-gray-500 font-medium py-1"
+          >
             {w}
           </div>
         ))}
@@ -113,11 +152,15 @@ export default function StudyCalendar({ store }) {
           const minutes = studyMap[cell.key] || 0
           const hasStudy = cell.current && minutes > 0
           const isSelected = selectedKey === cell.key
+          // 选中日让位给 bg-primary/10 类高亮：内联 backgroundColor 优先级更高会盖掉它
+          const heatCellStyle =
+            hasStudy && !(isSelected && cell.current) ? heatStyle(minutes) : undefined
 
           return (
             <button
               key={cell.key}
               onClick={() => handleClick(cell.key)}
+              style={heatCellStyle}
               className={`relative flex flex-col items-center justify-center py-1.5 rounded-lg transition-all ${
                 cell.current
                   ? 'text-content dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/[0.06]'
@@ -126,14 +169,17 @@ export default function StudyCalendar({ store }) {
                 isToday ? '' : ''
               }`}
             >
-              <span className={`relative text-sm leading-none ${
-                isToday
-                  ? 'font-semibold text-green-600 dark:text-green-400'
-                  : ''
-              }`}>
+              <span
+                className={`relative text-sm leading-none ${
+                  isToday ? 'font-semibold text-green-600 dark:text-green-400' : ''
+                }`}
+              >
                 {cell.current ? cell.day : ''}
                 {hasStudy && (
-                  <Check className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-4 h-4 text-green-500 drop-shadow-sm" strokeWidth={3} />
+                  <Check
+                    className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-4 h-4 text-green-500 drop-shadow-sm"
+                    strokeWidth={3}
+                  />
                 )}
               </span>
             </button>
@@ -145,10 +191,14 @@ export default function StudyCalendar({ store }) {
       {selectedKey && (
         <div className="mt-4 text-sm text-center text-content-secondary dark:text-gray-400 animate-page-fade-in">
           {selectedMonth}月{selectedDay}日：
-          {selectedMinutes > 0
-            ? <span className="font-semibold text-content dark:text-gray-200"> {selectedMinutes} </span>
-            : <span className="text-content-tertiary dark:text-gray-500"> 未学习</span>
-          }
+          {selectedMinutes > 0 ? (
+            <span className="font-semibold text-content dark:text-gray-200">
+              {' '}
+              {selectedMinutes}{' '}
+            </span>
+          ) : (
+            <span className="text-content-tertiary dark:text-gray-500"> 未学习</span>
+          )}
           {selectedMinutes > 0 && ' 分钟学习'}
         </div>
       )}

@@ -45,6 +45,26 @@ router.post('/', guarded, async (req, res, next) => {
       return res.status(400).json({ error: 'styleKey 不能为空' })
     }
 
+    // 可选字段套用与 PATCH /name、PATCH /gender 完全相同的标准，
+    // POST 不能成为绕过长度限制与白名单的旁路
+    let nameValue = null
+    if (customName != null) {
+      if (typeof customName !== 'string' || customName.trim().length === 0) {
+        return res.status(400).json({ error: '名称不能为空' })
+      }
+      if (customName.trim().length > 12) {
+        return res.status(400).json({ error: '名称不能超过12个字符' })
+      }
+      nameValue = customName.trim()
+    }
+    let genderValue = null
+    if (gender != null) {
+      if (!['male', 'female'].includes(gender)) {
+        return res.status(400).json({ error: '性别值无效' })
+      }
+      genderValue = gender
+    }
+
     // Validate style exists
     const [styleRows] = await pool.execute(
       'SELECT style_key, name, avatar FROM style_modes WHERE style_key = ? AND is_active = 1',
@@ -58,7 +78,7 @@ router.post('/', guarded, async (req, res, next) => {
     await pool.execute(
       `INSERT INTO user_style_settings (user_id, style_key, custom_name, gender) VALUES (?, ?, ?, ?)
        ON DUPLICATE KEY UPDATE style_key = VALUES(style_key), custom_name = COALESCE(VALUES(custom_name), custom_name), gender = COALESCE(VALUES(gender), gender)`,
-      [req.userId, styleKey, customName || null, gender || null]
+      [req.userId, styleKey, nameValue, genderValue]
     )
 
     res.json({ styleKey, name: styleRows[0].name, avatar: styleRows[0].avatar })

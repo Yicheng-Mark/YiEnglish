@@ -2,6 +2,7 @@ import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } f
 import { useNavigate } from 'react-router-dom'
 import { Bookmark, BookOpen, Search } from 'lucide-react'
 import { useReadingStore } from '../hooks/useReadingStore'
+import useStudyTracker from '../hooks/useStudyTracker'
 import { getReadingWordBookCount } from '../../../utils/readingWordBook.js'
 import ArticleCard from '../components/ArticleCard'
 import GrammarOverview from '../components/GrammarOverview'
@@ -11,6 +12,7 @@ import { VirtualGrid } from '../../../components/virtual/VirtualGrid'
 export default function ArticleList({ scrollRef }) {
   const navigate = useNavigate()
   const store = useReadingStore()
+  useStudyTracker('article-list')
   const gridRef = useRef(null)
   const isRestoring = useRef(scrollRef?.current > 0)
 

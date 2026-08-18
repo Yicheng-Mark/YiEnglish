@@ -23,8 +23,7 @@ import {
   clearMemory,
 } from '../../lib/ai-settings'
 import { useWordContext } from '../../contexts/WordContext'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+import MessageBubble from './MessageBubble'
 import styles from './AICircleFloat.module.css'
 
 /* ===== Quick action prompt builder ===== */
@@ -129,25 +128,7 @@ const ChatContent = memo(function ChatContent({
             !msg.reasoningContent &&
             idx === messages.length - 1
           if (isStreamingEmpty) return null
-          return (
-            <div key={idx} className={`${styles.message} ${styles[msg.role]}`}>
-              <div className={styles.bubble}>
-                {msg.reasoningContent && (
-                  <details className={styles.thinkingBlock}>
-                    <summary>💭 思考过程</summary>
-                    <div className={styles.thinkingContent}>{msg.reasoningContent}</div>
-                  </details>
-                )}
-                {msg.role === 'assistant' ? (
-                  <div className={styles.markdown}>
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
-                  </div>
-                ) : (
-                  <div>{msg.content}</div>
-                )}
-              </div>
-            </div>
-          )
+          return <MessageBubble key={idx} msg={msg} />
         })}
         {streaming && !currentReasoning && (
           <div className={styles.typingIndicator}>
@@ -256,22 +237,43 @@ export default function AICircleFloat() {
 
   // Load styles and chat history on mount
   useEffect(() => {
-    fetchStyles().then((data) => {
-      setCurrentStyle(data.current)
-    })
-    fetchChatHistory().then((history) => {
-      setMessages(history)
-    })
-    fetchChatUsage().then(setUsage)
+    fetchStyles()
+      .then((data) => {
+        setCurrentStyle(data.current)
+      })
+      .catch(() => {})
+    fetchChatHistory()
+      .then((history) => {
+        // 历史晚到时本地可能已有用户刚发出的消息：整体覆盖会踩掉进行中的对话
+        if (messagesRef.current.length === 0) setMessages(history)
+      })
+      .catch(() => {})
+    fetchChatUsage()
+      .then(setUsage)
+      .catch(() => setUsage({ status: 'error' }))
+  }, [])
+
+  // 卸载时中止进行中的流并作废待处理的回调：
+  // 悬浮球随页面卸载后不再消耗网络与用量，也避免对已卸载组件 setState
+  useEffect(() => {
+    return () => {
+      chatGenRef.current++
+      abortRef.current?.()
+      abortRef.current = null
+    }
   }, [])
 
   // Re-fetch style when panel opens to pick up changes made elsewhere
   useEffect(() => {
     if (panelOpen) {
-      fetchStyles().then((data) => {
-        setCurrentStyle(data.current)
-      })
-      fetchChatUsage().then(setUsage)
+      fetchStyles()
+        .then((data) => {
+          setCurrentStyle(data.current)
+        })
+        .catch(() => {})
+      fetchChatUsage()
+        .then(setUsage)
+        .catch(() => setUsage({ status: 'error' }))
     }
   }, [panelOpen])
 
@@ -537,12 +539,12 @@ export default function AICircleFloat() {
         const sr = streamingRef.current
         setCurrentReasoning(sr.reasoning)
         setMessages((prev) => {
-          const next = [...prev]
-          const last = next[next.length - 1]
-          if (last?.role === 'assistant') {
-            last.content = sr.content
-            last.reasoningContent = sr.reasoning
-          }
+          const last = prev[prev.length - 1]
+          if (last?.role !== 'assistant') return prev
+          // 用新对象替换最后一条（而非原地改写），让 MessageBubble 的 memo
+          // 只对正在流式输出的这一条重渲染
+          const next = prev.slice(0, -1)
+          next.push({ ...last, content: sr.content, reasoningContent: sr.reasoning })
           return next
         })
         messagesEndRef.current?.scrollIntoView({ behavior: 'instant' })

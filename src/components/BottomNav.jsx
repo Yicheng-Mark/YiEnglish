@@ -30,23 +30,38 @@ const items = [
     label: '我的',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+        />
       </svg>
     ),
   },
 ]
 
 function getModuleFromPath(pathname) {
-  if (pathname === '/word' || pathname.startsWith('/word/') || pathname.startsWith('/dict/') || pathname.startsWith('/typing/')) {
+  if (
+    pathname === '/word' ||
+    pathname.startsWith('/word/') ||
+    pathname.startsWith('/dict/') ||
+    pathname.startsWith('/typing/')
+  ) {
     return 'typing'
   }
-  if (pathname === '/reading' || pathname.startsWith('/reading/') || pathname === '/read' || pathname.startsWith('/read/')) {
+  if (
+    pathname === '/reading' ||
+    pathname.startsWith('/reading/') ||
+    pathname === '/read' ||
+    pathname.startsWith('/read/')
+  ) {
     return 'reading'
   }
   if (pathname === '/listening' || pathname.startsWith('/listening/')) {
     return 'listening'
   }
-if (pathname.startsWith('/reading/grammar')) {
+  if (pathname.startsWith('/reading/grammar')) {
     return 'reading'
   }
   return null
@@ -62,8 +77,9 @@ export default function BottomNav() {
 
     const tick = () => {
       if (document.visibilityState === 'hidden') return
+      // reading 模块的时长由 useStudyTracker 负责（visibility 感知），
+      // 这里若再每秒累计会与其双重计数
       if (module === 'typing') storeActions.addTypingSeconds(1)
-      else if (module === 'reading') storeActions.addReadingSeconds(1)
       else if (module === 'listening') storeActions.addListeningSeconds(1)
     }
 
@@ -79,17 +95,17 @@ export default function BottomNav() {
   }
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-card border-t border-gray-200/80 dark:border-white/[0.06] backdrop-blur-md">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-card border-t border-gray-200/80 dark:border-white/[0.06]">
       <div className="max-w-4xl mx-auto flex justify-around items-center h-14">
         {items.map((item) => (
           <Link
             key={item.to}
             to={item.to}
             onClick={() => window.scrollTo({ top: 0, behavior: 'instant' })}
-            className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-colors ${
+            className={`flex flex-col items-center justify-center gap-0.5 flex-1 transition-colors ${
               isActive(item.to)
-                ? 'text-primary dark:text-primary-dark'
-                : 'text-content-tertiary dark:text-gray-400 hover:text-content-secondary dark:hover:text-gray-300'
+                ? 'text-primary dark:text-primary-dark bg-primary-soft my-1.5 py-1.5 rounded-2xl'
+                : 'h-full text-content-tertiary dark:text-gray-400 hover:text-content-secondary dark:hover:text-gray-300'
             }`}
           >
             {item.icon}

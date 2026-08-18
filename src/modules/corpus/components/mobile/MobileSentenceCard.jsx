@@ -79,7 +79,10 @@ function DictationCard({ current }) {
             border: '1px solid var(--mobile-answer-border, #bbf7d0)',
           }}
         >
-          <p className="text-xs font-semibold mb-1" style={{ color: '#16a34a' }}>
+          <p
+            className="text-xs font-semibold mb-1"
+            style={{ color: 'var(--mobile-primary, #16a34a)' }}
+          >
             参考答案
           </p>
           <p className="text-base" style={{ color: 'var(--mobile-text)' }}>

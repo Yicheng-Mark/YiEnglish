@@ -15,15 +15,23 @@ const {
   getClientIp,
   parseDeviceName,
   resolveDeviceId,
+  ensureDeviceCookie,
   validateUsername,
   validatePassword,
   REFRESH_COOKIE,
 } = require('../utils/tokens')
+const { createRateLimiter } = require('../utils/apiRateLimit')
 
 const router = express.Router()
 
 // --- Validate activation code ---
-router.post('/validate-activation-code', async (req, res, next) => {
+// 激活码可直接兑换注册资格，需防在线爆破（checkRegisterRateLimit 只在注册段生效，拦不住此端点）
+const activationCodeLimiter = createRateLimiter({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: '尝试次数过多，请稍后再试',
+})
+router.post('/validate-activation-code', activationCodeLimiter, async (req, res, next) => {
   try {
     const { code } = req.body
     if (!code || typeof code !== 'string' || !code.trim()) {
@@ -71,27 +79,33 @@ router.post('/register', async (req, res, next) => {
       return res.status(400).json({ error: '密码需 8-128 位，至少包含一个字母和一个数字' })
     }
 
-    // 验证激活码
+    // 限流前移到激活码查询之前：code 探测本身就要被拦（checkRegisterRateLimit 只在注册段生效）
+    await checkRegisterRateLimit(ip)
+
+    // 验证激活码：失败按 code 维度计数，防止在线爆破有效码
+    const registerCodeKey = 'register-code:' + activationCode.trim()
     const [codes] = await pool.execute(
       `SELECT id, code, max_uses, current_uses, is_active, expires_at
        FROM experience_codes WHERE code = ? AND type = 'activation'`,
       [activationCode.trim()]
     )
     if (codes.length === 0) {
+      await logAttempt(registerCodeKey, ip, false)
       return res.status(400).json({ error: '激活码无效' })
     }
     const actCode = codes[0]
     if (!actCode.is_active) {
+      await logAttempt(registerCodeKey, ip, false)
       return res.status(400).json({ error: '激活码已失效' })
     }
     if (actCode.expires_at && new Date(actCode.expires_at) < new Date()) {
+      await logAttempt(registerCodeKey, ip, false)
       return res.status(400).json({ error: '激活码已过期' })
     }
     if (actCode.max_uses > 0 && actCode.current_uses >= actCode.max_uses) {
+      await logAttempt(registerCodeKey, ip, false)
       return res.status(400).json({ error: '激活码已达使用上限' })
     }
-
-    await checkRegisterRateLimit(ip)
 
     const [existing] = await pool.execute('SELECT id FROM users WHERE username = ?', [username])
     if (existing.length > 0) {
@@ -148,7 +162,7 @@ router.post('/register', async (req, res, next) => {
     }
 
     await issueTokens(res, userId, false, {
-      deviceId: resolveDeviceId(req),
+      deviceId: ensureDeviceCookie(req, res, resolveDeviceId(req)),
       deviceName: parseDeviceName(req.headers['user-agent']),
       ip,
     })
@@ -192,8 +206,10 @@ router.post('/login', async (req, res, next) => {
 
     await logAttempt(username, ip, true)
 
-    // 设备级会话名额：统计本设备以外的活跃设备，达上限则拒绝第 N+1 台登录
-    const deviceId = resolveDeviceId(req)
+    // 设备级会话名额：统计本设备以外的活跃设备，达上限则拒绝第 N+1 台登录。
+    // ensureDeviceCookie：无设备 cookie 的"干净登录"先下发再复用同一 deviceId，
+    // 否则每次登录生成新随机 id 写入 refresh_tokens，会误占设备名额导致锁号
+    const deviceId = ensureDeviceCookie(req, res, resolveDeviceId(req))
     const device = { deviceId, deviceName: parseDeviceName(req.headers['user-agent']), ip }
 
     const [[{ cnt }]] = await pool.execute(
@@ -522,6 +538,11 @@ router.post('/recover-reset', async (req, res, next) => {
 
     await checkRegisterRateLimit(ip)
 
+    // 与 recover-lookup 同款限流：code 维度 + IP 维度，失败必须计数，
+    // 否则可无限爆破激活码（一个有效码即可重置关联账号的用户名密码）
+    const codeKey = 'recover:' + code.trim()
+    await checkLoginRateLimit(codeKey, ip)
+
     const [rows] = await pool.execute(
       `SELECT u.id, u.username FROM users u
        JOIN experience_codes ec ON u.activation_code_id = ec.id
@@ -529,6 +550,7 @@ router.post('/recover-reset', async (req, res, next) => {
       [code.trim()]
     )
     if (rows.length === 0) {
+      await logAttempt(codeKey, ip, false)
       return res.status(404).json({ error: '未找到关联账号' })
     }
     if (rows.length > 1) {
@@ -564,11 +586,11 @@ router.post('/recover-reset', async (req, res, next) => {
     await pool.execute('DELETE FROM refresh_tokens WHERE user_id = ?', [userId])
 
     await issueTokens(res, userId, false, {
-      deviceId: resolveDeviceId(req),
+      deviceId: ensureDeviceCookie(req, res, resolveDeviceId(req)),
       deviceName: parseDeviceName(req.headers['user-agent']),
       ip,
     })
-    await logAttempt('recover:' + ip, ip, true)
+    await logAttempt(codeKey, ip, true)
 
     const [updated] = await pool.execute('SELECT id, username, nickname FROM users WHERE id = ?', [
       userId,

@@ -14,13 +14,20 @@ function loadFromStorage() {
       const data = JSON.parse(raw)
       if (Array.isArray(data)) return data
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return []
 }
 
 function persist() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(cache))
-  listeners.forEach(fn => fn())
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(cache))
+  } catch (e) {
+    // 配额满 / 隐私模式：内存态保持一致并照常广播，落盘失败不阻断交互
+    console.warn('Persist favorite dicts failed:', e)
+  }
+  listeners.forEach((fn) => fn())
 }
 
 export function getFavorites() {
@@ -33,13 +40,13 @@ export function isFavorite(dictId) {
 
 export function toggleFavorite(dictId) {
   if (cache.includes(dictId)) {
-    cache = cache.filter(id => id !== dictId)
+    cache = cache.filter((id) => id !== dictId)
   } else {
     cache = [...cache, dictId]
   }
   persist()
 
-  toggleFavoriteDict(dictId).catch(e => console.warn('Sync favorite dict failed:', e))
+  toggleFavoriteDict(dictId).catch((e) => console.warn('Sync favorite dict failed:', e))
 }
 
 export function subscribe(listener) {
@@ -50,7 +57,7 @@ export function subscribe(listener) {
 export function useFavorites() {
   const [, forceUpdate] = useState(0)
   useEffect(() => {
-    const unsub = subscribe(() => forceUpdate(n => n + 1))
+    const unsub = subscribe(() => forceUpdate((n) => n + 1))
     return unsub
   }, [])
   return { favorites: getFavorites(), isFavorite, toggleFavorite }

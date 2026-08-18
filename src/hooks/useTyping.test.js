@@ -140,6 +140,47 @@ describe('useTyping — 输入判定', () => {
     expect(result.current.currentInput).toBe('')
     expect(result.current.isWrong).toBe(false)
   })
+
+  it('错字后 300ms 内跳词 → 定时器被取消，不清空新词已敲的输入（回归：修复前定时器未登记，跳词后新输入被迟到的清空打断）', () => {
+    const { result } = renderTyping()
+    act(() => {
+      result.current.handleInput('x') // cat 打错，启动 300ms 自动清空
+    })
+    act(() => {
+      result.current.jumpTo(1) // 立即跳到 dog
+    })
+    act(() => {
+      result.current.handleInput('d')
+      result.current.handleInput('o')
+    })
+    expect(result.current.currentInput).toBe('do')
+    act(() => {
+      vi.advanceTimersByTime(400) // 修复前：旧定时器此刻把 'do' 清掉
+    })
+    expect(result.current.currentInput).toBe('do')
+  })
+
+  it('错字后 300ms 内退格 → 保留退格后的输入，可继续完成单词（回归）', () => {
+    const { result, callbacks } = renderTyping()
+    act(() => {
+      result.current.handleInput('c')
+      result.current.handleInput('a')
+      result.current.handleInput('x') // 'cax' 错
+    })
+    act(() => {
+      result.current.handleInput('Backspace') // 退掉错字 → 'ca'
+    })
+    expect(result.current.currentInput).toBe('ca')
+    act(() => {
+      vi.advanceTimersByTime(400) // 迟到的自动清空不应打断
+    })
+    expect(result.current.currentInput).toBe('ca')
+    act(() => {
+      result.current.handleInput('t') // 补完 cat
+    })
+    expect(callbacks.onWordComplete).toHaveBeenCalledWith('cat')
+    expect(result.current.wordIndex).toBe(1)
+  })
 })
 
 describe('useTyping — 完成判定', () => {
