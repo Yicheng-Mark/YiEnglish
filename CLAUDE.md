@@ -10,7 +10,9 @@
 
 ## 部署
 
-- **生产服务器（阿里云）**：代码在 `/home/lingoforge`，**不是 git 仓库**，服务器也拉不动私有仓库。**部署方式：本地打包 tar → scp 上传 → 服务器解压**。不要在服务器上 `git pull`。
+- **生产服务器（阿里云 47.115.147.221，cn-shenzhen，2C2G，Alibaba Cloud Linux 3）**：代码在 `/home/lingoforge`，**不是 git 仓库**。**部署方式：push 到 main 自动触发 GitHub Actions**（lint/test/build → rsync → pm2 reload，见 `.github/workflows/deploy.yml`；SSH 密钥在 secret `ALIYUN_KEY`）。不要在服务器上 `git pull`。
+- **HTTPS 证书**：acme.sh 自动续期（cron 每 6 小时），正常情况无需手动管。
+- **老实例 120.76.228.235** 已于 2026-08-19 完成迁移切换，保留观察至约 09-02 后释放；观察期内不要再往老机部署。
 - **Vercel**：绑定了 GitHub，push 自动构建。
 - **国内访问 Vercel 域名被墙**（GFW DNS 污染 + RST）：国内 `curl` 必返回 HTTP 000，**这不是部署故障**。验证 Vercel 部署状态只能看 **Vercel 控制台**，别用国内网络请求判断成败。
 
@@ -18,7 +20,7 @@
 
 - MySQL 凭证在服务器的 `/home/lingoforge/.env.local`（由 dotenv 加载，**pm2 environ 查不到**）。
 - 连 mysql 前必须先 `source /home/lingoforge/.env.local` 注入凭证，再连。
-- 连服务器走 ssh 别名：`ssh root@120.76.228.235`（复用 `~/.ssh/lingoforge_key.pem`）。
+- 连服务器走 ssh 别名：`ssh root@47.115.147.221`（复用 `~/.ssh/lingoforge_key.pem`）。
 
 ## 客户端错误上报
 
