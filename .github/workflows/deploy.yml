@@ -75,7 +75,7 @@ jobs:
             if pm2 describe lingoforge > /dev/null 2>&1; then
               pm2 reload lingoforge --update-env
             else
-              pm2 start deploy/ecosystem.config.js
+              pm2 start deploy/ecosystem.config.cjs
             fi
             pm2 save
             echo '阿里云部署完成'
