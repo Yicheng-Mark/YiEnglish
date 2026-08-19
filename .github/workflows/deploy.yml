@@ -33,14 +33,14 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.ALIYUN_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H 120.76.228.235 >> ~/.ssh/known_hosts 2>/dev/null
+          ssh-keyscan -H 47.115.147.221 >> ~/.ssh/known_hosts 2>/dev/null
 
       - name: Backup production before rsync
         # rsync --delete 会删除远端被移除的文件，先做硬链接快照保留回滚点。
         # cp -al 硬链接快照：省空间且快，未变文件共享 inode。
         # 回滚方式：ssh 进服务器执行 rm -rf /home/lingoforge && cp -al /home/lingoforge.bak /home/lingoforge && pm2 reload lingoforge
         run: |
-          ssh -i ~/.ssh/deploy_key root@120.76.228.235 'bash -s' << 'EOF'
+          ssh -i ~/.ssh/deploy_key root@47.115.147.221 'bash -s' << 'EOF'
             set -e
             if [ -d /home/lingoforge ]; then
               rm -rf /home/lingoforge.bak
@@ -57,7 +57,7 @@ jobs:
             --exclude='.git' \
             --exclude='*.map' \
             -e "ssh -i ~/.ssh/deploy_key" \
-            ./ root@120.76.228.235:/home/lingoforge/
+            ./ root@47.115.147.221:/home/lingoforge/
 
       - name: Install deps and restart service
         # 用 pm2 reload 替代 restart：reload 会先拉起新进程再关旧进程，旧进程处理完手头连接再退出，更平滑。
@@ -66,7 +66,7 @@ jobs:
         #       若 server/index.js 未监听 SIGINT 做 graceful shutdown，reload 会等待 reload 延迟后强制 kill，
         #       此时若发现部署中连接异常，可退回 pm2 restart lingoforge。
         run: |
-          ssh -i ~/.ssh/deploy_key root@120.76.228.235 'bash -s' << 'EOF'
+          ssh -i ~/.ssh/deploy_key root@47.115.147.221 'bash -s' << 'EOF'
             set -e
             cd /home/lingoforge
             # --ignore-scripts 跳过 prepare(husky)：husky 是 devDep，生产 --omit=dev 下未安装，
