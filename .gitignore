@@ -4,6 +4,7 @@ dist/
 .vite/
 
 # 环境变量（含 API Key）
+.env
 .env.local
 .env.test.local
 .oss.env
