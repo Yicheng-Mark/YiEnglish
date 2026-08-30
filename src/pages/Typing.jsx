@@ -120,6 +120,12 @@ export default function Typing() {
     })
   }, [isErrorBookMode, isWordBookMode, isReviewMode, dictId, chapterId])
 
+  // 卸载/切章时兜底 flush：<5 词的缓冲若不冲掉，普通返回导航会静默丢失这段服务端进度。
+  // cleanup 捕获的是旧版 flushServerProgress（含旧 dictId/chapterId），切章时恰好按旧章冲刷
+  useEffect(() => {
+    return () => flushServerProgress()
+  }, [flushServerProgress])
+
   const handleWordComplete = useCallback(
     (wordName) => {
       if (isReviewMode) {
@@ -315,7 +321,7 @@ export default function Typing() {
   // 页面加载/章节切换后自动聚焦隐藏输入框并清空残留
   useEffect(() => {
     if (!loading && words.length > 0 && hiddenInputRef.current) {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         if (isMobile && !keyboardActiveRef.current) return
         if (isMobile) {
           try {
@@ -329,6 +335,7 @@ export default function Typing() {
         inputValueRef.current = ''
         if (hiddenInputRef.current) hiddenInputRef.current.value = ''
       }, 300)
+      return () => clearTimeout(timer)
     }
   }, [loading, isMobile, inputValueRef])
 
@@ -455,6 +462,11 @@ export default function Typing() {
       }
     }, 100)
   }, [isMobile])
+
+  // 卸载时清掉待执行的 blur 检查定时器，避免离开页面后多余的 setState
+  useEffect(() => {
+    return () => clearTimeout(blurTimerRef.current)
+  }, [])
 
   const handleGoHome = useCallback(() => {
     if (

@@ -101,4 +101,54 @@ describe('searchWordIndex', () => {
     expect(searchWordIndex(idx, 'a', 1)).toHaveLength(1)
     expect(searchWordIndex(idx, 'a', 2)).toHaveLength(2)
   })
+
+  it('索引条目预计算 wordLower（搜索热路径的排序键）', () => {
+    const entry = idx.find((i) => i.word === 'apple')
+    expect(entry.wordLower).toBe('apple')
+  })
+})
+
+describe('searchWordIndex · 四级优先级完整排序（优化后行为回归）', () => {
+  const rankedDicts = [
+    {
+      id: 'rank',
+      name: '排序词库',
+      chapters: [
+        {
+          id: 'c1',
+          words: [
+            { name: 'app', trans: ['n. 应用程序'] }, // 完全匹配（priority 0）
+            { name: 'apple', trans: ['n. 苹果'] }, // 前缀（1），长度 5
+            { name: 'appetite', trans: ['n. 食欲'] }, // 前缀（1），长度 8
+            { name: 'happy', trans: ['adj. 快乐的'] }, // 子串（2），长度 5
+            { name: 'pineapple', trans: ['n. 菠萝'] }, // 子串（2），长度 9
+            { name: 'zephyr', trans: ['n. 和风 app 西风'] }, // 仅释义命中（3）
+          ],
+        },
+      ],
+    },
+  ]
+  const rankedIdx = buildWordIndex(rankedDicts)
+
+  it('完全 > 前缀 > 子串 > 释义；同级短词在前', () => {
+    const r = searchWordIndex(rankedIdx, 'app', 10)
+    expect(r.map((i) => i.word)).toEqual([
+      'app',
+      'apple',
+      'appetite',
+      'happy',
+      'pineapple',
+      'zephyr',
+    ])
+  })
+
+  it('limit 只保留排序后的前 N 个（不是匹配序）', () => {
+    const r = searchWordIndex(rankedIdx, 'app', 3)
+    expect(r.map((i) => i.word)).toEqual(['app', 'apple', 'appetite'])
+  })
+
+  it('查询大小写与两端空白归一化', () => {
+    const r = searchWordIndex(rankedIdx, '  APP ')
+    expect(r[0].word).toBe('app')
+  })
 })

@@ -23,13 +23,15 @@ const DICT_IDS = [
   'tem4',
   'tem8',
   'ielts',
+  'ieltsfreq',
   'toefl',
+  'toeflfreq',
   'sat',
   'postgraduate',
   'programmer',
 ]
 
-// 模块级缓存：避免页面切换时重复加载词典（约 15 个 JSON）
+// 模块级缓存：避免页面切换时重复加载词典（约 17 个 JSON）
 let DICT_CACHE = null
 let DICT_LOADING = null
 

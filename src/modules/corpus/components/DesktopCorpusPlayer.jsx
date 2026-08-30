@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ArrowLeft, Eye, EyeOff, Settings as SettingsIcon } from 'lucide-react'
 import { useCorpusContext } from '../context/CorpusPlayerContext.jsx'
 import VideoPlayer from './VideoPlayer'
@@ -29,9 +29,17 @@ function SettingsLauncher() {
 export default function DesktopCorpusPlayer({ video, posterUrl, onBack }) {
   const { player, popup, closePopup, saveWord, removeWord } = useCorpusContext()
 
-  // 键盘快捷键
+  // 键盘快捷键：经 ref 读取最新 player（currentTime 等高频字段），
+  // 监听器只挂一次。若直接依赖 player 对象，其身份随 timeupdate ~4Hz 变化，
+  // 键盘监听会被反复卸载重挂
+  const playerRef = useRef(player)
+  useEffect(() => {
+    playerRef.current = player
+  }, [player])
+
   useEffect(() => {
     function onKey(e) {
+      const player = playerRef.current
       const tag = e.target?.tagName
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
       if (e.code === 'Space') {
@@ -55,7 +63,7 @@ export default function DesktopCorpusPlayer({ video, posterUrl, onBack }) {
     }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [player])
+  }, [])
 
   return (
     <div className="h-[100dvh] flex flex-col overflow-hidden bg-background dark:bg-black transition-colors duration-500 animate-page-fade-in">

@@ -5,6 +5,10 @@ import { defineConfig } from 'vitest/config'
 // 2) 不引入 jsdom 依赖；将来需要 DOM 的测试在文件顶部用
 //    // @vitest/environment jsdom 注释按文件覆盖
 export default defineConfig({
+  // 与 vite.config.js 里 @vitejs/plugin-react 的 automatic JSX runtime 对齐：
+  // 独立测试配置没有 react 插件，esbuild 默认走 classic runtime，
+  // 源码 .jsx（未 import React）在测试里会报 "React is not defined"
+  esbuild: { jsx: 'automatic' },
   test: {
     // 默认 node 环境：现有 src/utils 与 server 测试均为纯函数/Node 侧逻辑
     environment: 'node',

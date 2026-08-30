@@ -17,25 +17,10 @@ function ensureCache() {
   if (_cache !== null) return
   try {
     const saved = localStorage.getItem(STORAGE_KEY)
-    const data = saved ? JSON.parse(saved) : { cards: {} }
-    _cache = data.cards || {}
-  } catch {
-    _cache = {}
-  }
-}
-
-function getCards() {
-  if (isMigrated()) {
-    ensureCache()
-    return { cards: _cache }
-  }
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY)
-    if (!saved) return { cards: {} }
-    const data = JSON.parse(saved)
+    const data = saved ? JSON.parse(saved) : null
     // 老版本格式/半损坏数据可能是数组或缺 cards 字段：兜底为空表，
     // 否则消费端 Object.values(undefined) 抛 TypeError 会让 Home 整页崩
-    const cards =
+    _cache =
       data &&
       typeof data === 'object' &&
       !Array.isArray(data) &&
@@ -43,16 +28,51 @@ function getCards() {
       typeof data.cards === 'object'
         ? data.cards
         : {}
-    return { cards }
   } catch {
-    return { cards: {} }
+    _cache = {}
   }
 }
 
-function saveCards(data) {
+// --- 落盘 debounce：内存为唯一数据源（读立即可见），全量 stringify 节流写 ---
+// 打字时每个新词都会走 addWordToReview，若每次都全量 stringify + localStorage.setItem，
+// 复习卡积累后会明显卡顿（见 errorBook.js 同类优化）。IDB 单卡 put 开销小，保持即时。
+const PERSIST_DEBOUNCE_MS = 2000
+let persistTimer = null
+
+function writeStorageNow() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+    ensureCache()
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ cards: _cache }))
   } catch {}
+}
+
+function schedulePersist() {
+  if (persistTimer) return
+  persistTimer = setTimeout(() => {
+    persistTimer = null
+    writeStorageNow()
+  }, PERSIST_DEBOUNCE_MS)
+}
+
+function persistNow() {
+  if (persistTimer) {
+    clearTimeout(persistTimer)
+    persistTimer = null
+  }
+  writeStorageNow()
+}
+
+// 页面隐藏/关闭时兜底 flush，避免丢最近 2s 的复习卡
+if (typeof window !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') persistNow()
+  })
+  window.addEventListener('pagehide', persistNow)
+}
+
+function getCards() {
+  ensureCache()
+  return { cards: _cache }
 }
 
 export function addWordToReview(wordName, dictId) {
@@ -68,18 +88,13 @@ export function addWordToReview(wordName, dictId) {
       lastQuality: null,
     }
 
+    ensureCache()
+    if (_cache[wordName]) return
+    _cache[wordName] = card
     if (isMigrated()) {
-      ensureCache()
-      if (_cache[wordName]) return
-      _cache[wordName] = card
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ cards: _cache }))
       idbPut('reviewCards', card).catch((e) => console.warn('[IDB] reviewCards put failed:', e))
-    } else {
-      const data = getCards()
-      if (data.cards[wordName]) return
-      data.cards[wordName] = card
-      saveCards(data)
     }
+    schedulePersist()
 
     apiAddReviewCard(wordName, dictId).catch((e) => console.warn('Sync review add failed:', e))
   } catch (e) {
@@ -115,13 +130,11 @@ export function updateReviewCard(wordName, quality) {
     card.lastQuality = quality
     card.nextReview = Date.now() + interval * DAY_MS
 
+    // card 是 _cache 内的引用，上面的变更已直接反映到内存
     if (isMigrated()) {
-      // _cache already updated (card is a reference from _cache)
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ cards: _cache }))
       idbPut('reviewCards', card).catch((e) => console.warn('[IDB] reviewCards put failed:', e))
-    } else {
-      saveCards(data)
     }
+    schedulePersist()
 
     apiUpsertReviewCards([
       {
@@ -142,19 +155,15 @@ export function updateReviewCard(wordName, quality) {
 
 export function removeFromReviewCards(wordName) {
   try {
+    ensureCache()
+    if (!_cache[wordName]) return
+    delete _cache[wordName]
+    // 删除是破坏性操作，立即落盘避免防抖窗口内进程退出导致复活
+    persistNow()
     if (isMigrated()) {
-      ensureCache()
-      if (!_cache[wordName]) return
-      delete _cache[wordName]
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ cards: _cache }))
       idbDelete('reviewCards', wordName).catch((e) =>
         console.warn('[IDB] reviewCards delete failed:', e)
       )
-    } else {
-      const data = getCards()
-      if (!data.cards[wordName]) return
-      delete data.cards[wordName]
-      saveCards(data)
     }
   } catch (e) {
     console.error('Failed to remove review card:', e)
@@ -228,14 +237,18 @@ export async function loadReviewAsDictionary() {
 export async function syncReviewCardsFromServer() {
   try {
     const data = await apiFetchReviewCards()
+    const cards =
+      data && typeof data === 'object' && data.cards && typeof data.cards === 'object'
+        ? data.cards
+        : {}
+    // 服务端数据是权威版本：覆盖内存并取消待写的防抖，直接落盘
+    _cache = cards
+    persistNow()
     if (isMigrated()) {
-      // 服务器返回 { cards: { [name]: card } }
-      _cache = data.cards || {}
       const items = Object.values(_cache)
       await idbClear('reviewCards')
       await idbBulkPut('reviewCards', items)
     }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
   } catch (e) {
     console.warn('Sync review cards from server failed:', e)
   }

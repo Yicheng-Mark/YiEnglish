@@ -25,7 +25,9 @@ const loaders = {
   tem4: () => fetchDictionary('tem4'),
   tem8: () => fetchDictionary('tem8'),
   ielts: () => fetchDictionary('ielts'),
+  ieltsfreq: () => fetchDictionary('ieltsfreq'),
   toefl: () => fetchDictionary('toefl'),
+  toeflfreq: () => fetchDictionary('toeflfreq'),
   sat: () => fetchDictionary('sat'),
   postgraduate: () => fetchDictionary('postgraduate'),
   postgraduateCore: () => fetchDictionary('postgraduateCore'),
@@ -51,6 +53,9 @@ const loaders = {
 }
 
 const cache = new Map()
+// in-flight 去重：并发调用同一词典共享同一次 fetch + JSON.parse。
+// 首页 hover 预取与搜索批量建索引并发时，避免同一多 MB JSON 被拉取解析两遍。
+const pending = new Map()
 
 const noCacheIds = new Set([
   'error-book',
@@ -91,11 +96,22 @@ export async function loadDictionary(id) {
   if (!noCacheIds.has(id) && cache.has(id)) return cache.get(id)
   const loader = loaders[id]
   if (!loader) return null
-  const mod = await loader()
-  const data = mod.default ?? mod
-  const result = noCacheIds.has(id) ? data : rechunkDictionary(data)
-  if (!noCacheIds.has(id)) cache.set(id, result)
-  return result
+  // 功能词本（noCacheIds）每次都要新鲜数据，不做 in-flight 共享
+  if (!noCacheIds.has(id) && pending.has(id)) return pending.get(id)
+  const load = (async () => {
+    const mod = await loader()
+    const data = mod.default ?? mod
+    return noCacheIds.has(id) ? data : rechunkDictionary(data)
+  })()
+  if (!noCacheIds.has(id)) {
+    pending.set(id, load)
+    load
+      .then((result) => cache.set(id, result))
+      // 失败不进缓存，允许下次重试（如瞬时断网恢复后）
+      .catch(() => {})
+      .finally(() => pending.delete(id))
+  }
+  return load
 }
 
 export async function loadChapter(dictId, chapterId) {

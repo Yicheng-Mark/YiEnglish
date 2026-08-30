@@ -1,16 +1,17 @@
-import { useState } from 'react'
+import { useState, useCallback, memo } from 'react'
 import { Send, Eye, RotateCcw } from 'lucide-react'
 import { formatTime } from '../../../../utils/formatTime.js'
 import { useCorpusContext } from '../../context/CorpusPlayerContext.jsx'
 import { useAutoScrollList } from '../../hooks/useAutoScrollList.js'
 import { ColorizedText } from '../ColorizedToken.jsx'
 
+const COMPARE_TOKEN_REGEX = /[a-zA-Z]+(?:['-][a-zA-Z0-9]+)*/g
+
 function tokenizeForCompare(text) {
   if (!text) return []
-  const re = /[a-zA-Z]+(?:['-][a-zA-Z0-9]+)*/g
+  COMPARE_TOKEN_REGEX.lastIndex = 0
   const out = []
-  let m
-  while ((m = re.exec(text)) !== null) {
+  for (const m of text.matchAll(COMPARE_TOKEN_REGEX)) {
     out.push(m[0].toLowerCase())
   }
   return out
@@ -32,9 +33,132 @@ function compareInput(input, target) {
   return { result, correct, total: targetWords.length }
 }
 
+// 单行字幕。memo 化：输入状态变化只重渲染受影响的行，
+// 播放器 timeupdate（~4Hz）触发的列表重渲染也因 props 未变而整体跳过
+const DictationRow = memo(function DictationRow({
+  sub,
+  active,
+  isFollow,
+  input,
+  submission,
+  showOriginal,
+  posMap,
+  onWordClick,
+  posHighlight,
+  setItemRef,
+  onJump,
+  onInput,
+  onSubmit,
+  onToggleOriginal,
+  onReset,
+}) {
+  return (
+    <div
+      ref={setItemRef(sub.id)}
+      onClick={() => onJump(sub.id)}
+      className={
+        'p-3 rounded-xl cursor-pointer transition-all select-none border ' +
+        (active
+          ? 'bg-primary-soft border-primary/30 dark:bg-primary-soft dark:border-primary/30'
+          : 'bg-transparent border-transparent hover:bg-gray-100/60 dark:hover:bg-white/[0.04]')
+      }
+    >
+      <div className="text-xs text-content-tertiary dark:text-gray-500 mb-1 tabular-nums">
+        {formatTime(sub.start)} — {formatTime(sub.end)}
+      </div>
+      {/* 跟读模式直接显示原文 */}
+      {isFollow ? (
+        sub.en && (
+          <div
+            className={`text-base leading-snug ${
+              active ? 'font-semibold' : 'text-content dark:text-gray-100'
+            }`}
+          >
+            <ColorizedText
+              text={sub.en}
+              paraKey={`dt-${sub.id}`}
+              posMap={posMap}
+              onWordClick={onWordClick}
+              showColor={posHighlight}
+            />
+          </div>
+        )
+      ) : !active && !showOriginal && !submission ? (
+        <div className="text-base text-content-tertiary dark:text-gray-500 select-none">……</div>
+      ) : null}
+
+      {sub.zh && (
+        <div className="text-sm leading-relaxed text-content-tertiary dark:text-gray-400 mt-1">
+          {sub.zh}
+        </div>
+      )}
+
+      {/* 听写模式 + 当前活跃句：输入区 */}
+      {!isFollow && active && (
+        <div className="mt-2" onClick={(e) => e.stopPropagation()}>
+          {!submission ? (
+            <>
+              <textarea
+                value={input}
+                onChange={(e) => onInput(sub.id, e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                    e.preventDefault()
+                    onSubmit(sub, input)
+                  }
+                }}
+                placeholder="开始听写吧…（Ctrl+Enter 提交）"
+                rows={2}
+                className="w-full px-3 py-2 text-sm rounded-md bg-surface dark:bg-white/[0.04] border border-gray-200 dark:border-white/[0.08] text-content dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:border-primary"
+              />
+              <div className="flex items-center gap-2 mt-2">
+                <button
+                  type="button"
+                  onClick={() => onSubmit(sub, input)}
+                  className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md bg-primary text-white hover:opacity-90"
+                >
+                  <Send className="w-3 h-3" />
+                  <span>提交对比</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onToggleOriginal(sub.id)}
+                  className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] text-content-secondary dark:text-gray-300"
+                >
+                  <Eye className="w-3 h-3" />
+                  <span>{showOriginal ? '隐藏原文' : '查看原文'}</span>
+                </button>
+              </div>
+              {showOriginal && sub.en && (
+                <div className="mt-2 px-3 py-2 rounded-md bg-gray-50 dark:bg-white/[0.04] text-sm text-content-secondary dark:text-gray-300 leading-snug">
+                  <ColorizedText
+                    text={sub.en}
+                    paraKey={`dt-orig-${sub.id}`}
+                    posMap={posMap}
+                    onWordClick={onWordClick}
+                    showColor={posHighlight}
+                  />
+                </div>
+              )}
+            </>
+          ) : (
+            <DictationFeedback submission={submission} sub={sub} onReset={() => onReset(sub.id)} />
+          )}
+        </div>
+      )}
+
+      {/* 提交后即使切走也保持显示反馈 */}
+      {!isFollow && !active && submission && (
+        <div className="mt-2" onClick={(e) => e.stopPropagation()}>
+          <DictationFeedback submission={submission} sub={sub} onReset={() => onReset(sub.id)} />
+        </div>
+      )}
+    </div>
+  )
+})
+
 export default function DictationMode() {
-  const { subtitles, player, posMap, handleWordClick, settings, updateSetting } =
-    useCorpusContext()
+  const { subtitles, player, posMap, handleWordClick, settings, updateSetting } = useCorpusContext()
   const { setItemRef, containerProps } = useAutoScrollList(player.activeId)
 
   const isFollow = settings.dictationFollowMode === 'follow'
@@ -44,20 +168,27 @@ export default function DictationMode() {
   const [submissions, setSubmissions] = useState({})
   const [showOriginal, setShowOriginal] = useState({})
 
-  if (!subtitles?.length) return null
-
-  const setInput = (id, val) => setInputs((p) => ({ ...p, [id]: val }))
-  const submit = (sub) => {
-    const inp = inputs[sub.id] || ''
+  // 稳定回调：配合 memo 行组件，父级重渲染不触发全表行重渲染。
+  // onSubmit 由行组件回传当前输入值，避免闭包读到旧的 inputs
+  const handleJump = useCallback((id) => player.jumpToCue(id), [player.jumpToCue])
+  const handleInput = useCallback((id, val) => {
+    setInputs((p) => ({ ...p, [id]: val }))
+  }, [])
+  const handleSubmit = useCallback((sub, inp) => {
     setSubmissions((p) => ({ ...p, [sub.id]: compareInput(inp, sub.en || '') }))
-  }
-  const resetSub = (id) => {
+  }, [])
+  const handleToggleOriginal = useCallback((id) => {
+    setShowOriginal((p) => ({ ...p, [id]: !p[id] }))
+  }, [])
+  const handleReset = useCallback((id) => {
     setSubmissions((p) => {
       const { [id]: _, ...rest } = p
       return rest
     })
     setInputs((p) => ({ ...p, [id]: '' }))
-  }
+  }, [])
+
+  if (!subtitles?.length) return null
 
   return (
     <div
@@ -95,122 +226,26 @@ export default function DictationMode() {
         </div>
       </div>
 
-      {subtitles.map((sub) => {
-        const active = sub.id === player.activeId
-        const sub_show = showOriginal[sub.id]
-        const submission = submissions[sub.id]
-        return (
-          <div
-            ref={setItemRef(sub.id)}
-            key={sub.id}
-            onClick={() => player.jumpToCue(sub.id)}
-            className={
-              'p-3 rounded-xl cursor-pointer transition-all select-none border ' +
-              (active
-                ? 'bg-primary-soft border-primary/30 dark:bg-primary-soft dark:border-primary/30'
-                : 'bg-transparent border-transparent hover:bg-gray-100/60 dark:hover:bg-white/[0.04]')
-            }
-          >
-            <div className="text-xs text-content-tertiary dark:text-gray-500 mb-1 tabular-nums">
-              {formatTime(sub.start)} — {formatTime(sub.end)}
-            </div>
-            {/* 跟读模式直接显示原文 */}
-            {isFollow ? (
-              sub.en && (
-                <div
-                  className={`text-base leading-snug ${
-                    active ? 'font-semibold' : 'text-content dark:text-gray-100'
-                  }`}
-                >
-                  <ColorizedText
-                    text={sub.en}
-                    paraKey={`dt-${sub.id}`}
-                    posMap={posMap}
-                    onWordClick={handleWordClick}
-                    showColor={settings?.posHighlight}
-                  />
-                </div>
-              )
-            ) : !active && !sub_show && !submission ? (
-              <div className="text-base text-content-tertiary dark:text-gray-500 select-none">
-                ……
-              </div>
-            ) : null}
-
-            {sub.zh && (
-              <div className="text-sm leading-relaxed text-content-tertiary dark:text-gray-400 mt-1">
-                {sub.zh}
-              </div>
-            )}
-
-            {/* 听写模式 + 当前活跃句：输入区 */}
-            {!isFollow && active && (
-              <div
-                className="mt-2"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {!submission ? (
-                  <>
-                    <textarea
-                      value={inputs[sub.id] || ''}
-                      onChange={(e) => setInput(sub.id, e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-                          e.preventDefault()
-                          submit(sub)
-                        }
-                      }}
-                      placeholder="开始听写吧…（Ctrl+Enter 提交）"
-                      rows={2}
-                      className="w-full px-3 py-2 text-sm rounded-md bg-surface dark:bg-white/[0.04] border border-gray-200 dark:border-white/[0.08] text-content dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:border-primary"
-                    />
-                    <div className="flex items-center gap-2 mt-2">
-                      <button
-                        type="button"
-                        onClick={() => submit(sub)}
-                        className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md bg-primary text-white hover:opacity-90"
-                      >
-                        <Send className="w-3 h-3" />
-                        <span>提交对比</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowOriginal((p) => ({ ...p, [sub.id]: !p[sub.id] }))
-                        }
-                        className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md bg-gray-100 hover:bg-gray-200 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] text-content-secondary dark:text-gray-300"
-                      >
-                        <Eye className="w-3 h-3" />
-                        <span>{sub_show ? '隐藏原文' : '查看原文'}</span>
-                      </button>
-                    </div>
-                    {sub_show && sub.en && (
-                      <div className="mt-2 px-3 py-2 rounded-md bg-gray-50 dark:bg-white/[0.04] text-sm text-content-secondary dark:text-gray-300 leading-snug">
-                        <ColorizedText
-                          text={sub.en}
-                          paraKey={`dt-orig-${sub.id}`}
-                          posMap={posMap}
-                          onWordClick={handleWordClick}
-                          showColor={settings?.posHighlight}
-                        />
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <DictationFeedback submission={submission} sub={sub} onReset={() => resetSub(sub.id)} />
-                )}
-              </div>
-            )}
-
-            {/* 提交后即使切走也保持显示反馈 */}
-            {!isFollow && !active && submission && (
-              <div className="mt-2" onClick={(e) => e.stopPropagation()}>
-                <DictationFeedback submission={submission} sub={sub} onReset={() => resetSub(sub.id)} />
-              </div>
-            )}
-          </div>
-        )
-      })}
+      {subtitles.map((sub) => (
+        <DictationRow
+          key={sub.id}
+          sub={sub}
+          active={sub.id === player.activeId}
+          isFollow={isFollow}
+          input={inputs[sub.id] || ''}
+          submission={submissions[sub.id]}
+          showOriginal={showOriginal[sub.id]}
+          posMap={posMap}
+          onWordClick={handleWordClick}
+          posHighlight={settings?.posHighlight}
+          setItemRef={setItemRef}
+          onJump={handleJump}
+          onInput={handleInput}
+          onSubmit={handleSubmit}
+          onToggleOriginal={handleToggleOriginal}
+          onReset={handleReset}
+        />
+      ))}
     </div>
   )
 }
@@ -226,8 +261,8 @@ function DictationFeedback({ submission, sub, onReset }) {
             accuracy >= 80
               ? 'text-emerald-600 dark:text-emerald-400'
               : accuracy >= 50
-              ? 'text-amber-600 dark:text-amber-400'
-              : 'text-rose-600 dark:text-rose-400'
+                ? 'text-amber-600 dark:text-amber-400'
+                : 'text-rose-600 dark:text-rose-400'
           }`}
         >
           准确率 {accuracy}%（{correct}/{total}）
@@ -271,8 +306,8 @@ function DictationFeedback({ submission, sub, onReset }) {
               (r.ok
                 ? 'text-emerald-600 dark:text-emerald-400'
                 : r.input
-                ? 'text-rose-600 dark:text-rose-400 line-through'
-                : 'text-content-tertiary dark:text-gray-500')
+                  ? 'text-rose-600 dark:text-rose-400 line-through'
+                  : 'text-content-tertiary dark:text-gray-500')
             }
           >
             {r.input || '—'}

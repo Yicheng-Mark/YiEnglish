@@ -23,9 +23,13 @@ const WordDisplay = memo(function WordDisplay({ word, currentInput, isWrong, hid
     prevLenRef.current = 0
   }, [word?.name])
 
-  // 追踪输入长度变化，用于正确字符 pop 动画
+  // 追踪输入长度变化，用于正确字符 pop 动画。
+  // 渲染期只读 ref，写入放到 effect：StrictMode/并发渲染下被丢弃的渲染
+  // 不应推进 prevLen，否则重试渲染会误判为"变短"，丢掉 pop 动画
   const newCorrectIndex = currentInput.length > prevLenRef.current ? currentInput.length - 1 : -1
-  prevLenRef.current = currentInput.length
+  useEffect(() => {
+    prevLenRef.current = currentInput.length
+  }, [currentInput.length])
 
   return (
     <div
@@ -52,7 +56,7 @@ const WordDisplay = memo(function WordDisplay({ word, currentInput, isWrong, hid
             'text-primary dark:text-primary-dark dark:drop-shadow-[0_0_8px_rgba(167,139,250,0.55)]'
         } else if (isError) {
           className =
-            'text-violet-500 dark:text-violet-400 dark:drop-shadow-[0_0_6px_rgba(167,139,250,0.45)]'
+            'text-red-500 dark:text-red-400 dark:drop-shadow-[0_0_6px_rgba(248,113,113,0.45)]'
         } else if (i === currentInput.length) {
           className = 'text-gray-300 dark:text-gray-400'
         } else {

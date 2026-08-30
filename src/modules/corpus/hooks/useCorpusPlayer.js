@@ -341,17 +341,23 @@ export function useCorpusPlayer({ videoRef, subtitles, videoEl }) {
     }
     const target = v.parentElement
     if (!target) return
-    if (document.fullscreenElement) {
-      await document.exitFullscreen?.()
-    } else {
-      // requestFullscreen() 的 resolve 值是 undefined，不能用作短路条件，
-      // 否则标准浏览器成功进入全屏后仍会再调 webkit 分支；按特性检测二选一
-      if (typeof target.requestFullscreen === 'function') {
-        await target.requestFullscreen()
-      } else if (typeof target.webkitRequestFullscreen === 'function') {
-        await target.webkitRequestFullscreen()
+    // 全屏请求可能被浏览器策略拒绝（手势丢失 / iframe 权限），
+    // 未捕获的 rejection 会变成 unhandled rejection 上报，这里统一吞掉
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen?.()
+      } else {
+        // requestFullscreen() 的 resolve 值是 undefined，不能用作短路条件，
+        // 否则标准浏览器成功进入全屏后仍会再调 webkit 分支；按特性检测二选一
+        if (typeof target.requestFullscreen === 'function') {
+          await target.requestFullscreen()
+        } else if (typeof target.webkitRequestFullscreen === 'function') {
+          await target.webkitRequestFullscreen()
+        }
+        screen.orientation?.lock?.('landscape').catch(() => {})
       }
-      screen.orientation?.lock?.('landscape').catch(() => {})
+    } catch (e) {
+      console.warn('[corpus] fullscreen request failed:', e)
     }
   }, [videoRef])
 

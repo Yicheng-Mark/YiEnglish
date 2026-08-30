@@ -1,5 +1,5 @@
 /** SHARED — Desktop + Mobile 共用，勿加平台特定逻辑 */
-import { memo, useState, useCallback } from 'react'
+import { memo, useState, useCallback, useMemo } from 'react'
 import { getPosColor, tokenizeEnglish } from '../utils/wordColorMap.js'
 import { getWordRect } from '../../../utils/wordTokenize.jsx'
 
@@ -16,9 +16,10 @@ function ColorizedTokenInner({ token, pos, onWordClick, showColor = true }) {
     [token.lower, onWordClick]
   )
 
-  const style = showColor && pos && pos !== 'unknown'
-    ? { '--corpus-pos-color': getPosColor(pos), color: 'var(--corpus-pos-color)' }
-    : undefined
+  const style =
+    showColor && pos && pos !== 'unknown'
+      ? { '--corpus-pos-color': getPosColor(pos), color: 'var(--corpus-pos-color)' }
+      : undefined
 
   return (
     <span
@@ -66,7 +67,9 @@ const ClozeBlank = memo(ClozeBlankInner)
 
 // 给定文本 + posMap，渲染带词性颜色的可点击片段
 // 可选 clozeIndices: Set<number> 表示哪些 token 索引要替换为空白
-export function ColorizedText({
+// memo + 分词缓存：字幕面板随播放器 timeupdate（~4Hz）重渲染时，
+// props 不变则整棵跳过；即便重渲染也不再重复分词
+const ColorizedTextInner = memo(function ColorizedText({
   text,
   paraKey = 't',
   posMap,
@@ -74,8 +77,8 @@ export function ColorizedText({
   showColor = true,
   clozeIndices = null,
 }) {
+  const tokens = useMemo(() => tokenizeEnglish(text), [text])
   if (!text) return null
-  const tokens = tokenizeEnglish(text)
   return (
     <>
       {tokens.map((tok, i) => {
@@ -98,4 +101,6 @@ export function ColorizedText({
       })}
     </>
   )
-}
+})
+
+export const ColorizedText = ColorizedTextInner

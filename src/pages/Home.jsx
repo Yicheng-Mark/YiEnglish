@@ -208,13 +208,18 @@ function Home() {
   const [wordQuery, setWordQuery] = useState('')
   const [wordResults, setWordResults] = useState([])
   const [showWordResults, setShowWordResults] = useState(false)
-  const [dictionaries, setDictionaries] = useState([])
+  // 索引增量构建：每批词典只 append 自己的词条，避免整库全量重建（27 部词典会触发 ~7 次全量遍历）
+  const indexRef = useRef([])
+  const [indexedCount, setIndexedCount] = useState(0) // 已入索引的词典数，兼作"加载中"指示
   const wordSearchRef = useRef(null)
   const debouncedWordQuery = useDebounce(wordQuery, 300)
 
   // 按需加载词库：仅在用户首次输入搜索词时才加载全部词库建索引（首屏不再预载 ~17MB）。
   // loadDictionary 自带缓存，后续搜索即时；优先词库先加载，结果逐步补充。
   const indexBuiltRef = useRef(false)
+  // 索引构建重试计数：全部词典加载失败（如断网）时不允许永久卡"加载中"
+  const [indexFailed, setIndexFailed] = useState(false)
+  const [indexBuildAttempt, setIndexBuildAttempt] = useState(0)
   useEffect(() => {
     const q = debouncedWordQuery.trim()
     if (!q) {
@@ -223,18 +228,23 @@ function Home() {
       return
     }
     setShowWordResults(true)
-    if (indexBuiltRef.current) return // 已加载，搜索交给下方 [wordIndex] effect
+    if (indexBuiltRef.current) return // 已加载，搜索交给下方 [indexedCount] effect
     indexBuiltRef.current = true
+    setIndexFailed(false)
     let cancelled = false
     const PRIORITY_IDS = ['cet4', 'cet6', 'gaokao', 'postgraduate', 'ielts']
     const loadBatch = async (ids) => {
       const results = await Promise.all(ids.map((id) => loadDictionary(id).catch(() => null)))
       return results.filter(Boolean)
     }
+    const appendIndex = (dicts) => {
+      indexRef.current = indexRef.current.concat(buildWordIndex(dicts))
+      setIndexedCount((n) => n + dicts.length)
+    }
     ;(async () => {
       const priorityDicts = await loadBatch(PRIORITY_IDS)
       if (cancelled) return
-      setDictionaries(priorityDicts)
+      appendIndex(priorityDicts)
       const remaining = dictionaryMeta.filter((m) => !PRIORITY_IDS.includes(m.id))
       const BATCH_SIZE = 4
       for (let i = 0; i < remaining.length; i += BATCH_SIZE) {
@@ -242,22 +252,26 @@ function Home() {
         const batch = remaining.slice(i, i + BATCH_SIZE)
         const batchResults = await loadBatch(batch.map((m) => m.id))
         if (cancelled) return
-        setDictionaries((prev) => [...prev, ...batchResults])
+        appendIndex(batchResults)
+      }
+      // 兜底：所有词典都加载失败（离线/服务异常）→ 解除构建锁并提示重试，
+      // 否则 indexBuiltRef 永久为 true，搜索框永远显示"正在加载词库"
+      if (!cancelled && indexRef.current.length === 0) {
+        indexBuiltRef.current = false
+        setIndexFailed(true)
       }
     })()
     return () => {
       cancelled = true
     }
-  }, [debouncedWordQuery])
-
-  const wordIndex = useMemo(() => buildWordIndex(dictionaries), [dictionaries])
+  }, [debouncedWordQuery, indexBuildAttempt])
 
   useEffect(() => {
     const q = debouncedWordQuery.trim()
-    // 词库尚未加载完时跳过，避免在空索引上误报"未找到"
-    if (!q || dictionaries.length === 0) return
-    setWordResults(searchWordIndex(wordIndex, q, 10))
-  }, [debouncedWordQuery, wordIndex, dictionaries.length])
+    // 索引尚未建立时跳过，避免在空索引上误报"未找到"
+    if (!q || indexRef.current.length === 0) return
+    setWordResults(searchWordIndex(indexRef.current, q, 10))
+  }, [debouncedWordQuery, indexedCount])
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -517,9 +531,26 @@ function Home() {
                         ))
                       ) : (
                         <div className="p-4 text-center text-sm text-content-secondary">
-                          {dictionaries.length === 0
-                            ? '正在加载词库，请稍候...'
-                            : '未找到匹配的单词'}
+                          {indexedCount === 0 ? (
+                            indexFailed ? (
+                              <span className="inline-flex items-center gap-2 flex-wrap justify-center">
+                                <span className="text-red-500 dark:text-red-400">
+                                  词库加载失败，请检查网络
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => setIndexBuildAttempt((n) => n + 1)}
+                                  className="px-2.5 py-1 rounded-md bg-primary text-white text-xs hover:opacity-90"
+                                >
+                                  重试
+                                </button>
+                              </span>
+                            ) : (
+                              '正在加载词库，请稍候...'
+                            )
+                          ) : (
+                            '未找到匹配的单词'
+                          )}
                         </div>
                       )}
                     </div>
