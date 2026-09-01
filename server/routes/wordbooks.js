@@ -1,22 +1,9 @@
 const { Router } = require('express')
 const pool = require('../db')
 const authMiddleware = require('../middleware/auth')
+const { clampStr, toValidDate } = require('../utils/sanitize')
 
 const router = Router()
-
-// 夹取可选字符串字段：null/非字符串/空串返回 null，超长截断到列宽
-// （word_name/notation/us_audio/uk_audio 255、usphone/ukphone 100、dict_name 100）
-function clampStr(v, max) {
-  if (typeof v !== 'string' || !v) return null
-  return v.slice(0, max)
-}
-
-// 无效日期返回 null（new Date(垃圾) 是 Invalid Date，mysql2 序列化会抛错）
-function toValidDate(v) {
-  if (!v) return null
-  const d = new Date(v)
-  return Number.isNaN(d.getTime()) ? null : d
-}
 
 // wrong_count SMALLINT UNSIGNED 上限 65535：非数字回退 1，越界夹取
 function clampWrongCount(v) {

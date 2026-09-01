@@ -1,4 +1,12 @@
-require('dotenv').config({ path: require('path').resolve(__dirname, '../.env.local') })
+// env 分离（向后兼容）：优先读 server/.env（服务端密钥独占、不进前端视野），
+// 不存在则回退仓库根 .env.local（历史布局：本地开发前后端变量混放一文件）。
+// 生产机沿用 /home/lingoforge/.env.local 手工维护的副本（rsync 排除该文件，不会被部署覆盖）。
+// dotenv 不覆盖已存在的环境变量 —— 部署平台注入的 env 优先级最高。
+const path = require('path')
+const fs = require('fs')
+const serverEnv = path.resolve(__dirname, '.env')
+const rootEnvLocal = path.resolve(__dirname, '../.env.local')
+require('dotenv').config({ path: fs.existsSync(serverEnv) ? serverEnv : rootEnvLocal })
 
 module.exports = {
   PORT: process.env.PORT || 3001,

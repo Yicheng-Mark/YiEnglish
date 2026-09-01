@@ -1,18 +1,13 @@
 const { Router } = require('express')
 const pool = require('../db')
 const authMiddleware = require('../middleware/auth')
+const { clampNum } = require('../utils/sanitize')
 
 const router = Router()
 
-// 数值列夹取：非数字回退默认值，越界夹到列宽范围内
-// （interval_days DECIMAL(6,2)、ease_factor DECIMAL(4,2)、repetitions/last_quality TINYINT UNSIGNED）
-function clampNum(v, fallback, min, max) {
-  const n = Number(v)
-  if (!Number.isFinite(n)) return fallback
-  return Math.min(max, Math.max(min, n))
-}
-
-// 时间戳（毫秒/Date/日期串）规整为合法 Date，无效返回 null
+// 时间戳（毫秒/Date/日期串）规整为合法 Date，无效返回 null。
+// 注意：这是 sanitize.toValidDate 的「容忍毫秒时间戳」变体（SM-2 客户端上送毫秒数），
+// 语义不同，勿替换为共享版。
 function toValidDate(v) {
   if (v === null || v === undefined || v === '') return null
   const n = typeof v === 'number' ? v : Number(v)

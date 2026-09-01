@@ -1,33 +1,10 @@
 const { Router } = require('express')
 const pool = require('../db')
 const authMiddleware = require('../middleware/auth')
+const { clampStr, toValidDate, toTransJson } = require('../utils/sanitize')
+const { VALID_THEMES } = require('../utils/themes')
 
 const router = Router()
-
-// 与 settings.js 保持一致的白名单/夹取，迁移入口不能成为绕过口
-const VALID_THEMES = ['light', 'gray', 'warm']
-
-// 与 wordbooks.js POST 一致：字符串释义包成单元素数组，
-// 否则老用户本地数据若是字符串释义，迁移后会变 null（释义丢失）
-function toTransJson(trans) {
-  if (Array.isArray(trans)) return JSON.stringify(trans)
-  if (typeof trans === 'string' && trans.trim()) return JSON.stringify([trans])
-  return null
-}
-
-// 夹取可选字符串字段：null/非字符串/空串返回 null，超长截断到列宽，
-// 防止单条脏数据触发 ER_DATA_TOO_LONG 让整个迁移事务回滚
-function clampStr(v, max) {
-  if (typeof v !== 'string' || !v) return null
-  return v.slice(0, max)
-}
-
-// 无效日期返回 null（new Date(垃圾) 是 Invalid Date，mysql2 序列化会抛错）
-function toValidDate(v) {
-  if (!v) return null
-  const d = new Date(v)
-  return Number.isNaN(d.getTime()) ? null : d
-}
 
 // POST /api/migrate/local-to-server — one-time localStorage → MySQL migration
 router.post('/local-to-server', authMiddleware, async (req, res, next) => {

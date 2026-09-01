@@ -1,10 +1,9 @@
 const { Router } = require('express')
 const pool = require('../db')
 const authMiddleware = require('../middleware/auth')
+const { VALID_THEMES } = require('../utils/themes')
 
 const router = Router()
-
-const VALID_THEMES = ['light', 'gray', 'warm']
 const CLIENT_TO_DB = {
   soundEnabled: 'sound_enabled',
   showTranslation: 'show_translation',

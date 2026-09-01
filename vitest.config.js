@@ -24,12 +24,13 @@ export default defineConfig({
     ],
     coverage: {
       provider: 'v8',
-      // 起步阈值低，先跑通流水线，后续随用例增加再收紧
+      // 阈值随用例增加逐步收紧（2026-09 实测：语句/行 ~22%、函数 ~53%、分支 ~75%）。
+      // 各轴留 5pp+ 余量，防止小幅代码增删导致 --coverage 门禁抖动。
       thresholds: {
-        statements: 15,
-        branches: 15,
-        functions: 15,
-        lines: 15,
+        statements: 20,
+        branches: 40,
+        functions: 45,
+        lines: 20,
       },
       include: ['src/**/*.{js,jsx}', 'server/**/*.js'],
       exclude: ['**/*.test.js', '**/node_modules/**', '**/dist/**'],

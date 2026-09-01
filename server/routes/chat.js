@@ -2,6 +2,7 @@ const { Router } = require('express')
 const pool = require('../db')
 const authMiddleware = require('../middleware/auth')
 const requireFullAccount = require('../middleware/requireFullAccount')
+const logger = require('../utils/logger')
 const { streamChatToRes } = require('../services/deepseekProxy')
 const { buildSystemPrompt } = require('../services/promptBuilder')
 const { extractMemories } = require('../services/memoryExtractor')
@@ -187,7 +188,7 @@ router.post('/', guarded, async (req, res, next) => {
     if (!res.headersSent) {
       next(err)
     } else {
-      console.error('[Chat Error after headers sent]', err.message)
+      logger.error({ err: err.message }, '[Chat Error after headers sent]')
     }
   }
 })

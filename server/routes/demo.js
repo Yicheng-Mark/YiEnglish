@@ -24,7 +24,7 @@ const DEMO_IP_DAILY_MAX = 5
 router.post('/redeem', async (req, res, next) => {
   try {
     const { code } = req.body
-    const ip = req.ip || req.headers['x-forwarded-for']?.split(',')[0]?.trim() || '127.0.0.1'
+    const ip = getClientIp(req)
 
     if (!code || typeof code !== 'string' || !code.trim()) {
       return res.status(400).json({ error: '请输入体验码' })

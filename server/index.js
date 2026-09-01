@@ -1,5 +1,6 @@
 const express = require('express')
 const cors = require('cors')
+const helmet = require('helmet')
 const cookieParser = require('cookie-parser')
 const fs = require('fs')
 const path = require('path')
@@ -105,6 +106,17 @@ const memoryRoutes = require('./routes/memory')
 const app = express()
 // 生产经 Nginx 反代：信任一层代理，从 X-Forwarded-For 正确解析客户端真实 IP（限流/设备 IP 都依赖 req.ip）
 app.set('trust proxy', 1)
+
+// 安全响应头（X-Content-Type-Options / X-Frame-Options / Referrer-Policy / HSTS 等）。
+// CSP 暂不启用：index.html 有防闪烁主题引导内联脚本、legacy 构建产物含 inline script、
+// 语料视频走 OSS 外域（media-src）——直接上严格 CSP 会白屏/断视频，待统一 nonce 方案后再收紧。
+// COEP 关闭：require-corp 会要求 OSS 视频响应带 CORP 头，当前 OSS 配置不满足。
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+  })
+)
 
 const corsOrigins = config.ALLOWED_ORIGINS
   ? config.ALLOWED_ORIGINS.split(',')

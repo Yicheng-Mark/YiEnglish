@@ -16,6 +16,7 @@
 
 - **MySQL80 必须先以管理员权限启动**（服务或手动提权），否则后端起不来。
 - 根目录 `.env.local`（不进 git）由后端 dotenv 加载：`DB_*`、`JWT_SECRET`、`DEEPSEEK_API_KEY` 等，完整清单见 `server/config.js`。
+- env 加载顺序（`server/config.js`）：优先 `server/.env`（服务端密钥独占，推荐新变量放这里），不存在则回退根 `.env.local`（历史布局，本地开发前后端变量混放）；已存在的环境变量优先于文件。生产机继续用 `/home/lingoforge/.env.local`（rsync 排除不覆盖）。**给前端用的变量必须带 `VITE_` 前缀且不得是密钥**（`VITE_` 变量会被打进浏览器 bundle）。
 - 建库用 `server/sql/schema.sql`；`migrate_*.sql` 在后端启动时自动按序执行（`schema_migrations` 表记版本，失败不中止启动、下次自动重试）。
 
 ## 架构速览
