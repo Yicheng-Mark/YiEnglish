@@ -1,4 +1,6 @@
-import { Suspense, useEffect, useState } from 'react'
+// AI 助手下线（DeepSeek key 无额度），恢复时取消注释各「AI 助手下线」标记处，
+// 并把 useState 加回本行 react import
+import { Suspense, useEffect } from 'react'
 import { lazyRetry } from './utils/lazyRetry'
 import { useScrollingFlag } from './hooks/useScrollingFlag'
 import { Routes, Route, Navigate, Outlet, useNavigate, useLocation } from 'react-router-dom'
@@ -7,7 +9,8 @@ import Layout from './components/Layout'
 import PageLoading from './components/PageLoading'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { WordProvider } from './contexts/WordContext'
-import { isAIAssistantHidden } from './lib/ai-settings'
+// AI 助手下线（DeepSeek key 无额度），恢复时取消注释本行
+// import { isAIAssistantHidden } from './lib/ai-settings'
 import { migrateFromLocalStorage } from './utils/idb.js'
 
 const Home = lazyRetry(() => import('./pages/Home'))
@@ -32,8 +35,9 @@ const DemoWord = lazyRetry(() => import('./pages/demo/DemoWord'))
 const DemoReading = lazyRetry(() => import('./pages/demo/DemoReading'))
 const DemoCorpus = lazyRetry(() => import('./pages/demo/DemoCorpus'))
 const DemoProfile = lazyRetry(() => import('./pages/demo/DemoProfile'))
-const AIChatPage = lazyRetry(() => import('./pages/AIChatPage'))
-const AICircleFloat = lazyRetry(() => import('./components/AIAssistant/AICircleFloat'))
+// AI 助手下线：页面与悬浮球 chunk 不再加载，恢复时取消注释
+// const AIChatPage = lazyRetry(() => import('./pages/AIChatPage'))
+// const AICircleFloat = lazyRetry(() => import('./components/AIAssistant/AICircleFloat'))
 
 // 预加载底部导航对应的模块 chunk，避免切换时闪"加载中"
 const moduleLoaders = [
@@ -84,30 +88,31 @@ function RegisterGuard() {
   return <Register />
 }
 
-// AI 悬浮球全局入口：登录/注册/体验/激活/找回页与体验用户隐藏；显隐由个人中心开关（localStorage + 事件）控制
-function AIAssistantGate() {
-  const { user } = useAuth()
-  const location = useLocation()
-  const [visible, setVisible] = useState(() => !isAIAssistantHidden())
-
-  useEffect(() => {
-    const onChange = () => setVisible(!isAIAssistantHidden())
-    window.addEventListener('ai-visibility-change', onChange)
-    return () => window.removeEventListener('ai-visibility-change', onChange)
-  }, [])
-
-  const p = location.pathname
-  const onAuthPage = ['/login', '/register', '/demo', '/activate', '/recover'].some(
-    (path) => p === path || p.startsWith(path + '/')
-  )
-  if (!visible || onAuthPage || user?.isTrial) return null
-
-  return (
-    <Suspense fallback={null}>
-      <AICircleFloat />
-    </Suspense>
-  )
-}
+// AI 助手下线（DeepSeek key 无额度）：悬浮球全局入口整体停用，恢复时取消注释本组件、
+// 顶部 isAIAssistantHidden / AICircleFloat 两处 import，以及路由表中 /ai-assistant 与下方 <AIAssistantGate />
+// function AIAssistantGate() {
+//   const { user } = useAuth()
+//   const location = useLocation()
+//   const [visible, setVisible] = useState(() => !isAIAssistantHidden())
+//
+//   useEffect(() => {
+//     const onChange = () => setVisible(!isAIAssistantHidden())
+//     window.addEventListener('ai-visibility-change', onChange)
+//     return () => window.removeEventListener('ai-visibility-change', onChange)
+//   }, [])
+//
+//   const p = location.pathname
+//   const onAuthPage = ['/login', '/register', '/demo', '/activate', '/recover'].some(
+//     (path) => p === path || p.startsWith(path + '/')
+//   )
+//   if (!visible || onAuthPage || user?.isTrial) return null
+//
+//   return (
+//     <Suspense fallback={null}>
+//       <AICircleFloat />
+//     </Suspense>
+//   )
+// }
 
 function App() {
   useScrollingFlag()
@@ -183,7 +188,8 @@ function App() {
                 <Route path="/profile/devices" element={<Devices />} />
                 <Route path="/stats" element={<Stats />} />
                 <Route path="/learning-methods/*" element={<LearningMethodsModule />} />
-                <Route path="/ai-assistant" element={<AIChatPage />} />
+                {/* AI 助手下线：/ai-assistant 路由停用，恢复时取消注释 */}
+                {/* <Route path="/ai-assistant" element={<AIChatPage />} /> */}
                 <Route path="/dict/:dictId" element={<ChapterSelect />} />
                 <Route path="/typing/:dictId/:chapterId" element={<Typing />} />
                 <Route path="/review/setup/:bookId" element={<ReviewSetup />} />
@@ -192,7 +198,8 @@ function App() {
             </Route>
           </Routes>
         </Suspense>
-        <AIAssistantGate />
+        {/* AI 助手下线：悬浮球入口停用，恢复时取消注释 */}
+        {/* <AIAssistantGate /> */}
       </WordProvider>
     </AuthProvider>
   )

@@ -94,13 +94,16 @@ export default function PersonalCenter() {
   const completedArticles = useMemo(() => store.getCompletedArticleCount(), [])
   const listeningHours = useMemo(() => (store.getTotalListeningSeconds() / 3600).toFixed(1), [])
 
-  function handleSaveProfile() {
+  async function handleSaveProfile() {
     const trimmed = nicknameInput.trim()
     if (!trimmed) return
-    profile.setNickname(trimmed)
-    profile.setSignature(signatureInput)
-    setEditModal(false)
-    toast('资料已更新')
+    try {
+      await profile.setProfile(trimmed, signatureInput)
+      setEditModal(false)
+      toast('资料已更新')
+    } catch (err) {
+      toast('更新失败', { description: err.message })
+    }
   }
 
   function handleAvatarUpload(e) {
@@ -117,7 +120,7 @@ export default function PersonalCenter() {
     const reader = new FileReader()
     reader.onload = (ev) => {
       const img = new Image()
-      img.onload = () => {
+      img.onload = async () => {
         const canvas = document.createElement('canvas')
         const size = 200
         canvas.width = size
@@ -127,8 +130,12 @@ export default function PersonalCenter() {
         const sx = (img.width - min) / 2
         const sy = (img.height - min) / 2
         ctx.drawImage(img, sx, sy, min, min, 0, 0, size, size)
-        profile.setAvatar(canvas.toDataURL('image/jpeg', 0.8))
-        toast('头像已更新')
+        try {
+          await profile.setAvatar(canvas.toDataURL('image/jpeg', 0.8))
+          toast('头像已更新')
+        } catch (err) {
+          toast('更新失败', { description: err.message })
+        }
       }
       img.src = ev.target.result
     }
@@ -151,7 +158,8 @@ export default function PersonalCenter() {
   ]
 
   const settingsItems = [
-    !isTrial && { label: 'AI 伙伴设置', emoji: '🤖', action: () => setCompanionModal(true) },
+    // AI 助手下线（DeepSeek key 无额度）：唯一入口注释掉，companion 弹窗代码原样保留，恢复时取消注释本行
+    // !isTrial && { label: 'AI 伙伴设置', emoji: '🤖', action: () => setCompanionModal(true) },
     { label: '学习方法', emoji: '💡', action: () => navigate('/learning-methods') },
     { label: '模式切换', emoji: '🎨', action: () => setThemeModal(true) },
     { label: '帮助与反馈', emoji: '💬', action: () => setHelpModal(true) },
@@ -306,10 +314,14 @@ export default function PersonalCenter() {
           {goalPresets.map((mins) => (
             <button
               key={mins}
-              onClick={() => {
-                profile.setDailyGoalMinutes(mins)
-                setGoalModal(false)
-                toast(`每日目标已设为 ${mins} 分钟`)
+              onClick={async () => {
+                try {
+                  await profile.setDailyGoalMinutes(mins)
+                  setGoalModal(false)
+                  toast(`每日目标已设为 ${mins} 分钟`)
+                } catch (err) {
+                  toast('更新失败', { description: err.message })
+                }
               }}
               className={`py-2.5 rounded-xl text-sm font-medium transition-colors ${
                 profile.dailyGoalMinutes === mins

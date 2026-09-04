@@ -10,11 +10,12 @@ function Layout() {
   const isTyping = location.pathname.startsWith('/typing/')
   const isListeningPlayer = /^\/listening\/.+/.test(location.pathname)
   const isProfile = location.pathname === '/profile'
-  // AI 聊天页全屏沉浸（自带返回键），隐藏全部导航
-  const isAIChat = location.pathname === '/ai-assistant'
+  // AI 助手下线（DeepSeek key 无额度）：/ai-assistant 路由已注释，全屏沉浸特判一并停用，
+  // 避免手动访问该路径时双导航被藏导致整页空白；恢复时连同 App.jsx 各标记处一起还原
+  // const isAIChat = location.pathname === '/ai-assistant'
   const showBottomNav =
-    !isTyping && !isListeningPlayer && !location.pathname.startsWith('/review/quiz/') && !isAIChat
-  const showTopNav = !isListeningPlayer && !isProfile && !isAIChat
+    !isTyping && !isListeningPlayer && !location.pathname.startsWith('/review/quiz/')
+  const showTopNav = !isListeningPlayer && !isProfile
 
   return (
     <div
