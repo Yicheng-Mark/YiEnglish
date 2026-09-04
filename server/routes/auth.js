@@ -24,6 +24,47 @@ const { createRateLimiter } = require('../utils/apiRateLimit')
 
 const router = express.Router()
 
+// users.avatar_url 是 TEXT。个人中心会把头像裁成 200x200 JPEG data URL，通常约数万字节；
+// 旧的 500 字符限制会让所有真实头像静默同步失败。给 TEXT 上限留出余量，并仅接受
+// canvas 生成的 JPEG data URL 或 HTTPS URL，避免把任意 data/SVG/script scheme 存进资料。
+const MAX_AVATAR_BYTES = 60000
+const MAX_AVATAR_URL_LENGTH = 2048
+
+function normalizeAvatar(value) {
+  if (value === null) return { value: null }
+  if (typeof value !== 'string') return { error: '头像格式无效' }
+
+  if (/^https:\/\//i.test(value)) {
+    return value.length <= MAX_AVATAR_URL_LENGTH ? { value } : { error: '头像地址过长' }
+  }
+
+  if (Buffer.byteLength(value, 'utf8') > MAX_AVATAR_BYTES) {
+    return { error: '头像数据过大' }
+  }
+  const match = /^data:image\/jpeg;base64,([A-Za-z0-9+/]+={0,2})$/.exec(value)
+  if (!match || match[1].length % 4 !== 0) return { error: '头像格式无效' }
+
+  const bytes = Buffer.from(match[1], 'base64')
+  const isJpeg =
+    bytes.length >= 4 &&
+    bytes[0] === 0xff &&
+    bytes[1] === 0xd8 &&
+    bytes[bytes.length - 2] === 0xff &&
+    bytes[bytes.length - 1] === 0xd9
+  return isJpeg ? { value } : { error: '头像格式无效' }
+}
+
+function toClientUser(user) {
+  return {
+    id: user.id,
+    username: user.username,
+    nickname: user.nickname,
+    avatar: user.avatar_url ?? null,
+    dailyGoalMinutes: user.daily_goal_minutes ?? 30,
+    signature: user.signature ?? null,
+  }
+}
+
 // --- Validate activation code ---
 // 激活码可直接兑换注册资格，需防在线爆破（checkRegisterRateLimit 只在注册段生效，拦不住此端点）
 const activationCodeLimiter = createRateLimiter({
@@ -169,7 +210,7 @@ router.post('/register', async (req, res, next) => {
     await logAttempt(`register:${ip}`, ip, true)
 
     res.json({
-      user: { id: userId, username, nickname: displayName },
+      user: toClientUser({ id: userId, username, nickname: displayName }),
     })
   } catch (err) {
     next(err)
@@ -191,7 +232,7 @@ router.post('/login', async (req, res, next) => {
     await checkLoginRateLimit(username, ip)
 
     const [rows] = await pool.execute(
-      'SELECT id, username, nickname, password_hash FROM users WHERE username = ?',
+      'SELECT id, username, nickname, password_hash, avatar_url, daily_goal_minutes, signature FROM users WHERE username = ?',
       [username]
     )
 
@@ -233,7 +274,7 @@ router.post('/login', async (req, res, next) => {
     await issueTokens(res, user.id, false, device)
 
     res.json({
-      user: { id: user.id, username: user.username, nickname: user.nickname },
+      user: toClientUser(user),
     })
   } catch (err) {
     next(err)
@@ -266,7 +307,7 @@ router.post('/refresh', async (req, res, next) => {
     await pool.execute('DELETE FROM refresh_tokens WHERE id = ?', [stored.id])
 
     const [userRows] = await pool.execute(
-      'SELECT id, username, nickname, is_guest FROM users WHERE id = ?',
+      'SELECT id, username, nickname, avatar_url, daily_goal_minutes, signature, is_guest FROM users WHERE id = ?',
       [stored.user_id]
     )
 
@@ -304,11 +345,7 @@ router.post('/refresh', async (req, res, next) => {
       isGuest && trialExpiresAt ? new Date(trialExpiresAt).toISOString() : null
     )
 
-    const userObj = {
-      id: userRows[0].id,
-      username: userRows[0].username,
-      nickname: userRows[0].nickname,
-    }
+    const userObj = toClientUser(userRows[0])
     if (isGuest) {
       userObj.isTrial = true
       userObj.trialExpiresAt = trialExpiresAt ? new Date(trialExpiresAt).toISOString() : null
@@ -353,14 +390,7 @@ router.get('/me', authMiddleware, async (req, res, next) => {
       return res.status(404).json({ error: '用户不存在' })
     }
     const u = rows[0]
-    const userObj = {
-      id: u.id,
-      username: u.username,
-      nickname: u.nickname,
-      avatar: u.avatar_url,
-      dailyGoalMinutes: u.daily_goal_minutes,
-      signature: u.signature,
-    }
+    const userObj = toClientUser(u)
     // 仅访客额外查一次试用到期（单列查询，比每请求 LEFT JOIN 全表更省）
     if (u.is_guest) {
       const [trialRows] = await pool.execute(
@@ -393,13 +423,10 @@ router.patch('/profile', authMiddleware, async (req, res, next) => {
       values.push(trimmed)
     }
     if (avatarUrl !== undefined) {
-      // avatar_url 启用：支持 null（清空）或字符串（URL/标识符）。长度上限 500 防滥用。
-      const av = avatarUrl === null ? null : String(avatarUrl)
-      if (av !== null && av.length > 500) {
-        return res.status(400).json({ error: '头像标识过长' })
-      }
+      const avatar = normalizeAvatar(avatarUrl)
+      if (avatar.error) return res.status(400).json({ error: avatar.error })
       sets.push('avatar_url = ?')
-      values.push(av)
+      values.push(avatar.value)
     }
     if (signature !== undefined) {
       const sig = String(signature)
@@ -431,14 +458,7 @@ router.patch('/profile', authMiddleware, async (req, res, next) => {
     )
     const u = rows[0]
     res.json({
-      user: {
-        id: u.id,
-        username: u.username,
-        nickname: u.nickname,
-        avatar: u.avatar_url,
-        dailyGoalMinutes: u.daily_goal_minutes,
-        signature: u.signature,
-      },
+      user: toClientUser(u),
     })
   } catch (err) {
     next(err)
@@ -592,10 +612,11 @@ router.post('/recover-reset', async (req, res, next) => {
     })
     await logAttempt(codeKey, ip, true)
 
-    const [updated] = await pool.execute('SELECT id, username, nickname FROM users WHERE id = ?', [
-      userId,
-    ])
-    res.json({ user: updated[0] })
+    const [updated] = await pool.execute(
+      'SELECT id, username, nickname, avatar_url, daily_goal_minutes, signature FROM users WHERE id = ?',
+      [userId]
+    )
+    res.json({ user: toClientUser(updated[0]) })
   } catch (err) {
     next(err)
   }

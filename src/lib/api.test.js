@@ -114,6 +114,22 @@ describe('apiFetch', () => {
     expect(dispatchEventSpy).not.toHaveBeenCalled()
   })
 
+  it('refresh 成功但原请求重试仍为 401 → 广播未授权且不再重复刷新', async () => {
+    const { apiFetch } = await import('./api')
+
+    fetchMock
+      .mockResolvedValueOnce(tokenExpiredResponse())
+      .mockResolvedValueOnce(refreshOkResponse())
+      .mockResolvedValueOnce(makeResponse({ error: '新会话仍无效' }, 401))
+
+    await expect(apiFetch('/api/progress/123')).rejects.toThrow('新会话仍无效')
+
+    expect(fetchMock).toHaveBeenCalledTimes(3)
+    expect(fetchMock.mock.calls.filter(([url]) => url === '/api/auth/refresh')).toHaveLength(1)
+    expect(dispatchEventSpy).toHaveBeenCalledTimes(1)
+    expect(dispatchEventSpy.mock.calls[0][0].type).toBe('auth:unauthorized')
+  })
+
   it('401 TOKEN_EXPIRED 且 refresh 也失败 → 抛错，不无限重试', async () => {
     const { apiFetch } = await import('./api')
 

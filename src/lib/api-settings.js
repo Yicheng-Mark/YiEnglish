@@ -1,8 +1,8 @@
-import { apiFetch } from './api'
+import { apiFetch, parseJsonResponse } from './api'
 
 export async function fetchSettings() {
   const res = await apiFetch('/api/settings')
-  return res.json()
+  return parseJsonResponse(res)
 }
 
 export async function updateSettings(partial) {
@@ -10,5 +10,5 @@ export async function updateSettings(partial) {
     method: 'PATCH',
     body: JSON.stringify(partial),
   })
-  return res.json()
+  return parseJsonResponse(res)
 }

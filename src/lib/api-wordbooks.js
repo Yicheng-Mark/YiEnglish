@@ -1,8 +1,8 @@
-import { apiFetch } from './api'
+import { apiFetch, parseJsonResponse } from './api'
 
 export async function fetchWordBook(bookType) {
   const res = await apiFetch(`/api/wordbooks/${bookType}`)
-  return res.json()
+  return parseJsonResponse(res)
 }
 
 export async function addWordToBook(bookType, wordInfo, { keepalive = false } = {}) {
@@ -12,21 +12,21 @@ export async function addWordToBook(bookType, wordInfo, { keepalive = false } = 
     // 卸载兜底 flush 时浏览器不保证普通 fetch 完成，keepalive 让请求存活到页面关闭后
     ...(keepalive ? { keepalive: true } : {}),
   })
-  return res.json()
+  return parseJsonResponse(res)
 }
 
 export async function removeWordFromBook(bookType, wordName) {
   const res = await apiFetch(`/api/wordbooks/${bookType}/${encodeURIComponent(wordName)}`, {
     method: 'DELETE',
   })
-  return res.json()
+  return parseJsonResponse(res)
 }
 
 export async function clearWordBook(bookType) {
   const res = await apiFetch(`/api/wordbooks/${bookType}?clearAll=true`, {
     method: 'DELETE',
   })
-  return res.json()
+  return parseJsonResponse(res)
 }
 
 export async function replaceWordBook(bookType, words) {
@@ -34,5 +34,5 @@ export async function replaceWordBook(bookType, words) {
     method: 'PUT',
     body: JSON.stringify({ words }),
   })
-  return res.json()
+  return parseJsonResponse(res)
 }

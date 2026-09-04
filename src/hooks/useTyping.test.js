@@ -52,7 +52,7 @@ function renderTyping(overrides = {}) {
       initialProps: {
         words,
         soundEnabled: false,
-        wordRepeatCount: 1,
+        wordRepeatCount: overrides.wordRepeatCount ?? 1,
         isErrorBookMode: true,
         onWordComplete,
         onAutoRemove,
@@ -179,6 +179,55 @@ describe('useTyping — 输入判定', () => {
       result.current.handleInput('t') // 补完 cat
     })
     expect(callbacks.onWordComplete).toHaveBeenCalledWith('cat')
+    expect(result.current.wordIndex).toBe(1)
+  })
+
+  it('重复模式首次拼对不自动移除，整轮无错完成后才移除', () => {
+    const { result, callbacks } = renderTyping({ wordRepeatCount: 2 })
+
+    act(() => {
+      result.current.handleInput('c')
+      result.current.handleInput('a')
+      result.current.handleInput('t')
+    })
+    expect(callbacks.onAutoRemove).not.toHaveBeenCalled()
+    expect(result.current.wordIndex).toBe(0)
+
+    act(() => {
+      result.current.handleInput('c')
+      result.current.handleInput('a')
+      result.current.handleInput('t')
+    })
+    expect(callbacks.onAutoRemove).toHaveBeenCalledTimes(1)
+    expect(callbacks.onAutoRemove).toHaveBeenCalledWith('cat')
+    expect(result.current.wordIndex).toBe(1)
+  })
+
+  it('重复模式后续轮次出错，即使最终拼对也不自动移除', () => {
+    const { result, callbacks } = renderTyping({ wordRepeatCount: 2 })
+
+    act(() => {
+      result.current.handleInput('c')
+      result.current.handleInput('a')
+      result.current.handleInput('t')
+    })
+    expect(callbacks.onAutoRemove).not.toHaveBeenCalled()
+
+    act(() => {
+      result.current.handleInput('c')
+      result.current.handleInput('a')
+      result.current.handleInput('x')
+    })
+    act(() => {
+      vi.advanceTimersByTime(300)
+    })
+    act(() => {
+      result.current.handleInput('c')
+      result.current.handleInput('a')
+      result.current.handleInput('t')
+    })
+
+    expect(callbacks.onAutoRemove).not.toHaveBeenCalled()
     expect(result.current.wordIndex).toBe(1)
   })
 })

@@ -9,7 +9,6 @@
 // 使 auth.js 的 require 拿到我们的 mock pool/config/rateLimit。
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-const path = require('path')
 const express = require('express')
 const cookieParser = require('cookie-parser')
 const supertest = require('supertest')
@@ -97,7 +96,7 @@ function makeApp() {
   app.use(cookieParser()) // auth.js 依赖 req.cookies，必须挂 cookie-parser
   app.use('/api/auth', authRouter)
   // 兜底错误处理（auth.js 里 next(err) 会落到这里）
-  app.use((err, req, res, next) => {
+  app.use((err, req, res, _next) => {
     res.status(err.status || 500).json({ error: err.message || '服务器错误' })
   })
   return app
@@ -284,7 +283,17 @@ describe('POST /api/auth/login', () => {
     setExecuteHandlers([
       {
         match: ['FROM users WHERE username'],
-        returns: [{ id: 5, username: VALID_USER, nickname: 'Alice', password_hash: VALID_HASH }],
+        returns: [
+          {
+            id: 5,
+            username: VALID_USER,
+            nickname: 'Alice',
+            password_hash: VALID_HASH,
+            avatar_url: null,
+            daily_goal_minutes: 45,
+            signature: 'Keep going',
+          },
+        ],
       },
       { match: ['SELECT COUNT(*) AS cnt FROM refresh_tokens'], returns: [{ cnt: 0 }] },
       { match: ['DELETE FROM refresh_tokens WHERE user_id'], returns: { affectedRows: 0 } },
@@ -296,7 +305,14 @@ describe('POST /api/auth/login', () => {
       .send({ username: VALID_USER, password: VALID_PASSWORD })
 
     expect(res.status).toBe(200)
-    expect(res.body.user).toMatchObject({ id: 5, username: VALID_USER, nickname: 'Alice' })
+    expect(res.body.user).toMatchObject({
+      id: 5,
+      username: VALID_USER,
+      nickname: 'Alice',
+      avatar: null,
+      dailyGoalMinutes: 45,
+      signature: 'Keep going',
+    })
     const access = getCookie(res.headers['set-cookie'], 'lf_access_token')
     const refresh = getCookie(res.headers['set-cookie'], 'lf_refresh_token')
     expect(access).toBeTruthy()
@@ -405,6 +421,97 @@ describe('GET /api/auth/me', () => {
       .get('/api/auth/me')
       .set('Cookie', 'lf_access_token=' + token)
     expect(res.status).toBe(404)
+  })
+})
+
+// =====================================================================
+// /profile：PATCH /api/auth/profile（头像 data URL / 清空 / 输入边界）
+// =====================================================================
+describe('PATCH /api/auth/profile', () => {
+  const userId = 7
+  const token = jwt.sign({ userId }, FIXED_JWT_SECRET, { expiresIn: '30m' })
+
+  function profileRow(avatar) {
+    return {
+      id: userId,
+      username: VALID_USER,
+      nickname: 'Alice',
+      avatar_url: avatar,
+      daily_goal_minutes: 30,
+      signature: '',
+    }
+  }
+
+  it('接受个人中心生成的 JPEG data URL，并写入 avatar_url', async () => {
+    const avatar = 'data:image/jpeg;base64,/9j/2Q=='
+    setExecuteHandlers([
+      { match: ['UPDATE users SET avatar_url = ?'], returns: { affectedRows: 1 } },
+      { match: ['SELECT id, username, nickname, avatar_url'], returns: [profileRow(avatar)] },
+    ])
+
+    const res = await supertest(makeApp())
+      .patch('/api/auth/profile')
+      .set('Cookie', 'lf_access_token=' + token)
+      .send({ avatarUrl: avatar })
+
+    expect(res.status).toBe(200)
+    expect(res.body.user.avatar).toBe(avatar)
+    const update = mockExecute.mock.calls.find(([sql]) =>
+      String(sql).includes('UPDATE users SET avatar_url = ?')
+    )
+    expect(update[1]).toEqual([avatar, userId])
+  })
+
+  it('avatarUrl=null 可清空服务端头像', async () => {
+    setExecuteHandlers([
+      { match: ['UPDATE users SET avatar_url = ?'], returns: { affectedRows: 1 } },
+      { match: ['SELECT id, username, nickname, avatar_url'], returns: [profileRow(null)] },
+    ])
+
+    const res = await supertest(makeApp())
+      .patch('/api/auth/profile')
+      .set('Cookie', 'lf_access_token=' + token)
+      .send({ avatarUrl: null })
+
+    expect(res.status).toBe(200)
+    expect(res.body.user.avatar).toBeNull()
+    const update = mockExecute.mock.calls.find(([sql]) =>
+      String(sql).includes('UPDATE users SET avatar_url = ?')
+    )
+    expect(update[1]).toEqual([null, userId])
+  })
+
+  it('拒绝超出 TEXT 安全余量的头像，且不访问数据库', async () => {
+    const bytes = Buffer.alloc(50000, 0)
+    bytes[0] = 0xff
+    bytes[1] = 0xd8
+    bytes[bytes.length - 2] = 0xff
+    bytes[bytes.length - 1] = 0xd9
+    const oversized = `data:image/jpeg;base64,${bytes.toString('base64')}`
+
+    const res = await supertest(makeApp())
+      .patch('/api/auth/profile')
+      .set('Cookie', 'lf_access_token=' + token)
+      .send({ avatarUrl: oversized })
+
+    expect(res.status).toBe(400)
+    expect(res.body.error).toBe('头像数据过大')
+    expect(mockExecute).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    ['SVG data URL', 'data:image/svg+xml;base64,PHN2Zz48L3N2Zz4='],
+    ['伪 JPEG', 'data:image/jpeg;base64,ZmFrZQ=='],
+    ['非 HTTPS URL', 'javascript:alert(1)'],
+  ])('拒绝无效头像格式：%s', async (_label, avatarUrl) => {
+    const res = await supertest(makeApp())
+      .patch('/api/auth/profile')
+      .set('Cookie', 'lf_access_token=' + token)
+      .send({ avatarUrl })
+
+    expect(res.status).toBe(400)
+    expect(res.body.error).toBe('头像格式无效')
+    expect(mockExecute).not.toHaveBeenCalled()
   })
 })
 
@@ -526,8 +633,17 @@ describe('POST /api/auth/recover-reset', () => {
       { match: ['DELETE FROM refresh_tokens WHERE user_id'], returns: { affectedRows: 1 } },
       { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 1, affectedRows: 1 } },
       {
-        match: ['SELECT id, username, nickname FROM users'],
-        returns: [{ id: 5, username: 'newname1', nickname: null }],
+        match: ['SELECT id, username, nickname, avatar_url'],
+        returns: [
+          {
+            id: 5,
+            username: 'newname1',
+            nickname: null,
+            avatar_url: null,
+            daily_goal_minutes: 30,
+            signature: null,
+          },
+        ],
       },
     ])
     const app = makeApp()

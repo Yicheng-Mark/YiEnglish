@@ -42,7 +42,10 @@ function cookieOptions(path, maxAge) {
 // access cookie 寿命对齐 refresh（7d）而非 access token（30m）：保证 access token 总是先于 cookie 过期，
 // 从而命中 401/TOKEN_EXPIRED 自动刷新链路；避免 cookie 被浏览器先删除（边界时序）导致活跃用户被误登出
 const ACCESS_COOKIE_OPTS = cookieOptions('/api', REFRESH_MAX_AGE)
-const REFRESH_COOKIE_OPTS = cookieOptions('/api/auth/refresh', REFRESH_MAX_AGE)
+// refresh cookie 既要发给 /refresh，也要发给 /logout，后者才能删除服务端 token 行。
+// 旧 path 仅覆盖 /refresh，真实浏览器登出时不会携带 cookie，设备名额会一直被占用。
+const REFRESH_COOKIE_OPTS = cookieOptions('/api/auth', REFRESH_MAX_AGE)
+const LEGACY_REFRESH_COOKIE_PATH = '/api/auth/refresh'
 
 function signAccessToken(userId, isGuest = false, trialExp = null) {
   const payload = { userId }
@@ -83,6 +86,13 @@ async function issueTokens(res, userId, isGuest = false, device = {}, trialExp =
   )
 
   res.cookie(ACCESS_COOKIE, accessToken, ACCESS_COOKIE_OPTS)
+  // 清理旧版本更窄 path 的同名 cookie，避免浏览器在 /refresh 同时发送两个值。
+  res.clearCookie(REFRESH_COOKIE, {
+    httpOnly: true,
+    secure: config.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: LEGACY_REFRESH_COOKIE_PATH,
+  })
   res.cookie(REFRESH_COOKIE, refreshToken, REFRESH_COOKIE_OPTS)
 }
 
@@ -93,7 +103,8 @@ function clearCookies(res) {
     sameSite: 'lax',
   }
   res.clearCookie(ACCESS_COOKIE, { ...clearOpts, path: '/api' })
-  res.clearCookie(REFRESH_COOKIE, { ...clearOpts, path: '/api/auth/refresh' })
+  res.clearCookie(REFRESH_COOKIE, { ...clearOpts, path: '/api/auth' })
+  res.clearCookie(REFRESH_COOKIE, { ...clearOpts, path: LEGACY_REFRESH_COOKIE_PATH })
 }
 
 function getClientIp(req) {

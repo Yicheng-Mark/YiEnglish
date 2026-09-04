@@ -33,7 +33,12 @@ export default defineConfig({
         lines: 20,
       },
       include: ['src/**/*.{js,jsx}', 'server/**/*.js'],
-      exclude: ['**/*.test.js', '**/node_modules/**', '**/dist/**'],
+      exclude: [
+        '**/*.{test,spec}.{js,jsx,ts,tsx}',
+        'src/**/data/**',
+        '**/node_modules/**',
+        '**/dist/**',
+      ],
     },
   },
 })

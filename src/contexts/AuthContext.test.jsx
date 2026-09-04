@@ -161,7 +161,10 @@ describe('auth:unauthorized 全局广播', () => {
     globalThis.fetch = vi.fn().mockResolvedValue(jsonResponse({ user: USER }))
     renderProvider()
     await waitFor(() => expect(getState().user).toEqual(USER))
-    expect(() => window.dispatchEvent(new Event('auth:unauthorized'))).not.toThrow()
+    await act(async () => {
+      expect(() => window.dispatchEvent(new Event('auth:unauthorized'))).not.toThrow()
+    })
+    await waitFor(() => expect(getState().user).toBeNull())
   })
 })
 

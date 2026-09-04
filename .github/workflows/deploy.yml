@@ -22,8 +22,8 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Test
-        run: npm run test:run
+      - name: Test with coverage thresholds
+        run: npm run test:coverage
 
       - name: Build frontend
         run: npm run build
@@ -54,6 +54,7 @@ jobs:
           rsync -avz --delete \
             --exclude='.env.local' \
             --exclude='node_modules' \
+            --exclude='coverage' \
             --exclude='.git' \
             --exclude='*.map' \
             -e "ssh -i ~/.ssh/deploy_key" \

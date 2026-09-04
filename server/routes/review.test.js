@@ -187,3 +187,24 @@ describe('GET /api/review', () => {
     })
   })
 })
+
+describe('DELETE /api/review/:wordName', () => {
+  it('删除单张复习卡时限定当前用户，并支持 URL 编码词名', async () => {
+    const res = await supertest(makeApp()).delete('/api/review/ice%20cream')
+
+    expect(res.status).toBe(200)
+    const call = mockExecute.mock.calls.find(([sql]) =>
+      String(sql).includes('DELETE FROM user_review_cards')
+    )
+    expect(call[1]).toEqual([USER_ID, 'ice cream'])
+  })
+
+  it('拒绝空白或超长词名', async () => {
+    const blank = await supertest(makeApp()).delete('/api/review/%20')
+    expect(blank.status).toBe(400)
+
+    const long = await supertest(makeApp()).delete(`/api/review/${'x'.repeat(256)}`)
+    expect(long.status).toBe(400)
+    expect(mockExecute).not.toHaveBeenCalled()
+  })
+})

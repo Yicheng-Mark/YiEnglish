@@ -1,4 +1,9 @@
-import { apiFetchReviewCards, apiUpsertReviewCards, apiAddReviewCard } from '../lib/api-review'
+import {
+  apiFetchReviewCards,
+  apiUpsertReviewCards,
+  apiAddReviewCard,
+  apiDeleteReviewCard,
+} from '../lib/api-review'
 import { idbPut, idbClear, idbBulkPut, idbDelete } from './idb.js'
 import { buildDictWordMap } from './dictWordMap.js'
 
@@ -8,6 +13,37 @@ const CHAPTER_SIZE = 25
 
 // 内存缓存：{ [wordName]: cardObj }
 let _cache = null
+
+// 同一单词的服务端写操作必须保持用户操作顺序。HTTP 请求即使按 add/upsert → delete
+// 发起，也可能在服务端乱序完成，导致较慢的旧写入在删除后把卡片“复活”。
+// 队列为空时直接调用 mutation，保持首次同步请求仍在当前调用栈中启动。
+const serverMutationQueue = new Map()
+
+function enqueueServerMutation(wordName, mutation, failureMessage) {
+  const previous = serverMutationQueue.get(wordName)
+  let current
+  if (previous) {
+    current = previous.catch(() => {}).then(mutation)
+  } else {
+    try {
+      current = Promise.resolve(mutation())
+    } catch (error) {
+      current = Promise.reject(error)
+    }
+  }
+
+  serverMutationQueue.set(wordName, current)
+  current.then(
+    () => {
+      if (serverMutationQueue.get(wordName) === current) serverMutationQueue.delete(wordName)
+    },
+    (error) => {
+      console.warn(failureMessage, error)
+      if (serverMutationQueue.get(wordName) === current) serverMutationQueue.delete(wordName)
+    }
+  )
+  return current
+}
 
 function isMigrated() {
   return localStorage.getItem(STORAGE_KEY + '_migrated') === '1'
@@ -96,7 +132,11 @@ export function addWordToReview(wordName, dictId) {
     }
     schedulePersist()
 
-    apiAddReviewCard(wordName, dictId).catch((e) => console.warn('Sync review add failed:', e))
+    enqueueServerMutation(
+      wordName,
+      () => apiAddReviewCard(wordName, dictId),
+      'Sync review add failed:'
+    )
   } catch (e) {
     console.error('Failed to add word to review:', e)
   }
@@ -136,7 +176,7 @@ export function updateReviewCard(wordName, quality) {
     }
     schedulePersist()
 
-    apiUpsertReviewCards([
+    const payload = [
       {
         wordName,
         dictId: card.dictId,
@@ -147,7 +187,12 @@ export function updateReviewCard(wordName, quality) {
         lastReviewAt: card.lastReviewAt,
         lastQuality: quality,
       },
-    ]).catch((e) => console.warn('Sync review update failed:', e))
+    ]
+    enqueueServerMutation(
+      wordName,
+      () => apiUpsertReviewCards(payload),
+      'Sync review update failed:'
+    )
   } catch (e) {
     console.error('Failed to update review card:', e)
   }
@@ -165,6 +210,11 @@ export function removeFromReviewCards(wordName) {
         console.warn('[IDB] reviewCards delete failed:', e)
       )
     }
+    enqueueServerMutation(
+      wordName,
+      () => apiDeleteReviewCard(wordName),
+      'Sync review delete failed:'
+    )
   } catch (e) {
     console.error('Failed to remove review card:', e)
   }

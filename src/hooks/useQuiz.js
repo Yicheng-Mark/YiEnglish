@@ -61,7 +61,7 @@ async function playQuizSound(type) {
         osc.stop(start + 0.25)
       })
     }
-  } catch (e) {}
+  } catch {}
 }
 
 // 题目生成纯逻辑已抽出到 src/utils/quizGenerator.js，便于单元测试。
@@ -131,8 +131,22 @@ export default function useQuiz(words, options = {}) {
   }, [])
 
   // 用 ref 追踪最新状态，避免 useCallback 闭包过期
-  const stateRef = useRef({ questions, currentIndex, score, selectedOption, isFinished })
-  stateRef.current = { questions, currentIndex, score, selectedOption, isFinished }
+  const stateRef = useRef({
+    questions,
+    currentIndex,
+    score,
+    selectedOption,
+    isCorrect,
+    isFinished,
+  })
+  stateRef.current = {
+    questions,
+    currentIndex,
+    score,
+    selectedOption,
+    isCorrect,
+    isFinished,
+  }
 
   const handleAnswer = useCallback((index) => {
     const s = stateRef.current
@@ -210,6 +224,11 @@ export default function useQuiz(words, options = {}) {
     } else {
       // 移除的题在当前题之前，index 需前移
       setCurrentIndex((prev) => Math.max(0, prev - removedCountBeforeCurrent))
+    }
+    // 用户可以在答题后的 1.2 秒自动推进窗口内移除当前词。
+    // 若这题已经答对，题目总数会减少，分数也必须同步回退，否则最终正确率可超过 100%。
+    if (isCurrentWord && s.isCorrect === true) {
+      setScore((prev) => Math.max(0, prev - 1))
     }
     setSelectedOption(null)
     setIsCorrect(null)

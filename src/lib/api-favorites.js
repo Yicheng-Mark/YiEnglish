@@ -1,8 +1,8 @@
-import { apiFetch } from './api'
+import { apiFetch, parseJsonResponse } from './api'
 
 export async function fetchFavoriteDicts() {
   const res = await apiFetch('/api/favorites')
-  return res.json()
+  return parseJsonResponse(res)
 }
 
 export async function toggleFavoriteDict(dictId) {
@@ -10,5 +10,5 @@ export async function toggleFavoriteDict(dictId) {
     method: 'POST',
     body: JSON.stringify({ dictId }),
   })
-  return res.json()
+  return parseJsonResponse(res)
 }

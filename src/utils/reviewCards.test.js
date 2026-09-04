@@ -6,16 +6,19 @@
 // 落盘防抖合批（打字高频写不卡顿）、内存优先读、pagehide 兜底 flush。
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
-const { apiUpsertReviewCards, apiAddReviewCard, apiFetchReviewCards } = vi.hoisted(() => ({
-  apiUpsertReviewCards: vi.fn().mockResolvedValue(),
-  apiAddReviewCard: vi.fn().mockResolvedValue(),
-  apiFetchReviewCards: vi.fn().mockResolvedValue({ cards: [] }),
-}))
+const { apiUpsertReviewCards, apiAddReviewCard, apiFetchReviewCards, apiDeleteReviewCard } =
+  vi.hoisted(() => ({
+    apiUpsertReviewCards: vi.fn().mockResolvedValue(),
+    apiAddReviewCard: vi.fn().mockResolvedValue(),
+    apiFetchReviewCards: vi.fn().mockResolvedValue({ cards: [] }),
+    apiDeleteReviewCard: vi.fn().mockResolvedValue(),
+  }))
 
 vi.mock('../lib/api-review', () => ({
   apiUpsertReviewCards,
   apiAddReviewCard,
   apiFetchReviewCards,
+  apiDeleteReviewCard,
 }))
 vi.mock('./idb.js', () => ({
   idbPut: vi.fn().mockResolvedValue(),
@@ -50,6 +53,7 @@ beforeEach(() => {
   apiUpsertReviewCards.mockClear()
   apiAddReviewCard.mockClear()
   apiFetchReviewCards.mockClear().mockResolvedValue({ cards: [] })
+  apiDeleteReviewCard.mockClear().mockResolvedValue()
 })
 
 afterEach(() => {
@@ -216,6 +220,31 @@ describe('防抖持久化（回归：修复前每个新词/每次复习都全量
     addWordToReview('apple', 'cet4')
     removeFromReviewCards('apple')
     expect(JSON.parse(localStorage.getItem(KEY)).cards).toEqual({})
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(apiDeleteReviewCard).toHaveBeenCalledWith('apple')
+  })
+
+  it('同词 add 未完成时 delete 排队等待，避免旧 add 在删除后复活卡片', async () => {
+    let resolveAdd
+    const pendingAdd = new Promise((resolve) => {
+      resolveAdd = resolve
+    })
+    apiAddReviewCard.mockReturnValueOnce(pendingAdd)
+    const { addWordToReview, removeFromReviewCards } = await import('./reviewCards.js')
+
+    addWordToReview('apple', 'cet4')
+    expect(apiAddReviewCard).toHaveBeenCalledWith('apple', 'cet4')
+
+    removeFromReviewCards('apple')
+    expect(apiDeleteReviewCard).not.toHaveBeenCalled()
+
+    resolveAdd()
+    await pendingAdd
+    await Promise.resolve()
+
+    expect(apiDeleteReviewCard).toHaveBeenCalledTimes(1)
+    expect(apiDeleteReviewCard).toHaveBeenCalledWith('apple')
   })
 
   it('addWordToReview 触发服务端同步，重复添加同词被跳过', async () => {

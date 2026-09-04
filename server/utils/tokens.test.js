@@ -138,7 +138,7 @@ describe('issueTokens cookie 下发', () => {
   })
 
   it('下发 access cookie（httpOnly、path=/api、maxAge 对齐 refresh）', async () => {
-    const res = { cookie: vi.fn() }
+    const res = { cookie: vi.fn(), clearCookie: vi.fn() }
     await tokens.issueTokens(res, 1, false, {})
 
     const accessCall = res.cookie.mock.calls.find(([name]) => name === tokens.ACCESS_COOKIE)
@@ -153,8 +153,8 @@ describe('issueTokens cookie 下发', () => {
     expect(opts.maxAge).toBe(tokens.REFRESH_MAX_AGE)
   })
 
-  it('下发 refresh cookie（httpOnly、path=/api/auth/refresh）', async () => {
-    const res = { cookie: vi.fn() }
+  it('下发 refresh cookie（path=/api/auth，覆盖 refresh 与 logout）', async () => {
+    const res = { cookie: vi.fn(), clearCookie: vi.fn() }
     await tokens.issueTokens(res, 1, false, {})
 
     const refreshCall = res.cookie.mock.calls.find(([name]) => name === tokens.REFRESH_COOKIE)
@@ -162,13 +162,18 @@ describe('issueTokens cookie 下发', () => {
     const [, refreshToken, opts] = refreshCall
     expect(refreshToken).toMatch(/^[0-9a-f]{96}$/)
     expect(opts.httpOnly).toBe(true)
-    expect(opts.path).toBe('/api/auth/refresh')
+    expect(opts.path).toBe('/api/auth')
     expect(opts.sameSite).toBe('lax')
     expect(opts.maxAge).toBe(tokens.REFRESH_MAX_AGE)
+    // 发新 cookie 时清掉旧版本的窄 path，避免 /refresh 收到两个同名值。
+    expect(res.clearCookie).toHaveBeenCalledWith(
+      tokens.REFRESH_COOKIE,
+      expect.objectContaining({ path: '/api/auth/refresh' })
+    )
   })
 
   it('将 refresh token 的 SHA-256 哈希写入数据库', async () => {
-    const res = { cookie: vi.fn() }
+    const res = { cookie: vi.fn(), clearCookie: vi.fn() }
     await tokens.issueTokens(res, 1, false, { deviceId: 'dev-1' })
 
     expect(poolExecute).toHaveBeenCalledTimes(1)
@@ -182,6 +187,26 @@ describe('issueTokens cookie 下发', () => {
     const refreshCall = res.cookie.mock.calls.find(([name]) => name === tokens.REFRESH_COOKIE)
     expect(tokens.hashToken(refreshCall[1])).toBe(params[1])
     expect(params[3]).toBe('dev-1')
+  })
+})
+
+describe('clearCookies', () => {
+  it('同时清理当前与旧版 refresh path，确保登出不会残留会话 cookie', () => {
+    const res = { clearCookie: vi.fn() }
+    tokens.clearCookies(res)
+
+    expect(res.clearCookie).toHaveBeenCalledWith(
+      tokens.ACCESS_COOKIE,
+      expect.objectContaining({ path: '/api' })
+    )
+    expect(res.clearCookie).toHaveBeenCalledWith(
+      tokens.REFRESH_COOKIE,
+      expect.objectContaining({ path: '/api/auth' })
+    )
+    expect(res.clearCookie).toHaveBeenCalledWith(
+      tokens.REFRESH_COOKIE,
+      expect.objectContaining({ path: '/api/auth/refresh' })
+    )
   })
 })
 

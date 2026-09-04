@@ -348,12 +348,14 @@ export default function useTyping(
         if (nextInput === target) {
           if (soundEnabled) playSound('correct')
           correctCountRef.current += target.length
-          if (autoRemoveErrorWord && !hasWrongInCurrentWordRef.current) {
-            onAutoRemoveRef.current?.(currentWord.name)
-          }
           const completedTimes = repeatCountRef.current + 1
           const shouldAdvance = wordRepeatCount !== 0 && completedTimes >= wordRepeatCount
           if (shouldAdvance) {
+            // 重复模式下必须整轮都完成且从未出错，才能从功能词本自动移除。
+            // 若在第一次拼对时就删除，后续重复即使打错也无法把词恢复回来。
+            if (autoRemoveErrorWord && !hasWrongInCurrentWordRef.current) {
+              onAutoRemoveRef.current?.(currentWord.name)
+            }
             lastWordHadErrorRef.current = hasWrongInCurrentWordRef.current
             onWordCompleteRef.current?.(currentWord.name)
             if (wordIndex >= words.length - 1) {

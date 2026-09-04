@@ -120,4 +120,21 @@ router.delete('/', authMiddleware, async (req, res, next) => {
   }
 })
 
+// DELETE /api/review/:wordName — remove one card
+router.delete('/:wordName', authMiddleware, async (req, res, next) => {
+  try {
+    const { wordName } = req.params
+    if (typeof wordName !== 'string' || !wordName.trim() || wordName.trim().length > 255) {
+      return res.status(400).json({ error: '无效的单词名称' })
+    }
+    await pool.execute('DELETE FROM user_review_cards WHERE user_id = ? AND word_name = ?', [
+      req.userId,
+      wordName.trim(),
+    ])
+    res.json({ success: true })
+  } catch (err) {
+    next(err)
+  }
+})
+
 module.exports = router

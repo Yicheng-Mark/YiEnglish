@@ -1,8 +1,8 @@
-import { apiFetch } from './api'
+import { apiFetch, parseJsonResponse } from './api'
 
 export async function apiFetchReviewCards() {
   const res = await apiFetch('/api/review')
-  return res.json()
+  return parseJsonResponse(res)
 }
 
 export async function apiAddReviewCard(wordName, dictId) {
@@ -10,7 +10,7 @@ export async function apiAddReviewCard(wordName, dictId) {
     method: 'POST',
     body: JSON.stringify({ wordName, dictId }),
   })
-  return res.json()
+  return parseJsonResponse(res)
 }
 
 export async function apiUpsertReviewCards(cards) {
@@ -18,12 +18,19 @@ export async function apiUpsertReviewCards(cards) {
     method: 'POST',
     body: JSON.stringify({ cards }),
   })
-  return res.json()
+  return parseJsonResponse(res)
 }
 
 export async function apiResetReviewCards() {
   const res = await apiFetch('/api/review', {
     method: 'DELETE',
   })
-  return res.json()
+  return parseJsonResponse(res)
+}
+
+export async function apiDeleteReviewCard(wordName) {
+  const res = await apiFetch(`/api/review/${encodeURIComponent(wordName)}`, {
+    method: 'DELETE',
+  })
+  return parseJsonResponse(res)
 }
