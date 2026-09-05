@@ -11,6 +11,30 @@ const mocks = vi.hoisted(() => ({ apiFetch: vi.fn(), getDeviceId: vi.fn() }))
 vi.mock('../lib/api', () => ({ apiFetch: mocks.apiFetch }))
 vi.mock('../utils/getDeviceId', () => ({ getDeviceId: mocks.getDeviceId }))
 
+// 登出必须断开各本地缓存的内存态（跨账号串数据防护）：六个 reset 全 mock，只验证接线
+const resets = vi.hoisted(() => ({
+  resetErrorBookCache: vi.fn(),
+  resetReviewCardsCache: vi.fn(),
+  resetFavoriteWordsCache: vi.fn(),
+  resetReadingWordBookCache: vi.fn(),
+  resetCorpusWordBookCache: vi.fn(),
+  resetLocalProgressCache: vi.fn(),
+}))
+vi.mock('../utils/errorBook', () => ({ resetErrorBookCache: resets.resetErrorBookCache }))
+vi.mock('../utils/reviewCards', () => ({ resetReviewCardsCache: resets.resetReviewCardsCache }))
+vi.mock('../utils/favoriteWords', () => ({
+  resetFavoriteWordsCache: resets.resetFavoriteWordsCache,
+}))
+vi.mock('../utils/readingWordBook', () => ({
+  resetReadingWordBookCache: resets.resetReadingWordBookCache,
+}))
+vi.mock('../utils/corpusWordBook', () => ({
+  resetCorpusWordBookCache: resets.resetCorpusWordBookCache,
+}))
+vi.mock('../utils/localProgress', () => ({
+  resetLocalProgressCache: resets.resetLocalProgressCache,
+}))
+
 // 注意：本仓库 .env.local 在本地开发时可能带 VITE_AUTH_ENABLED=false（免登录模式），
 // vitest 会加载它；本文件针对「鉴权启用」路径，先强制开启再动态加载被测模块，
 // 保证 AUTH_ENABLED 模块常量按 true 求值。
@@ -21,6 +45,17 @@ const USER = { id: 7, username: 'alice', nickname: 'Alice' }
 
 function jsonResponse(data, ok = true, status = 200) {
   return { ok, status, json: async () => data }
+}
+
+// 网关 502 等场景返回 HTML 正文：res.json() 抛 SyntaxError
+function htmlResponse(ok = false, status = 502) {
+  return {
+    ok,
+    status,
+    json: async () => {
+      throw new SyntaxError(`Unexpected token '<', "<html>..." is not valid JSON`)
+    },
+  }
 }
 
 // 探针：暴露扁平 useAuth 值，并在按钮上挂 action 便于交互驱动
@@ -139,6 +174,35 @@ describe('login / logout', () => {
       method: 'POST',
       credentials: 'include',
     })
+  })
+
+  it('logout → 调用全部六个本地缓存 reset，断开旧账号内存态与待写队列（跨账号串数据防护）', async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue(jsonResponse({ user: USER }))
+    renderProvider()
+    await act(async () => {
+      screen.getByText('login').click()
+    })
+    await waitFor(() => expect(getState().user).toEqual(USER))
+
+    await act(async () => {
+      screen.getByText('logout').click()
+    })
+    await waitFor(() => expect(getState().user).toBeNull())
+    expect(resets.resetErrorBookCache).toHaveBeenCalledTimes(1)
+    expect(resets.resetReviewCardsCache).toHaveBeenCalledTimes(1)
+    expect(resets.resetFavoriteWordsCache).toHaveBeenCalledTimes(1)
+    expect(resets.resetReadingWordBookCache).toHaveBeenCalledTimes(1)
+    expect(resets.resetCorpusWordBookCache).toHaveBeenCalledTimes(1)
+    expect(resets.resetLocalProgressCache).toHaveBeenCalledTimes(1)
+  })
+
+  it('网关 502 返回 HTML（json 解析失败）→ login 抛出兜底文案而非 SyntaxError', async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue(htmlResponse())
+    renderProvider()
+    await waitFor(() => expect(getState().loading).toBe(false))
+
+    await expect(captured.login('alice', 'password1')).rejects.toThrow('登录失败')
+    expect(getState().user).toBeNull()
   })
 })
 

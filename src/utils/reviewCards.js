@@ -18,15 +18,23 @@ let _cache = null
 // 发起，也可能在服务端乱序完成，导致较慢的旧写入在删除后把卡片“复活”。
 // 队列为空时直接调用 mutation，保持首次同步请求仍在当前调用栈中启动。
 const serverMutationQueue = new Map()
+// 会话代号：登出重置后自增，排队中尚未执行的旧会话 mutation 直接丢弃
+let serverMutationEpoch = 0
 
 function enqueueServerMutation(wordName, mutation, failureMessage) {
+  const epoch = serverMutationEpoch
+  // 登出重置后仍在排队的 mutation 属于旧会话，跳过执行避免写进新账号
+  const guardedMutation = () => {
+    if (epoch !== serverMutationEpoch) return
+    return mutation()
+  }
   const previous = serverMutationQueue.get(wordName)
   let current
   if (previous) {
-    current = previous.catch(() => {}).then(mutation)
+    current = previous.catch(() => {}).then(guardedMutation)
   } else {
     try {
-      current = Promise.resolve(mutation())
+      current = Promise.resolve(guardedMutation())
     } catch (error) {
       current = Promise.reject(error)
     }
@@ -229,6 +237,19 @@ export function getDueReviewCount() {
 export function getTotalReviewCount() {
   const data = getCards()
   return Object.keys(data.cards).length
+}
+
+// 登出时断开当前会话内存态：清空内存缓存，并丢弃服务端写队列中尚未执行的
+// 旧会话 mutation（epoch 变化后直接跳过），避免旧账号的写入推进新账号。
+// 不删除 localStorage/IDB 里的用户数据本身，仅取消尚未落盘的防抖定时器。
+export function resetReviewCardsCache() {
+  _cache = null
+  serverMutationEpoch++
+  serverMutationQueue.clear()
+  if (persistTimer) {
+    clearTimeout(persistTimer)
+    persistTimer = null
+  }
 }
 
 export async function getDueReviewWords() {

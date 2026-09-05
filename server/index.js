@@ -68,6 +68,7 @@ async function runMigrations() {
       .filter((s) => s && !s.startsWith('USE '))
       .map((s) => (s.endsWith(';') ? s.slice(0, -1).trim() : s))
       .filter(Boolean)
+    let failed = false
     for (const stmt of cleaned) {
       try {
         await pool.query(stmt)
@@ -75,11 +76,17 @@ async function runMigrations() {
         // ALTER ADD COLUMN 旧 MySQL 不支持 IF NOT EXISTS，忽略重复列
         if (err.code === 'ER_DUP_FIELDNAME') continue
         // 其余错误记录为 error 便于发现，但不中止启动（保持可用性）
+        failed = true
         logger.error({ file, err: err.message }, '[Migration] statement failed')
       }
     }
-    // 跑完即记录版本：避免每次启动重复执行同一迁移、刷日志；
-    // 真错误由上方 error 日志暴露，人工介入（不引入重试循环）。
+    if (failed) {
+      // 任一语句失败：不写 schema_migrations，避免把半成品 schema 固化为"已应用"。
+      // 同样不中止启动（与上方错误处理风格一致，避免崩溃循环）；下次启动自动重试该文件。
+      logger.error({ file }, '[Migration] 有语句失败，跳过版本记录，下次启动将重试')
+      continue
+    }
+    // 全部语句成功才记录版本：避免每次启动重复执行同一迁移、刷日志。
     await pool.query('INSERT IGNORE INTO schema_migrations (version) VALUES (?)', [file])
     logger.info({ file }, '[Migration] applied')
   }

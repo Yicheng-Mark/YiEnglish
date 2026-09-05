@@ -105,6 +105,8 @@ export async function saveProgress(dictId, chapterId, words) {
   const res = await apiFetch('/api/progress', {
     method: 'POST',
     body: JSON.stringify({ dictId, chapterId, words }),
+    // 页面关闭/刷新时兜底 flush 也要能送达：keepalive 允许请求在页面卸载后继续完成
+    keepalive: true,
   })
   return parseJsonResponse(res)
 }

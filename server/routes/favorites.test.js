@@ -71,6 +71,39 @@ describe('POST /api/favorites/toggle', () => {
     expect(res.body.error).toMatch(/缺少 dictId/)
   })
 
+  it('dictId 为 truthy 对象 → 400，不进入 DB 查询（回归：对象入参触发 500）', async () => {
+    const res = await supertest(makeApp())
+      .post('/api/favorites/toggle')
+      .send({ dictId: { id: 'cet4' } })
+    expect(res.status).toBe(400)
+    expect(mockExecute).not.toHaveBeenCalled()
+  })
+
+  it('dictId 超过 50 字符（DB 列 VARCHAR(50) 上限）→ 400，不进入 DB 查询', async () => {
+    const res = await supertest(makeApp())
+      .post('/api/favorites/toggle')
+      .send({ dictId: 'x'.repeat(51) })
+    expect(res.status).toBe(400)
+    expect(mockExecute).not.toHaveBeenCalled()
+  })
+
+  it('dictId 为纯空白字符串 → 400', async () => {
+    const res = await supertest(makeApp()).post('/api/favorites/toggle').send({ dictId: '   ' })
+    expect(res.status).toBe(400)
+    expect(mockExecute).not.toHaveBeenCalled()
+  })
+
+  it('dictId 恰好 50 字符（边界）→ 正常入库', async () => {
+    const id = 'd'.repeat(50)
+    const res = await supertest(makeApp()).post('/api/favorites/toggle').send({ dictId: id })
+    expect(res.status).toBe(200)
+    expect(res.body).toEqual({ isFavorite: true })
+    const [, params] = mockExecute.mock.calls.find(([sql]) =>
+      String(sql).includes('INSERT INTO user_favorite_dicts')
+    )
+    expect(params).toEqual([USER_ID, id])
+  })
+
   it('已收藏 → DELETE 并返回 isFavorite:false', async () => {
     mockExecute.mockImplementation(async (sql) => {
       if (String(sql).includes('SELECT 1')) return [[{ 1: 1 }], []]

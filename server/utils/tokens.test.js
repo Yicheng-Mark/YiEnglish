@@ -210,8 +210,10 @@ describe('clearCookies', () => {
   })
 })
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+
 describe('resolveDeviceId 优先级', () => {
-  it('cookie 优先于 body 和自动生成', () => {
+  it('合法 cookie 优先，body 与自动生成均不参与', () => {
     const req = {
       cookies: { lf_device_id: 'from-cookie' },
       body: { deviceId: 'from-body' },
@@ -219,22 +221,38 @@ describe('resolveDeviceId 优先级', () => {
     expect(tokens.resolveDeviceId(req)).toBe('from-cookie')
   })
 
-  it('无 cookie 时回退到 body', () => {
+  it('无 cookie 时不再信任 body.deviceId（可伪造绕过每设备一次试用），现场生成 UUID', () => {
     const req = { cookies: {}, body: { deviceId: 'from-body' } }
-    expect(tokens.resolveDeviceId(req)).toBe('from-body')
+    const id = tokens.resolveDeviceId(req)
+    expect(id).toMatch(UUID_RE)
+    expect(id).not.toBe('from-body')
   })
 
   it('cookie 与 body 都缺失时自动生成（UUID 形态）', () => {
     const req = { cookies: {}, body: {} }
     const id = tokens.resolveDeviceId(req)
-    expect(id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
+    expect(id).toMatch(UUID_RE)
     // 多次调用产出不同 id（随机性）
     expect(tokens.resolveDeviceId({ cookies: {}, body: {} })).not.toBe(id)
   })
 
-  it('cookie 为空白字符串时回退到 body', () => {
+  it('cookie 为空白字符串时自动生成 UUID（不再回退 body）', () => {
     const req = { cookies: { lf_device_id: '   ' }, body: { deviceId: 'from-body' } }
-    expect(tokens.resolveDeviceId(req)).toBe('from-body')
+    const id = tokens.resolveDeviceId(req)
+    expect(id).toMatch(UUID_RE)
+    expect(id).not.toBe('from-body')
+  })
+
+  it('cookie 超过 64 字符（DB 列 VARCHAR(64) 上限）→ 重新生成 UUID，避免超长入库 500', () => {
+    const req = { cookies: { lf_device_id: 'x'.repeat(100) }, body: {} }
+    const id = tokens.resolveDeviceId(req)
+    expect(id).toMatch(UUID_RE)
+    expect(id.length).toBeLessThanOrEqual(64)
+  })
+
+  it('body.deviceId 为任意非字符串类型（对象等）均被忽略', () => {
+    const id = tokens.resolveDeviceId({ cookies: {}, body: { deviceId: { evil: true } } })
+    expect(id).toMatch(UUID_RE)
   })
 })
 
@@ -261,5 +279,22 @@ describe('ensureDeviceCookie', () => {
     expect(opts.sameSite).toBe('lax')
     // 1 年
     expect(opts.maxAge).toBe(365 * 24 * 60 * 60 * 1000)
+  })
+
+  it('cookie 值不合法（超长 >64）时不复用，重签 cookie 并返回入参 id', () => {
+    const res = { cookie: vi.fn() }
+    const req = { cookies: { lf_device_id: 'x'.repeat(100) } }
+    const id = tokens.ensureDeviceCookie(req, res, 'fresh-id')
+    expect(id).toBe('fresh-id')
+    expect(res.cookie).toHaveBeenCalledTimes(1)
+    expect(res.cookie.mock.calls[0][1]).toBe('fresh-id')
+  })
+
+  it('cookie 值为空白字符串时视为缺失，重签 cookie', () => {
+    const res = { cookie: vi.fn() }
+    const req = { cookies: { lf_device_id: '   ' } }
+    const id = tokens.ensureDeviceCookie(req, res, 'fresh-id')
+    expect(id).toBe('fresh-id')
+    expect(res.cookie).toHaveBeenCalledTimes(1)
   })
 })

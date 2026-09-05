@@ -167,9 +167,6 @@ export default function useTyping(
   // 跟踪语音合成状态，避免空 cancel()
   const speakingRef = useRef(false)
 
-  // 收集 setTimeout 引用，组件卸载时统一清理
-  const timeoutsRef = useRef([])
-
   // 错字后 300ms 自动清空输入的定时器句柄：
   // 跳词/切章/退格/重打时必须先取消，否则到点会把新上下文里已敲的输入清掉
   const wrongResetTimerRef = useRef(null)
@@ -275,8 +272,13 @@ export default function useTyping(
         clearTimeout(wrongResetTimerRef.current)
         wrongResetTimerRef.current = null
       }
-      timeoutsRef.current.forEach(clearTimeout)
-      timeoutsRef.current = []
+    }
+  }, [words])
+
+  // 音频缓存只在组件卸载时统一清理。不能挂在 [words] 上：删词/重载词表都会触发，
+  // 会把正在播放的发音掐断并丢弃全部预加载缓存
+  useEffect(() => {
+    return () => {
       audioCacheRef.current.forEach((audio) => {
         try {
           audio.pause()
@@ -285,7 +287,7 @@ export default function useTyping(
       })
       audioCacheRef.current.clear()
     }
-  }, [words])
+  }, [])
 
   // soundEnabled 为 true 时朗读首词
   useEffect(() => {

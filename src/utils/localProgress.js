@@ -107,6 +107,17 @@ export function getLocalProgress(dictId) {
   }
 }
 
+// 登出时断开当前会话内存态：清空内存缓存与待落盘队列（不删 localStorage/IDB
+// 数据本身，仅取消尚未落盘的防抖定时器，避免旧会话的内存进度推进新会话）
+export function resetLocalProgressCache() {
+  _cache = null
+  if (persistTimer) {
+    clearTimeout(persistTimer)
+    persistTimer = null
+  }
+  pendingIdbKeys.clear()
+}
+
 // 重置某词库的全部本地进度（ChapterSelect「重置进度」用）：
 // 内存 + localStorage + IDB 三处同步清理，避免数据源不一致
 export function clearLocalProgress(dictId) {

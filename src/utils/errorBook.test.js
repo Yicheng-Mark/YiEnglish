@@ -124,3 +124,30 @@ describe('errorBook 服务端同步', () => {
     expect(addWordToBook.mock.calls[0][2]).toEqual({ keepalive: true })
   })
 })
+
+describe('resetErrorBookCache（登出断开内存态）', () => {
+  it('登出后清空待上云增量队列：到达原 debounce 时刻也不把旧账号数据发出去', async () => {
+    const { addToErrorBook, resetErrorBookCache } = await import('./errorBook')
+    addWordToBook.mockResolvedValue({ success: true })
+
+    addToErrorBook(WORD)
+    resetErrorBookCache()
+
+    await vi.advanceTimersByTimeAsync(2000) // 原 flush 时刻
+    await vi.advanceTimersByTimeAsync(60 * 1000)
+    expect(addWordToBook).not.toHaveBeenCalled()
+  })
+
+  it('登出后在途请求的迟到失败不再把增量还回队列重试（epoch 守卫）', async () => {
+    const { addToErrorBook, resetErrorBookCache } = await import('./errorBook')
+    addWordToBook.mockRejectedValueOnce(new Error('network down'))
+
+    addToErrorBook(WORD)
+    await vi.advanceTimersByTimeAsync(2000) // 首刷失败 → 增量还回队列并武装重试
+    expect(addWordToBook).toHaveBeenCalledTimes(1)
+
+    resetErrorBookCache() // 登出：清空队列并递增 epoch
+    await vi.advanceTimersByTimeAsync(60 * 1000) // 旧会话的重试被丢弃
+    expect(addWordToBook).toHaveBeenCalledTimes(1)
+  })
+})

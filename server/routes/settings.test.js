@@ -135,6 +135,43 @@ describe('PATCH /api/settings', () => {
     expect(params2[0]).toBe(1)
   })
 
+  it('wordRepeatCount 非数字 → 落库为合法数字而非 NaN（回归："abc"/对象入库触发 500）', async () => {
+    // 非数字字符串：Number('abc') 为 NaN → 回退默认 1
+    const res = await supertest(makeApp()).patch('/api/settings').send({ wordRepeatCount: 'abc' })
+    expect(res.status).toBe(200)
+    const [, params] = mockExecute.mock.calls.find(([sql]) =>
+      String(sql).includes('UPDATE user_settings')
+    )
+    expect(Number.isInteger(params[0])).toBe(true)
+    expect(params[0]).toBe(1)
+
+    // 数字字符串：可正常转换
+    await supertest(makeApp()).patch('/api/settings').send({ wordRepeatCount: '7' })
+    const updateCalls = mockExecute.mock.calls.filter(([sql]) =>
+      String(sql).includes('word_repeat_count = ?')
+    )
+    const [, params2] = updateCalls[updateCalls.length - 1]
+    expect(params2[0]).toBe(7)
+
+    // null：Number(null)=0 → 回退 1
+    const res3 = await supertest(makeApp()).patch('/api/settings').send({ wordRepeatCount: null })
+    expect(res3.status).toBe(200)
+    const updateCalls3 = mockExecute.mock.calls.filter(([sql]) =>
+      String(sql).includes('word_repeat_count = ?')
+    )
+    const [, params3] = updateCalls3[updateCalls3.length - 1]
+    expect(params3[0]).toBe(1)
+
+    // truthy 对象：Number({}) 为 NaN → 回退 1
+    const res4 = await supertest(makeApp()).patch('/api/settings').send({ wordRepeatCount: {} })
+    expect(res4.status).toBe(200)
+    const updateCalls4 = mockExecute.mock.calls.filter(([sql]) =>
+      String(sql).includes('word_repeat_count = ?')
+    )
+    const [, params4] = updateCalls4[updateCalls4.length - 1]
+    expect(params4[0]).toBe(1)
+  })
+
   it('布尔字段强转 1/0（truthy/falsy），非法 theme 与布尔字段混发时仅保留布尔字段', async () => {
     const res = await supertest(makeApp())
       .patch('/api/settings')

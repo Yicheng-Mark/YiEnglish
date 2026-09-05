@@ -1,6 +1,12 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { apiFetch } from '../lib/api'
 import { getDeviceId } from '../utils/getDeviceId'
+import { resetErrorBookCache } from '../utils/errorBook'
+import { resetReviewCardsCache } from '../utils/reviewCards'
+import { resetFavoriteWordsCache } from '../utils/favoriteWords'
+import { resetReadingWordBookCache } from '../utils/readingWordBook'
+import { resetCorpusWordBookCache } from '../utils/corpusWordBook'
+import { resetLocalProgressCache } from '../utils/localProgress'
 
 // 方案A：拆成两个 context。
 // - 稳定方法 context：login / register / logout / updateProfile / changePassword /
@@ -72,7 +78,8 @@ export function AuthProvider({ children }) {
       credentials: 'include',
       body: JSON.stringify({ username, password, deviceId: getDeviceId() }),
     })
-    const data = await res.json()
+    // 网关 502 等场景返回 HTML，json() 会抛 SyntaxError：兜底为空对象走下方 !res.ok 文案
+    const data = await res.json().catch(() => ({}))
     if (!res.ok) throw new Error(data.error || '登录失败')
     setUser(data.user)
     return data.user
@@ -88,7 +95,7 @@ export function AuthProvider({ children }) {
       credentials: 'include',
       body: JSON.stringify(body),
     })
-    const data = await res.json()
+    const data = await res.json().catch(() => ({}))
     if (!res.ok) throw new Error(data.error || '注册失败')
     setUser(data.user)
     return data.user
@@ -101,7 +108,7 @@ export function AuthProvider({ children }) {
       credentials: 'include',
       body: JSON.stringify({ code }),
     })
-    const data = await res.json()
+    const data = await res.json().catch(() => ({}))
     if (!res.ok) throw new Error(data.error || '查找失败')
     return data
   }, [])
@@ -113,7 +120,7 @@ export function AuthProvider({ children }) {
       credentials: 'include',
       body: JSON.stringify({ code, username, password, deviceId: getDeviceId() }),
     })
-    const data = await res.json()
+    const data = await res.json().catch(() => ({}))
     if (!res.ok) throw new Error(data.error || '重置失败')
     setUser(data.user)
     return data.user
@@ -128,6 +135,15 @@ export function AuthProvider({ children }) {
     } catch {
       // ignore
     }
+    // 服务端会话结束后断开本地各缓存的内存态与待写队列：本地缓存的内存快照
+    // 属于上一个账号，直接留给下一个账号会串数据，未上云的合批增量也会被
+    // 推进新账号（只断内存态，不删 localStorage/IDB 里的用户数据）
+    resetErrorBookCache()
+    resetReviewCardsCache()
+    resetFavoriteWordsCache()
+    resetReadingWordBookCache()
+    resetCorpusWordBookCache()
+    resetLocalProgressCache()
     setUser(null)
   }, [])
 
@@ -136,7 +152,7 @@ export function AuthProvider({ children }) {
       method: 'PATCH',
       body: JSON.stringify(fields),
     })
-    const data = await res.json()
+    const data = await res.json().catch(() => ({}))
     if (!res.ok) throw new Error(data.error || '更新失败')
     setUser(data.user)
     return data.user
@@ -147,7 +163,7 @@ export function AuthProvider({ children }) {
       method: 'POST',
       body: JSON.stringify({ currentPassword, newPassword }),
     })
-    const data = await res.json()
+    const data = await res.json().catch(() => ({}))
     if (!res.ok) throw new Error(data.error || '修改密码失败')
   }, [])
 
@@ -158,7 +174,7 @@ export function AuthProvider({ children }) {
       credentials: 'include',
       body: JSON.stringify({ code, deviceId: getDeviceId() }),
     })
-    const data = await res.json()
+    const data = await res.json().catch(() => ({}))
     if (!res.ok) throw new Error(data.error || '体验码无效')
     setUser(data.user)
     return data.user
@@ -171,7 +187,7 @@ export function AuthProvider({ children }) {
       method: 'POST',
       body: JSON.stringify(body),
     })
-    const data = await res.json()
+    const data = await res.json().catch(() => ({}))
     if (!res.ok) throw new Error(data.error || '升级失败')
     setUser(data.user)
     return data.user

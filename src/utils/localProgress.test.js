@@ -138,3 +138,23 @@ describe('损坏数据兜底', () => {
     expect(JSON.parse(localStorage.getItem(KEY))).toEqual({ 'cet4:0': ['apple'] })
   })
 })
+
+describe('resetLocalProgressCache（登出断开内存态）', () => {
+  it('清空内存缓存并取消待落盘定时器，但不删除 localStorage 数据', async () => {
+    localStorage.setItem(KEY, JSON.stringify({ 'cet4:0': ['apple'] }))
+    const { saveLocalProgress, getLocalProgress, resetLocalProgressCache } =
+      await import('./localProgress.js')
+
+    saveLocalProgress('cet4', 0, ['dog']) // 进入防抖窗口：内存有未落盘变更
+    expect(getLocalProgress('cet4')).toEqual({ 0: 2 })
+
+    resetLocalProgressCache()
+
+    // localStorage 数据保持不动，防抖定时器被取消：旧会话内存态不再落盘
+    expect(JSON.parse(localStorage.getItem(KEY))['cet4:0']).toEqual(['apple'])
+    await flushDebounce()
+    expect(JSON.parse(localStorage.getItem(KEY))['cet4:0']).toEqual(['apple'])
+    // 内存缓存已断开：下次读取重新从 localStorage bootstrap
+    expect(getLocalProgress('cet4')).toEqual({ 0: 1 })
+  })
+})

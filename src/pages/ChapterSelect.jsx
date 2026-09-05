@@ -43,13 +43,26 @@ export default function ChapterSelect() {
   }, [dictId])
 
   useEffect(() => {
+    // 竞态防护：快速切词书时旧 dictId 的慢响应后到，会把旧词书章节进度合并进新词书
+    let cancelled = false
     const localData = getLocalProgress(dictId)
     setProgress(localData)
     fetchProgress(dictId)
       .then((data) => {
-        setProgress((prev) => ({ ...prev, ...(data.chapters || {}) }))
+        if (cancelled) return
+        setProgress((prev) => {
+          // 按章节 id 取较大值合并：离线期间的本地进度不被服务器旧值抹掉
+          const merged = { ...prev }
+          for (const [id, count] of Object.entries(data.chapters || {})) {
+            merged[id] = Math.max(merged[id] || 0, count)
+          }
+          return merged
+        })
       })
       .catch(() => {})
+    return () => {
+      cancelled = true
+    }
   }, [dictId])
 
   useEffect(() => {

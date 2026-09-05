@@ -62,7 +62,9 @@ router.patch('/', authMiddleware, async (req, res, next) => {
       if (dbCol === 'theme') {
         if (!VALID_THEMES.includes(val)) continue
       } else if (dbCol === 'word_repeat_count') {
-        val = Math.max(1, Math.min(10, Math.round(val)))
+        // 非数字（"abc"/对象等）时 Number() 为 NaN，直接 Math.round 会得 NaN 入库 → 500。
+        // 与 routes/migrate.js 同款收敛：NaN 回退默认 1，再夹取 [1,10]。
+        val = Math.max(1, Math.min(10, Math.round(Number(val) || 1)))
       } else {
         val = val ? 1 : 0
       }

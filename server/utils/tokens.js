@@ -133,27 +133,32 @@ function parseDeviceName(ua) {
   return `${browser} · ${os}`
 }
 
-// 解析设备标识，优先级：服务端 cookie > 请求体 > 现场随机生成。
-// cookie 由服务端签发（HttpOnly），清 localStorage 不会改变它，显著提高换设备重领试用的门槛。
-// 若 cookie 缺失，ensureDeviceCookie 会现场签发并通过 Set-Cookie 下发，保证后续请求稳定。
+// deviceId 合法性：DB 列 device_id 为 VARCHAR(64)，超长/空值会触发 500 或污染去重统计。
+function isValidDeviceId(v) {
+  return typeof v === 'string' && v.length > 0 && v.length <= 64
+}
+
+// 解析设备标识：只信任服务端签发的 HttpOnly cookie，缺失或不合法时现场随机生成。
+// 不再回退 req.body.deviceId——客户端可任意伪造新值，绕过"每设备一次试用"的去重
+// （demo/redeem 按 device_id 全局去重）。cookie 由服务端签发（HttpOnly），
+// 清 localStorage 不会改变它；超长（>64）/空白等被篡改的 cookie 值同样不采信。
 function resolveDeviceId(req) {
   const fromCookie =
     req.cookies && typeof req.cookies[DEVICE_COOKIE] === 'string'
       ? req.cookies[DEVICE_COOKIE].trim()
       : ''
-  if (fromCookie) return fromCookie
-  const fromBody = req.body && typeof req.body.deviceId === 'string' ? req.body.deviceId.trim() : ''
-  return fromBody || crypto.randomUUID()
+  if (isValidDeviceId(fromCookie)) return fromCookie
+  return crypto.randomUUID()
 }
 
-// 确保响应带有 deviceId cookie：无则签发随机串并 Set-Cookie（HttpOnly, path=/, 1 年, sameSite=lax）。
+// 确保响应带有 deviceId cookie：缺失或不合法则签发随机串并 Set-Cookie（HttpOnly, path=/, 1 年, sameSite=lax）。
 // 返回最终生效的 deviceId（供调用方写入 refresh_tokens / trial_activations，保持一致性）。
 function ensureDeviceCookie(req, res, deviceId) {
   const existing =
     req.cookies && typeof req.cookies[DEVICE_COOKIE] === 'string'
       ? req.cookies[DEVICE_COOKIE].trim()
       : ''
-  if (existing) return existing
+  if (isValidDeviceId(existing)) return existing
   res.cookie(DEVICE_COOKIE, deviceId, {
     httpOnly: true,
     secure: config.NODE_ENV === 'production',

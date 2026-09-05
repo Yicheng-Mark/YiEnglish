@@ -88,6 +88,8 @@ injectMocksIntoRequireCache()
 
 // 此时 require('./auth')：auth.js 内 require('../db') 等命中缓存，拿到 fake。
 const authRouter = require('./auth')
+// hashToken 与 auth.js 共用同一 tokens 模块实例（依赖的 db/config 已被注入 fake）
+const { hashToken } = require('../utils/tokens')
 
 // 构造临时 app：模拟主应用挂载方式（/api/auth 前缀）
 function makeApp() {
@@ -252,6 +254,27 @@ describe('POST /api/auth/login', () => {
     const res = await supertest(app).post('/api/auth/login').send({ username: 'x' })
     expect(res.status).toBe(400)
     expect(res.body.error).toMatch(/用户名和密码/)
+  })
+
+  it('username 为 truthy 对象（如 {}）→ 400，不进入 DB 查询（回归：对象入参触发 500）', async () => {
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/login')
+      .send({ username: {}, password: VALID_PASSWORD })
+    expect(res.status).toBe(400)
+    expect(res.body.error).toMatch(/用户名和密码/)
+    expect(mockExecute).not.toHaveBeenCalled()
+    expect(fakeRateLimit.checkLoginRateLimit).not.toHaveBeenCalled()
+  })
+
+  it('password 为非字符串（如数组）→ 400，不触发 bcrypt 比较', async () => {
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/login')
+      .send({ username: VALID_USER, password: ['password1'] })
+    expect(res.status).toBe(400)
+    expect(res.body.error).toMatch(/用户名和密码/)
+    expect(mockExecute).not.toHaveBeenCalled()
   })
 
   it('用户不存在 → 401「用户名或密码错误」', async () => {
@@ -562,21 +585,19 @@ describe('POST /api/auth/refresh', () => {
     expect(res.status).toBe(401)
   })
 
-  it('有效 refresh token（正式用户）→ 200 轮换并下发新 cookie', async () => {
+  // 原子轮换后的 SELECT（读会话元数据）用更具体的关键字，避免误匹配 DELETE 语句
+  const STORED_REFRESH_ROW = {
+    id: 100,
+    user_id: 5,
+    device_id: 'dev-1',
+    device_name: 'Chrome · Windows',
+    ip: '127.0.0.1',
+  }
+
+  it('有效 refresh token（正式用户）→ 200 轮换并下发新 cookie，DELETE 带过期守卫', async () => {
     setExecuteHandlers([
-      {
-        match: ['FROM refresh_tokens WHERE token_hash'],
-        returns: [
-          {
-            id: 100,
-            user_id: 5,
-            device_id: 'dev-1',
-            device_name: 'Chrome · Windows',
-            ip: '127.0.0.1',
-          },
-        ],
-      },
-      { match: ['DELETE FROM refresh_tokens WHERE id'], returns: { affectedRows: 1 } },
+      { match: ['SELECT id, user_id, device_id'], returns: [STORED_REFRESH_ROW] },
+      { match: ['DELETE FROM refresh_tokens WHERE token_hash'], returns: { affectedRows: 1 } },
       {
         match: ['FROM users WHERE id'],
         returns: [{ id: 5, username: VALID_USER, nickname: 'Alice', is_guest: 0 }],
@@ -591,6 +612,35 @@ describe('POST /api/auth/refresh', () => {
     expect(res.body.user).toMatchObject({ id: 5, username: VALID_USER })
     const access = getCookie(res.headers['set-cookie'], 'lf_access_token')
     expect(access).toBeTruthy()
+
+    // 回归（原子轮换）：抢占删除必须是"按 token_hash + 未过期"的单条守卫 DELETE，
+    // 而非按 id 删（无法防并发双花）
+    const delCall = mockExecute.mock.calls.find(([sql]) =>
+      String(sql).includes('DELETE FROM refresh_tokens WHERE token_hash')
+    )
+    expect(delCall).toBeTruthy()
+    expect(String(delCall[0])).toContain('expires_at > NOW()')
+    expect(delCall[1]).toEqual([hashToken('somevalidvalue')])
+  })
+
+  it('并发抢占同一 token（原子 DELETE affectedRows=0）→ 401 清 cookie，不再签发并行会话', async () => {
+    setExecuteHandlers([
+      { match: ['SELECT id, user_id, device_id'], returns: [STORED_REFRESH_ROW] },
+      { match: ['DELETE FROM refresh_tokens WHERE token_hash'], returns: { affectedRows: 0 } },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/refresh')
+      .set('Cookie', 'lf_refresh_token=racedvalue')
+    expect(res.status).toBe(401)
+    expect(res.body.error).toMatch(/请先登录/)
+    // 输了的请求不得写入新 token（否则出现两套并行会话）
+    expect(
+      mockExecute.mock.calls.some(([sql]) => String(sql).includes('INSERT INTO refresh_tokens'))
+    ).toBe(false)
+    const sc = res.headers['set-cookie'] || []
+    const arr = Array.isArray(sc) ? sc : [sc]
+    expect(arr.some((c) => /lf_refresh_token=;/.test(c))).toBe(true)
   })
 })
 
@@ -689,5 +739,30 @@ describe('POST /api/auth/register · 激活码爆破防护', () => {
     expect(mockExecute.mock.calls.some(([sql]) => String(sql).includes('experience_codes'))).toBe(
       false
     )
+  })
+})
+
+// =====================================================================
+// auth 通用 IP 限流：refresh / logout / change-password（安全修复回归）
+// 这三个端点此前无任何限流：refresh 可未认证刷 DB、change-password 可刷 bcrypt CPU
+// =====================================================================
+describe('auth 通用 IP 限流（refresh/logout/change-password）', () => {
+  it('三个路由均挂载了 IP 限流中间件（rateLimiter）', () => {
+    for (const path of ['/refresh', '/logout', '/change-password']) {
+      const layer = authRouter.stack.find((l) => l.route && l.route.path === path)
+      expect(layer).toBeTruthy()
+      const middlewareNames = layer.route.stack.map((s) => s.name)
+      expect(middlewareNames).toContain('rateLimiter')
+    }
+  })
+
+  // 注意：本用例会刷爆共享的 60s 限流窗口，必须放在本文件所有 refresh/logout 用例之后
+  it('refresh 超过阈值（30 次/分/IP）→ 429（回归：此前可无限刷）', async () => {
+    let last
+    for (let i = 0; i < 40; i++) {
+      last = await supertest(makeApp()).post('/api/auth/refresh')
+    }
+    expect(last.status).toBe(429)
+    expect(last.body.error).toMatch(/请求过于频繁/)
   })
 })

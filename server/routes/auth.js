@@ -72,6 +72,14 @@ const activationCodeLimiter = createRateLimiter({
   max: 20,
   message: '尝试次数过多，请稍后再试',
 })
+// refresh/logout/change-password 无专用限流：refresh 可未认证刷 DB、change-password 可刷
+// bcrypt CPU。三者共用一个低阈值 IP 限流（30 次/分/IP）；login/register/recover 的
+// 专用限流（checkLoginRateLimit / checkRegisterRateLimit）保持不变。
+const authActionLimiter = createRateLimiter({
+  windowMs: 60 * 1000,
+  max: 30,
+})
+
 router.post('/validate-activation-code', activationCodeLimiter, async (req, res, next) => {
   try {
     const { code } = req.body
@@ -225,7 +233,15 @@ router.post('/login', async (req, res, next) => {
     const { username, password } = req.body
     const ip = getClientIp(req)
 
-    if (!username || !password) {
+    // username/password 必须是非空字符串：truthy 对象（如 {}）若放行，会原样进入
+    // DB 查询参数 / bcrypt.compare → 500。此处只挡类型/空值，不做格式校验
+    //（用户名不存在与密码错误统一 401 文案，避免枚举）。
+    if (
+      typeof username !== 'string' ||
+      !username.trim() ||
+      typeof password !== 'string' ||
+      !password
+    ) {
       return res.status(400).json({ error: '请输入用户名和密码' })
     }
 
@@ -282,7 +298,7 @@ router.post('/login', async (req, res, next) => {
 })
 
 // --- Refresh ---
-router.post('/refresh', async (req, res, next) => {
+router.post('/refresh', authActionLimiter, async (req, res, next) => {
   try {
     const refreshToken = req.cookies?.[REFRESH_COOKIE]
     if (!refreshToken) {
@@ -303,8 +319,18 @@ router.post('/refresh', async (req, res, next) => {
 
     const stored = rows[0]
 
-    // rotation: delete used token
-    await pool.execute('DELETE FROM refresh_tokens WHERE id = ?', [stored.id])
+    // rotation：原子抢占删除。旧实现"先 SELECT 再按 id DELETE"存在窗口期，并发携带同一
+    // cookie 时可双双通过 SELECT、各自删行成功，签发两套并行会话。
+    // 改为单条带过期守卫的 DELETE 作为唯一认领手段：affectedRows=0 说明该 token 已被
+    // 并发请求认领或已过期 → 拒绝（401）。上方 SELECT 仅用于读取签发新 token 所需元数据。
+    const [claimed] = await pool.execute(
+      'DELETE FROM refresh_tokens WHERE token_hash = ? AND expires_at > NOW()',
+      [tokenHash]
+    )
+    if (claimed.affectedRows === 0) {
+      clearCookies(res)
+      return res.status(401).json({ error: '请先登录' })
+    }
 
     const [userRows] = await pool.execute(
       'SELECT id, username, nickname, avatar_url, daily_goal_minutes, signature, is_guest FROM users WHERE id = ?',
@@ -358,7 +384,7 @@ router.post('/refresh', async (req, res, next) => {
 })
 
 // --- Logout ---
-router.post('/logout', async (req, res, next) => {
+router.post('/logout', authActionLimiter, async (req, res, next) => {
   try {
     const refreshToken = req.cookies?.[REFRESH_COOKIE]
     if (refreshToken) {
@@ -466,7 +492,7 @@ router.patch('/profile', authMiddleware, async (req, res, next) => {
 })
 
 // --- Change password (requires auth) ---
-router.post('/change-password', authMiddleware, async (req, res, next) => {
+router.post('/change-password', authActionLimiter, authMiddleware, async (req, res, next) => {
   try {
     const { currentPassword, newPassword } = req.body
 

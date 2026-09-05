@@ -161,6 +161,12 @@ export function getReadingWordBookCount() {
   return getReadingWordBook().words?.length || 0
 }
 
+// 登出时断开当前会话内存态：清空模块级内存缓存（下次读取时重新从
+// localStorage bootstrap）。不删除 localStorage/IDB 里的用户数据本身。
+export function resetReadingWordBookCache() {
+  _cache = null
+}
+
 const CHAPTER_SIZE = 25
 
 export function loadReadingWordBookAsDictionary() {

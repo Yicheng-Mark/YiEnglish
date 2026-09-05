@@ -63,6 +63,8 @@ const SYNC_RETRY_MAX = 3 // 连续失败重试轮数上限，超过后等下一�
 const pendingSyncDeltas = new Map() // word -> 自上次成功同步后新增的错误次数
 let syncTimer = null
 let syncRetryCount = 0
+// 会话代号：登出重置后自增，用于丢弃旧会话在途请求的迟到失败恢复
+let syncEpoch = 0
 
 function queueServerSync(word) {
   pendingSyncDeltas.set(word, (pendingSyncDeltas.get(word) || 0) + 1)
@@ -84,6 +86,7 @@ function flushServerSync({ keepalive = false } = {}) {
     syncTimer = null
   }
   if (pendingSyncDeltas.size === 0) return
+  const epoch = syncEpoch
   const words = Array.from(pendingSyncDeltas.keys())
   const deltas = new Map(pendingSyncDeltas)
   pendingSyncDeltas.clear()
@@ -108,9 +111,11 @@ function flushServerSync({ keepalive = false } = {}) {
         syncRetryCount = 0
       })
       .catch((e) => {
+        // 登出重置后迟到的失败响应：增量属于旧会话，直接丢弃，不还回队列
+        if (epoch !== syncEpoch) return
         // 失败且词仍在错题本中：把增量还回去并定时重试。
         // 不重新武装定时器的话，增量会一直滞留到用户下次打错同一词或页面隐藏
-        if (_cache.some((w) => w.name === word)) {
+        if (Array.isArray(_cache) && _cache.some((w) => w.name === word)) {
           pendingSyncDeltas.set(word, (pendingSyncDeltas.get(word) || 0) + (deltas.get(word) || 1))
           scheduleSyncRetry()
         }
@@ -207,6 +212,24 @@ export function clearErrorBook() {
 
 export function getErrorBookCount() {
   return getErrorBook().words?.length || 0
+}
+
+// 登出时断开当前会话内存态：清空内存缓存与待上云增量队列（丢弃而非上云，
+// 避免旧账号的合批写入被推进下一个登录的账号）。
+// 不删除 localStorage/IDB 里的用户数据本身，仅取消尚未落盘的防抖定时器。
+export function resetErrorBookCache() {
+  _cache = null
+  if (persistTimer) {
+    clearTimeout(persistTimer)
+    persistTimer = null
+  }
+  if (syncTimer) {
+    clearTimeout(syncTimer)
+    syncTimer = null
+  }
+  pendingSyncDeltas.clear()
+  syncRetryCount = 0
+  syncEpoch++
 }
 
 const CHAPTER_SIZE = 25

@@ -313,3 +313,41 @@ describe('useTyping — 连字符规范化', () => {
     expect(result.current.isFinished).toBe(true)
   })
 })
+
+describe('useTyping — 音频缓存清理时机', () => {
+  it('词表变化（删词）不暂停缓存音频；卸载时才统一清理（回归：修复前清理挂在 [words] 上，删词会掐断正在播放的发音）', () => {
+    const pauseSpy = vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {})
+    const playSpy = vi
+      .spyOn(HTMLMediaElement.prototype, 'play')
+      .mockImplementation(() => Promise.resolve())
+    const loadSpy = vi.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(() => {})
+
+    const words = makeWords()
+    // soundEnabled=true：挂载即朗读首词并预加载下一词，音频进入缓存
+    const { result, rerender, unmount, callbacks } = renderTyping({ soundEnabled: true, words })
+    expect(result.current.currentWord.name).toBe('cat')
+    const pausesAfterMount = pauseSpy.mock.calls.length
+
+    // 删词：词表变化不应暂停任何缓存音频
+    act(() => {
+      rerender({
+        words: [words[0]],
+        soundEnabled: true,
+        wordRepeatCount: 1,
+        isErrorBookMode: true,
+        onWordComplete: callbacks.onWordComplete,
+        onAutoRemove: callbacks.onAutoRemove,
+        onError: callbacks.onError,
+      })
+    })
+    expect(pauseSpy.mock.calls.length).toBe(pausesAfterMount)
+
+    // 卸载才统一清理缓存音频
+    unmount()
+    expect(pauseSpy.mock.calls.length).toBeGreaterThan(pausesAfterMount)
+
+    pauseSpy.mockRestore()
+    playSpy.mockRestore()
+    loadSpy.mockRestore()
+  })
+})

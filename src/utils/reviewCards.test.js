@@ -273,3 +273,36 @@ describe('防抖持久化（回归：修复前每个新词/每次复习都全量
     expect(JSON.parse(localStorage.getItem(KEY)).cards.apple).toBeTruthy()
   })
 })
+
+describe('resetReviewCardsCache（登出断开内存态）', () => {
+  it('登出重置后，排队中未执行的旧会话 mutation 被丢弃，不写进新会话', async () => {
+    let resolveAdd
+    const pendingAdd = new Promise((resolve) => {
+      resolveAdd = resolve
+    })
+    apiAddReviewCard.mockReturnValueOnce(pendingAdd)
+    const { addWordToReview, removeFromReviewCards, resetReviewCardsCache } =
+      await import('./reviewCards.js')
+
+    addWordToReview('apple', 'cet4') // add 请求在途
+    removeFromReviewCards('apple') // delete 排队等待 add 完成
+    resetReviewCardsCache() // 登出
+
+    resolveAdd() // 在途 add 完成 → 排队的 delete 因 epoch 变化被丢弃
+    await pendingAdd
+    await Promise.resolve()
+
+    expect(apiDeleteReviewCard).not.toHaveBeenCalled()
+  })
+
+  it('重置只断开内存缓存（下次从 localStorage 重新 bootstrap），不删用户数据', async () => {
+    seedCard('apple', matureCard())
+    const { resetReviewCardsCache, getTotalReviewCount } = await import('./reviewCards.js')
+    expect(getTotalReviewCount()).toBe(1)
+
+    resetReviewCardsCache()
+
+    expect(JSON.parse(localStorage.getItem(KEY)).cards.apple).toBeTruthy()
+    expect(getTotalReviewCount()).toBe(1) // 重新 bootstrap 后计数恢复
+  })
+})

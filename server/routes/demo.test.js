@@ -333,6 +333,122 @@ describe('POST /api/demo/redeem', () => {
     expect(mockConnection.rollback).toHaveBeenCalled()
     expect(mockConnection.commit).not.toHaveBeenCalled()
   })
+
+  // --- 设备身份回归：body.deviceId 不再被信任（安全修复） ---
+  // mock 一套完整成功链路：限流计数 0、码有效、无重复设备、用户名无碰撞、事务全部成功
+  function mockRedeemSuccess() {
+    setExecuteHandlers([
+      { match: ['INTERVAL 1 MINUTE'], returns: [{ cnt: 0 }] },
+      { match: ['INTERVAL 24 HOUR'], returns: [{ cnt: 0 }] },
+      {
+        match: ['FROM experience_codes WHERE code'],
+        returns: [
+          {
+            id: 11,
+            code: 'TRY1',
+            max_uses: 10,
+            current_uses: 0,
+            trial_hours: 24,
+            is_active: 1,
+            expires_at: null,
+          },
+        ],
+      },
+      { match: ['FROM trial_activations WHERE device_id'], returns: [] },
+      { match: ['SELECT id FROM users WHERE username'], returns: [] },
+      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 1, affectedRows: 1 } },
+    ])
+    mockConnection.execute.mockImplementation(async (sql) => {
+      if (sql.includes('INSERT INTO users')) return [{ insertId: 777, affectedRows: 1 }, []]
+      return [{ affectedRows: 1 }, []]
+    })
+  }
+
+  it('body.deviceId 不再被信任：无 cookie 时伪造值不落库，改用服务端现场生成的 UUID', async () => {
+    mockRedeemSuccess()
+    const forged = 'attacker-forged-device-id'
+    const res = await supertest(makeApp())
+      .post('/api/demo/redeem')
+      .send({ code: 'TRY1', deviceId: forged })
+    expect(res.status).toBe(200)
+
+    const cookieId = getCookie(res.headers['set-cookie'], 'lf_device_id')
+    expect(cookieId).toBeTruthy()
+    expect(cookieId).not.toBe(forged)
+    expect(cookieId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
+
+    // 入库的 device_id（trial_activations 第 3 个参数）是服务端生成的，不是 body 伪造值
+    const insertCall = mockConnection.execute.mock.calls.find(([sql]) =>
+      String(sql).includes('INSERT INTO trial_activations')
+    )
+    expect(insertCall[1][2]).toBe(cookieId)
+    expect(insertCall[1][2]).not.toBe(forged)
+  })
+
+  it('换 body 值无法重领：同一 cookie 第二次兑换按 cookie 身份命中去重 → 400', async () => {
+    mockRedeemSuccess()
+    const first = await supertest(makeApp())
+      .post('/api/demo/redeem')
+      .send({ code: 'TRY1', deviceId: 'body-A' })
+    expect(first.status).toBe(200)
+    const cookieId = getCookie(first.headers['set-cookie'], 'lf_device_id')
+    expect(cookieId).toBeTruthy()
+
+    // 第二次：伪造另一个 body deviceId，cookie 未变 → 去重查询必须用 cookie 身份而非 'body-B'
+    let dupQueryDeviceId = null
+    setExecuteHandlers([
+      { match: ['INTERVAL 1 MINUTE'], returns: [{ cnt: 0 }] },
+      { match: ['INTERVAL 24 HOUR'], returns: [{ cnt: 0 }] },
+      {
+        match: ['FROM experience_codes WHERE code'],
+        returns: [
+          {
+            id: 11,
+            code: 'TRY1',
+            max_uses: 10,
+            current_uses: 0,
+            trial_hours: 24,
+            is_active: 1,
+            expires_at: null,
+          },
+        ],
+      },
+      {
+        match: ['FROM trial_activations WHERE device_id'],
+        returns: (params) => {
+          dupQueryDeviceId = params[0]
+          return [{ 1: 1 }]
+        },
+      },
+    ])
+    const second = await supertest(makeApp())
+      .post('/api/demo/redeem')
+      .set('Cookie', 'lf_device_id=' + cookieId)
+      .send({ code: 'TRY1', deviceId: 'body-B' })
+    expect(second.status).toBe(400)
+    expect(second.body.error).toMatch(/该设备已体验过/)
+    expect(dupQueryDeviceId).toBe(cookieId)
+    expect(dupQueryDeviceId).not.toBe('body-B')
+  })
+
+  it('cookie deviceId 超长（>64，DB 列 VARCHAR(64) 上限）→ 重新生成合法 id，不触发 500', async () => {
+    mockRedeemSuccess()
+    const oversized = 'x'.repeat(100)
+    const res = await supertest(makeApp())
+      .post('/api/demo/redeem')
+      .set('Cookie', 'lf_device_id=' + oversized)
+      .send({ code: 'TRY1' })
+    expect(res.status).toBe(200)
+
+    const insertCall = mockConnection.execute.mock.calls.find(([sql]) =>
+      String(sql).includes('INSERT INTO trial_activations')
+    )
+    const usedId = insertCall[1][2]
+    expect(usedId.length).toBeLessThanOrEqual(64)
+    expect(usedId).not.toBe(oversized)
+    // 重签了新的合法 cookie
+    expect(getCookie(res.headers['set-cookie'], 'lf_device_id')).toBe(usedId)
+  })
 })
 
 // =====================================================================

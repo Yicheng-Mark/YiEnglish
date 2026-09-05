@@ -126,6 +126,21 @@ export default function Typing() {
     return () => flushServerProgress()
   }, [flushServerProgress])
 
+  // pagehide/beforeunload 兜底 flush：直接关闭标签页/刷新不触发 React 卸载清理，
+  // 缓冲里的服务端进度会丢（仿 errorBook.js 的页面隐藏兜底模式；
+  // flushServerProgress 会 splice 清空缓冲，与卸载 flush 叠加不会重复上报）
+  const flushServerProgressRef = useRef(flushServerProgress)
+  flushServerProgressRef.current = flushServerProgress
+  useEffect(() => {
+    const flushAll = () => flushServerProgressRef.current()
+    window.addEventListener('pagehide', flushAll)
+    window.addEventListener('beforeunload', flushAll)
+    return () => {
+      window.removeEventListener('pagehide', flushAll)
+      window.removeEventListener('beforeunload', flushAll)
+    }
+  }, [])
+
   const handleWordComplete = useCallback(
     (wordName) => {
       if (isReviewMode) {
@@ -385,6 +400,15 @@ export default function Typing() {
         e.preventDefault()
         if (currentWord) {
           saveLocalProgress(dictId, Number(chapterId), [currentWord.name])
+          // 跳词与正常完成（handleWordComplete）保持两侧一致：本地记了进度，
+          // 服务端缓冲也要同时记，否则服务器进度落后、重新拉取后跳过的词会"回退"。
+          // 词本/复习模式服务端不记进度，也不进缓冲（flush 对这些模式是 no-op）
+          if (!isErrorBookMode && !isWordBookMode && !isReviewMode) {
+            completedBufferRef.current.push(currentWord.name)
+            if (completedBufferRef.current.length >= 5) {
+              flushServerProgress()
+            }
+          }
         }
         if (wordIndex < words.length - 1) {
           jumpTo(wordIndex + 1)
@@ -432,6 +456,9 @@ export default function Typing() {
     chapterId,
     hasNextChapter,
     flushServerProgress,
+    isErrorBookMode,
+    isWordBookMode,
+    isReviewMode,
     navigate,
     justCommittedRef,
     isComposingRef,
