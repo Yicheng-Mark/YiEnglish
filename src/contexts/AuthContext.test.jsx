@@ -35,6 +35,13 @@ vi.mock('../utils/localProgress', () => ({
   resetLocalProgressCache: resets.resetLocalProgressCache,
 }))
 
+// 登录/会话恢复后的服务端设置同步（B2）：mock 掉并只验证接线时机，
+// 同步本身的行为在 useUserConfig.test.js 覆盖
+const sync = vi.hoisted(() => ({ syncSettingsFromServer: vi.fn() }))
+vi.mock('../hooks/useUserConfig', () => ({
+  syncSettingsFromServer: sync.syncSettingsFromServer,
+}))
+
 // 注意：本仓库 .env.local 在本地开发时可能带 VITE_AUTH_ENABLED=false（免登录模式），
 // vitest 会加载它；本文件针对「鉴权启用」路径，先强制开启再动态加载被测模块，
 // 保证 AUTH_ENABLED 模块常量按 true 求值。
@@ -88,18 +95,21 @@ function getState() {
 beforeEach(() => {
   vi.clearAllMocks()
   mocks.getDeviceId.mockReturnValue('test-device')
+  sync.syncSettingsFromServer.mockResolvedValue()
 })
 
 describe('会话自检（挂载即拉 /api/auth/me）', () => {
-  it('已登录 → user 就位、loading 结束', async () => {
+  it('已登录 → user 就位、loading 结束，并触发一次服务端设置同步', async () => {
     globalThis.fetch = vi.fn().mockResolvedValue(jsonResponse({ user: USER }))
     renderProvider()
     await waitFor(() => expect(getState().loading).toBe(false))
     expect(getState().user).toEqual(USER)
     expect(globalThis.fetch).toHaveBeenCalledWith('/api/auth/me', { credentials: 'include' })
+    // 恢复会话后拉一次服务端设置（跨设备设置/主题同步）
+    await waitFor(() => expect(sync.syncSettingsFromServer).toHaveBeenCalledTimes(1))
   })
 
-  it('access 过期（401）→ 自动 refresh 成功 → 恢复会话', async () => {
+  it('access 过期（401）→ 自动 refresh 成功 → 恢复会话并触发设置同步', async () => {
     globalThis.fetch = vi
       .fn()
       .mockResolvedValueOnce(jsonResponse({ error: 'expired' }, false, 401))
@@ -110,6 +120,7 @@ describe('会话自检（挂载即拉 /api/auth/me）', () => {
       method: 'POST',
       credentials: 'include',
     })
+    await waitFor(() => expect(sync.syncSettingsFromServer).toHaveBeenCalledTimes(1))
   })
 
   it('refresh 也失败 → 未登录态（user=null）', async () => {
@@ -145,7 +156,24 @@ describe('login / logout', () => {
     expect(JSON.parse(init.body)).toMatchObject({ username: 'alice', deviceId: 'test-device' })
   })
 
-  it('login 失败 → 抛出服务端错误文案，user 保持 null', async () => {
+  it('login 成功 → 触发服务端设置同步（跨设备设置/主题跟随）', async () => {
+    // 挂载会话检查全程 401（未登录），保证 sync 计数只来自 login
+    globalThis.fetch = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ error: 'no' }, false, 401)) // 挂载 /me
+      .mockResolvedValueOnce(jsonResponse({ error: 'no' }, false, 401)) // 挂载 /refresh
+      .mockResolvedValue(jsonResponse({ user: USER })) // login
+    renderProvider()
+    await waitFor(() => expect(getState().loading).toBe(false))
+    expect(sync.syncSettingsFromServer).not.toHaveBeenCalled()
+    await act(async () => {
+      screen.getByText('login').click()
+    })
+    await waitFor(() => expect(getState().user).toEqual(USER))
+    expect(sync.syncSettingsFromServer).toHaveBeenCalledTimes(1)
+  })
+
+  it('login 失败 → 抛出服务端错误文案，user 保持 null，不触发设置同步', async () => {
     globalThis.fetch = vi
       .fn()
       .mockResolvedValue(jsonResponse({ error: '用户名或密码错误' }, false, 401))
@@ -155,6 +183,7 @@ describe('login / logout', () => {
     })
     await expect(captured.login('alice', 'wrong1')).rejects.toThrow('用户名或密码错误')
     expect(getState().user).toBeNull()
+    expect(sync.syncSettingsFromServer).not.toHaveBeenCalled()
   })
 
   it('logout → 请求登出端点并清空 user（网络失败也照清）', async () => {

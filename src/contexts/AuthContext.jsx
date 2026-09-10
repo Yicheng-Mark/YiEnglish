@@ -7,6 +7,7 @@ import { resetFavoriteWordsCache } from '../utils/favoriteWords'
 import { resetReadingWordBookCache } from '../utils/readingWordBook'
 import { resetCorpusWordBookCache } from '../utils/corpusWordBook'
 import { resetLocalProgressCache } from '../utils/localProgress'
+import { syncSettingsFromServer } from '../hooks/useUserConfig'
 
 // 方案A：拆成两个 context。
 // - 稳定方法 context：login / register / logout / updateProfile / changePassword /
@@ -46,11 +47,14 @@ export function AuthProvider({ children }) {
           if (refreshRes.ok) {
             const data = await refreshRes.json()
             setUser(data.user)
+            // 恢复会话后拉一次服务端设置（跨设备同步设置/主题），失败静默
+            syncSettingsFromServer()
             return
           }
         } else if (res.ok) {
           const data = await res.json()
           setUser(data.user)
+          syncSettingsFromServer()
         }
       } catch {
         // not logged in
@@ -82,6 +86,8 @@ export function AuthProvider({ children }) {
     const data = await res.json().catch(() => ({}))
     if (!res.ok) throw new Error(data.error || '登录失败')
     setUser(data.user)
+    // 登录后拉一次服务端设置（跨设备同步设置/主题），不阻塞登录流程
+    syncSettingsFromServer()
     return data.user
   }, [])
 

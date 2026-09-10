@@ -12,6 +12,20 @@ const DEFAULT_CONFIG = {
 
 const VALID_THEMES = ['light', 'warm']
 
+// 登录/会话恢复后 syncSettingsFromServer 把服务端设置写回 localStorage，
+// 通过该事件通知已挂载的 useUserConfig 实例重读本地存档（config + theme），
+// 使跨设备同步的设置/主题即时生效，无需整页刷新
+const SETTINGS_SYNCED_EVENT = 'lingoforge:settings-synced'
+
+function readConfigFromStorage() {
+  try {
+    const saved = localStorage.getItem('typingword_config')
+    return saved ? { ...DEFAULT_CONFIG, ...JSON.parse(saved) } : DEFAULT_CONFIG
+  } catch {
+    return DEFAULT_CONFIG
+  }
+}
+
 function loadInitialTheme() {
   if (typeof window === 'undefined') return 'light'
   try {
@@ -29,14 +43,7 @@ function syncSettingUpdate(partial) {
 }
 
 export function useUserConfig() {
-  const [config, setConfig] = useState(() => {
-    try {
-      const saved = localStorage.getItem('typingword_config')
-      return saved ? { ...DEFAULT_CONFIG, ...JSON.parse(saved) } : DEFAULT_CONFIG
-    } catch {
-      return DEFAULT_CONFIG
-    }
-  })
+  const [config, setConfig] = useState(readConfigFromStorage)
 
   const [theme, setThemeState] = useState(loadInitialTheme)
 
@@ -47,6 +54,16 @@ export function useUserConfig() {
       localStorage.setItem('lingoforge-theme', theme)
     } catch {}
   }, [theme])
+
+  // 登录/会话恢复后服务端设置写回 localStorage → 重读本地存档（见 syncSettingsFromServer）
+  useEffect(() => {
+    const onSettingsSynced = () => {
+      setConfig(readConfigFromStorage())
+      setThemeState(loadInitialTheme())
+    }
+    window.addEventListener(SETTINGS_SYNCED_EVENT, onSettingsSynced)
+    return () => window.removeEventListener(SETTINGS_SYNCED_EVENT, onSettingsSynced)
+  }, [])
 
   const setTheme = useCallback((next) => {
     if (!VALID_THEMES.includes(next)) return
@@ -85,6 +102,8 @@ export async function syncSettingsFromServer() {
     if (settings.theme && VALID_THEMES.includes(settings.theme)) {
       localStorage.setItem('lingoforge-theme', settings.theme)
     }
+    // 通知已挂载的 useUserConfig 实例重读 localStorage（跨设备同步的设置/主题即时生效）
+    window.dispatchEvent(new Event(SETTINGS_SYNCED_EVENT))
   } catch (e) {
     console.warn('Sync settings from server failed:', e)
   }

@@ -158,6 +158,26 @@ describe('syncSettingsFromServer', () => {
     expect(localStorage.getItem('lingoforge-theme')).toBe('warm')
   })
 
+  it('同步完成后已挂载的 useUserConfig 实例重读本地存档（设置/主题即时生效）', async () => {
+    // 本地 light + 默认配置的实例先挂载
+    const { result } = renderHook(() => useUserConfig())
+    expect(result.current.theme).toBe('light')
+    expect(result.current.config.soundEnabled).toBe(true)
+
+    mocks.fetchSettings.mockResolvedValue({
+      soundEnabled: false,
+      theme: 'warm',
+    })
+    await act(async () => {
+      await syncSettingsFromServer()
+    })
+
+    // 不重挂载：同步事件让已挂载实例重读 localStorage
+    expect(result.current.theme).toBe('warm')
+    expect(result.current.config.soundEnabled).toBe(false)
+    expect(document.documentElement.getAttribute('data-theme')).toBe('warm')
+  })
+
   it('服务端 theme 非法 → 不落盘', async () => {
     localStorage.setItem('lingoforge-theme', 'warm')
     mocks.fetchSettings.mockResolvedValue({
