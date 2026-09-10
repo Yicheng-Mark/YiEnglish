@@ -31,5 +31,9 @@ module.exports = {
   REGISTER_RATE_LIMIT_WINDOW: 60 * 60 * 1000,
   REGISTER_RATE_LIMIT_MAX: 3,
   // 每个账号允许同时登录的设备上限，第 N+1 台登录直接拒绝
-  MAX_DEVICES_PER_USER: parseInt(process.env.MAX_DEVICES_PER_USER, 10) || 2,
+  // 与 users.max_devices 同语义：0=不限，>0=精确上限；显式设 0 不能被默认值吞掉
+  MAX_DEVICES_PER_USER: (() => {
+    const n = parseInt(process.env.MAX_DEVICES_PER_USER, 10)
+    return Number.isInteger(n) && n >= 0 ? n : 2
+  })(),
 }

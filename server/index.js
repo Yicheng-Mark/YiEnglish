@@ -73,8 +73,9 @@ async function runMigrations() {
       try {
         await pool.query(stmt)
       } catch (err) {
-        // ALTER ADD COLUMN 旧 MySQL 不支持 IF NOT EXISTS，忽略重复列
-        if (err.code === 'ER_DUP_FIELDNAME') continue
+        // ALTER ADD COLUMN/KEY 旧 MySQL 不支持 IF NOT EXISTS，忽略重复列/重复键名
+        // （重复键名见于版本记录写入失败后的重跑：DDL 已生效但未记录，重跑撞 ER_DUP_KEYNAME）
+        if (err.code === 'ER_DUP_FIELDNAME' || err.code === 'ER_DUP_KEYNAME') continue
         // 其余错误记录为 error 便于发现，但不中止启动（保持可用性）
         failed = true
         logger.error({ file, err: err.message }, '[Migration] statement failed')

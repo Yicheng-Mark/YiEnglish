@@ -99,6 +99,16 @@ describe('POST /api/migrate/local-to-server', () => {
     expect(settingsUpdateCall()[1]).toEqual([{ theme: 'warm' }, USER_ID])
   })
 
+  it('已下线的暗夜主题值（gray/star）导入时被忽略，保持库内默认（回落明亮）', async () => {
+    await post({ theme: 'gray' })
+    expect(settingsUpdateCall()).toBeUndefined()
+    expect(mockConnection.commit).toHaveBeenCalled()
+
+    mockConnQuery.mockClear()
+    await post({ theme: 'star' })
+    expect(settingsUpdateCall()).toBeUndefined()
+  })
+
   it('wordRepeatCount 夹取到 1-10，非数字回退 1', async () => {
     await post({ config: { wordRepeatCount: 99 } })
     expect(settingsUpdateCall()[1][0].word_repeat_count).toBe(10)

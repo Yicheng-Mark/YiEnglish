@@ -15,6 +15,8 @@
 --   migrate_auth_v4         refresh_tokens.uk_token_hash
 --   migrate_ai_assistant     AI 助手：style_modes + user_style_settings + conversation_memory + chat_messages + ai_usage
 --   migrate_user_device_limit users.max_devices 用户级设备登录上限覆盖
+--   migrate_refresh_device_unique refresh_tokens.uk_user_device + 清理 device_id='' 历史行
+--   migrate_theme_cleanup   user_settings.theme 存量 gray/star/dark 回落 light
 -- ============================================================
 
 CREATE DATABASE IF NOT EXISTS lingoforge
@@ -54,6 +56,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- ------------------------------------------------------------
 -- refresh_tokens：刷新令牌（每行=一台登录设备）
 -- 来源：migrate_auth_v3（建表）+ migrate_device_sessions（设备字段）+ migrate_auth_v4（uk_token_hash）
+--       + migrate_refresh_device_unique（uk_user_device：一台设备同一账号只保留一条会话行）
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS refresh_tokens (
   id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -66,6 +69,7 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
   expires_at      TIMESTAMP      NOT NULL,
   created_at      TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY uk_token_hash (token_hash),
+  UNIQUE KEY uk_user_device (user_id, device_id),
   INDEX idx_user_id (user_id),
   INDEX idx_expires (expires_at),
   CONSTRAINT fk_refresh_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE

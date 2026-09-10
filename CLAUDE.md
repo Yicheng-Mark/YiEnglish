@@ -69,6 +69,13 @@
 - SSH 走 `ssh root@47.115.147.221`（复用 `~/.ssh/lingoforge_key.pem`）。
 - 线上前端报错会 `POST /api/client-error`；排障在 `pm2 logs` 里 grep 接口/错误串。
 
+### 用户级设备登录上限（users.max_devices）
+
+- 语义：`NULL`=跟随全局默认（env `MAX_DEVICES_PER_USER`，默认 2）；`0`=不限台数；`>0`=该账号精确上限。全局 env 同样支持 `0`=不限。
+- **无管理界面，只能手工 SQL**：`UPDATE users SET max_devices = 3 WHERE username = 'xxx';`（设回 `NULL` 恢复全局默认）。
+- 调低上限不会立刻踢人：存量超额会话在下一次 token 轮换（约 30 分钟内）被逐台收敛到新上限，超出设备收到 403 `DEVICE_LIMIT_REACHED` 并自动登出。
+- 相关迁移：`migrate_user_device_limit.sql`（加列）、`migrate_refresh_device_unique.sql`（(user_id, device_id) 唯一键 + 清理 device_id='' 历史行）。启动时自动执行；若登录报 `ER_BAD_FIELD_ERROR: max_devices` 说明迁移未跑成，查 `SELECT * FROM schema_migrations` 确认。
+
 ## 红线（必须遵守）
 
 - **打乱词库**：只能 shuffle `words` 数组的**顺序**，不得改动任何字段内容和 JSON 结构。

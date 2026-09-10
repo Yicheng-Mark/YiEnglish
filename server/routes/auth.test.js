@@ -118,6 +118,21 @@ function setExecuteHandlers(handlers) {
   })
 }
 
+// 事务连接（pool.getConnection 返回的 mockConnection）的 execute 分发：
+// 登录的设备名额检查与会话写入走事务连接。默认空结果集——遗漏 handler 的用例
+// 会在解构处尽早抛错，而不是静默通过。
+function setConnectionHandlers(handlers) {
+  mockConnection.execute.mockImplementation(async (sql, params) => {
+    for (const h of handlers) {
+      if (h.match.every((sub) => String(sql).includes(sub))) {
+        const rows = typeof h.returns === 'function' ? h.returns(params) : h.returns
+        return [rows, []]
+      }
+    }
+    return [[], []]
+  })
+}
+
 // 提取 Set-Cookie 中指定 cookie 的值
 function getCookie(setCookieHeaders, name) {
   if (!setCookieHeaders) return null
@@ -145,6 +160,9 @@ beforeEach(() => {
   mockConnection.commit.mockResolvedValue()
   mockConnection.rollback.mockResolvedValue()
   mockConnection.release.mockResolvedValue()
+  // 清掉上一条用例注入的事务实现，防止泄漏到后续用例
+  mockConnection.execute.mockReset()
+  setConnectionHandlers([])
   // 默认 execute 返回空
   setExecuteHandlers([])
 })
@@ -302,7 +320,7 @@ describe('POST /api/auth/login', () => {
     expect(res.body.error).toMatch(/用户名或密码错误/)
   })
 
-  it('登录成功 → 200 + 下发 cookie + 返回用户信息', async () => {
+  it('登录成功 → 200 + 下发 cookie + 返回用户信息（事务内 FOR UPDATE 名额检查 + 原子 upsert）', async () => {
     setExecuteHandlers([
       {
         match: ['FROM users WHERE username'],
@@ -318,6 +336,9 @@ describe('POST /api/auth/login', () => {
           },
         ],
       },
+    ])
+    setConnectionHandlers([
+      { match: ['SELECT max_devices FROM users'], returns: [{ max_devices: null }] },
       { match: ['SELECT COUNT(*) AS cnt FROM refresh_tokens'], returns: [{ cnt: 0 }] },
       { match: ['DELETE FROM refresh_tokens WHERE user_id'], returns: { affectedRows: 0 } },
       { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 1, affectedRows: 1 } },
@@ -340,14 +361,38 @@ describe('POST /api/auth/login', () => {
     const refresh = getCookie(res.headers['set-cookie'], 'lf_refresh_token')
     expect(access).toBeTruthy()
     expect(refresh).toBeTruthy()
+
+    // 名额检查在事务内串行化：锁用户行（FOR UPDATE），统计其他设备时
+    // 排除空 device_id、排除本设备、只算未过期
+    const lockCall = mockConnection.execute.mock.calls.find(([sql]) =>
+      String(sql).includes('SELECT max_devices FROM users')
+    )
+    expect(lockCall).toBeTruthy()
+    expect(String(lockCall[0])).toContain('FOR UPDATE')
+    const countCall = mockConnection.execute.mock.calls.find(([sql]) =>
+      String(sql).includes('SELECT COUNT(*) AS cnt FROM refresh_tokens')
+    )
+    expect(String(countCall[0])).toContain("device_id <> ''")
+    expect(String(countCall[0])).toContain('device_id <> ?')
+    expect(String(countCall[0])).toContain('expires_at > NOW()')
+    expect(countCall[1]).toEqual([5, expect.any(String)])
+    // 同设备重登覆盖旧行而非新增：写入是 (user_id, device_id) 唯一键上的原子 upsert
+    const insertCall = mockConnection.execute.mock.calls.find(([sql]) =>
+      String(sql).includes('INSERT INTO refresh_tokens')
+    )
+    expect(String(insertCall[0])).toContain('ON DUPLICATE KEY UPDATE')
+    expect(mockConnection.commit).toHaveBeenCalled()
   })
 
-  it('达设备上限 → 403 DEVICE_LIMIT_REACHED', async () => {
+  it('达设备上限 → 403 DEVICE_LIMIT_REACHED（真实计数文案；不写入新会话不提交事务）', async () => {
     setExecuteHandlers([
       {
         match: ['FROM users WHERE username'],
         returns: [{ id: 5, username: VALID_USER, nickname: 'Alice', password_hash: VALID_HASH }],
       },
+    ])
+    setConnectionHandlers([
+      { match: ['SELECT max_devices FROM users'], returns: [{ max_devices: null }] },
       {
         match: ['SELECT COUNT(*) AS cnt FROM refresh_tokens'],
         returns: [{ cnt: FIXED_CONFIG.MAX_DEVICES_PER_USER }],
@@ -359,22 +404,77 @@ describe('POST /api/auth/login', () => {
       .send({ username: VALID_USER, password: VALID_PASSWORD })
     expect(res.status).toBe(403)
     expect(res.body.code).toBe('DEVICE_LIMIT_REACHED')
+    // 文案用真实计数（cnt=2）与生效上限（全局 2），不再拿上限值冒充已登录台数
+    expect(res.body.error).toMatch(/已在 2 台其他设备登录（上限 2 台）/)
+    // 拒绝路径不得写入新会话（upsert 或普通 INSERT 都算），事务必须回滚
+    expect(
+      mockConnection.execute.mock.calls.some(([sql]) =>
+        String(sql).includes('INSERT INTO refresh_tokens')
+      )
+    ).toBe(false)
+    expect(
+      mockExecute.mock.calls.some(([sql]) => String(sql).includes('INSERT INTO refresh_tokens'))
+    ).toBe(false)
+    expect(mockConnection.rollback).toHaveBeenCalled()
+    expect(mockConnection.commit).not.toHaveBeenCalled()
+  })
+
+  it('全局默认上限边界：cnt=上限-1（1 台其他设备）→ 放行', async () => {
+    setExecuteHandlers([
+      {
+        match: ['FROM users WHERE username'],
+        returns: [{ id: 5, username: VALID_USER, nickname: 'Alice', password_hash: VALID_HASH }],
+      },
+    ])
+    setConnectionHandlers([
+      { match: ['SELECT max_devices FROM users'], returns: [{ max_devices: null }] },
+      { match: ['SELECT COUNT(*) AS cnt FROM refresh_tokens'], returns: [{ cnt: 1 }] },
+      { match: ['DELETE FROM refresh_tokens WHERE user_id'], returns: { affectedRows: 0 } },
+      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 1, affectedRows: 1 } },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/login')
+      .send({ username: VALID_USER, password: VALID_PASSWORD })
+    expect(res.status).toBe(200)
+  })
+
+  it('全局 MAX_DEVICES_PER_USER=0（不限）→ 超额也放行（回归：旧 parseInt||2 会把 0 吞成 2）', async () => {
+    FIXED_CONFIG.MAX_DEVICES_PER_USER = 0
+    try {
+      setExecuteHandlers([
+        {
+          match: ['FROM users WHERE username'],
+          returns: [{ id: 5, username: VALID_USER, nickname: 'Alice', password_hash: VALID_HASH }],
+        },
+      ])
+      setConnectionHandlers([
+        { match: ['SELECT max_devices FROM users'], returns: [{ max_devices: null }] },
+        // 9 台已远超任何默认值，但全局配置为不限
+        { match: ['SELECT COUNT(*) AS cnt FROM refresh_tokens'], returns: [{ cnt: 9 }] },
+        { match: ['DELETE FROM refresh_tokens WHERE user_id'], returns: { affectedRows: 0 } },
+        { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 1, affectedRows: 1 } },
+      ])
+      const app = makeApp()
+      const res = await supertest(app)
+        .post('/api/auth/login')
+        .send({ username: VALID_USER, password: VALID_PASSWORD })
+      expect(res.status).toBe(200)
+    } finally {
+      FIXED_CONFIG.MAX_DEVICES_PER_USER = 2
+    }
   })
 
   it('用户级 max_devices=0（不限）→ 已超全局上限也放行', async () => {
     setExecuteHandlers([
       {
         match: ['FROM users WHERE username'],
-        returns: [
-          {
-            id: 5,
-            username: VALID_USER,
-            nickname: 'Alice',
-            password_hash: VALID_HASH,
-            max_devices: 0,
-          },
-        ],
+        returns: [{ id: 5, username: VALID_USER, nickname: 'Alice', password_hash: VALID_HASH }],
       },
+    ])
+    setConnectionHandlers([
+      // 事务内重读的 max_devices=0：用户级不限
+      { match: ['SELECT max_devices FROM users'], returns: [{ max_devices: 0 }] },
       // 5 台已远超全局上限 2，但该用户不限台数
       { match: ['SELECT COUNT(*) AS cnt FROM refresh_tokens'], returns: [{ cnt: 5 }] },
       { match: ['DELETE FROM refresh_tokens WHERE user_id'], returns: { affectedRows: 0 } },
@@ -392,16 +492,11 @@ describe('POST /api/auth/login', () => {
     setExecuteHandlers([
       {
         match: ['FROM users WHERE username'],
-        returns: [
-          {
-            id: 5,
-            username: VALID_USER,
-            nickname: 'Alice',
-            password_hash: VALID_HASH,
-            max_devices: 3,
-          },
-        ],
+        returns: [{ id: 5, username: VALID_USER, nickname: 'Alice', password_hash: VALID_HASH }],
       },
+    ])
+    setConnectionHandlers([
+      { match: ['SELECT max_devices FROM users'], returns: [{ max_devices: 3 }] },
       // 全局上限 2 会拒绝，但该用户上限为 3，cnt=2 应放行
       { match: ['SELECT COUNT(*) AS cnt FROM refresh_tokens'], returns: [{ cnt: 2 }] },
       { match: ['DELETE FROM refresh_tokens WHERE user_id'], returns: { affectedRows: 0 } },
@@ -414,20 +509,15 @@ describe('POST /api/auth/login', () => {
     expect(res.status).toBe(200)
   })
 
-  it('用户级 max_devices=3 → 达到覆盖上限（cnt=3）→ 403', async () => {
+  it('用户级 max_devices=3 → 达到覆盖上限（cnt=3）→ 403（文案用生效上限）', async () => {
     setExecuteHandlers([
       {
         match: ['FROM users WHERE username'],
-        returns: [
-          {
-            id: 5,
-            username: VALID_USER,
-            nickname: 'Alice',
-            password_hash: VALID_HASH,
-            max_devices: 3,
-          },
-        ],
+        returns: [{ id: 5, username: VALID_USER, nickname: 'Alice', password_hash: VALID_HASH }],
       },
+    ])
+    setConnectionHandlers([
+      { match: ['SELECT max_devices FROM users'], returns: [{ max_devices: 3 }] },
       { match: ['SELECT COUNT(*) AS cnt FROM refresh_tokens'], returns: [{ cnt: 3 }] },
     ])
     const app = makeApp()
@@ -437,7 +527,7 @@ describe('POST /api/auth/login', () => {
     expect(res.status).toBe(403)
     expect(res.body.code).toBe('DEVICE_LIMIT_REACHED')
     // 错误文案使用生效上限（覆盖值 3）而非全局值
-    expect(res.body.error).toMatch(/3 台设备/)
+    expect(res.body.error).toMatch(/上限 3 台/)
   })
 
   it('登录频率超限 → 429（rateLimit mock 抛错）', async () => {
@@ -664,23 +754,29 @@ describe('POST /api/auth/refresh', () => {
     expect(res.status).toBe(401)
   })
 
-  // 原子轮换后的 SELECT（读会话元数据）用更具体的关键字，避免误匹配 DELETE 语句
+  // 原子轮换后的 SELECT（读会话元数据）用更具体的关键字，避免误匹配 DELETE 语句。
+  // created_at/id 供设备上限复检做「比本会话更早创建」的排序比较。
   const STORED_REFRESH_ROW = {
     id: 100,
     user_id: 5,
     device_id: 'dev-1',
     device_name: 'Chrome · Windows',
     ip: '127.0.0.1',
+    created_at: new Date('2026-09-01T08:00:00Z'),
   }
 
-  it('有效 refresh token（正式用户）→ 200 轮换并下发新 cookie，DELETE 带过期守卫', async () => {
+  it('有效 refresh token（正式用户）→ 200 轮换并下发新 cookie，DELETE 带过期守卫，设备复检放行', async () => {
     setExecuteHandlers([
       { match: ['SELECT id, user_id, device_id'], returns: [STORED_REFRESH_ROW] },
       { match: ['DELETE FROM refresh_tokens WHERE token_hash'], returns: { affectedRows: 1 } },
       {
         match: ['FROM users WHERE id'],
-        returns: [{ id: 5, username: VALID_USER, nickname: 'Alice', is_guest: 0 }],
+        returns: [
+          { id: 5, username: VALID_USER, nickname: 'Alice', is_guest: 0, max_devices: null },
+        ],
       },
+      // 全局上限 2，仅 1 台更早会话 → 本台在保留集合内，放行
+      { match: ['COUNT(*) AS olderCnt'], returns: [{ olderCnt: 1 }] },
       { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 2, affectedRows: 1 } },
     ])
     const app = makeApp()
@@ -700,6 +796,66 @@ describe('POST /api/auth/refresh', () => {
     expect(delCall).toBeTruthy()
     expect(String(delCall[0])).toContain('expires_at > NOW()')
     expect(delCall[1]).toEqual([hashToken('somevalidvalue')])
+
+    // 设备复检：只统计「创建时间早于本会话（created_at/id 双键比较）」的活跃会话
+    const olderCall = mockExecute.mock.calls.find(([sql]) =>
+      String(sql).includes('COUNT(*) AS olderCnt')
+    )
+    expect(olderCall).toBeTruthy()
+    expect(String(olderCall[0])).toContain('created_at < ?')
+    expect(String(olderCall[0])).toContain('expires_at > NOW()')
+    expect(olderCall[1]).toEqual([
+      5,
+      STORED_REFRESH_ROW.created_at,
+      STORED_REFRESH_ROW.created_at,
+      STORED_REFRESH_ROW.id,
+    ])
+  })
+
+  it('设备复检：更早会话数已达上限 → 403 DEVICE_LIMIT_REACHED，清 cookie 且不再签发', async () => {
+    setExecuteHandlers([
+      { match: ['SELECT id, user_id, device_id'], returns: [STORED_REFRESH_ROW] },
+      { match: ['DELETE FROM refresh_tokens WHERE token_hash'], returns: { affectedRows: 1 } },
+      {
+        match: ['FROM users WHERE id'],
+        returns: [
+          { id: 5, username: VALID_USER, nickname: 'Alice', is_guest: 0, max_devices: null },
+        ],
+      },
+      // 全局上限 2，已有 2 台更早会话 → 本台属超额设备，拒绝续期
+      { match: ['COUNT(*) AS olderCnt'], returns: [{ olderCnt: 2 }] },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/refresh')
+      .set('Cookie', 'lf_refresh_token=overlimit')
+    expect(res.status).toBe(403)
+    expect(res.body.code).toBe('DEVICE_LIMIT_REACHED')
+    // 本会话行已被 rotation 认领删除，吊销即生效：不得再签发新 token
+    expect(
+      mockExecute.mock.calls.some(([sql]) => String(sql).includes('INSERT INTO refresh_tokens'))
+    ).toBe(false)
+    const sc = res.headers['set-cookie'] || []
+    const arr = Array.isArray(sc) ? sc : [sc]
+    expect(arr.some((c) => /lf_refresh_token=;/.test(c))).toBe(true)
+  })
+
+  it('用户级 max_devices=0（不限）→ refresh 不复检上限（不发 olderCnt 查询）', async () => {
+    setExecuteHandlers([
+      { match: ['SELECT id, user_id, device_id'], returns: [STORED_REFRESH_ROW] },
+      { match: ['DELETE FROM refresh_tokens WHERE token_hash'], returns: { affectedRows: 1 } },
+      {
+        match: ['FROM users WHERE id'],
+        returns: [{ id: 5, username: VALID_USER, nickname: 'Alice', is_guest: 0, max_devices: 0 }],
+      },
+      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 2, affectedRows: 1 } },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/refresh')
+      .set('Cookie', 'lf_refresh_token=unlimited')
+    expect(res.status).toBe(200)
+    expect(mockExecute.mock.calls.some(([sql]) => String(sql).includes('olderCnt'))).toBe(false)
   })
 
   it('并发抢占同一 token（原子 DELETE affectedRows=0）→ 401 清 cookie，不再签发并行会话', async () => {

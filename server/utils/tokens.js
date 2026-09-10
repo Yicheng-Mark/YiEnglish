@@ -65,16 +65,35 @@ function hashToken(token) {
   return crypto.createHash('sha256').update(token).digest('hex')
 }
 
-// 签发 access + refresh，写入 refresh_tokens（含设备信息用于设备管理/名额统计），并下发 cookie
-async function issueTokens(res, userId, isGuest = false, device = {}, trialExp = null) {
+// 签发 access + refresh，写入 refresh_tokens（含设备信息用于设备管理/名额统计），并下发 cookie。
+// conn：调用方传入事务连接时，会话行写入挂到该事务内（登录的设备名额检查依赖此原子性）。
+async function issueTokens(
+  res,
+  userId,
+  isGuest = false,
+  device = {},
+  trialExp = null,
+  conn = null
+) {
   const accessToken = signAccessToken(userId, isGuest, trialExp)
   const refreshToken = signRefreshToken()
   const tokenHash = hashToken(refreshToken)
   const expiresAt = new Date(Date.now() + REFRESH_MAX_AGE)
 
-  await pool.execute(
+  // (user_id, device_id) 唯一键上的原子 upsert：同一设备重复登录/续期直接覆盖旧行。
+  // 旧实现「先 DELETE 本设备行再 INSERT」存在窗口期，并发登录会产生同设备重复行，
+  // 使 COUNT(*) 按行数虚报设备占用导致他人被误 403；覆盖时重置 created_at/last_active_at。
+  const db = conn || pool
+  await db.execute(
     `INSERT INTO refresh_tokens (user_id, token_hash, expires_at, device_id, device_name, ip, last_active_at)
-     VALUES (?, ?, ?, ?, ?, ?, NOW())`,
+     VALUES (?, ?, ?, ?, ?, ?, NOW())
+     ON DUPLICATE KEY UPDATE
+       token_hash = VALUES(token_hash),
+       expires_at = VALUES(expires_at),
+       device_name = VALUES(device_name),
+       ip = VALUES(ip),
+       created_at = NOW(),
+       last_active_at = NOW()`,
     [
       userId,
       tokenHash,

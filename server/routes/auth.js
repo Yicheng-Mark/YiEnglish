@@ -248,7 +248,7 @@ router.post('/login', async (req, res, next) => {
     await checkLoginRateLimit(username, ip)
 
     const [rows] = await pool.execute(
-      'SELECT id, username, nickname, password_hash, avatar_url, daily_goal_minutes, signature, max_devices FROM users WHERE username = ?',
+      'SELECT id, username, nickname, password_hash, avatar_url, daily_goal_minutes, signature FROM users WHERE username = ?',
       [username]
     )
 
@@ -269,27 +269,50 @@ router.post('/login', async (req, res, next) => {
     const deviceId = ensureDeviceCookie(req, res, resolveDeviceId(req))
     const device = { deviceId, deviceName: parseDeviceName(req.headers['user-agent']), ip }
 
-    const [[{ cnt }]] = await pool.execute(
-      `SELECT COUNT(*) AS cnt FROM refresh_tokens
-       WHERE user_id = ? AND device_id <> '' AND device_id <> ? AND expires_at > NOW()`,
-      [user.id, deviceId]
-    )
-    // 设备上限支持用户级覆盖：users.max_devices NULL=跟随全局默认，0=不限，>0=精确上限
-    const deviceLimit = user.max_devices ?? config.MAX_DEVICES_PER_USER
-    if (deviceLimit > 0 && cnt >= deviceLimit) {
-      return res.status(403).json({
-        error: `该账号已在 ${deviceLimit} 台设备登录，请到已登录设备的「设置-登录设备管理」中退出一台后再试`,
-        code: 'DEVICE_LIMIT_REACHED',
-      })
+    // 名额检查 + 会话写入放同一短事务（bcrypt 已在外层完成，锁只覆盖毫秒级 DB 操作）：
+    // SELECT ... FOR UPDATE 锁住用户行，串行化同一账号的并发登录，消除「两台新设备
+    // 同时通过 COUNT 检查再各自 INSERT」的超限竞态；issueTokens 的写入走
+    // (user_id, device_id) 唯一键原子 upsert，同一设备重复登录覆盖旧行不占新名额。
+    const conn = await pool.getConnection()
+    try {
+      await conn.beginTransaction()
+
+      // 事务内重读 max_devices：并发调上限时以最新值为准（初查 SELECT 的值可能已过期）
+      const [lockRows] = await conn.execute(
+        'SELECT max_devices FROM users WHERE id = ? FOR UPDATE',
+        [user.id]
+      )
+      const maxDevices = lockRows[0]?.max_devices
+
+      const [[{ cnt }]] = await conn.execute(
+        `SELECT COUNT(*) AS cnt FROM refresh_tokens
+         WHERE user_id = ? AND device_id <> '' AND device_id <> ? AND expires_at > NOW()`,
+        [user.id, deviceId]
+      )
+      // 设备上限支持用户级覆盖：users.max_devices NULL=跟随全局默认，0=不限，>0=精确上限
+      const deviceLimit = maxDevices ?? config.MAX_DEVICES_PER_USER
+      if (deviceLimit > 0 && cnt >= deviceLimit) {
+        await conn.rollback()
+        return res.status(403).json({
+          error: `该账号已在 ${cnt} 台其他设备登录（上限 ${deviceLimit} 台），请到已登录设备的「设置-登录设备管理」中退出一台后再试`,
+          code: 'DEVICE_LIMIT_REACHED',
+        })
+      }
+
+      // 顺带回收该账号已过期的会话行（过期行不占名额，纯清理）
+      await conn.execute('DELETE FROM refresh_tokens WHERE user_id = ? AND expires_at <= NOW()', [
+        user.id,
+      ])
+
+      await issueTokens(res, user.id, false, device, null, conn)
+
+      await conn.commit()
+    } catch (err) {
+      await conn.rollback().catch(() => {})
+      throw err
+    } finally {
+      conn.release()
     }
-
-    // 替换本设备旧行：同一设备重复登录不占新名额
-    await pool.execute('DELETE FROM refresh_tokens WHERE user_id = ? AND device_id = ?', [
-      user.id,
-      deviceId,
-    ])
-
-    await issueTokens(res, user.id, false, device)
 
     res.json({
       user: toClientUser(user),
@@ -309,8 +332,9 @@ router.post('/refresh', authActionLimiter, async (req, res, next) => {
 
     const tokenHash = hashToken(refreshToken)
 
+    // created_at / id 供下方设备上限复检做「比本会话更早创建」的排序比较
     const [rows] = await pool.execute(
-      'SELECT id, user_id, device_id, device_name, ip FROM refresh_tokens WHERE token_hash = ? AND expires_at > NOW()',
+      'SELECT id, user_id, device_id, device_name, ip, created_at FROM refresh_tokens WHERE token_hash = ? AND expires_at > NOW()',
       [tokenHash]
     )
 
@@ -335,7 +359,7 @@ router.post('/refresh', authActionLimiter, async (req, res, next) => {
     }
 
     const [userRows] = await pool.execute(
-      'SELECT id, username, nickname, avatar_url, daily_goal_minutes, signature, is_guest FROM users WHERE id = ?',
+      'SELECT id, username, nickname, avatar_url, daily_goal_minutes, signature, is_guest, max_devices FROM users WHERE id = ?',
       [stored.user_id]
     )
 
@@ -357,6 +381,29 @@ router.post('/refresh', authActionLimiter, async (req, res, next) => {
       if (!trialExpiresAt || new Date(trialExpiresAt) <= new Date()) {
         clearCookies(res)
         return res.status(401).json({ error: '体验时间已结束', code: 'TRIAL_EXPIRED' })
+      }
+    }
+
+    // 设备上限复检：上限只拦「新登录」的话，调低上限后存量超额会话仍可无限续期。
+    // 判定规则——比本会话更早创建的活跃会话数已达上限，说明本台属于超额设备：
+    // 拒绝续期（本会话行已被上方 rotation 认领删除，吊销即生效）。
+    // 会话按 created_at 排序自然收敛到上限台数；游客走独立试用体系不参与。
+    if (!isGuest) {
+      const deviceLimit = userRows[0].max_devices ?? config.MAX_DEVICES_PER_USER
+      if (deviceLimit > 0) {
+        const [[{ olderCnt }]] = await pool.execute(
+          `SELECT COUNT(*) AS olderCnt FROM refresh_tokens
+           WHERE user_id = ? AND expires_at > NOW()
+             AND (created_at < ? OR (created_at = ? AND id < ?))`,
+          [stored.user_id, stored.created_at, stored.created_at, stored.id]
+        )
+        if (olderCnt >= deviceLimit) {
+          clearCookies(res)
+          return res.status(403).json({
+            error: `该账号登录设备数已达上限（${deviceLimit} 台），本设备已退出登录`,
+            code: 'DEVICE_LIMIT_REACHED',
+          })
+        }
       }
     }
 
