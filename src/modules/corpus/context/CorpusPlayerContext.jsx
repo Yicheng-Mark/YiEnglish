@@ -76,16 +76,19 @@ async function ensureDictLoaded() {
   return DICT_LOADING
 }
 
-// 方案A：拆成两个 context。
+// 方案A：拆成三个 context。
 // - 稳定/低频 context：模式、视频引用、字幕、词典、设置、弹窗相关（不含 player）。
 //   变化来源只有字幕加载完成、模式切换、设置切换、弹窗开关——都是用户显式动作，频率低。
-// - player context：仅 player 对象（含 currentTime / activeId / isPlaying 等 timeupdate 高频字段）。
-//   这样不读 player 的消费者（ModeTabs / SettingsPanel / SubtitlePanel / 各字幕模式的稳定部分）
-//   不再随 timeupdate 全局重渲染。
+// - player context：player 对象（activeId/isPlaying 等按句/按操作变化的状态 + 稳定回调）。
+//   不含 currentTime——那是唯一随 timeupdate(~4Hz) 高频变化的字段，放进来的话
+//   player 身份每帧重建，所有消费者都会跟着全树重渲染（拆分等于没拆）。
+// - time context：currentTime 原语按值下发，只有进度条类组件（桌面/移动进度条）订阅。
+//   timeupdate 高频 tick 只重渲染这几个小组件。
 //
-// useCorpusContext() 仍返回扁平对象，签名完全兼容，消费方零改动。
+// useCorpusContext() 仍返回扁平对象（不含 currentTime），签名兼容，消费方基本零改动。
 const CorpusStableContext = createContext(null)
 const CorpusPlayerOnlyContext = createContext(null)
+const CorpusTimeContext = createContext(0)
 
 const MODES = ['bilingual', 'english', 'chinese', 'dictation', 'cloze', 'translate', 'vocab']
 
@@ -105,7 +108,7 @@ export function CorpusPlayerProvider({ video, children }) {
   const activeTokenRef = useRef(null)
 
   const { settings, updateSetting, toggleSetting } = useCorpusSettings()
-  const player = useCorpusPlayer({ videoRef, subtitles, videoEl })
+  const { player, currentTime } = useCorpusPlayer({ videoRef, subtitles, videoEl })
 
   // 加载字幕
   useEffect(() => {
@@ -266,13 +269,14 @@ export function CorpusPlayerProvider({ video, children }) {
     ]
   )
 
-  // player 单独成 context：依赖只有 player，timeupdate 高频变化只重建这个 value。
+  // player 单独成 context：player 不含 currentTime，timeupdate 高频 tick 不改变其身份，
+  // player 消费者只在 activeId/isPlaying/设置类状态实际变化时重渲染。
   const playerValue = useMemo(() => ({ player }), [player])
 
   return (
     <CorpusStableContext.Provider value={stableValue}>
       <CorpusPlayerOnlyContext.Provider value={playerValue}>
-        {children}
+        <CorpusTimeContext.Provider value={currentTime}>{children}</CorpusTimeContext.Provider>
       </CorpusPlayerOnlyContext.Provider>
     </CorpusStableContext.Provider>
   )
@@ -284,15 +288,16 @@ export function useCorpusContext() {
   if (!stable || !playerCtx) {
     throw new Error('useCorpusContext must be used within CorpusPlayerProvider')
   }
-  // 返回扁平结构，与改造前完全一致；消费方零改动。
-  // 注：调用 useCorpusContext 的组件会在 stable 或 player 任一变化时重渲染，
-  // 这与改造前等价；真正受益的是未来用细粒度 hook 的消费方（见下）。
+  // 返回扁平结构，与改造前一致（currentTime 不在此：需要它的组件用 useCorpusTime()）。
+  // 调用 useCorpusContext 的组件在 stable 或 player 任一变化时重渲染；
+  // timeupdate 高频 tick 已被隔离在 time context，不再波及这里。
   return useMemo(() => ({ ...stable, player: playerCtx.player }), [stable, playerCtx])
 }
 
-// 细粒度 hook（消费方未改动，但供未来优化使用）：
-// - useCorpusStable()：只订阅低频 context，不含 player，不随 timeupdate 重渲染。
-// - useCorpusPlayerState()：只订阅 player context。
+// 细粒度 hook：
+// - useCorpusStable()：只订阅低频 context，不含 player，不随播放状态变化重渲染。
+// - useCorpusPlayerState()：只订阅 player context（activeId/isPlaying/回调，不含 currentTime）。
+// - useCorpusTime()：只订阅 currentTime（timeupdate ~4Hz 变化），进度条类组件专用。
 export function useCorpusStable() {
   const ctx = useContext(CorpusStableContext)
   if (!ctx) {
@@ -307,4 +312,8 @@ export function useCorpusPlayerState() {
     throw new Error('useCorpusPlayerState must be used within CorpusPlayerProvider')
   }
   return ctx.player
+}
+
+export function useCorpusTime() {
+  return useContext(CorpusTimeContext)
 }

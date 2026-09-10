@@ -107,14 +107,18 @@ function DictationCard({ current }) {
 }
 
 /* ── Cloze text helper ── */
-function ClozeText({ text, paraKey, posMap, onWordClick, showColor }) {
-  const tokens = tokenizeEnglish(text)
-  const clozeCount = Math.max(1, Math.floor(tokens.filter((t) => t.isWord).length * 0.25))
-  const clozeSet = new Set()
-  const wordIndices = tokens.map((t, i) => (t.isWord ? i : -1)).filter((i) => i >= 0)
-  for (let i = 0; i < Math.min(clozeCount, wordIndices.length); i++) {
-    clozeSet.add(wordIndices[i])
-  }
+// 挖空位置对同一 text 是确定性的：memo 化后 props 不变即跳过（含 tokenize 重算）
+const ClozeText = memo(function ClozeText({ text, paraKey, posMap, onWordClick, showColor }) {
+  const clozeSet = useMemo(() => {
+    const tokens = tokenizeEnglish(text)
+    const clozeCount = Math.max(1, Math.floor(tokens.filter((t) => t.isWord).length * 0.25))
+    const set = new Set()
+    const wordIndices = tokens.map((t, i) => (t.isWord ? i : -1)).filter((i) => i >= 0)
+    for (let i = 0; i < Math.min(clozeCount, wordIndices.length); i++) {
+      set.add(wordIndices[i])
+    }
+    return set
+  }, [text])
   return (
     <ColorizedText
       text={text}
@@ -125,7 +129,7 @@ function ClozeText({ text, paraKey, posMap, onWordClick, showColor }) {
       clozeIndices={clozeSet}
     />
   )
-}
+})
 
 function getFirstMeaning(trans) {
   if (!trans) return ''

@@ -97,6 +97,12 @@ describe('searchWordIndex', () => {
     expect(r.some((i) => i.word === 'apple')).toBe(true)
   })
 
+  it('清洗后的音标片段也能命中（searchText 预计算的命中路径）', () => {
+    // apple 的音标 /ˈæpəl/ 清洗为 æpəl：用音标子串反查词名
+    const r = searchWordIndex(idx, 'æpəl')
+    expect(r.some((i) => i.word === 'apple')).toBe(true)
+  })
+
   it('limit 截断结果数量', () => {
     expect(searchWordIndex(idx, 'a', 1)).toHaveLength(1)
     expect(searchWordIndex(idx, 'a', 2)).toHaveLength(2)

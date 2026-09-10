@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { idbPut, idbGetAll, idbDelete } from '../utils/idb'
+import { idbBulkPut, idbGetAll, idbDelete } from '../utils/idb'
 
 const STORE = 'errorDetails'
 
@@ -84,6 +84,36 @@ function invalidateCache() {
   _cacheTimestamp = 0
 }
 
+// 错键明细合批：每个错键插一行，连续打错时逐键开 IDB 事务会排队抖动输入延迟。
+// 缓冲后统一落盘（单事务批量 put），页面隐藏/关闭时兜底 flush 防
+// 丢失最近 2s 的明细
+let pendingDetails = []
+let detailFlushTimer = null
+const DETAILS_FLUSH_MS = 2000
+
+function flushErrorDetails() {
+  if (detailFlushTimer) {
+    clearTimeout(detailFlushTimer)
+    detailFlushTimer = null
+  }
+  if (pendingDetails.length === 0) return
+  const batch = pendingDetails
+  pendingDetails = []
+  idbBulkPut(STORE, batch).catch(() => {})
+}
+
+function scheduleErrorDetailsFlush() {
+  if (detailFlushTimer) return
+  detailFlushTimer = setTimeout(flushErrorDetails, DETAILS_FLUSH_MS)
+}
+
+if (typeof window !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') flushErrorDetails()
+  })
+  window.addEventListener('pagehide', flushErrorDetails)
+}
+
 export default function useErrorTracking() {
   const onError = useCallback((wordObj, expected, typed, letterIndex) => {
     // 空/加载中场景 expected/typed 可能为 undefined，跳过避免崩溃并污染统计
@@ -97,8 +127,9 @@ export default function useErrorTracking() {
       timestamp: Date.now(),
       pattern: classifyError(word, letterIndex, expected, typed),
     }
-    // 写入 IndexedDB（异步，不阻塞输入）
-    idbPut(STORE, entry).catch(() => {})
+    // 进内存缓冲，2s 批量落盘（不再逐键开 IDB 事务）
+    pendingDetails.push(entry)
+    scheduleErrorDetailsFlush()
     writeCount += 1
     if (writeCount % PRUNE_EVERY_N_WRITES === 0) pruneExpiredErrors()
     invalidateCache()
@@ -106,8 +137,10 @@ export default function useErrorTracking() {
 
   const getRecentErrors = useCallback(async (days = 30) => {
     const all = await idbGetAll(STORE)
+    // 合并尚未落盘的缓冲行，保证统计/导出与实际错键一致
+    const merged = pendingDetails.length ? all.concat(pendingDetails) : all
     const cutoff = Date.now() - days * 24 * 60 * 60 * 1000
-    return all.filter((e) => e.timestamp >= cutoff)
+    return merged.filter((e) => e.timestamp >= cutoff)
   }, [])
 
   const getErrorStats = useCallback(async () => {

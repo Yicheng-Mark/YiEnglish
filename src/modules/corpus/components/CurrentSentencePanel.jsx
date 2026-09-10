@@ -3,9 +3,15 @@ import { useCorpusContext } from '../context/CorpusPlayerContext.jsx'
 import { tokenizeEnglish, POS_LABEL, getPosHighlightColor } from '../utils/wordColorMap.js'
 import { buildPhonetic } from '../utils/buildPhonetic.js'
 
-function HighlightedSentence({ text, posMap, onWordClick, posHighlight = true }) {
+// memo + tokens useMemo：props 稳定时跳过重渲染，避免正则分词随列表重渲染反复重算
+const HighlightedSentence = memo(function HighlightedSentence({
+  text,
+  posMap,
+  onWordClick,
+  posHighlight = true,
+}) {
+  const tokens = useMemo(() => (text ? tokenizeEnglish(text) : []), [text])
   if (!text) return null
-  const tokens = tokenizeEnglish(text)
   return (
     <>
       {tokens.map((tok, i) => {
@@ -48,7 +54,7 @@ function HighlightedSentence({ text, posMap, onWordClick, posHighlight = true })
       })}
     </>
   )
-}
+})
 
 function CurrentSentencePanelInner() {
   const { subtitles, player, posMap, wordMap, settings, handleWordClick, mode } = useCorpusContext()
@@ -122,11 +128,13 @@ function CurrentSentencePanelInner() {
 
           {/* 中文翻译 */}
           {showZh && current.zh && (
-            <div className={`leading-relaxed ${
-              showEn
-                ? 'text-sm md:text-base text-content-tertiary dark:text-gray-400'
-                : 'text-lg md:text-xl text-content dark:text-gray-100 font-semibold'
-            }`}>
+            <div
+              className={`leading-relaxed ${
+                showEn
+                  ? 'text-sm md:text-base text-content-tertiary dark:text-gray-400'
+                  : 'text-lg md:text-xl text-content dark:text-gray-100 font-semibold'
+              }`}
+            >
               {current.zh}
             </div>
           )}

@@ -76,9 +76,8 @@ export default function BilingualMode() {
                 active={active}
                 posMap={posMap}
                 phonetic={phoneticArr ? phoneticArr[idx] : ''}
-                onClick={() => player.jumpToCue(sub.id)}
+                onJump={player.jumpToCue}
                 onWordClick={handleWordClick}
-                onPlay={() => player.jumpToCue(sub.id)}
                 posHighlight={settings?.posHighlight}
               />
             </div>

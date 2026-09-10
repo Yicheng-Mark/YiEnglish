@@ -28,7 +28,7 @@ export default function ClozeMode() {
       {...containerProps}
       className="h-full overflow-y-auto p-2 md:p-3 space-y-2 bg-surface dark:bg-white/[0.03] border border-gray-200/70 dark:border-white/[0.06] rounded-2xl shadow-sm"
     >
-      {subtitles.map((sub) => {
+      {subtitles.map((sub, idx) => {
         const active = sub.id === player.activeId
         const indices = clozeMap.get(sub.id) || new Set()
         return (
@@ -44,7 +44,7 @@ export default function ClozeMode() {
             }
           >
             <div className="text-xs text-content-tertiary dark:text-gray-500 mb-1 tabular-nums">
-              {subtitles.indexOf(sub) + 1} · {formatTime(sub.start)} — {formatTime(sub.end)}
+              {idx + 1} · {formatTime(sub.start)} — {formatTime(sub.end)}
             </div>
             {sub.en && (
               <div

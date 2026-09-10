@@ -14,7 +14,7 @@ import {
   Check,
   X,
 } from 'lucide-react'
-import { useCorpusContext } from '../../context/CorpusPlayerContext.jsx'
+import { useCorpusContext, useCorpusTime } from '../../context/CorpusPlayerContext.jsx'
 import { formatTime } from '../../../../utils/formatTime.js'
 
 const RATES = [0.5, 0.75, 1, 1.25, 1.5, 2]
@@ -51,7 +51,9 @@ function ControlBtn({ onClick, label, ariaLabel, active, children }) {
 
 export default function MobileBottomControls({ focusMode, onToggleFocus }) {
   const { player, settings, toggleSetting } = useCorpusContext()
-  const { currentTime, duration, rate, loopCount, pauseAfterCue, intervalGap } = player
+  const { duration, rate, loopCount, pauseAfterCue, intervalGap } = player
+  // currentTime 高频变化（timeupdate ~4Hz），单独订阅避免整个组件树跟着重渲染
+  const currentTime = useCorpusTime()
   const [showSpeedMenu, setShowSpeedMenu] = useState(false)
 
   const max = duration > 0 ? duration : 0
@@ -93,19 +95,11 @@ export default function MobileBottomControls({ focusMode, onToggleFocus }) {
 
         {/* Row 1: 7 main control buttons */}
         <div className="flex items-center justify-around">
-          <ControlBtn
-            onClick={() => setShowSpeedMenu(true)}
-            label="倍速"
-            active={rate !== 1}
-          >
+          <ControlBtn onClick={() => setShowSpeedMenu(true)} label="倍速" active={rate !== 1}>
             <span className="text-[11px] font-bold tabular-nums">{rate}x</span>
           </ControlBtn>
 
-          <ControlBtn
-            onClick={onToggleFocus}
-            label="精听"
-            active={focusMode}
-          >
+          <ControlBtn onClick={onToggleFocus} label="精听" active={focusMode}>
             <Zap className="w-[16px] h-[16px]" />
           </ControlBtn>
 
@@ -118,9 +112,11 @@ export default function MobileBottomControls({ focusMode, onToggleFocus }) {
             label={player.isPlaying ? '暂停' : '播放'}
             active={false}
           >
-            {player.isPlaying
-              ? <Pause className="w-[18px] h-[18px]" fill="currentColor" />
-              : <Play className="w-[18px] h-[18px] ml-0.5" fill="currentColor" />}
+            {player.isPlaying ? (
+              <Pause className="w-[18px] h-[18px]" fill="currentColor" />
+            ) : (
+              <Play className="w-[18px] h-[18px] ml-0.5" fill="currentColor" />
+            )}
           </ControlBtn>
 
           <ControlBtn onClick={player.nextCue} label="下一句" active={false}>
@@ -146,11 +142,7 @@ export default function MobileBottomControls({ focusMode, onToggleFocus }) {
 
         {/* Row 2: 4 auxiliary buttons */}
         <div className="flex items-center justify-around">
-          <ControlBtn
-            onClick={player.togglePauseAfterCue}
-            label="单句暂停"
-            active={pauseAfterCue}
-          >
+          <ControlBtn onClick={player.togglePauseAfterCue} label="单句暂停" active={pauseAfterCue}>
             <PauseCircle className="w-[16px] h-[16px]" />
           </ControlBtn>
 
@@ -216,7 +208,9 @@ export default function MobileBottomControls({ focusMode, onToggleFocus }) {
                   }}
                   className="w-full flex items-center justify-center gap-2 py-3 px-5 transition-colors"
                   style={{
-                    backgroundColor: active ? 'var(--mobile-primary-soft, rgba(88,86,214,0.08))' : 'transparent',
+                    backgroundColor: active
+                      ? 'var(--mobile-primary-soft, rgba(88,86,214,0.08))'
+                      : 'transparent',
                     color: active ? 'var(--mobile-primary)' : 'var(--mobile-text)',
                     fontWeight: active ? 600 : 400,
                   }}
@@ -230,7 +224,6 @@ export default function MobileBottomControls({ focusMode, onToggleFocus }) {
           </div>
         </>
       )}
-
     </>
   )
 }

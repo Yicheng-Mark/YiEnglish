@@ -37,7 +37,7 @@ export default function TranslateMode() {
       {...containerProps}
       className="h-full overflow-y-auto p-2 md:p-3 space-y-2 bg-surface dark:bg-white/[0.03] border border-gray-200/70 dark:border-white/[0.06] rounded-2xl shadow-sm"
     >
-      {subtitles.map((sub) => {
+      {subtitles.map((sub, idx) => {
         const active = sub.id === player.activeId
         const showEn = revealed.has(sub.id)
         return (
@@ -53,13 +53,11 @@ export default function TranslateMode() {
             }
           >
             <div className="text-xs text-content-tertiary dark:text-gray-500 mb-1 tabular-nums">
-              {subtitles.indexOf(sub) + 1} · {formatTime(sub.start)} — {formatTime(sub.end)}
+              {idx + 1} · {formatTime(sub.start)} — {formatTime(sub.end)}
             </div>
             <div
               className={`leading-relaxed mb-2 ${
-                active
-                  ? 'text-base font-semibold'
-                  : 'text-base text-content dark:text-gray-100'
+                active ? 'text-base font-semibold' : 'text-base text-content dark:text-gray-100'
               }`}
             >
               {sub.zh || ''}
@@ -76,9 +74,7 @@ export default function TranslateMode() {
             ) : showEn && sub.en ? (
               <div
                 className={`text-sm leading-snug ${
-                  active
-                    ? 'text-primary/80'
-                    : 'text-content-secondary dark:text-gray-300'
+                  active ? 'text-primary/80' : 'text-content-secondary dark:text-gray-300'
                 }`}
               >
                 <ColorizedText

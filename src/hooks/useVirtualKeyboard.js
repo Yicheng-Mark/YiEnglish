@@ -32,26 +32,43 @@ export default function useVirtualKeyboard({ threshold = 0, active = true } = {}
     baseHeightRef.current = window.innerHeight
 
     const vv = window.visualViewport
+    // 键盘弹出/收起动画期间 resize 会连发 10-20 次；rAF 合帧后每帧最多
+    // 结算一次 setState，避免整个 Typing 页随每个 resize 事件重渲染
+    let rafId = null
     const handleResize = () => {
-      const currentHeight = vv ? vv.height : window.innerHeight
-      const kbdHeight = Math.max(0, baseHeightRef.current - currentHeight)
-      const effective = kbdHeight > threshold ? kbdHeight : 0
-      setKeyboardHeight(effective)
-      // 键盘弹起时，vv.height 就是键盘上方的可视区域，直接用即可；
-      // 不要再减 safe-area（部分安卓机会把手势条/键盘高度算进 safe-area，导致下方留白）
-      setViewportHeight(effective > 0 ? currentHeight : null)
+      if (rafId != null) return
+      rafId = requestAnimationFrame(() => {
+        rafId = null
+        const currentHeight = vv ? vv.height : window.innerHeight
+        const kbdHeight = Math.max(0, baseHeightRef.current - currentHeight)
+        const effective = kbdHeight > threshold ? kbdHeight : 0
+        setKeyboardHeight(effective)
+        // 键盘弹起时，vv.height 就是键盘上方的可视区域，直接用即可；
+        // 不要再减 safe-area（部分安卓机会把手势条/键盘高度算进 safe-area，导致下方留白）
+        setViewportHeight(effective > 0 ? currentHeight : null)
+      })
+    }
+    const teardown = () => {
+      if (rafId != null) cancelAnimationFrame(rafId)
+      rafId = null
     }
 
     if (vv) {
       vv.addEventListener('resize', handleResize)
       handleResize()
-      return () => vv.removeEventListener('resize', handleResize)
+      return () => {
+        teardown()
+        vv.removeEventListener('resize', handleResize)
+      }
     }
 
     // 不支持 visualViewport 的浏览器 fallback 到 window.innerHeight
     window.addEventListener('resize', handleResize)
     handleResize()
-    return () => window.removeEventListener('resize', handleResize)
+    return () => {
+      teardown()
+      window.removeEventListener('resize', handleResize)
+    }
   }, [active, threshold])
 
   return { keyboardHeight, viewportHeight }

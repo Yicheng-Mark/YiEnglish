@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { playMediaSafe } from '../../../utils/playMediaSafe.js'
 
 export function useCorpusPlayer({ videoRef, subtitles, videoEl }) {
@@ -391,39 +391,81 @@ export function useCorpusPlayer({ videoRef, subtitles, videoEl }) {
     else if (idx === -1 && cues.length) jumpToCue(cues[0].id)
   }, [jumpToCue])
 
+  // 直接读视频元素当前时间。currentTime 是唯一随 timeupdate(~4Hz) 变化的字段，
+  // 不能放进 player 对象（否则对象身份每帧变化，所有 player 消费者全树重渲染）；
+  // 需要最新时间戳的场景（键盘快捷键 ±5s 等 ref 读取）用本回调按需取值
+  const getCurrentTime = useCallback(() => videoRef.current?.currentTime ?? 0, [videoRef])
+
   // 句子进度：(当前是第几句, 总句数)；activeId 不在字幕里（如切视频后的残留态）时不算第几句
   const activeIdx = activeId == null ? -1 : subtitles.findIndex((c) => c.id === activeId)
   const cueIndex = activeIdx >= 0 ? activeIdx + 1 : 0
   const cueTotal = subtitles?.length ?? 0
 
-  return {
-    activeId,
-    currentTime,
-    duration,
-    isPlaying,
-    rate,
-    loopCount,
-    pauseAfterCue,
-    intervalGap,
-    hideSubtitleRight,
-    hideSubtitleBottom,
-    cueIndex,
-    cueTotal,
-    play,
-    pause,
-    toggle,
-    seek,
-    setRate,
-    setLoopCount,
-    toggleLoop,
-    togglePauseAfterCue,
-    setIntervalGap,
-    toggleHideSubtitleRight,
-    toggleHideSubtitleBottom,
-    toggleAllSubtitles,
-    requestFullscreen,
-    jumpToCue,
-    prevCue,
-    nextCue,
-  }
+  // player 聚合低频状态 + 稳定回调（不含 currentTime）：activeId 按句切换、isPlaying
+  // 播放/暂停才变化，timeupdate 高频 tick 不再改变 player 身份
+  const player = useMemo(
+    () => ({
+      activeId,
+      duration,
+      isPlaying,
+      rate,
+      loopCount,
+      pauseAfterCue,
+      intervalGap,
+      hideSubtitleRight,
+      hideSubtitleBottom,
+      cueIndex,
+      cueTotal,
+      getCurrentTime,
+      play,
+      pause,
+      toggle,
+      seek,
+      setRate,
+      setLoopCount,
+      toggleLoop,
+      togglePauseAfterCue,
+      setIntervalGap,
+      toggleHideSubtitleRight,
+      toggleHideSubtitleBottom,
+      toggleAllSubtitles,
+      requestFullscreen,
+      jumpToCue,
+      prevCue,
+      nextCue,
+    }),
+    [
+      activeId,
+      duration,
+      isPlaying,
+      rate,
+      loopCount,
+      pauseAfterCue,
+      intervalGap,
+      hideSubtitleRight,
+      hideSubtitleBottom,
+      cueIndex,
+      cueTotal,
+      getCurrentTime,
+      play,
+      pause,
+      toggle,
+      seek,
+      setRate,
+      setLoopCount,
+      toggleLoop,
+      togglePauseAfterCue,
+      setIntervalGap,
+      toggleHideSubtitleRight,
+      toggleHideSubtitleBottom,
+      toggleAllSubtitles,
+      requestFullscreen,
+      jumpToCue,
+      prevCue,
+      nextCue,
+    ]
+  )
+
+  // currentTime 单独暴露（原语）：由 CorpusTimeContext 按值下发，只有进度条类组件订阅
+  return { player, currentTime }
 }

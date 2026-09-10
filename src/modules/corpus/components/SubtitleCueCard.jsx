@@ -1,11 +1,18 @@
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
 import { Play, Copy } from 'lucide-react'
 import { formatTime } from '../../../utils/formatTime.js'
 import { tokenizeEnglish, POS_LABEL, getPosHighlightColor } from '../utils/wordColorMap.js'
 
-function CueTextWithPills({ text, posMap, onWordClick, posHighlight = true }) {
+// memo + tokens useMemo：props（text/posMap/onWordClick/posHighlight）稳定时
+// 跳过重渲染，正则分词 token 不会被反复重算（跟随 activeId 切换的列表重渲染每句一次）
+const CueTextWithPills = memo(function CueTextWithPills({
+  text,
+  posMap,
+  onWordClick,
+  posHighlight = true,
+}) {
+  const tokens = useMemo(() => (text ? tokenizeEnglish(text) : []), [text])
   if (!text) return null
-  const tokens = tokenizeEnglish(text)
   return (
     <>
       {tokens.map((tok, i) => {
@@ -48,7 +55,7 @@ function CueTextWithPills({ text, posMap, onWordClick, posHighlight = true }) {
       })}
     </>
   )
-}
+})
 
 function CueActions({ onPlay, onCopy }) {
   const cls =
@@ -57,7 +64,10 @@ function CueActions({ onPlay, onCopy }) {
     <div className="flex items-center gap-0.5 shrink-0 opacity-60 group-hover:opacity-100 transition-opacity">
       <button
         type="button"
-        onClick={(e) => { e.stopPropagation(); if (onPlay) onPlay() }}
+        onClick={(e) => {
+          e.stopPropagation()
+          if (onPlay) onPlay()
+        }}
         className={cls}
         title="播放"
       >
@@ -65,7 +75,10 @@ function CueActions({ onPlay, onCopy }) {
       </button>
       <button
         type="button"
-        onClick={(e) => { e.stopPropagation(); if (onCopy) onCopy() }}
+        onClick={(e) => {
+          e.stopPropagation()
+          if (onCopy) onCopy()
+        }}
         className={cls}
         title="复制"
       >
@@ -81,11 +94,12 @@ function SubtitleCueCardInner({
   active,
   posMap,
   phonetic,
-  onClick,
+  onJump,
   onWordClick,
-  onPlay,
   posHighlight = true,
 }) {
+  // onJump 是稳定引用（player.jumpToCue），行内自建回调；父级传入内联箭头函数会击穿 memo
+  const handleJump = () => onJump(subtitle.id)
   const handleCopy = () => {
     const text = `${subtitle.en}\n${subtitle.zh || ''}`
     navigator.clipboard.writeText(text).catch(() => {})
@@ -93,7 +107,7 @@ function SubtitleCueCardInner({
 
   return (
     <div
-      onClick={onClick}
+      onClick={handleJump}
       className={`group relative p-3 md:p-4 transition-colors cursor-pointer ${
         active
           ? 'bg-primary-soft/60 dark:bg-primary-soft/30 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[2px] before:bg-primary'
@@ -104,9 +118,11 @@ function SubtitleCueCardInner({
       <div className="flex items-center justify-between mb-1.5">
         <div className="text-xs text-content-tertiary dark:text-gray-500 tabular-nums">
           <span className="font-medium">{index + 1}</span>
-          <span className="mx-2">{formatTime(subtitle.start)} - {formatTime(subtitle.end)}</span>
+          <span className="mx-2">
+            {formatTime(subtitle.start)} - {formatTime(subtitle.end)}
+          </span>
         </div>
-        <CueActions onPlay={onPlay} onCopy={handleCopy} />
+        <CueActions onPlay={handleJump} onCopy={handleCopy} />
       </div>
 
       {/* 整句音标 */}

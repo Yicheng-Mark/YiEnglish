@@ -29,9 +29,8 @@ function SettingsLauncher() {
 export default function DesktopCorpusPlayer({ video, posterUrl, onBack }) {
   const { player, popup, closePopup, saveWord, removeWord } = useCorpusContext()
 
-  // 键盘快捷键：经 ref 读取最新 player（currentTime 等高频字段），
-  // 监听器只挂一次。若直接依赖 player 对象，其身份随 timeupdate ~4Hz 变化，
-  // 键盘监听会被反复卸载重挂
+  // 键盘快捷键：经 ref 读取最新 player（player 现不含 currentTime，
+  // 高频时间戳用 getCurrentTime() 直读视频元素），监听器只挂一次
   const playerRef = useRef(player)
   useEffect(() => {
     playerRef.current = player
@@ -47,10 +46,10 @@ export default function DesktopCorpusPlayer({ video, posterUrl, onBack }) {
         player.toggle()
       } else if (e.code === 'ArrowLeft') {
         e.preventDefault()
-        player.seek(player.currentTime - 5)
+        player.seek(player.getCurrentTime() - 5)
       } else if (e.code === 'ArrowRight') {
         e.preventDefault()
-        player.seek(player.currentTime + 5)
+        player.seek(player.getCurrentTime() + 5)
       } else if (e.code === 'ArrowUp') {
         e.preventDefault()
         player.prevCue()

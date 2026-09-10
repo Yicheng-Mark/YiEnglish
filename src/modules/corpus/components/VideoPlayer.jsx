@@ -1,11 +1,13 @@
 import { VideoOff } from 'lucide-react'
-import { useCorpusContext } from '../context/CorpusPlayerContext.jsx'
+import { useCorpusContext, useCorpusTime } from '../context/CorpusPlayerContext.jsx'
 import { formatTime } from '../../../utils/formatTime.js'
 import { handleVideoPlaybackError } from '../utils/videoError.js'
 
 export default function VideoPlayer({ src, poster }) {
   const { videoRef, player, settings, toggleSetting } = useCorpusContext()
-  const { currentTime, duration, seek } = player
+  const { duration, seek } = player
+  // currentTime 高频变化（timeupdate ~4Hz），单独订阅避免整个组件树跟着重渲染
+  const currentTime = useCorpusTime()
   const max = duration > 0 ? duration : 0
   const hidden = !!settings?.hideVideo
 

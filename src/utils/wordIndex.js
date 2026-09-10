@@ -43,34 +43,42 @@ export function buildWordIndex(dictionaries) {
 
 /**
  * 在索引中搜索单词
+ *
+ * 单遍分桶实现（热路径优化）：
+ * - 用 buildWordIndex 预计算的 searchText 一次 includes 完成命中判定
+ *   （不再逐条 definition.split('；').map() 分配数组），清洗后的音标片段同样可命中
+ * - 按优先级分桶收集，桶内只需按词长排序；逐桶补足 limit 即返回，
+ *   不再对全量命中做 sort（旧实现在宽泛查询下要排序上万条中间对象）
+ * - 输出顺序与旧实现（全量 filter + (priority, wordLength) 排序）完全一致
  */
 export function searchWordIndex(index, query, limit = 10) {
   if (!query || query.trim().length === 0) return []
   const q = query.toLowerCase().trim()
 
-  const matched = index.filter((item) => {
+  // 0=完全匹配 1=前缀匹配 2=子串匹配 3=释义/音标匹配
+  const buckets = [[], [], [], []]
+  for (const item of index) {
     const wordName = item.wordLower || ''
-    if (wordName.includes(q)) return true
-    const transList = item.definition?.split('；').map((t) => t.trim().toLowerCase()) || []
-    return transList.some((t) => t.includes(q))
-  })
-
-  const getPriority = (item) => {
-    const wordName = item.wordLower || ''
-    if (wordName === q) return 0 // 完全匹配
-    if (wordName.startsWith(q)) return 1 // 前缀匹配
-    if (wordName.includes(q)) return 2 // 子串匹配
-    return 3 // 释义匹配
+    let p
+    if (wordName === q) p = 0
+    else if (wordName.startsWith(q)) p = 1
+    else if (wordName.includes(q)) p = 2
+    else if (item.searchText && item.searchText.includes(q)) p = 3
+    else continue
+    buckets[p].push(item)
   }
 
-  // 排序键预计算一次：比较器内做 toLowerCase/trim 是 O(m log m) 次重复字符串运算，
-  // 索引达数万条时每个按键（防抖后）都要付出这笔开销
-  const decorated = matched.map((item) => ({
-    item,
-    p: getPriority(item),
-    l: (item.wordLower || '').length,
-  }))
-  decorated.sort((a, b) => a.p - b.p || a.l - b.l)
-
-  return decorated.slice(0, limit).map((d) => d.item)
+  // 同桶内优先级相同，只需按词长升序（与旧比较器的第二键一致）
+  const byLength = (a, b) => (a.wordLower || '').length - (b.wordLower || '').length
+  const out = []
+  for (let p = 0; p < 4 && out.length < limit; p++) {
+    const bucket = buckets[p]
+    if (bucket.length === 0) continue
+    bucket.sort(byLength)
+    for (const item of bucket) {
+      if (out.length >= limit) break
+      out.push(item)
+    }
+  }
+  return out
 }

@@ -4,7 +4,7 @@ import {
   clearWordBook,
   fetchWordBook,
 } from '../lib/api-wordbooks'
-import { idbPut, idbDelete, idbClear, idbBulkPut } from './idb.js'
+import { idbDelete, idbClear, idbBulkPut } from './idb.js'
 
 const STORAGE_KEY = 'typingword_wrong'
 
@@ -32,12 +32,26 @@ function ensureCache() {
 const PERSIST_DEBOUNCE_MS = 2000
 let persistTimer = null
 
+// errorBook 的 IDB 写入合批：同一词连续打错只需最终落盘一条（entry 引用被后续
+// wrongCount 递增原地修改，flush 时天然是最新的）；逐键 idbPut 会排队
+// IDB 事务，连续打错时抖动输入延迟
+const pendingIdbPuts = new Map()
+
+function flushIdbPuts() {
+  if (pendingIdbPuts.size === 0) return
+  const values = Array.from(pendingIdbPuts.values())
+  pendingIdbPuts.clear()
+  idbBulkPut('errorBook', values).catch((e) => console.warn('[IDB] errorBook bulk put failed:', e))
+}
+
 function writeStorageNow() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ words: _cache }))
   } catch (e) {
     console.error('Failed to persist error book:', e)
   }
+  // 与 localStorage 共用同一个 2s debounce 批次
+  flushIdbPuts()
 }
 
 function schedulePersist() {
@@ -150,9 +164,8 @@ export function addToErrorBook({ word, trans, notation, dictName }) {
       _cache[existingIndex].dictName = dictName || _cache[existingIndex].dictName
       _cache[existingIndex].lastWrongTime = Date.now()
       if (migrated) {
-        idbPut('errorBook', _cache[existingIndex]).catch((e) =>
-          console.warn('[IDB] errorBook put failed:', e)
-        )
+        // 挂 2s debounce 批次，不再逐键开 IDB 事务
+        pendingIdbPuts.set(word, _cache[existingIndex])
       }
     } else {
       _cache.unshift({
@@ -165,7 +178,7 @@ export function addToErrorBook({ word, trans, notation, dictName }) {
         lastWrongTime: Date.now(),
       })
       if (migrated) {
-        idbPut('errorBook', _cache[0]).catch((e) => console.warn('[IDB] errorBook put failed:', e))
+        pendingIdbPuts.set(word, _cache[0])
       }
     }
     schedulePersist()
@@ -185,6 +198,8 @@ export function removeFromErrorBook(wordName) {
     ensureCache()
     _cache = _cache.filter((w) => w.name !== wordName)
     pendingSyncDeltas.delete(wordName)
+    // 先丢弃待写批次中的同词条目，避免 bulk put 迟到把刚删的词写回
+    pendingIdbPuts.delete(wordName)
     persistNow()
     if (isMigrated()) {
       idbDelete('errorBook', wordName).catch((e) =>
@@ -278,6 +293,7 @@ export async function syncErrorBookFromServer() {
     _cache = data.words || []
     // 服务端数据是权威版本：取消本地待写/待同步，直接覆盖落盘
     pendingSyncDeltas.clear()
+    pendingIdbPuts.clear()
     persistNow()
     if (isMigrated()) {
       await idbClear('errorBook')
