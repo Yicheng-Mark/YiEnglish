@@ -248,7 +248,7 @@ router.post('/login', async (req, res, next) => {
     await checkLoginRateLimit(username, ip)
 
     const [rows] = await pool.execute(
-      'SELECT id, username, nickname, password_hash, avatar_url, daily_goal_minutes, signature FROM users WHERE username = ?',
+      'SELECT id, username, nickname, password_hash, avatar_url, daily_goal_minutes, signature, max_devices FROM users WHERE username = ?',
       [username]
     )
 
@@ -274,9 +274,11 @@ router.post('/login', async (req, res, next) => {
        WHERE user_id = ? AND device_id <> '' AND device_id <> ? AND expires_at > NOW()`,
       [user.id, deviceId]
     )
-    if (cnt >= config.MAX_DEVICES_PER_USER) {
+    // 设备上限支持用户级覆盖：users.max_devices NULL=跟随全局默认，0=不限，>0=精确上限
+    const deviceLimit = user.max_devices ?? config.MAX_DEVICES_PER_USER
+    if (deviceLimit > 0 && cnt >= deviceLimit) {
       return res.status(403).json({
-        error: `该账号已在 ${config.MAX_DEVICES_PER_USER} 台设备登录，请到已登录设备的「设置-登录设备管理」中退出一台后再试`,
+        error: `该账号已在 ${deviceLimit} 台设备登录，请到已登录设备的「设置-登录设备管理」中退出一台后再试`,
         code: 'DEVICE_LIMIT_REACHED',
       })
     }

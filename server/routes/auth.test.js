@@ -361,6 +361,85 @@ describe('POST /api/auth/login', () => {
     expect(res.body.code).toBe('DEVICE_LIMIT_REACHED')
   })
 
+  it('用户级 max_devices=0（不限）→ 已超全局上限也放行', async () => {
+    setExecuteHandlers([
+      {
+        match: ['FROM users WHERE username'],
+        returns: [
+          {
+            id: 5,
+            username: VALID_USER,
+            nickname: 'Alice',
+            password_hash: VALID_HASH,
+            max_devices: 0,
+          },
+        ],
+      },
+      // 5 台已远超全局上限 2，但该用户不限台数
+      { match: ['SELECT COUNT(*) AS cnt FROM refresh_tokens'], returns: [{ cnt: 5 }] },
+      { match: ['DELETE FROM refresh_tokens WHERE user_id'], returns: { affectedRows: 0 } },
+      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 1, affectedRows: 1 } },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/login')
+      .send({ username: VALID_USER, password: VALID_PASSWORD })
+    expect(res.status).toBe(200)
+    expect(res.body.user).toMatchObject({ id: 5, username: VALID_USER })
+  })
+
+  it('用户级 max_devices=3 覆盖全局 2 → 第 3 台可登录', async () => {
+    setExecuteHandlers([
+      {
+        match: ['FROM users WHERE username'],
+        returns: [
+          {
+            id: 5,
+            username: VALID_USER,
+            nickname: 'Alice',
+            password_hash: VALID_HASH,
+            max_devices: 3,
+          },
+        ],
+      },
+      // 全局上限 2 会拒绝，但该用户上限为 3，cnt=2 应放行
+      { match: ['SELECT COUNT(*) AS cnt FROM refresh_tokens'], returns: [{ cnt: 2 }] },
+      { match: ['DELETE FROM refresh_tokens WHERE user_id'], returns: { affectedRows: 0 } },
+      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 1, affectedRows: 1 } },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/login')
+      .send({ username: VALID_USER, password: VALID_PASSWORD })
+    expect(res.status).toBe(200)
+  })
+
+  it('用户级 max_devices=3 → 达到覆盖上限（cnt=3）→ 403', async () => {
+    setExecuteHandlers([
+      {
+        match: ['FROM users WHERE username'],
+        returns: [
+          {
+            id: 5,
+            username: VALID_USER,
+            nickname: 'Alice',
+            password_hash: VALID_HASH,
+            max_devices: 3,
+          },
+        ],
+      },
+      { match: ['SELECT COUNT(*) AS cnt FROM refresh_tokens'], returns: [{ cnt: 3 }] },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/login')
+      .send({ username: VALID_USER, password: VALID_PASSWORD })
+    expect(res.status).toBe(403)
+    expect(res.body.code).toBe('DEVICE_LIMIT_REACHED')
+    // 错误文案使用生效上限（覆盖值 3）而非全局值
+    expect(res.body.error).toMatch(/3 台设备/)
+  })
+
   it('登录频率超限 → 429（rateLimit mock 抛错）', async () => {
     const rateErr = new Error('登录尝试过于频繁，请稍后再试')
     rateErr.status = 429

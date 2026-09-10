@@ -14,6 +14,7 @@
 --   migrate_device_trial    trial_activations.device_id
 --   migrate_auth_v4         refresh_tokens.uk_token_hash
 --   migrate_ai_assistant     AI 助手：style_modes + user_style_settings + conversation_memory + chat_messages + ai_usage
+--   migrate_user_device_limit users.max_devices 用户级设备登录上限覆盖
 -- ============================================================
 
 CREATE DATABASE IF NOT EXISTS lingoforge
@@ -28,6 +29,7 @@ USE lingoforge;
 --   初始 schema     id/nickname/email/password_hash/avatar_url/daily_goal_minutes/created_at/updated_at
 --   migrate_auth_v2 verify_code/code_expires_at/email_verified（已被 v3 删除，不在此出现）
 --   migrate_auth_v3 username/uk_username，email 改为可空并删除唯一键，signature，password_changed_at
+--   migrate_user_device_limit max_devices（NULL=全局默认，0=不限，>0=覆盖）
 --   migrate_demo_trial is_guest
 --   migrate_activation_code activation_code_id
 -- ------------------------------------------------------------
@@ -43,6 +45,7 @@ CREATE TABLE IF NOT EXISTS users (
   avatar_url             TEXT          DEFAULT NULL,
   signature              VARCHAR(200)  DEFAULT NULL,
   daily_goal_minutes     SMALLINT UNSIGNED NOT NULL DEFAULT 30,
+  max_devices            SMALLINT UNSIGNED NULL DEFAULT NULL COMMENT '设备登录数上限：NULL=全局默认，0=不限，>0=覆盖值',
   created_at             TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at             TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY uk_username (username)
