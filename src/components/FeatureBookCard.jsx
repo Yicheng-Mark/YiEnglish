@@ -16,7 +16,6 @@ const COLOR_TOKENS = {
   violet: {
     border: 'border-violet-200 hover:border-violet-300',
     gradient: 'bg-gradient-to-br from-violet-50 to-purple-50',
-    glow: 'rgba(139, 92, 246, 0.13)',
     topBar: 'bg-violet-500 dark:hidden',
     iconWrap: 'bg-violet-100 text-violet-600',
     iconWrapDark: 'dark:bg-violet-500/10 dark:text-violet-300',
@@ -29,7 +28,6 @@ const COLOR_TOKENS = {
   cyan: {
     border: 'border-cyan-200 hover:border-cyan-300',
     gradient: 'bg-gradient-to-br from-cyan-50 to-sky-50',
-    glow: 'rgba(6, 182, 212, 0.12)',
     topBar: 'bg-cyan-500 dark:hidden',
     iconWrap: 'bg-cyan-100 text-cyan-600',
     iconWrapDark: 'dark:bg-cyan-500/10 dark:text-cyan-300',
@@ -42,7 +40,6 @@ const COLOR_TOKENS = {
   amber: {
     border: 'border-amber-200 hover:border-amber-300',
     gradient: 'bg-gradient-to-br from-amber-50 to-yellow-50',
-    glow: 'rgba(245, 158, 11, 0.11)',
     topBar: 'bg-amber-500 dark:hidden',
     iconWrap: 'bg-amber-100 text-amber-600',
     iconWrapDark: 'dark:bg-amber-500/10 dark:text-amber-300',
@@ -82,7 +79,6 @@ export default function FeatureBookCard({
   return (
     <div
       onClick={onClick}
-      style={{ '--card-glow': c.glow }}
       className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border-2 dark:border p-6 cursor-pointer hover:shadow-lg animate-card-enter glow-border-subtle transition-all duration-150 active:scale-[0.98] dark:bg-surface dark:border-white/[0.09] ${c.border} ${c.gradient}`}
     >
       {/* 顶部色条 */}

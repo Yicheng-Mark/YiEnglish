@@ -40,7 +40,9 @@ router.get('/', authMiddleware, async (req, res, next) => {
       hideEnglish: !!row.dictation_mode,
       wordRepeatCount: row.word_repeat_count,
       autoRemoveErrorWord: !!row.auto_remove_error_word,
-      theme: row.theme,
+      // 防御性回落：暗夜主题下线后 DB 仍可能残留 gray/star/legacy 值（迁移前的存量行），
+      // 与前端 useUserConfig 同规则回落 light，避免下线主题值漏到客户端
+      theme: VALID_THEMES.includes(row.theme) ? row.theme : 'light',
     })
   } catch (err) {
     next(err)
