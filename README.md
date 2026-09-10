@@ -44,11 +44,11 @@
 
 ## 🎨 主题外观
 
-三套主题共用一套设计 token，全局一键切换：
+两套主题共用一套设计 token，全局一键切换：
 
-| 明亮 | 暗夜 | 暖色 |
-|:---:|:---:|:---:|
-| <img src="public/images/yi-english-banner-light.png" alt="明亮主题" width="270" /> | <img src="public/images/yi-english-banner-dark.png" alt="暗夜主题" width="270" /> | <img src="public/images/yi-english-banner-warm.png" alt="暖色主题" width="270" /> |
+| 明亮 | 暖色 |
+|:---:|:---:|
+| <img src="public/images/yi-english-banner-light.png" alt="明亮主题" width="270" /> | <img src="public/images/yi-english-banner-warm.png" alt="暖色主题" width="270" /> |
 
 <details>
 <summary><b>品牌标识设计稿</b></summary>
@@ -156,7 +156,7 @@
 | 🔍 词形还原查词 | 不规则动词、复数、时态、比较级等形态还原，查词无死角 |
 | 🎬 65 集真实语料 | 8 种字幕模式 + 字幕点词即查，OSS 自定义域名解决 iOS 内嵌播放 |
 | 🔐 完整账号体系 | 每账号 2 设备 + 激活码 / 体验码 / 找回密码，到期双重强制下线 |
-| 🎨 3 套主题 | 明亮 / 暗夜 / 暖色，CSS 变量驱动全局换肤 |
+| 🎨 2 套主题 | 明亮 / 暖色，CSS 变量驱动全局换肤 |
 | 📱 深度移动端适配 | UA + 触控 + 屏幕尺寸 + 指针类型多维检测，平板横竖屏自动切换（运行时分流，单构建产物） |
 | 💾 离线可用 + 服务端同步 | IndexedDB + localStorage 双存储，登录后跨设备同步 |
 | 🧭 Safari 14+ 兼容 | `@vitejs/plugin-legacy`（iOS/Safari ≥ 14）+ `modernPolyfills` + `es2020` 产物，根治低版本 Safari 白屏 |
@@ -201,7 +201,7 @@
 | 层级 | 技术选型 |
 |:---|:---|
 | 框架 | React 18 + Vite 5（ESM） |
-| 样式 | Tailwind CSS 3 + CSS 变量主题系统（4 套主题，`darkMode: 'class'`） |
+| 样式 | Tailwind CSS 3 + CSS 变量主题系统（2 套主题，`darkMode: 'class'`） |
 | 路由 | React Router 6（懒加载 + 失败重试 `lazyRetry`） |
 | 虚拟列表 | @tanstack/react-virtual（[src/components/virtual/](src/components/virtual/)） |
 | 图表 | 纯 CSS/DOM 自绘（学习日历热力图 + 7 天趋势图，无第三方图表库） |

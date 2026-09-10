@@ -140,7 +140,7 @@ function StatsPanel({ stats, keyboardHeight = 0 }) {
   return (
     <div
       className={`
-        stats-panel relative
+        relative
         bg-white/90 backdrop-blur-sm
         border-t border-gray-200/60 dark:border-white/[0.04]
         transition-all duration-200 ease-out

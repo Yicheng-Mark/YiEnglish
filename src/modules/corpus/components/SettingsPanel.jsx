@@ -10,11 +10,6 @@ const THEME_OPTIONS = [
     activeClass: 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400',
   },
   {
-    value: 'gray',
-    label: '暗夜',
-    activeClass: 'bg-gray-200 text-gray-700 dark:bg-white dark:text-gray-900',
-  },
-  {
     value: 'warm',
     label: '暖色',
     activeClass: 'bg-orange-100 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400',
@@ -152,7 +147,7 @@ export default function SettingsPanel({ open, onClose }) {
 
           {/* 主题 */}
           <Section title="主题颜色">
-            <div className="grid grid-cols-4 gap-1 p-0.5 rounded-md bg-gray-100 dark:bg-white/[0.06]">
+            <div className="grid grid-cols-2 gap-1 p-0.5 rounded-md bg-gray-100 dark:bg-white/[0.06]">
               {THEME_OPTIONS.map((opt) => {
                 const active = theme === opt.value
                 return (

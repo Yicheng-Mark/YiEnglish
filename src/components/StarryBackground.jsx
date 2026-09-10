@@ -17,22 +17,6 @@ function StarryBackground() {
     return () => observer.disconnect()
   }, [])
 
-  // 暗夜：aurora 氛围光 —— 紫/靛/蓝三个静态柔光斑（CSS 见 index.css 的 .aurora-* 段）。
-  // 不加 filter: blur 与动画：大模糊层 + 动态背景会让 backdrop-filter 玻璃逐帧重采样，导致卡顿。
-  // 第三光斑用蓝不用青：大面积低透明度的青会被感知为绿光，观感不适
-  if (theme === 'gray') {
-    return (
-      <div
-        className="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden"
-        aria-hidden="true"
-      >
-        <div className="aurora-glow aurora-violet" />
-        <div className="aurora-glow aurora-indigo" />
-        <div className="aurora-glow aurora-blue" />
-      </div>
-    )
-  }
-
   if (theme === 'warm') {
     return (
       <div className="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">

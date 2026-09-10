@@ -6,7 +6,7 @@ export default function ReviewCard({ dueCount, totalCount, onClick }) {
       onClick={onClick}
       style={{ '--card-glow': 'rgba(16, 185, 129, 0.12)' }}
       className="
-        feature-card group relative flex flex-col justify-between overflow-hidden
+        group relative flex flex-col justify-between overflow-hidden
         rounded-2xl border-2 p-6
         animate-card-enter glow-border-subtle
         transition-all duration-150 active:scale-[0.98]

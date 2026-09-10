@@ -10,21 +10,18 @@ const DEFAULT_CONFIG = {
   autoRemoveErrorWord: true,
 }
 
-const VALID_THEMES = ['light', 'gray', 'warm']
+const VALID_THEMES = ['light', 'warm']
 
 function loadInitialTheme() {
   if (typeof window === 'undefined') return 'light'
   try {
     const saved = localStorage.getItem('lingoforge-theme')
-    if (saved === 'star') return 'gray'
+    // 旧存档（gray/star/legacy dark）随暗夜模式下线统一回落明亮
     if (saved && VALID_THEMES.includes(saved)) return saved
-    const legacy = localStorage.getItem('theme')
-    if (legacy === 'dark') return 'gray'
-    if (legacy === 'light') return 'light'
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'gray' : 'light'
   } catch {
     return 'light'
   }
+  return 'light'
 }
 
 function syncSettingUpdate(partial) {
@@ -45,11 +42,6 @@ export function useUserConfig() {
 
   useEffect(() => {
     const root = document.documentElement
-    if (theme === 'gray') {
-      root.classList.add('dark')
-    } else {
-      root.classList.remove('dark')
-    }
     root.setAttribute('data-theme', theme)
     try {
       localStorage.setItem('lingoforge-theme', theme)

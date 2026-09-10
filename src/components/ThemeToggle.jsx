@@ -9,13 +9,6 @@ const themes = [
     activeClass: 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400',
   },
   {
-    key: 'gray',
-    label: '暗夜',
-    icon: '🌙',
-    desc: '沉稳深邃',
-    activeClass: 'bg-gray-200 text-gray-700 dark:bg-white dark:text-gray-900',
-  },
-  {
     key: 'warm',
     label: '暖色',
     icon: '☕',

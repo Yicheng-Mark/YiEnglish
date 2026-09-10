@@ -49,7 +49,7 @@ const SAMPLE_ROW = {
   dictation_mode: 0,
   word_repeat_count: 3,
   auto_remove_error_word: 1,
-  theme: 'gray',
+  theme: 'warm',
 }
 
 beforeEach(() => {
@@ -68,7 +68,7 @@ describe('GET /api/settings', () => {
       hideEnglish: false,
       wordRepeatCount: 3,
       autoRemoveErrorWord: true,
-      theme: 'gray',
+      theme: 'warm',
     })
   })
 
@@ -82,7 +82,7 @@ describe('GET /api/settings', () => {
     })
     const res = await supertest(makeApp()).get('/api/settings')
     expect(res.status).toBe(200)
-    expect(res.body.theme).toBe('gray')
+    expect(res.body.theme).toBe('warm')
     const sqls = mockExecute.mock.calls.map(([sql]) => String(sql))
     expect(sqls.some((s) => s.includes('INSERT IGNORE INTO user_settings'))).toBe(true)
   })

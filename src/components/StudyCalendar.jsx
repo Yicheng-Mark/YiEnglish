@@ -113,7 +113,7 @@ export default function StudyCalendar({ store }) {
   }
 
   return (
-    <div className="relative overflow-hidden bg-surface dark:bg-surface-dark rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100/80 dark:border-white/[0.06] card-aurora">
+    <div className="relative overflow-hidden bg-surface dark:bg-surface-dark rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100/80 dark:border-white/[0.06]">
       {/* Month navigation */}
       <div className="flex items-center justify-between mb-5">
         <button

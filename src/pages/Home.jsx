@@ -518,7 +518,7 @@ function Home() {
                       <div
                         onClick={() => saveScrollAndNavigate('/wordbooks')}
                         style={{ '--card-glow': 'rgba(99, 102, 241, 0.12)' }}
-                        className="feature-card group relative flex items-center justify-between overflow-hidden rounded-2xl border-2 border-indigo-200 bg-gradient-to-r from-indigo-50 via-violet-50 to-purple-50 p-5 cursor-pointer hover:shadow-lg hover:border-indigo-300 dark:border dark:border-white/[0.09] dark:bg-surface dark:from-transparent dark:via-transparent dark:to-transparent animate-card-enter glow-border-subtle transition-all duration-150 active:scale-[0.98]"
+                        className="group relative flex items-center justify-between overflow-hidden rounded-2xl border-2 border-indigo-200 bg-gradient-to-r from-indigo-50 via-violet-50 to-purple-50 p-5 cursor-pointer hover:shadow-lg hover:border-indigo-300 dark:border dark:border-white/[0.09] dark:bg-surface dark:from-transparent dark:via-transparent dark:to-transparent animate-card-enter glow-border-subtle transition-all duration-150 active:scale-[0.98]"
                       >
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-violet-500 to-amber-500 opacity-80 dark:hidden" />
                         <div className="flex items-center gap-3">
@@ -716,7 +716,7 @@ function Home() {
                             {dict.name}
                           </h2>
                         </div>
-                        <p className="text-body text-content-tertiary dark:text-gray-400 mb-4 leading-relaxed">
+                        <p className="text-body text-content-tertiary dark:text-gray-400 mb-4 leading-relaxed line-clamp-2">
                           {dict.description}
                         </p>
                         <div className="flex items-center justify-between">

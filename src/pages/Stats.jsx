@@ -21,7 +21,7 @@ function StatsCard({ label, value, unit, Icon, accent = 'primary' }) {
   const accentChip =
     accent === 'secondary' ? 'bg-secondary-soft text-secondary' : 'bg-primary/10 text-primary'
   return (
-    <div className="relative overflow-hidden bg-surface dark:bg-surface-dark rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100/80 dark:border-white/[0.06] card-aurora">
+    <div className="relative overflow-hidden bg-surface dark:bg-surface-dark rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100/80 dark:border-white/[0.06]">
       <div className="flex items-start justify-between mb-6">
         <span className="text-sm text-content-secondary dark:text-gray-400">{label}</span>
         <span className={`w-9 h-9 rounded-full flex items-center justify-center ${accentChip}`}>
@@ -51,7 +51,7 @@ function WeeklyChart({ days }) {
   }
 
   return (
-    <div className="relative overflow-hidden bg-surface dark:bg-surface-dark rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100/80 dark:border-white/[0.06] card-aurora">
+    <div className="relative overflow-hidden bg-surface dark:bg-surface-dark rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100/80 dark:border-white/[0.06]">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <Calendar className="w-4 h-4 text-content-secondary dark:text-gray-400" />

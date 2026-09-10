@@ -23,22 +23,16 @@
     <meta name="twitter:image" content="https://www.lingoforge.fun/logo.png" />
     <script>
       (function() {
-        var VALID_THEMES = ['light','gray','warm'];
+        var VALID_THEMES = ['light','warm'];
         var theme = 'light';
         try {
           var saved = localStorage.getItem('lingoforge-theme');
+          // 旧存档 gray/legacy dark 随暗夜模式下线统一回落明亮
           if (saved && VALID_THEMES.indexOf(saved) !== -1) {
             theme = saved;
-          } else {
-            var legacy = localStorage.getItem('theme');
-            if (legacy === 'dark') theme = 'gray';
-            else if (legacy === 'light') theme = 'light';
-            else if (window.matchMedia('(prefers-color-scheme: dark)').matches) theme = 'gray';
           }
         } catch (e) {}
-        var root = document.documentElement;
-        root.setAttribute('data-theme', theme);
-        if (theme === 'gray') root.classList.add('dark');
+        document.documentElement.setAttribute('data-theme', theme);
       })();
     </script>
     <script>
@@ -80,7 +74,7 @@
       })();
     </script>
   </head>
-  <body class="bg-background dark:bg-background-dark">
+  <body class="bg-background">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

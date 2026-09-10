@@ -147,7 +147,6 @@ export default function PersonalCenter() {
 
   const themeOptions = [
     { key: 'light', label: '明亮', desc: '清新简洁' },
-    { key: 'gray', label: '暗夜', desc: '沉稳深邃' },
     { key: 'warm', label: '暖色', desc: '温暖舒适' },
   ]
 
@@ -337,7 +336,7 @@ export default function PersonalCenter() {
 
       {/* Theme Modal */}
       <Modal open={themeModal} onClose={() => setThemeModal(false)} title="模式切换">
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           {themeOptions.map((opt) => (
             <button
               key={opt.key}

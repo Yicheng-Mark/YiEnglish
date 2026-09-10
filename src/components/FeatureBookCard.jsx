@@ -10,9 +10,7 @@
  */
 
 // 颜色 token -> 该颜色涉及的 className 映射。
-// 亮色：淡彩渐变 + 实色顶条；暗夜：色彩单层化——卡片挂 .feature-card，glow 值经
-// inline style 注入 --card-glow，由 CSS 在卡片顶部晕开同色辉光（无边框色条、
-// 无全卡渐变，避免同色系多层叠加糊成一片）。
+// 亮色：淡彩渐变 + 实色顶条。
 // 新增颜色只需在此处追加一项，并在调用方传 color="xxx"。
 const COLOR_TOKENS = {
   violet: {
@@ -85,9 +83,9 @@ export default function FeatureBookCard({
     <div
       onClick={onClick}
       style={{ '--card-glow': c.glow }}
-      className={`feature-card group relative flex flex-col justify-between overflow-hidden rounded-2xl border-2 dark:border p-6 cursor-pointer hover:shadow-lg animate-card-enter glow-border-subtle transition-all duration-150 active:scale-[0.98] dark:bg-surface dark:border-white/[0.09] ${c.border} ${c.gradient}`}
+      className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border-2 dark:border p-6 cursor-pointer hover:shadow-lg animate-card-enter glow-border-subtle transition-all duration-150 active:scale-[0.98] dark:bg-surface dark:border-white/[0.09] ${c.border} ${c.gradient}`}
     >
-      {/* 顶部色条：仅亮色模式（暗夜的色彩由 .feature-card 顶部辉光承担） */}
+      {/* 顶部色条 */}
       <div className={`absolute top-0 left-0 w-full h-1 opacity-80 ${c.topBar}`} />
 
       <div className="flex items-start justify-between">
