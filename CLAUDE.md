@@ -21,8 +21,8 @@
 
 ## 架构速览
 
-- `src/` React 前端：`pages/` 路由页（Typing / ReviewQuiz / Stats / WordBooks / AIChat 等）；`modules/` 功能模块（corpus 语料视频、grammar、reading、learning-methods）；`hooks/`（useTyping / useQuiz 等）；`contexts/`（Auth / Word）；`lib/`（api 封装、chat-engine）；`utils/` 纯函数工具，多数有配套 `.test.js`
-- `server/` Express 后端：根 package.json 是 `type:module`，server 自带 `{"type":"commonjs"}`——后端代码用 require。`routes/`（auth / progress / review / wordbooks / chat / memory / clientError 等，均有测试）、`services/`（deepseekProxy、memoryExtractor、promptBuilder）、`middleware/`（JWT auth、rateLimit）
+- `src/` React 前端：`pages/` 路由页（Typing / ReviewQuiz / Stats / WordBooks 等）；`modules/` 功能模块（corpus 语料视频、grammar、reading、learning-methods）；`hooks/`（useTyping / useQuiz 等）；`contexts/`（Auth / Word）；`lib/`（api 封装）；`utils/` 纯函数工具，多数有配套 `.test.js`
+- `server/` Express 后端：根 package.json 是 `type:module`，server 自带 `{"type":"commonjs"}`——后端代码用 require。`routes/`（auth / progress / review / wordbooks / settings / demo / clientError 等，均有测试）、`middleware/`（JWT auth、rateLimit）
 - `public/dictionaries/*.json` 词库数据（按需 fetch 不进 bundle）+ `src/dictionaries/meta.js` 元信息注册（含功能词本虚拟词库）；`standards/` 原始标准词表；`scripts/*.mjs` 词库维护与语料处理脚本
 - `deploy/` pm2 ecosystem（fork 单实例）、nginx.conf
 
@@ -36,7 +36,7 @@
 - **阅读**：`/read` → `modules/reading`，词形还原 `utils/wordLookup.js`；**语料**：`/listening` → `modules/corpus`，8 种字幕模式在 `components/subtitleModes/`，视频托管阿里云 OSS `videos.lingoforge.fun`（H.264 + faststart，iOS Safari 内嵌播放的前提，别改格式）
 - **语法 / 学习方法**：纯静态数据 `src/data/*.json`
 - **复习**：`/review/setup/:bookId`、`/review/quiz/:bookId`
-- **AI 助手**：`/ai-assistant` + 全局悬浮球（`components/AIAssistant`，显隐开关在个人中心）；前端 `lib/chat-engine.js` → 后端 `routes/chat|memory|style` → `services/deepseekProxy`（DeepSeek 代理）+ `memoryExtractor`（长期记忆）
+- **AI 助手**：已于 2026-09-11 整体归档（先于 09-04 因 DeepSeek key 无额度下线入口）。全部模块文件（前端悬浮球/页面/ai-settings/chat-engine + 后端 chat|style|memory 路由与 services）在 `D:\AI助手归档`，恢复指南见其 README.md；DB 表与 schema.sql 未动
 
 ## 数据与同步
 

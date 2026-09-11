@@ -175,9 +175,6 @@ export default function ArticleList({ scrollRef }) {
                 <h1 className="text-display gradient-text mb-3 tracking-tight text-glow-primary">
                   阅读
                 </h1>
-                <p className="text-content-tertiary text-body max-w-xl leading-relaxed">
-                  精选英语文章，让每一次阅读都成为沉浸式的语言旅行。
-                </p>
               </div>
 
               {/* 筛选栏 */}

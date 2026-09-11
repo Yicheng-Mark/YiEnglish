@@ -21,10 +21,11 @@ window.addEventListener('error', (event) => {
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter>
+    {/* future flags：提前启用 v7 语义，消除两条 v6 弃用警告；项目内无相对路径导航，行为无变化 */}
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <ErrorBoundary>
         <App />
       </ErrorBoundary>
     </BrowserRouter>
-  </StrictMode>,
+  </StrictMode>
 )

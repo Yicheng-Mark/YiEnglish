@@ -1,11 +1,7 @@
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Bookmark, BookOpen, Hash, Search, Video } from 'lucide-react'
-import {
-  mockCorpusVideos,
-  categories,
-  totalCount,
-} from '../data/mockCorpusVideos'
+import { mockCorpusVideos, categories, totalCount } from '../data/mockCorpusVideos'
 import { DIFFICULTY_LABELS, getDifficultyLabel } from '../utils/difficulty'
 import { useCorpusStore } from '../hooks/useCorpusStore'
 import useCorpusLayout from '../hooks/useCorpusLayout'
@@ -45,10 +41,7 @@ export default function CorpusList({ scrollRef }) {
     setCorpusWordCount(getCorpusWordBookCount())
   }, [])
 
-  const bookmarkSet = useMemo(
-    () => new Set(store.bookmarks),
-    [store.bookmarks]
-  )
+  const bookmarkSet = useMemo(() => new Set(store.bookmarks), [store.bookmarks])
 
   const difficultyOptions = useMemo(() => ['全部', ...DIFFICULTY_LABELS], [])
 
@@ -56,7 +49,8 @@ export default function CorpusList({ scrollRef }) {
     const q = deferredQuery.trim().toLowerCase()
     return mockCorpusVideos.filter((v) => {
       if (categoryFilter !== '全部' && v.category !== categoryFilter) return false
-      if (difficultyFilter !== '全部' && getDifficultyLabel(v.sentenceCount) !== difficultyFilter) return false
+      if (difficultyFilter !== '全部' && getDifficultyLabel(v.sentenceCount) !== difficultyFilter)
+        return false
       if (bookmarkOnly && !bookmarkSet.has(v.id)) return false
       if (q) {
         const hay = (
@@ -136,22 +130,22 @@ export default function CorpusList({ scrollRef }) {
   )
 
   return (
-    <div className={`bg-background dark:bg-transparent ${isMobile ? 'p-4' : 'p-6'} transition-colors duration-500 ${isRestoring.current ? '' : 'animate-page-fade-in'}`}>
+    <div
+      className={`bg-background dark:bg-transparent ${isMobile ? 'p-4' : 'p-6'} transition-colors duration-500 ${isRestoring.current ? '' : 'animate-page-fade-in'}`}
+    >
       <div className={`max-w-6xl mx-auto ${isMobile ? 'px-2' : 'px-6'} w-full`}>
         <div>
           <div className={`${isMobile ? 'mt-6' : 'mt-16'} ${isMobile ? 'mb-6' : 'mb-10'}`}>
-            <div className={`flex ${isMobile ? 'flex-col' : 'flex-row items-end justify-between'} gap-6`}>
+            <div
+              className={`flex ${isMobile ? 'flex-col' : 'flex-row items-end justify-between'} gap-6`}
+            >
               <div className="text-left">
                 <h1 className="text-display gradient-text mb-3 tracking-tight text-glow-primary">
                   语料
                 </h1>
-                <p className={`text-content-tertiary text-body max-w-xl leading-relaxed ${isMobile ? 'line-clamp-2' : 'line-clamp-none'}`}>
-                  精选演讲与短视频，逐句字幕跟读、单句循环、变速练习,在真实语境中磨炼听说能力。
-                </p>
                 <div className="mt-3 flex items-center gap-3 text-sm text-content-tertiary dark:text-gray-500">
                   <span className="inline-flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                    共 {totalCount} 期
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary" />共 {totalCount} 期
                   </span>
                   <span className="text-gray-300 dark:text-gray-700">|</span>
                   <span className="inline-flex items-center gap-1.5">
@@ -162,7 +156,9 @@ export default function CorpusList({ scrollRef }) {
               </div>
 
               {/* 筛选栏 */}
-              <div className={`${isMobile ? 'grid grid-cols-2' : 'flex flex-wrap'} items-center ${isMobile ? 'gap-2' : 'gap-3'}`}>
+              <div
+                className={`${isMobile ? 'grid grid-cols-2' : 'flex flex-wrap'} items-center ${isMobile ? 'gap-2' : 'gap-3'}`}
+              >
                 <button
                   onClick={handleNavigateWordBook}
                   className={`flex items-center justify-center ${isMobile ? 'w-full' : 'w-auto'} gap-2 px-4 py-2 glass-card rounded-button text-sm font-medium text-content-secondary dark:text-gray-300 hover:border-primary/40 transition-colors cursor-pointer`}
@@ -196,14 +192,14 @@ export default function CorpusList({ scrollRef }) {
                   value={difficultyFilter}
                   options={difficultyOptions}
                   onChange={handleDifficultyChange}
-                  className={isMobile ? "" : "w-auto"}
+                  className={isMobile ? '' : 'w-auto'}
                 />
                 <Dropdown
                   label="全部分类"
                   value={categoryFilter}
                   options={categories}
                   onChange={handleCategoryChange}
-                  className={isMobile ? "" : "w-auto"}
+                  className={isMobile ? '' : 'w-auto'}
                 />
               </div>
             </div>

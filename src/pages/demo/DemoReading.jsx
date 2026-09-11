@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { mockArticles } from '../../modules/reading/data/mockArticles'
 import ArticleCard from '../../modules/reading/components/ArticleCard'
 
-const demoArticle = mockArticles.find(a => a.id === 'article2026_01')
+const demoArticle = mockArticles.find((a) => a.id === 'article2026_01')
 
 export default function DemoReading() {
   const navigate = useNavigate()
@@ -19,9 +19,6 @@ export default function DemoReading() {
             <h1 className="text-display gradient-text mb-3 tracking-tight text-glow-primary">
               阅读
             </h1>
-            <p className="text-content-tertiary text-body max-w-xl leading-relaxed">
-              精选英语文章，让每一次阅读都成为沉浸式的语言旅行。
-            </p>
           </div>
         </div>
 

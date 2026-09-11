@@ -108,6 +108,7 @@ const authRoutes = require('./routes/auth')
 const demoRoutes = require('./routes/demo')
 const clientErrorRoutes = require('./routes/clientError')
 // AI 助手下线（DeepSeek key 无额度），恢复时取消注释本块及下方 aiLimiter、三个 app.use 挂载
+// 2026-09-11 路由与 services 文件已整体归档至 D:\AI助手归档，恢复时先复制回仓库
 // const chatRoutes = require('./routes/chat')
 // const styleRoutes = require('./routes/style')
 // const memoryRoutes = require('./routes/memory')

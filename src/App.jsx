@@ -1,5 +1,6 @@
 // AI 助手下线（DeepSeek key 无额度），恢复时取消注释各「AI 助手下线」标记处，
 // 并把 useState 加回本行 react import
+// 2026-09-11 模块文件已整体归档至 D:\AI助手归档，恢复时先按其 README.md 复制回仓库
 import { Suspense, useEffect } from 'react'
 import { lazyRetry } from './utils/lazyRetry'
 import { useScrollingFlag } from './hooks/useScrollingFlag'

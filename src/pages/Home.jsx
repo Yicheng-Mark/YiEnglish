@@ -256,14 +256,14 @@ function Home() {
       <div className="min-h-screen bg-background dark:bg-transparent p-6 transition-colors duration-500 animate-page-fade-in">
         <div className="max-w-6xl mx-auto px-6">
           <div id="wordbooks" className="mt-8 md:mt-12 mb-8">
-            <div className="flex items-start justify-between">
+            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
               <div className="text-left">
                 <h1 className="text-display gradient-text mb-4 tracking-tight text-glow-primary animate-pulse-soft">
-                  选择词库开始练习
+                  选择词库
+                  <br className="md:hidden" />
+                  开始练习
                 </h1>
                 <p className="text-content-tertiary text-body max-w-md">
-                  从丰富的词库中选择，开启你的单词记忆之旅
-                  <br />
                   <span className="text-lg font-semibold text-content-secondary">
                     （请使用英文输入法）
                   </span>

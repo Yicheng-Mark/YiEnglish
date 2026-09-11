@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { mockCorpusVideos, TRIAL_EPISODE_COUNT } from '../../modules/corpus/data/mockCorpusVideos'
 import VideoCard from '../../modules/corpus/components/VideoCard'
 
-const demoVideos = mockCorpusVideos.filter(v => Number(v.id) <= TRIAL_EPISODE_COUNT)
+const demoVideos = mockCorpusVideos.filter((v) => Number(v.id) <= TRIAL_EPISODE_COUNT)
 
 export default function DemoCorpus() {
   const navigate = useNavigate()
@@ -19,14 +19,11 @@ export default function DemoCorpus() {
             <h1 className="text-display gradient-text mb-3 tracking-tight text-glow-primary">
               语料
             </h1>
-            <p className="text-content-tertiary text-body max-w-xl leading-relaxed">
-              精选演讲与短视频，逐句字幕跟读、单句循环、变速练习，在真实语境中磨炼听说能力。
-            </p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pb-28">
-          {demoVideos.map(video => (
+          {demoVideos.map((video) => (
             <VideoCard
               key={video.id}
               video={video}
