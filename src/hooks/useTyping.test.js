@@ -36,6 +36,7 @@ function renderTyping(overrides = {}) {
       onWordComplete,
       onAutoRemove,
       onError,
+      resetKey,
     }) =>
       useTyping(
         words,
@@ -46,17 +47,19 @@ function renderTyping(overrides = {}) {
         true,
         onWordComplete,
         onAutoRemove,
-        onError
+        onError,
+        resetKey
       ),
     {
       initialProps: {
         words,
-        soundEnabled: false,
+        soundEnabled: overrides.soundEnabled ?? false,
         wordRepeatCount: overrides.wordRepeatCount ?? 1,
         isErrorBookMode: true,
         onWordComplete,
         onAutoRemove,
         onError,
+        resetKey: overrides.resetKey ?? null,
       },
     }
   )
@@ -349,5 +352,161 @@ describe('useTyping — 音频缓存清理时机', () => {
     pauseSpy.mockRestore()
     playSpy.mockRestore()
     loadSpy.mockRestore()
+  })
+})
+
+describe('useTyping — resetKey 换章语义（A1 回归）', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  // 8 词长章 + 1 词短章，模拟 cet4 末章(24 词) → cet4freq 末章(8 词) 的切章场景
+  function makeLongWords() {
+    return Array.from({ length: 8 }, (_, i) => ({ name: `w${i}`, trans: [], notation: '' }))
+  }
+
+  it('resetKey 变化且新词表更短 → 完整重置，不误判为删词（修复前开局即已完成）', () => {
+    const long = makeLongWords()
+    const short = [{ name: 'hi', trans: [], notation: '' }]
+    const { result, rerender } = renderTyping({ words: long, resetKey: 'cet4:9:0' })
+
+    // 跳到长章最后一词并打完 → isFinished、startTime 就位
+    act(() => {
+      result.current.jumpTo(7)
+    })
+    act(() => {
+      for (const ch of 'w7') result.current.handleInput(ch)
+    })
+    expect(result.current.isFinished).toBe(true)
+    expect(result.current.startTime).not.toBeNull()
+
+    act(() => {
+      rerender({ words: short, resetKey: 'cet4freq:9:0' })
+    })
+    expect(result.current.isFinished).toBe(false)
+    expect(result.current.wordIndex).toBe(0)
+    expect(result.current.currentWord.name).toBe('hi')
+    expect(result.current.startTime).toBeNull()
+    expect(result.current.stats).toEqual({
+      time: 0,
+      inputCount: 0,
+      correctCount: 0,
+      wpm: 0,
+      accuracy: 0,
+    })
+  })
+
+  it('resetKey 先变、words 后替换（Typing 切章的两步渲染序列）→ 新章更短仍走完整重置', () => {
+    const long = makeLongWords()
+    const short = [{ name: 'hi', trans: [], notation: '' }]
+    const { result, rerender } = renderTyping({ words: long, resetKey: 'd:1:0' })
+
+    act(() => {
+      result.current.jumpTo(7)
+    })
+    act(() => {
+      for (const ch of 'w7') result.current.handleInput(ch)
+    })
+    expect(result.current.isFinished).toBe(true)
+
+    // 第一步：URL 变化 resetKey 先变，词表还是旧章（loading 中）
+    act(() => {
+      rerender({ words: long, resetKey: 'd:2:0' })
+    })
+    expect(result.current.isFinished).toBe(false)
+    // 第二步：新章词表到达，比旧章短
+    act(() => {
+      rerender({ words: short, resetKey: 'd:2:0' })
+    })
+    expect(result.current.isFinished).toBe(false)
+    expect(result.current.currentWord.name).toBe('hi')
+    expect(result.current.wordIndex).toBe(0)
+    expect(result.current.startTime).toBeNull()
+  })
+
+  it('同 resetKey 下词表缩短 → 删词语义保留（保留统计，仅清输入）', () => {
+    const words = makeWords()
+    const { result, rerender } = renderTyping({ words, resetKey: 'd:1:0' })
+
+    act(() => {
+      result.current.handleInput('c')
+    })
+    expect(result.current.startTime).not.toBeNull()
+
+    act(() => {
+      rerender({ words: [words[0]], resetKey: 'd:1:0' })
+    })
+    // 删词分支：startTime/stats 保留（完整重置会把 startTime 打回 null）
+    expect(result.current.startTime).not.toBeNull()
+    expect(result.current.isFinished).toBe(false)
+    expect(result.current.currentInput).toBe('')
+    expect(result.current.currentWord.name).toBe('cat')
+  })
+})
+
+describe('useTyping — 音频分支', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  function spyMedia() {
+    const pauseSpy = vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {})
+    const playSpy = vi
+      .spyOn(HTMLMediaElement.prototype, 'play')
+      .mockImplementation(() => Promise.resolve())
+    const loadSpy = vi.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(() => {})
+    return { pauseSpy, playSpy, loadSpy }
+  }
+
+  it('soundEnabled=true 开局朗读首词且仅一次；首词打错 300ms 自动清空后不重播（A2 回归）', () => {
+    const { playSpy } = spyMedia()
+    const { result } = renderTyping({ soundEnabled: true })
+    expect(playSpy).toHaveBeenCalledTimes(1) // 挂载朗读 cat
+
+    act(() => {
+      result.current.handleInput('x') // 打错 → 启动 300ms 自动清空
+    })
+    act(() => {
+      vi.advanceTimersByTime(300)
+    })
+    expect(result.current.currentInput).toBe('')
+    // 修复前：currentInput 被清空会触发朗读 effect 重跑 → 发音重播
+    expect(playSpy).toHaveBeenCalledTimes(1)
+  })
+
+  it('开局预加载下一词（load），完成后朗读下一词', () => {
+    const { playSpy, loadSpy } = spyMedia()
+    const { result } = renderTyping({ soundEnabled: true })
+    expect(loadSpy).toHaveBeenCalledTimes(1) // 预加载 words[1] = dog
+
+    act(() => {
+      result.current.handleInput('c')
+      result.current.handleInput('a')
+      result.current.handleInput('t')
+    })
+    expect(result.current.wordIndex).toBe(1)
+    expect(playSpy).toHaveBeenCalledTimes(2) // cat + dog
+    // words[2] 不存在 → 不再触发新的 preload
+    expect(loadSpy).toHaveBeenCalledTimes(1)
+  })
+
+  it('playMediaSafe 被拒（autoplay 拦截）不影响输入推进', () => {
+    const { playSpy } = spyMedia()
+    playSpy.mockImplementation(() => Promise.reject(new Error('NotAllowedError')))
+    const { result, callbacks, unmount } = renderTyping({ soundEnabled: true })
+
+    act(() => {
+      result.current.handleInput('c')
+      result.current.handleInput('a')
+      result.current.handleInput('t')
+    })
+    // play 拒绝被 playMediaSafe 吞掉，打字推进不受影响
+    expect(callbacks.onWordComplete).toHaveBeenCalledWith('cat')
+    expect(result.current.wordIndex).toBe(1)
+    unmount()
   })
 })

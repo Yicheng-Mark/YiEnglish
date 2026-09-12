@@ -27,7 +27,6 @@ import useProgressSync from '../hooks/useProgressSync.js'
 import { saveProgress } from '../lib/api.js'
 import { saveLocalProgress } from '../utils/localProgress.js'
 import { addWordToReview, updateReviewCard } from '../utils/reviewCards.js'
-import { useWordContext } from '../contexts/WordContext.jsx'
 import useErrorTracking from '../hooks/useErrorTracking.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
 
@@ -197,13 +196,11 @@ export default function Typing() {
     config.autoRemoveErrorWord,
     handleWordComplete,
     handleAutoRemove,
-    onErrorTracking
+    onErrorTracking,
+    // 换章/重打时 resetKey 变化 → useTyping 走完整重置；同章内删词 resetKey 不变，
+    // 仅凭词表长度判断（保留功能词本打字中删词的语义）
+    `${dictId}:${chapterId}:${reloadKey}`
   )
-  const { setCurrentWord } = useWordContext()
-  useEffect(() => {
-    setCurrentWord(currentWord)
-    return () => setCurrentWord(null)
-  }, [currentWord, setCurrentWord])
   const addTypingSeconds = getReadingStoreActions().addTypingSeconds
   const typingAccumulatedRef = useRef(0)
   const lastFlushRef = useRef(0)

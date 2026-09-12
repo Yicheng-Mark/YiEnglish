@@ -128,7 +128,8 @@ export default function useTyping(
   autoRemoveErrorWord = true,
   onWordComplete = null,
   onAutoRemove = null,
-  onError = null
+  onError = null,
+  resetKey = null
 ) {
   const [wordIndex, setWordIndex] = useState(0)
   const [currentInput, setCurrentInput] = useState('')
@@ -153,6 +154,16 @@ export default function useTyping(
   const wordsRef = useRef(words)
   wordsRef.current = words
   const prevWordsRef = useRef(words)
+  // A1：resetKey 变化（Typing 传 `${dictId}:${chapterId}:${reloadKey}`）代表换章/重载，
+  // 必须走完整重置；不传（undefined 常量）时比较恒为 false，行为退化为纯长度判断，
+  // 与历史行为完全一致
+  const prevResetKeyRef = useRef(resetKey)
+  // resetKey 变化后的下一次 words 替换（切章后的 setWords 到达）不再做长度比较，
+  // 否则「旧章词多 → 新章词少」仍会被误判成删词
+  const skipNextLengthCheckRef = useRef(false)
+  // A2：首词自动朗读的「已播」标记——每次完整重置或 soundEnabled 关→开时清除
+  const hasSpokenFirstWordRef = useRef(false)
+  const prevSoundEnabledRef = useRef(soundEnabled)
   wordIndexRef.current = wordIndex
   const onWordCompleteRef = useRef(onWordComplete)
   onWordCompleteRef.current = onWordComplete
@@ -217,13 +228,22 @@ export default function useTyping(
     [soundEnabled, getOrCreateAudio]
   )
 
-  // words 变化时处理状态：区分"单词移除"和"新词库加载"
+  // words / resetKey 变化时处理状态：区分「换章/重载（完整重置）」和「同词表删词」
   useEffect(() => {
+    const keyChanged = resetKey !== prevResetKeyRef.current
+    prevResetKeyRef.current = resetKey
+    if (keyChanged) {
+      skipNextLengthCheckRef.current = true
+    }
+
     const prev = prevWordsRef.current
     const prevLen = prev.length
     const newLen = words.length
+    const isWordRemoval =
+      !keyChanged && !skipNextLengthCheckRef.current && newLen < prevLen && prevLen > 0
+    skipNextLengthCheckRef.current = false
 
-    if (newLen < prevLen && prevLen > 0) {
+    if (isWordRemoval) {
       // 单词被移除：智能调整 wordIndex，保留统计数据
       const removedIdx = prev.findIndex((w, i) => !words[i] || w.name !== words[i].name)
       if (removedIdx !== -1) {
@@ -259,6 +279,8 @@ export default function useTyping(
       correctCountRef.current = 0
       repeatCountRef.current = 0
       hasWrongInCurrentWordRef.current = false
+      // A2：重置后允许重新自动朗读首词（本 effect 先于下方朗读 effect 执行）
+      hasSpokenFirstWordRef.current = false
       if (timerRef.current) {
         clearInterval(timerRef.current)
         timerRef.current = null
@@ -273,7 +295,7 @@ export default function useTyping(
         wrongResetTimerRef.current = null
       }
     }
-  }, [words])
+  }, [words, resetKey])
 
   // 音频缓存只在组件卸载时统一清理。不能挂在 [words] 上：删词/重载词表都会触发，
   // 会把正在播放的发音掐断并丢弃全部预加载缓存
@@ -289,13 +311,21 @@ export default function useTyping(
     }
   }, [])
 
-  // soundEnabled 为 true 时朗读首词
+  // soundEnabled 为 true 时朗读首词（标记型：每次完整重置/开声音只播一次）。
+  // 不把 currentInput 放进触发条件——首词打错被 300ms 自动清空后曾导致发音重播（A2）
   useEffect(() => {
-    if (soundEnabled && words.length > 0 && wordIndex === 0 && currentInput === '') {
-      speakWord(words[0]?.name)
-      preloadWord(words[1]?.name)
+    // soundEnabled 关→开：允许重新播报首词
+    if (soundEnabled && !prevSoundEnabledRef.current) {
+      hasSpokenFirstWordRef.current = false
     }
-  }, [soundEnabled, words, wordIndex, currentInput, speakWord, preloadWord])
+    prevSoundEnabledRef.current = soundEnabled
+    if (!soundEnabled || hasSpokenFirstWordRef.current || words.length === 0 || wordIndex !== 0) {
+      return
+    }
+    hasSpokenFirstWordRef.current = true
+    speakWord(words[0]?.name)
+    preloadWord(words[1]?.name)
+  }, [soundEnabled, words, wordIndex, speakWord, preloadWord])
 
   // 计时器
   useEffect(() => {
@@ -454,6 +484,8 @@ export default function useTyping(
       if (soundEnabled) {
         speakWord(wordsRef.current[index]?.name)
         preloadWord(wordsRef.current[index + 1]?.name)
+        // 已手动朗读当前词：占用首词自动朗读标记，避免 wordIndex 变回 0 时 effect 重播
+        hasSpokenFirstWordRef.current = true
       }
     },
     [soundEnabled, speakWord, preloadWord, clearWrongResetTimer]
@@ -479,6 +511,8 @@ export default function useTyping(
     if (soundEnabled && wordsRef.current.length > 0) {
       speakWord(wordsRef.current[0]?.name)
       preloadWord(wordsRef.current[1]?.name)
+      // 已手动朗读首词：占用标记，避免 wordIndex 变回 0 时 effect 重播
+      hasSpokenFirstWordRef.current = true
     }
   }, [soundEnabled, speakWord, preloadWord, clearWrongResetTimer])
 
