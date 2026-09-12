@@ -14,9 +14,28 @@ export default defineConfig({
     legacy({
       // legacy 产物(es5 + 全量 polyfill)给不支持 module 的老浏览器；
       // modernPolyfills 给"支持 module 但缺新 API"的 Safari 14–15.3
-      // (structuredClone/Object.hasOwn 需 15.4+) —— 这是修复白屏的关键开关
+      // (Object.hasOwn/.at()/Promise.any 需 15.4/15+) —— 这是修复白屏的关键开关。
+      // 显式列出 core-js 模块替代全量 true（89KB → ~N KB）：
+      // - src 实际用到的 ES2021+ API：matchAll/flatMap(Safari 13+ 原生，无需补)
+      // - 宁多勿漏的保守项：未直接使用但三方库/未来代码常见（structuredClone、
+      //   Promise.any、Array.fromAsync、error cause 等），逐项核对过
+      //   node_modules/core-js/modules 存在对应模块文件
       targets: ['defaults', 'iOS >= 14', 'Safari >= 14'],
-      modernPolyfills: true,
+      modernPolyfills: [
+        'es.array.at',
+        'es.string.at-alternative',
+        'es.object.has-own',
+        'es.string.replace-all',
+        'es.array.find-last',
+        'es.array.find-last-index',
+        'es.promise.any',
+        'es.aggregate-error',
+        'es.error.cause',
+        'es.global-this',
+        'web.queue-microtask',
+        'web.structured-clone',
+        'es.array.from-async',
+      ],
     }),
   ],
   server: {
