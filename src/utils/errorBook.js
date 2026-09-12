@@ -80,6 +80,43 @@ let syncRetryCount = 0
 // 会话代号：登出重置后自增，用于丢弃旧会话在途请求的迟到失败恢复
 let syncEpoch = 0
 
+// 同一单词的服务端写操作必须保持用户操作顺序。add 在途时本地删词，若 add 晚于
+// delete 到达服务端，词条会“复活”。按词串行化（移植 reviewCards.js 的
+// enqueueServerMutation 模式）：队列空时直接调用，保持首次请求仍在当前调用栈启动。
+const serverMutationQueue = new Map()
+
+function enqueueServerMutation(wordName, mutation, failureMessage) {
+  const epoch = syncEpoch
+  // 登出重置后仍在排队的 mutation 属于旧会话，跳过执行避免写进新账号
+  const guardedMutation = () => {
+    if (epoch !== syncEpoch) return
+    return mutation()
+  }
+  const previous = serverMutationQueue.get(wordName)
+  let current
+  if (previous) {
+    current = previous.catch(() => {}).then(guardedMutation)
+  } else {
+    try {
+      current = Promise.resolve(guardedMutation())
+    } catch (error) {
+      current = Promise.reject(error)
+    }
+  }
+
+  serverMutationQueue.set(wordName, current)
+  current.then(
+    () => {
+      if (serverMutationQueue.get(wordName) === current) serverMutationQueue.delete(wordName)
+    },
+    (error) => {
+      console.warn(failureMessage, error)
+      if (serverMutationQueue.get(wordName) === current) serverMutationQueue.delete(wordName)
+    }
+  )
+  return current
+}
+
 function queueServerSync(word) {
   pendingSyncDeltas.set(word, (pendingSyncDeltas.get(word) || 0) + 1)
   syncRetryCount = 0 // 有新的错词写入，说明链路重新活跃，重置失败计数
@@ -109,32 +146,38 @@ function flushServerSync({ keepalive = false } = {}) {
     const entry = _cache.find((w) => w.name === word)
     // 词已被删除则跳过，避免把刚删的词同步回去
     if (!entry) continue
-    addWordToBook(
-      'error',
-      {
-        name: entry.name,
-        trans: entry.trans,
-        notation: entry.notation,
-        dictName: entry.dictName,
-        wrongCount: entry.wrongCount || 1, // 首次插入用的绝对值
-        delta: deltas.get(word) || 1, // 已存在时按增量累加
-      },
-      { keepalive }
-    )
-      .then(() => {
-        syncRetryCount = 0
-      })
-      .catch((e) => {
-        // 登出重置后迟到的失败响应：增量属于旧会话，直接丢弃，不还回队列
-        if (epoch !== syncEpoch) return
-        // 失败且词仍在错题本中：把增量还回去并定时重试。
-        // 不重新武装定时器的话，增量会一直滞留到用户下次打错同一词或页面隐藏
-        if (Array.isArray(_cache) && _cache.some((w) => w.name === word)) {
-          pendingSyncDeltas.set(word, (pendingSyncDeltas.get(word) || 0) + (deltas.get(word) || 1))
-          scheduleSyncRetry()
+    const delta = deltas.get(word) || 1
+    enqueueServerMutation(
+      word,
+      async () => {
+        try {
+          await addWordToBook(
+            'error',
+            {
+              name: entry.name,
+              trans: entry.trans,
+              notation: entry.notation,
+              dictName: entry.dictName,
+              wrongCount: entry.wrongCount || 1, // 首次插入用的绝对值
+              delta, // 已存在时按增量累加
+            },
+            { keepalive }
+          )
+          syncRetryCount = 0
+        } catch (e) {
+          // 登出重置后迟到的失败响应：增量属于旧会话，直接丢弃，不还回队列
+          if (epoch !== syncEpoch) throw e
+          // 失败且词仍在错题本中：把增量还回去并定时重试。
+          // 不重新武装定时器的话，增量会一直滞留到用户下次打错同一词或页面隐藏
+          if (Array.isArray(_cache) && _cache.some((w) => w.name === word)) {
+            pendingSyncDeltas.set(word, (pendingSyncDeltas.get(word) || 0) + delta)
+            scheduleSyncRetry()
+          }
+          throw e
         }
-        console.warn('Sync error add failed:', e)
-      })
+      },
+      'Sync error add failed:'
+    )
   }
 }
 
@@ -207,7 +250,12 @@ export function removeFromErrorBook(wordName) {
       )
     }
 
-    removeWordFromBook('error', wordName).catch((e) => console.warn('Sync error remove failed:', e))
+    // 删除进同一按词队列：等在途 add 完成后再发，避免 add 晚到把词条“复活”
+    enqueueServerMutation(
+      wordName,
+      () => removeWordFromBook('error', wordName),
+      'Sync error remove failed:'
+    )
   } catch (e) {
     console.error('Failed to remove from error book:', e)
   }
@@ -245,6 +293,8 @@ export function resetErrorBookCache() {
   pendingSyncDeltas.clear()
   syncRetryCount = 0
   syncEpoch++
+  // 排队中尚未执行的旧会话 mutation 直接丢弃（epoch 守卫兜底在途链）
+  serverMutationQueue.clear()
 }
 
 const CHAPTER_SIZE = 25

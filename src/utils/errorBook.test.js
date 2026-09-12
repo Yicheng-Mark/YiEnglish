@@ -123,6 +123,28 @@ describe('errorBook 服务端同步', () => {
     expect(addWordToBook).toHaveBeenCalledTimes(1)
     expect(addWordToBook.mock.calls[0][2]).toEqual({ keepalive: true })
   })
+
+  it('add 在途时本地删词：remove 排队等待 add 完成后再发，服务端最终无此词（A5 回归）', async () => {
+    let resolveAdd
+    addWordToBook.mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveAdd = resolve
+      })
+    )
+    const { addToErrorBook, removeFromErrorBook } = await import('./errorBook')
+
+    addToErrorBook(WORD)
+    await vi.advanceTimersByTimeAsync(2000) // flush → add 请求在途
+    expect(addWordToBook).toHaveBeenCalledTimes(1)
+
+    removeFromErrorBook('apple') // remove 入队，等待在途 add 完成后再发
+    expect(removeWordFromBook).not.toHaveBeenCalled()
+
+    resolveAdd({ success: true })
+    await vi.advanceTimersByTimeAsync(0)
+    expect(removeWordFromBook).toHaveBeenCalledTimes(1)
+    expect(removeWordFromBook).toHaveBeenCalledWith('error', 'apple')
+  })
 })
 
 describe('resetErrorBookCache（登出断开内存态）', () => {

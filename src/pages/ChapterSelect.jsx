@@ -24,10 +24,13 @@ export default function ChapterSelect() {
   const meta = getMeta(dictId)
 
   useEffect(() => {
+    // 竞态防护：快速切换词书时，旧 dictId 的慢响应后到会覆盖新词书的数据/错误态
+    let cancelled = false
     setLoading(true)
     setError(null)
     loadDictionary(dictId)
       .then((data) => {
+        if (cancelled) return
         if (!data.chapters || !Array.isArray(data.chapters)) {
           setError('词库数据格式错误')
           setLoading(false)
@@ -37,9 +40,13 @@ export default function ChapterSelect() {
         setLoading(false)
       })
       .catch((err) => {
+        if (cancelled) return
         setError('加载失败')
         setLoading(false)
       })
+    return () => {
+      cancelled = true
+    }
   }, [dictId])
 
   useEffect(() => {
