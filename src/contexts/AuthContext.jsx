@@ -8,6 +8,11 @@ import { resetReadingWordBookCache } from '../utils/readingWordBook'
 import { resetCorpusWordBookCache } from '../utils/corpusWordBook'
 import { resetLocalProgressCache } from '../utils/localProgress'
 import { syncSettingsFromServer } from '../hooks/useUserConfig'
+import { syncErrorBookFromServer } from '../utils/errorBook'
+import { syncReviewCardsFromServer } from '../utils/reviewCards'
+import { syncFavoriteWordsFromServer } from '../utils/favoriteWords'
+import { syncReadingWordBookFromServer } from '../utils/readingWordBook'
+import { syncCorpusWordBookFromServer } from '../utils/corpusWordBook'
 
 // 方案A：拆成两个 context。
 // - 稳定方法 context：login / register / logout / updateProfile / changePassword /
@@ -24,6 +29,32 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
 const AUTH_ENABLED = import.meta.env.VITE_AUTH_ENABLED !== 'false'
 
 const DEFAULT_USER = { id: 1, username: 'demo', nickname: '学习者' }
+
+// 登出与 401 强制登出共用：断开各本地缓存的内存态与待写队列（只断内存态，
+// 不删 localStorage/IDB 里的用户数据），避免旧账号的内存快照/合批增量串进新会话
+function resetAllLocalCaches() {
+  resetErrorBookCache()
+  resetReviewCardsCache()
+  resetFavoriteWordsCache()
+  resetReadingWordBookCache()
+  resetCorpusWordBookCache()
+  resetLocalProgressCache()
+}
+
+// 登录/会话恢复成功后，并行拉取五个词本的服务端权威数据覆盖本地缓存。
+// 采用覆盖式而非合并：主应用所有词本写入口（打字/阅读/语料/复习）都在
+// ProtectedRoute 之下，不存在「未登录本地积累 → 后登录」的场景；登出与 401
+// 时已 reset 内存态，本地残留只有上一个账号的数据，覆盖正是期望行为。
+// allSettled + 各 sync 自带 try/catch：任一失败静默，不阻塞登录流程
+function syncWordBooksFromServer() {
+  Promise.allSettled([
+    syncErrorBookFromServer(),
+    syncReviewCardsFromServer(),
+    syncFavoriteWordsFromServer(),
+    syncReadingWordBookFromServer(),
+    syncCorpusWordBookFromServer(),
+  ])
+}
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(AUTH_ENABLED ? null : DEFAULT_USER)
@@ -49,12 +80,14 @@ export function AuthProvider({ children }) {
             setUser(data.user)
             // 恢复会话后拉一次服务端设置（跨设备同步设置/主题），失败静默
             syncSettingsFromServer()
+            syncWordBooksFromServer()
             return
           }
         } else if (res.ok) {
           const data = await res.json()
           setUser(data.user)
           syncSettingsFromServer()
+          syncWordBooksFromServer()
         }
       } catch {
         // not logged in
@@ -68,6 +101,8 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     if (!AUTH_ENABLED) return
     function onUnauthorized() {
+      // 与 logout 同样的缓存断开：401 强制登出后旧账号内存态不能留给下一个登录
+      resetAllLocalCaches()
       setUser(null)
       navigateRef.current?.('/login', { replace: true })
     }
@@ -86,8 +121,10 @@ export function AuthProvider({ children }) {
     const data = await res.json().catch(() => ({}))
     if (!res.ok) throw new Error(data.error || '登录失败')
     setUser(data.user)
-    // 登录后拉一次服务端设置（跨设备同步设置/主题），不阻塞登录流程
+    // 登录后拉一次服务端设置（跨设备同步设置/主题），并拉取五个词本的服务端
+    // 权威数据，均不阻塞登录流程
     syncSettingsFromServer()
+    syncWordBooksFromServer()
     return data.user
   }, [])
 
@@ -144,12 +181,7 @@ export function AuthProvider({ children }) {
     // 服务端会话结束后断开本地各缓存的内存态与待写队列：本地缓存的内存快照
     // 属于上一个账号，直接留给下一个账号会串数据，未上云的合批增量也会被
     // 推进新账号（只断内存态，不删 localStorage/IDB 里的用户数据）
-    resetErrorBookCache()
-    resetReviewCardsCache()
-    resetFavoriteWordsCache()
-    resetReadingWordBookCache()
-    resetCorpusWordBookCache()
-    resetLocalProgressCache()
+    resetAllLocalCaches()
     setUser(null)
   }, [])
 

@@ -12,6 +12,7 @@ vi.mock('../lib/api', () => ({ apiFetch: mocks.apiFetch }))
 vi.mock('../utils/getDeviceId', () => ({ getDeviceId: mocks.getDeviceId }))
 
 // 登出必须断开各本地缓存的内存态（跨账号串数据防护）：六个 reset 全 mock，只验证接线
+// 登录/会话恢复的五个词本 sync 同理：mock 后只验证接线时机，同步行为在各 util 自己的测试里
 const resets = vi.hoisted(() => ({
   resetErrorBookCache: vi.fn(),
   resetReviewCardsCache: vi.fn(),
@@ -19,17 +20,31 @@ const resets = vi.hoisted(() => ({
   resetReadingWordBookCache: vi.fn(),
   resetCorpusWordBookCache: vi.fn(),
   resetLocalProgressCache: vi.fn(),
+  syncErrorBookFromServer: vi.fn(),
+  syncReviewCardsFromServer: vi.fn(),
+  syncFavoriteWordsFromServer: vi.fn(),
+  syncReadingWordBookFromServer: vi.fn(),
+  syncCorpusWordBookFromServer: vi.fn(),
 }))
-vi.mock('../utils/errorBook', () => ({ resetErrorBookCache: resets.resetErrorBookCache }))
-vi.mock('../utils/reviewCards', () => ({ resetReviewCardsCache: resets.resetReviewCardsCache }))
+vi.mock('../utils/errorBook', () => ({
+  resetErrorBookCache: resets.resetErrorBookCache,
+  syncErrorBookFromServer: resets.syncErrorBookFromServer,
+}))
+vi.mock('../utils/reviewCards', () => ({
+  resetReviewCardsCache: resets.resetReviewCardsCache,
+  syncReviewCardsFromServer: resets.syncReviewCardsFromServer,
+}))
 vi.mock('../utils/favoriteWords', () => ({
   resetFavoriteWordsCache: resets.resetFavoriteWordsCache,
+  syncFavoriteWordsFromServer: resets.syncFavoriteWordsFromServer,
 }))
 vi.mock('../utils/readingWordBook', () => ({
   resetReadingWordBookCache: resets.resetReadingWordBookCache,
+  syncReadingWordBookFromServer: resets.syncReadingWordBookFromServer,
 }))
 vi.mock('../utils/corpusWordBook', () => ({
   resetCorpusWordBookCache: resets.resetCorpusWordBookCache,
+  syncCorpusWordBookFromServer: resets.syncCorpusWordBookFromServer,
 }))
 vi.mock('../utils/localProgress', () => ({
   resetLocalProgressCache: resets.resetLocalProgressCache,
@@ -96,6 +111,15 @@ beforeEach(() => {
   vi.clearAllMocks()
   mocks.getDeviceId.mockReturnValue('test-device')
   sync.syncSettingsFromServer.mockResolvedValue()
+  for (const key of [
+    'syncErrorBookFromServer',
+    'syncReviewCardsFromServer',
+    'syncFavoriteWordsFromServer',
+    'syncReadingWordBookFromServer',
+    'syncCorpusWordBookFromServer',
+  ]) {
+    resets[key].mockResolvedValue()
+  }
 })
 
 describe('会话自检（挂载即拉 /api/auth/me）', () => {
@@ -258,6 +282,99 @@ describe('auth:unauthorized 全局广播', () => {
       expect(() => window.dispatchEvent(new Event('auth:unauthorized'))).not.toThrow()
     })
     await waitFor(() => expect(getState().user).toBeNull())
+  })
+
+  it('事件 → 六个本地缓存 reset 全部被调（A3 回归：修复前 401 登出只清 user 不清缓存）', async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue(jsonResponse({ user: USER }))
+    renderProvider()
+    await waitFor(() => expect(getState().user).toEqual(USER))
+
+    act(() => {
+      window.dispatchEvent(new Event('auth:unauthorized'))
+    })
+    await waitFor(() => expect(getState().user).toBeNull())
+    expect(resets.resetErrorBookCache).toHaveBeenCalledTimes(1)
+    expect(resets.resetReviewCardsCache).toHaveBeenCalledTimes(1)
+    expect(resets.resetFavoriteWordsCache).toHaveBeenCalledTimes(1)
+    expect(resets.resetReadingWordBookCache).toHaveBeenCalledTimes(1)
+    expect(resets.resetCorpusWordBookCache).toHaveBeenCalledTimes(1)
+    expect(resets.resetLocalProgressCache).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('词本服务端同步接线（A4）', () => {
+  it('login 成功 → 五个词本 sync 各触发一次', async () => {
+    // 挂载会话检查全程 401（未登录），保证 sync 计数只来自 login
+    globalThis.fetch = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ error: 'no' }, false, 401)) // 挂载 /me
+      .mockResolvedValueOnce(jsonResponse({ error: 'no' }, false, 401)) // 挂载 /refresh
+      .mockResolvedValue(jsonResponse({ user: USER })) // login
+    renderProvider()
+    await waitFor(() => expect(getState().loading).toBe(false))
+
+    await act(async () => {
+      screen.getByText('login').click()
+    })
+    await waitFor(() => expect(getState().user).toEqual(USER))
+    expect(resets.syncErrorBookFromServer).toHaveBeenCalledTimes(1)
+    expect(resets.syncReviewCardsFromServer).toHaveBeenCalledTimes(1)
+    expect(resets.syncFavoriteWordsFromServer).toHaveBeenCalledTimes(1)
+    expect(resets.syncReadingWordBookFromServer).toHaveBeenCalledTimes(1)
+    expect(resets.syncCorpusWordBookFromServer).toHaveBeenCalledTimes(1)
+  })
+
+  it('恢复会话成功 → 五个词本 sync 触发一次', async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue(jsonResponse({ user: USER }))
+    renderProvider()
+    await waitFor(() => expect(getState().user).toEqual(USER))
+    expect(resets.syncErrorBookFromServer).toHaveBeenCalledTimes(1)
+    expect(resets.syncReviewCardsFromServer).toHaveBeenCalledTimes(1)
+    expect(resets.syncFavoriteWordsFromServer).toHaveBeenCalledTimes(1)
+    expect(resets.syncReadingWordBookFromServer).toHaveBeenCalledTimes(1)
+    expect(resets.syncCorpusWordBookFromServer).toHaveBeenCalledTimes(1)
+  })
+
+  it('词本 sync 失败 → 静默吞掉，不阻塞登录流程', async () => {
+    globalThis.fetch = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ error: 'no' }, false, 401))
+      .mockResolvedValueOnce(jsonResponse({ error: 'no' }, false, 401))
+      .mockResolvedValue(jsonResponse({ user: USER }))
+    for (const key of [
+      'syncErrorBookFromServer',
+      'syncReviewCardsFromServer',
+      'syncFavoriteWordsFromServer',
+      'syncReadingWordBookFromServer',
+      'syncCorpusWordBookFromServer',
+    ]) {
+      resets[key].mockRejectedValue(new Error('sync down'))
+    }
+    renderProvider()
+    await waitFor(() => expect(getState().loading).toBe(false))
+
+    await act(async () => {
+      screen.getByText('login').click()
+    })
+    await waitFor(() => expect(getState().user).toEqual(USER))
+    // allSettled 已吸收 rejection，登录态正常就位
+    expect(resets.syncErrorBookFromServer).toHaveBeenCalledTimes(1)
+  })
+
+  it('login 失败 → 不触发词本 sync', async () => {
+    globalThis.fetch = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ error: 'no' }, false, 401))
+      .mockResolvedValueOnce(jsonResponse({ error: 'no' }, false, 401))
+      .mockResolvedValue(jsonResponse({ error: '用户名或密码错误' }, false, 401))
+    renderProvider()
+    await waitFor(() => expect(getState().loading).toBe(false))
+
+    await act(async () => {
+      await expect(captured.login('alice', 'wrong1')).rejects.toThrow('用户名或密码错误')
+    })
+    expect(getState().user).toBeNull()
+    expect(resets.syncErrorBookFromServer).not.toHaveBeenCalled()
   })
 })
 
