@@ -755,7 +755,6 @@ describe('POST /api/auth/refresh', () => {
   })
 
   // 原子轮换后的 SELECT（读会话元数据）用更具体的关键字，避免误匹配 DELETE 语句。
-  // created_at/id 供设备上限复检做「比本会话更早创建」的排序比较。
   const STORED_REFRESH_ROW = {
     id: 100,
     user_id: 5,
@@ -775,8 +774,8 @@ describe('POST /api/auth/refresh', () => {
           { id: 5, username: VALID_USER, nickname: 'Alice', is_guest: 0, max_devices: null },
         ],
       },
-      // 全局上限 2，仅 1 台更早会话 → 本台在保留集合内，放行
-      { match: ['COUNT(*) AS olderCnt'], returns: [{ olderCnt: 1 }] },
+      // 全局上限 2，活跃会话 1 台 → 未超限，不触发驱逐
+      { match: ['COUNT(*) AS activeCnt'], returns: [{ activeCnt: 1 }] },
       { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 2, affectedRows: 1 } },
     ])
     const app = makeApp()
@@ -797,22 +796,23 @@ describe('POST /api/auth/refresh', () => {
     expect(String(delCall[0])).toContain('expires_at > NOW()')
     expect(delCall[1]).toEqual([hashToken('somevalidvalue')])
 
-    // 设备复检：只统计「创建时间早于本会话（created_at/id 双键比较）」的活跃会话
-    const olderCall = mockExecute.mock.calls.find(([sql]) =>
-      String(sql).includes('COUNT(*) AS olderCnt')
+    // 设备复检（驱逐制）：轮换写入后统计活跃会话总数（与登录口径一致，排除空 device_id）
+    const cntCall = mockExecute.mock.calls.find(([sql]) =>
+      String(sql).includes('COUNT(*) AS activeCnt')
     )
-    expect(olderCall).toBeTruthy()
-    expect(String(olderCall[0])).toContain('created_at < ?')
-    expect(String(olderCall[0])).toContain('expires_at > NOW()')
-    expect(olderCall[1]).toEqual([
-      5,
-      STORED_REFRESH_ROW.created_at,
-      STORED_REFRESH_ROW.created_at,
-      STORED_REFRESH_ROW.id,
-    ])
+    expect(cntCall).toBeTruthy()
+    expect(String(cntCall[0])).toContain("device_id <> ''")
+    expect(String(cntCall[0])).toContain('expires_at > NOW()')
+    expect(cntCall[1]).toEqual([5])
+    // 未超限：不得发出驱逐 DELETE
+    expect(
+      mockExecute.mock.calls.some(([sql]) =>
+        String(sql).includes('DELETE FROM refresh_tokens WHERE id IN')
+      )
+    ).toBe(false)
   })
 
-  it('设备复检：更早会话数已达上限 → 403 DEVICE_LIMIT_REACHED，清 cookie 且不再签发', async () => {
+  it('设备复检：活跃会话超上限 → 驱逐最旧他台（排除本会话行），本台正常续期 200', async () => {
     setExecuteHandlers([
       { match: ['SELECT id, user_id, device_id'], returns: [STORED_REFRESH_ROW] },
       { match: ['DELETE FROM refresh_tokens WHERE token_hash'], returns: { affectedRows: 1 } },
@@ -822,25 +822,57 @@ describe('POST /api/auth/refresh', () => {
           { id: 5, username: VALID_USER, nickname: 'Alice', is_guest: 0, max_devices: null },
         ],
       },
-      // 全局上限 2，已有 2 台更早会话 → 本台属超额设备，拒绝续期
-      { match: ['COUNT(*) AS olderCnt'], returns: [{ olderCnt: 2 }] },
+      // 全局上限 2，活跃会话 3 台 → 超额 1 台，驱逐最旧的 1 台他者
+      { match: ['COUNT(*) AS activeCnt'], returns: [{ activeCnt: 3 }] },
+      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 2, affectedRows: 1 } },
     ])
     const app = makeApp()
     const res = await supertest(app)
       .post('/api/auth/refresh')
       .set('Cookie', 'lf_refresh_token=overlimit')
-    expect(res.status).toBe(403)
-    expect(res.body.code).toBe('DEVICE_LIMIT_REACHED')
-    // 本会话行已被 rotation 认领删除，吊销即生效：不得再签发新 token
-    expect(
-      mockExecute.mock.calls.some(([sql]) => String(sql).includes('INSERT INTO refresh_tokens'))
-    ).toBe(false)
-    const sc = res.headers['set-cookie'] || []
-    const arr = Array.isArray(sc) ? sc : [sc]
-    expect(arr.some((c) => /lf_refresh_token=;/.test(c))).toBe(true)
+    // 语义变化（驱逐制）：refresh 不再 403，本台续期成功，超额的最旧设备被服务端删行
+    expect(res.status).toBe(200)
+    expect(res.body.user).toMatchObject({ id: 5, username: VALID_USER })
+    expect(getCookie(res.headers['set-cookie'], 'lf_refresh_token')).toBeTruthy()
+
+    // 驱逐 = 单条原子 DELETE + 派生表子查询；按 last_active_at 最旧排序，排除本会话行
+    const evictCall = mockExecute.mock.calls.find(([sql]) =>
+      String(sql).includes('DELETE FROM refresh_tokens WHERE id IN')
+    )
+    expect(evictCall).toBeTruthy()
+    expect(String(evictCall[0])).toContain('ORDER BY last_active_at ASC')
+    expect(String(evictCall[0])).toContain('id <> ?')
+    expect(String(evictCall[0])).toContain('LIMIT ?')
+    // [user_id, 本会话行 id（来自 upsert 的 insertId）, 超额台数]
+    expect(evictCall[1]).toEqual([5, 2, 1])
   })
 
-  it('用户级 max_devices=0（不限）→ refresh 不复检上限（不发 olderCnt 查询）', async () => {
+  it('设备复检：活跃会话恰好等于上限 → 不驱逐（excess=0 边界）', async () => {
+    setExecuteHandlers([
+      { match: ['SELECT id, user_id, device_id'], returns: [STORED_REFRESH_ROW] },
+      { match: ['DELETE FROM refresh_tokens WHERE token_hash'], returns: { affectedRows: 1 } },
+      {
+        match: ['FROM users WHERE id'],
+        returns: [
+          { id: 5, username: VALID_USER, nickname: 'Alice', is_guest: 0, max_devices: null },
+        ],
+      },
+      { match: ['COUNT(*) AS activeCnt'], returns: [{ activeCnt: 2 }] },
+      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 2, affectedRows: 1 } },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/refresh')
+      .set('Cookie', 'lf_refresh_token=atlimit')
+    expect(res.status).toBe(200)
+    expect(
+      mockExecute.mock.calls.some(([sql]) =>
+        String(sql).includes('DELETE FROM refresh_tokens WHERE id IN')
+      )
+    ).toBe(false)
+  })
+
+  it('用户级 max_devices=0（不限）→ refresh 不复检上限（不发 activeCnt 查询）', async () => {
     setExecuteHandlers([
       { match: ['SELECT id, user_id, device_id'], returns: [STORED_REFRESH_ROW] },
       { match: ['DELETE FROM refresh_tokens WHERE token_hash'], returns: { affectedRows: 1 } },
@@ -855,10 +887,10 @@ describe('POST /api/auth/refresh', () => {
       .post('/api/auth/refresh')
       .set('Cookie', 'lf_refresh_token=unlimited')
     expect(res.status).toBe(200)
-    expect(mockExecute.mock.calls.some(([sql]) => String(sql).includes('olderCnt'))).toBe(false)
+    expect(mockExecute.mock.calls.some(([sql]) => String(sql).includes('activeCnt'))).toBe(false)
   })
 
-  it('并发抢占同一 token（原子 DELETE affectedRows=0）→ 401 清 cookie，不再签发并行会话', async () => {
+  it('并发抢占同一 token（原子 DELETE affectedRows=0）→ 401 但不清 cookie（胜者刚下发的新 cookie 不能被抹掉），不再签发并行会话', async () => {
     setExecuteHandlers([
       { match: ['SELECT id, user_id, device_id'], returns: [STORED_REFRESH_ROW] },
       { match: ['DELETE FROM refresh_tokens WHERE token_hash'], returns: { affectedRows: 0 } },
@@ -873,9 +905,73 @@ describe('POST /api/auth/refresh', () => {
     expect(
       mockExecute.mock.calls.some(([sql]) => String(sql).includes('INSERT INTO refresh_tokens'))
     ).toBe(false)
+    // 回归（B2）：并发败者只回 401 响应体，不清 cookie——否则会抹掉并发胜者
+    // 刚 Set-Cookie 的新 refresh token，双标签页间歇被登出
     const sc = res.headers['set-cookie'] || []
     const arr = Array.isArray(sc) ? sc : [sc]
-    expect(arr.some((c) => /lf_refresh_token=;/.test(c))).toBe(true)
+    expect(arr.some((c) => /lf_refresh_token=;/.test(c))).toBe(false)
+    expect(arr.some((c) => /lf_access_token=;/.test(c))).toBe(false)
+  })
+})
+
+// =====================================================================
+// 设备管理：GET /api/auth/devices（is_current 以服务端 cookie 为准）
+// =====================================================================
+describe('GET /api/auth/devices', () => {
+  const userId = 5
+  const token = jwt.sign({ userId }, FIXED_JWT_SECRET, { expiresIn: '30m' })
+
+  it('is_current 以 lf_device_id cookie 比对（回归：query.deviceId 是前端 localStorage id，恒不相等）', async () => {
+    setExecuteHandlers([
+      {
+        match: ['AS is_current'],
+        returns: [
+          {
+            id: 1,
+            device_name: 'Chrome · Windows',
+            ip: '1.2.3.4',
+            last_active_at: new Date('2026-09-10T00:00:00Z'),
+            is_current: 1,
+          },
+          {
+            id: 2,
+            device_name: 'Safari · iPhone',
+            ip: '5.6.7.8',
+            last_active_at: new Date('2026-09-09T00:00:00Z'),
+            is_current: 0,
+          },
+        ],
+      },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .get('/api/auth/devices')
+      .set('Cookie', `lf_access_token=${token}; lf_device_id=cookie-device-1`)
+      // query 里伪造的 localStorage id 必须被忽略
+      .query({ deviceId: 'forged-localstorage-id' })
+    expect(res.status).toBe(200)
+    expect(res.body.devices[0]).toMatchObject({ id: 1, isCurrent: true })
+    expect(res.body.devices[1]).toMatchObject({ id: 2, isCurrent: false })
+
+    // SQL 参数第一个是 cookie 的 device id，不是 query 伪造值
+    const call = mockExecute.mock.calls.find(([sql]) => String(sql).includes('AS is_current'))
+    expect(call[1][0]).toBe('cookie-device-1')
+    expect(call[1][1]).toBe(userId)
+  })
+
+  it('无设备 cookie → 空串比对，所有行 isCurrent=false', async () => {
+    setExecuteHandlers([
+      {
+        match: ['AS is_current'],
+        returns: [{ id: 1, device_name: null, ip: null, last_active_at: null, is_current: 0 }],
+      },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .get('/api/auth/devices')
+      .set('Cookie', `lf_access_token=${token}`)
+    expect(res.status).toBe(200)
+    expect(res.body.devices[0]).toMatchObject({ id: 1, name: '未知设备', isCurrent: false })
   })
 })
 

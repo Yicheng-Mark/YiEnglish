@@ -19,6 +19,7 @@ const {
   validateUsername,
   validatePassword,
   REFRESH_COOKIE,
+  DEVICE_COOKIE,
 } = require('../utils/tokens')
 const { createRateLimiter } = require('../utils/apiRateLimit')
 
@@ -332,7 +333,7 @@ router.post('/refresh', authActionLimiter, async (req, res, next) => {
 
     const tokenHash = hashToken(refreshToken)
 
-    // created_at / id 供下方设备上限复检做「比本会话更早创建」的排序比较
+    // SELECT 仅用于读取轮换所需元数据（认领由下方守卫 DELETE 完成）
     const [rows] = await pool.execute(
       'SELECT id, user_id, device_id, device_name, ip, created_at FROM refresh_tokens WHERE token_hash = ? AND expires_at > NOW()',
       [tokenHash]
@@ -354,7 +355,10 @@ router.post('/refresh', authActionLimiter, async (req, res, next) => {
       [tokenHash]
     )
     if (claimed.affectedRows === 0) {
-      clearCookies(res)
+      // 走到这里说明上方 SELECT 查到了行但 DELETE 认领失败——token 刚被并发的
+      // 另一标签页认领，胜者已拿到新 cookie。此时若 clearCookies 会把胜者刚下发
+      // 的新 refresh cookie 一并抹掉 → 双标签页间歇被登出。仅返回 401 响应体，
+      // 不动 cookie（真无效 token 的 rows.length===0 分支仍照常清）。
       return res.status(401).json({ error: '请先登录' })
     }
 
@@ -384,31 +388,9 @@ router.post('/refresh', authActionLimiter, async (req, res, next) => {
       }
     }
 
-    // 设备上限复检：上限只拦「新登录」的话，调低上限后存量超额会话仍可无限续期。
-    // 判定规则——比本会话更早创建的活跃会话数已达上限，说明本台属于超额设备：
-    // 拒绝续期（本会话行已被上方 rotation 认领删除，吊销即生效）。
-    // 会话按 created_at 排序自然收敛到上限台数；游客走独立试用体系不参与。
-    if (!isGuest) {
-      const deviceLimit = userRows[0].max_devices ?? config.MAX_DEVICES_PER_USER
-      if (deviceLimit > 0) {
-        const [[{ olderCnt }]] = await pool.execute(
-          `SELECT COUNT(*) AS olderCnt FROM refresh_tokens
-           WHERE user_id = ? AND expires_at > NOW()
-             AND (created_at < ? OR (created_at = ? AND id < ?))`,
-          [stored.user_id, stored.created_at, stored.created_at, stored.id]
-        )
-        if (olderCnt >= deviceLimit) {
-          clearCookies(res)
-          return res.status(403).json({
-            error: `该账号登录设备数已达上限（${deviceLimit} 台），本设备已退出登录`,
-            code: 'DEVICE_LIMIT_REACHED',
-          })
-        }
-      }
-    }
-
-    // rotation 时沿用原会话的设备标识/IP，刷新 last_active_at
-    await issueTokens(
+    // rotation 时沿用原会话的设备标识/IP，刷新 last_active_at（返回本会话行 id，
+    // 供下方设备上限驱逐排除自身）
+    const sessionId = await issueTokens(
       res,
       stored.user_id,
       isGuest,
@@ -419,6 +401,40 @@ router.post('/refresh', authActionLimiter, async (req, res, next) => {
       },
       isGuest && trialExpiresAt ? new Date(trialExpiresAt).toISOString() : null
     )
+
+    // 设备上限复检（驱逐制）：上限只拦「新登录」的话，调低上限后存量超额会话仍可
+    // 无限续期。本会话刚完成轮换写入（last_active_at=NOW()，必为全账号最新），此后
+    // 统计活跃会话总数，超出上限时把最旧的他台逐出台数差额——被踢设备下次 refresh
+    // 因 token 行已删自然落到 401 清 cookie 分支，本台正常续期不受影响。
+    // 旧实现按「比本会话更早创建的会话数 >= 上限」判 403，但轮换 upsert 会把
+    // created_at 刷成 NOW()，多设备 FIFO 正常轮换时 olderCnt 恒 0 永不收敛，乱序时
+    // 反而踢到最新设备；驱逐制只看 last_active_at，任意轮换顺序都单调收敛。
+    // 统计口径与登录路径一致：只算 device_id <> '' 的未过期行；游客走独立试用体系不参与。
+    if (!isGuest) {
+      const deviceLimit = userRows[0].max_devices ?? config.MAX_DEVICES_PER_USER
+      if (deviceLimit > 0) {
+        const [[{ activeCnt }]] = await pool.execute(
+          `SELECT COUNT(*) AS activeCnt FROM refresh_tokens
+           WHERE user_id = ? AND device_id <> '' AND expires_at > NOW()`,
+          [stored.user_id]
+        )
+        const excess = activeCnt - deviceLimit
+        if (excess > 0) {
+          // 单条 DELETE + 派生表子查询保持原子（MySQL 同表 DELETE 子查询需包一层）
+          await pool.execute(
+            `DELETE FROM refresh_tokens WHERE id IN (
+               SELECT id FROM (
+                 SELECT id FROM refresh_tokens
+                 WHERE user_id = ? AND device_id <> '' AND expires_at > NOW() AND id <> ?
+                 ORDER BY last_active_at ASC, id ASC
+                 LIMIT ?
+               ) AS victims
+             )`,
+            [stored.user_id, sessionId, excess]
+          )
+        }
+      }
+    }
 
     const userObj = toClientUser(userRows[0])
     if (isGuest) {
@@ -700,7 +716,11 @@ router.post('/recover-reset', async (req, res, next) => {
 // --- 设备管理：列出当前账号的登录设备（requires auth）---
 router.get('/devices', authMiddleware, async (req, res, next) => {
   try {
-    const deviceId = typeof req.query.deviceId === 'string' ? req.query.deviceId.trim() : ''
+    // 当前设备标识只认服务端签发的 HttpOnly cookie（与 refresh_tokens.device_id 同源，
+    // 都是 DEVICE_COOKIE）。旧实现读 req.query.deviceId——前端 localStorage 自生成 id
+    // 与 DB 里 cookie 来源的 device_id 是两套值，永不相等，is_current 恒 false。
+    const deviceId =
+      typeof req.cookies?.[DEVICE_COOKIE] === 'string' ? req.cookies[DEVICE_COOKIE].trim() : ''
     const [rows] = await pool.execute(
       `SELECT id, device_name, ip, last_active_at,
               (device_id = ?) AS is_current

@@ -84,7 +84,7 @@ async function issueTokens(
   // 旧实现「先 DELETE 本设备行再 INSERT」存在窗口期，并发登录会产生同设备重复行，
   // 使 COUNT(*) 按行数虚报设备占用导致他人被误 403；覆盖时重置 created_at/last_active_at。
   const db = conn || pool
-  await db.execute(
+  const [result] = await db.execute(
     `INSERT INTO refresh_tokens (user_id, token_hash, expires_at, device_id, device_name, ip, last_active_at)
      VALUES (?, ?, ?, ?, ?, ?, NOW())
      ON DUPLICATE KEY UPDATE
@@ -103,7 +103,6 @@ async function issueTokens(
       device.ip || null,
     ]
   )
-
   res.cookie(ACCESS_COOKIE, accessToken, ACCESS_COOKIE_OPTS)
   // 清理旧版本更窄 path 的同名 cookie，避免浏览器在 /refresh 同时发送两个值。
   res.clearCookie(REFRESH_COOKIE, {
@@ -113,6 +112,11 @@ async function issueTokens(
     path: LEGACY_REFRESH_COOKIE_PATH,
   })
   res.cookie(REFRESH_COOKIE, refreshToken, REFRESH_COOKIE_OPTS)
+
+  // 返回本会话行 id：ON DUPLICATE KEY UPDATE 走更新分支时 MySQL 协议里的
+  // insertId 即被更新行的自增 id（新插入时即新行 id），调用方（refresh 的设备
+  // 上限驱逐）据此在 DELETE 排除自身。此前无返回值，向后兼容。
+  return result.insertId
 }
 
 function clearCookies(res) {
