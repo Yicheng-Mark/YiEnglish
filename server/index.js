@@ -7,12 +7,18 @@ const path = require('path')
 const config = require('./config')
 const pool = require('./db')
 const logger = require('./utils/logger')
+const splitSqlStatements = require('./utils/splitSqlStatements')
 const errorHandler = require('./middleware/errorHandler')
 const { cleanupStaleAttempts } = require('./middleware/rateLimit')
 const { createRateLimiter } = require('./utils/apiRateLimit')
 
 // 自动执行所有 migrate_*.sql。引入 schema_migrations 版本表：已执行的文件跳过，避免每次启动重复跑全部迁移。
 // 失败时升级为 error 日志，但不中止启动（保持可用性）；失败的文件不记录版本，下次启动自动重试。
+// 执行顺序为不动点重试：文件名字母序存在依赖倒挂（如 migrate_activation_code.sql 的
+// ALTER 目标表由排其后的 migrate_demo_trial.sql 创建），首轮必失败。不重命名/重排迁移
+// 文件（schema_migrations 按文件名记历史，重排会导致生产重复执行），改为失败文件多轮
+// 重试：每轮跑完后，只要本轮有文件成功（依赖已被补齐）就对剩余失败文件再跑一轮，最多
+// 5 轮；仍失败的不记版本、不中止启动，下次启动自动重试。
 async function runMigrations() {
   const sqlDir = path.join(__dirname, 'sql')
 
@@ -30,44 +36,10 @@ async function runMigrations() {
     .filter((f) => f.startsWith('migrate_') && f.endsWith('.sql'))
     .sort()
 
-  for (const file of files) {
-    if (appliedSet.has(file)) continue
+  // 单文件执行：全部语句成功记录版本并返回 true；任一语句失败不记版本，返回 false
+  const applyMigrationFile = async (file) => {
     const sql = fs.readFileSync(path.join(sqlDir, file), 'utf8')
-    // 分句：只在引号外的 ';' 处切分。
-    // 朴素 split(';') 会误切 CHECK 约束、INSERT 字面量、PREPARE 内嵌 SQL 等引号内的分号。
-    // 逐字符扫描，跟踪是否在 '...' 字符串内（'' 视为转义引号而非结束），仅在外层 ';' 处断句。
-    const statements = []
-    let buf = ''
-    let inStr = false
-    for (let i = 0; i < sql.length; i++) {
-      const ch = sql[i]
-      buf += ch
-      if (ch === "'") {
-        // 连续两个单引号 = 转义字面引号（''），不算字符串结束
-        if (inStr && sql[i + 1] === "'") {
-          buf += sql[i + 1]
-          i++
-          continue
-        }
-        inStr = !inStr
-      } else if (ch === ';' && !inStr) {
-        // 引号外分号 = 语句边界；把缓冲里的整段（含分号）交给清洗
-        statements.push(buf)
-        buf = ''
-      }
-    }
-    if (buf.trim()) statements.push(buf)
-    const cleaned = statements
-      .map((s) =>
-        s
-          .split('\n')
-          .filter((line) => !line.trim().startsWith('--'))
-          .join('\n')
-          .trim()
-      )
-      .filter((s) => s && !s.startsWith('USE '))
-      .map((s) => (s.endsWith(';') ? s.slice(0, -1).trim() : s))
-      .filter(Boolean)
+    const cleaned = splitSqlStatements(sql)
     let failed = false
     for (const stmt of cleaned) {
       try {
@@ -83,13 +55,28 @@ async function runMigrations() {
     }
     if (failed) {
       // 任一语句失败：不写 schema_migrations，避免把半成品 schema 固化为"已应用"。
-      // 同样不中止启动（与上方错误处理风格一致，避免崩溃循环）；下次启动自动重试该文件。
-      logger.error({ file }, '[Migration] 有语句失败，跳过版本记录，下次启动将重试')
-      continue
+      logger.error({ file }, '[Migration] 有语句失败，跳过版本记录，稍后重试')
+      return false
     }
     // 全部语句成功才记录版本：避免每次启动重复执行同一迁移、刷日志。
     await pool.query('INSERT IGNORE INTO schema_migrations (version) VALUES (?)', [file])
     logger.info({ file }, '[Migration] applied')
+    return true
+  }
+
+  let pending = files.filter((f) => !appliedSet.has(f))
+  for (let round = 0; round < 5 && pending.length > 0; round++) {
+    const failed = []
+    let progressed = false
+    for (const file of pending) {
+      // 不动点：本轮只要有文件成功就值得再跑一轮（失败的依赖可能已被本轮补齐）；
+      // 全部失败则提前收敛，不再空转
+      const ok = await applyMigrationFile(file)
+      if (ok) progressed = true
+      else failed.push(file)
+    }
+    if (!progressed) break
+    pending = failed
   }
 }
 
@@ -114,8 +101,9 @@ const clientErrorRoutes = require('./routes/clientError')
 // const memoryRoutes = require('./routes/memory')
 
 const app = express()
-// 生产经 Nginx 反代：信任一层代理，从 X-Forwarded-For 正确解析客户端真实 IP（限流/设备 IP 都依赖 req.ip）
-app.set('trust proxy', 1)
+// 生产经 Nginx 反代：信任一层代理，从 X-Forwarded-For 正确解析客户端真实 IP（限流/设备 IP 都依赖 req.ip）。
+// 默认 1；服务不经反代直接暴露时应设 TRUST_PROXY=0，否则客户端可伪造 X-Forwarded-For 绕过 IP 限流
+app.set('trust proxy', config.TRUST_PROXY)
 
 // 安全响应头（X-Content-Type-Options / X-Frame-Options / Referrer-Policy / HSTS 等）。
 // CSP 暂不启用：index.html 有防闪烁主题引导内联脚本、legacy 构建产物含 inline script、

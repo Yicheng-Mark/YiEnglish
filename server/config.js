@@ -36,4 +36,11 @@ module.exports = {
     const n = parseInt(process.env.MAX_DEVICES_PER_USER, 10)
     return Number.isInteger(n) && n >= 0 ? n : 2
   })(),
+  // express trust proxy：信任的反代层数。生产默认 1（nginx 前置，req.ip 从
+  // X-Forwarded-For 取真实客户端 IP）；服务直连暴露时应设 0（否则 X-Forwarded-For
+  // 可被客户端伪造，绕过 IP 限流）。负数/非数字回退默认 1
+  TRUST_PROXY: (() => {
+    const n = parseInt(process.env.TRUST_PROXY, 10)
+    return Number.isInteger(n) && n >= 0 ? n : 1
+  })(),
 }
