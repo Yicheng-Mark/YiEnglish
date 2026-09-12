@@ -334,6 +334,42 @@ describe('POST /api/demo/redeem', () => {
     expect(mockConnection.commit).not.toHaveBeenCalled()
   })
 
+  it('并发兑换撞 trial_activations 唯一键（ER_DUP_ENTRY）→ 回滚并 400「该设备已体验过」（回归：修复前 500）', async () => {
+    setExecuteHandlers([
+      {
+        match: ['FROM experience_codes WHERE code'],
+        returns: [
+          {
+            id: 11,
+            code: 'TRY1',
+            max_uses: 10,
+            current_uses: 0,
+            trial_hours: 24,
+            is_active: 1,
+            expires_at: null,
+          },
+        ],
+      },
+      { match: ['FROM trial_activations WHERE device_id'], returns: [] }, // 预检通过
+      { match: ['SELECT id FROM users WHERE username'], returns: [] },
+    ])
+    const dupErr = new Error("Duplicate entry 'dev-1' for key 'uk_device'")
+    dupErr.code = 'ER_DUP_ENTRY'
+    mockConnection.execute.mockImplementation(async (sql) => {
+      if (sql.includes('INSERT INTO users')) return [{ insertId: 779, affectedRows: 1 }, []]
+      if (sql.includes('INSERT INTO trial_activations')) throw dupErr
+      return [{ affectedRows: 1 }, []]
+    })
+
+    const res = await supertest(makeApp()).post('/api/demo/redeem').send({ code: 'TRY1' })
+    expect(res.status).toBe(400)
+    expect(res.body.error).toMatch(/该设备已体验过/)
+    expect(mockConnection.rollback).toHaveBeenCalled()
+    expect(mockConnection.commit).not.toHaveBeenCalled()
+    // 失败领取按失败记次
+    expect(fakeLogAttempt).toHaveBeenCalledWith(expect.any(String), expect.any(String), false)
+  })
+
   // --- 设备身份回归：body.deviceId 不再被信任（安全修复） ---
   // mock 一套完整成功链路：限流计数 0、码有效、无重复设备、用户名无碰撞、事务全部成功
   function mockRedeemSuccess() {
@@ -542,15 +578,13 @@ describe('POST /api/demo/upgrade', () => {
     expect(res.body.error).toMatch(/用户名已被占用/)
   })
 
-  it('升级成功 → 200，转正 UPDATE/试用标记/清旧 token 均执行，重新下发 cookie', async () => {
+  it('升级成功 → 200，事务内转正 UPDATE/试用标记/清旧 token 均执行，重新下发 cookie', async () => {
     setExecuteHandlers([
       { match: ['SELECT id, is_guest FROM users'], returns: [{ id: GUEST_USER_ID, is_guest: 1 }] },
       { match: ['SELECT id FROM users WHERE username'], returns: [] },
-      { match: ['UPDATE users SET username'], returns: { affectedRows: 1 } },
-      { match: ['UPDATE trial_activations SET converted'], returns: { affectedRows: 1 } },
-      { match: ['DELETE FROM refresh_tokens WHERE user_id'], returns: { affectedRows: 1 } },
       { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 2, affectedRows: 1 } },
     ])
+    mockConnection.execute.mockImplementation(async () => [{ affectedRows: 1 }, []])
 
     const res = await supertest(makeApp())
       .post('/api/demo/upgrade')
@@ -565,10 +599,13 @@ describe('POST /api/demo/upgrade', () => {
     })
     expect(getCookie(res.headers['set-cookie'], 'lf_access_token')).toBeTruthy()
 
-    const sqls = mockExecute.mock.calls.map(([sql]) => String(sql))
+    // 转正写入已收进事务连接
+    const sqls = mockConnection.execute.mock.calls.map(([sql]) => String(sql))
     expect(sqls.some((s) => s.includes('UPDATE users SET username'))).toBe(true)
     expect(sqls.some((s) => s.includes('UPDATE trial_activations SET converted'))).toBe(true)
     expect(sqls.some((s) => s.includes('DELETE FROM refresh_tokens WHERE user_id'))).toBe(true)
+    expect(mockConnection.beginTransaction).toHaveBeenCalled()
+    expect(mockConnection.commit).toHaveBeenCalled()
 
     // 新 access token 不再带 isGuest
     const token = getCookie(res.headers['set-cookie'], 'lf_access_token')
@@ -576,15 +613,34 @@ describe('POST /api/demo/upgrade', () => {
     expect(decoded.isGuest).toBeUndefined()
   })
 
+  it('用户名 TOCTOU：预检通过但并发占用致 UPDATE 撞唯一键（ER_DUP_ENTRY）→ 回滚并 400「用户名已被占用」（回归：修复前 500）', async () => {
+    setExecuteHandlers([
+      { match: ['SELECT id, is_guest FROM users'], returns: [{ id: GUEST_USER_ID, is_guest: 1 }] },
+      { match: ['SELECT id FROM users WHERE username'], returns: [] }, // 预检通过
+    ])
+    const dupErr = new Error("Duplicate entry 'taken1' for key 'username'")
+    dupErr.code = 'ER_DUP_ENTRY'
+    mockConnection.execute.mockImplementation(async (sql) => {
+      if (String(sql).includes('UPDATE users SET username')) throw dupErr
+      return [{ affectedRows: 1 }, []]
+    })
+
+    const res = await supertest(makeApp())
+      .post('/api/demo/upgrade')
+      .send({ username: 'taken1', password: 'password1' })
+    expect(res.status).toBe(400)
+    expect(res.body.error).toMatch(/用户名已被占用/)
+    expect(mockConnection.rollback).toHaveBeenCalled()
+    expect(mockConnection.commit).not.toHaveBeenCalled()
+  })
+
   it('未提供 nickname 时用 username 兜底', async () => {
     setExecuteHandlers([
       { match: ['SELECT id, is_guest FROM users'], returns: [{ id: GUEST_USER_ID, is_guest: 1 }] },
       { match: ['SELECT id FROM users WHERE username'], returns: [] },
-      { match: ['UPDATE users SET username'], returns: { affectedRows: 1 } },
-      { match: ['UPDATE trial_activations SET converted'], returns: { affectedRows: 1 } },
-      { match: ['DELETE FROM refresh_tokens WHERE user_id'], returns: { affectedRows: 1 } },
       { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 2, affectedRows: 1 } },
     ])
+    mockConnection.execute.mockImplementation(async () => [{ affectedRows: 1 }, []])
     const res = await supertest(makeApp())
       .post('/api/demo/upgrade')
       .send({ username: 'newuser1', password: 'password1' })

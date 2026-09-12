@@ -147,6 +147,12 @@ router.post('/redeem', async (req, res, next) => {
       await conn.commit()
     } catch (err) {
       await conn.rollback().catch(() => {})
+      // 并发兑换：预检未见行但 INSERT trial_activations 撞 uk_device/uk_user 唯一键，
+      // 说明该设备刚被另一请求领取成功 → 按已体验返回 400 而非 500
+      if (err.code === 'ER_DUP_ENTRY') {
+        await logAttempt(`demo_redeem:${ip}`, ip, false)
+        return res.status(400).json({ error: '该设备已体验过' })
+      }
       throw err
     } finally {
       conn.release()
@@ -244,20 +250,41 @@ router.post('/upgrade', authMiddleware, async (req, res, next) => {
     const displayName =
       typeof nickname === 'string' && nickname.trim() ? nickname.trim().slice(0, 50) : username
 
-    // 更新为正式用户
-    await pool.execute(
-      'UPDATE users SET username = ?, nickname = ?, password_hash = ?, is_guest = 0 WHERE id = ?',
-      [username, displayName, hash, req.userId]
-    )
+    // 转正 UPDATE / 试用标记 / 清旧 token 包同一事务：中途失败整体回滚，不留
+    // 「已转正但试用记录未标记」的中间态
+    const conn = await pool.getConnection()
+    try {
+      await conn.beginTransaction()
 
-    // 标记试用记录为已转换
-    await pool.execute(
-      'UPDATE trial_activations SET converted = 1, converted_at = NOW() WHERE user_id = ?',
-      [req.userId]
-    )
+      // 更新为正式用户
+      await conn.execute(
+        'UPDATE users SET username = ?, nickname = ?, password_hash = ?, is_guest = 0 WHERE id = ?',
+        [username, displayName, hash, req.userId]
+      )
 
-    // 清除旧 refresh token，重新签发（去掉 isGuest 标记，写入设备信息）
-    await pool.execute('DELETE FROM refresh_tokens WHERE user_id = ?', [req.userId])
+      // 标记试用记录为已转换
+      await conn.execute(
+        'UPDATE trial_activations SET converted = 1, converted_at = NOW() WHERE user_id = ?',
+        [req.userId]
+      )
+
+      // 清除旧 refresh token，重新签发（去掉 isGuest 标记，写入设备信息）
+      await conn.execute('DELETE FROM refresh_tokens WHERE user_id = ?', [req.userId])
+
+      await conn.commit()
+    } catch (err) {
+      await conn.rollback().catch(() => {})
+      // 唯一索引兜底，防用户名 TOCTOU（与 auth.js recover-reset 同款）
+      if (err.code === 'ER_DUP_ENTRY') {
+        return res.status(400).json({ error: '用户名已被占用' })
+      }
+      throw err
+    } finally {
+      conn.release()
+    }
+
+    // cookie 签发放事务外：res.cookie 在 commit 前入队的话，回滚路径会连新 cookie
+    // 一起发给客户端，留下指向不存在会话行的 token
     await issueTokens(res, req.userId, false, {
       deviceId: ensureDeviceCookie(req, res, resolveDeviceId(req)),
       deviceName: parseDeviceName(req.headers['user-agent']),

@@ -38,10 +38,19 @@ router.post('/toggle', authMiddleware, async (req, res, next) => {
       ])
       res.json({ isFavorite: false })
     } else {
-      await pool.execute('INSERT INTO user_favorite_dicts (user_id, dict_id) VALUES (?, ?)', [
-        req.userId,
-        trimmedDictId,
-      ])
+      try {
+        await pool.execute('INSERT INTO user_favorite_dicts (user_id, dict_id) VALUES (?, ?)', [
+          req.userId,
+          trimmedDictId,
+        ])
+      } catch (err) {
+        // 并发双击：预检都未见行、INSERT 撞 uk_user_dict 唯一键 → 行已被另一请求收藏，
+        // 终态即已收藏，按成功返回真实状态而非 500
+        if (err.code === 'ER_DUP_ENTRY') {
+          return res.json({ isFavorite: true })
+        }
+        throw err
+      }
       res.json({ isFavorite: true })
     }
   } catch (err) {

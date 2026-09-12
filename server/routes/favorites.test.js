@@ -127,4 +127,29 @@ describe('POST /api/favorites/toggle', () => {
     )
     expect(params).toEqual([USER_ID, 'cet4'])
   })
+
+  it('并发双击撞 uk_user_dict 唯一键（ER_DUP_ENTRY）→ 行已被并发请求收藏，按终态返回 isFavorite:true（回归：修复前 500）', async () => {
+    const dupErr = new Error("Duplicate entry '42-cet4' for key 'uk_user_dict'")
+    dupErr.code = 'ER_DUP_ENTRY'
+    mockExecute.mockImplementation(async (sql) => {
+      if (String(sql).includes('SELECT 1')) return [[], []]
+      if (String(sql).includes('INSERT INTO')) throw dupErr
+      return [{ affectedRows: 0 }, []]
+    })
+    const res = await supertest(makeApp()).post('/api/favorites/toggle').send({ dictId: 'cet4' })
+    expect(res.status).toBe(200)
+    expect(res.body).toEqual({ isFavorite: true })
+  })
+
+  it('INSERT 的非唯一键冲突错误照常 500 透传（ER_DUP_ENTRY 兜底不吞错）', async () => {
+    const otherErr = new Error('db down')
+    otherErr.code = 'ER_NO_REFERENCED_ROW_2'
+    mockExecute.mockImplementation(async (sql) => {
+      if (String(sql).includes('SELECT 1')) return [[], []]
+      if (String(sql).includes('INSERT INTO')) throw otherErr
+      return [{ affectedRows: 0 }, []]
+    })
+    const res = await supertest(makeApp()).post('/api/favorites/toggle').send({ dictId: 'cet4' })
+    expect(res.status).toBe(500)
+  })
 })
