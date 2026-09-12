@@ -10,20 +10,20 @@
 | `npm run test:run` | Vitest 单次全量（CI 用这个；`npm test` 是 watch 模式） |
 | `npm run lint` / `lint:fix` | ESLint |
 | `npm run build` | 生产构建 |
-| `npm run dict:check` | 词库清洗 + 校验（改 `public/dictionaries/*.json` 后必跑） |
+| `npm run dict:check` | 词库清洗 + 校验 + 重建合并索引（改 `public/dictionaries/*.json` 后必跑） |
 
 ## 本地开发前置
 
 - **MySQL80 必须先以管理员权限启动**（服务或手动提权），否则后端起不来。
 - 根目录 `.env.local`（不进 git）由后端 dotenv 加载：`DB_*`、`JWT_SECRET`、`DEEPSEEK_API_KEY` 等，完整清单见 `server/config.js`。
 - env 加载顺序（`server/config.js`）：优先 `server/.env`（服务端密钥独占，推荐新变量放这里），不存在则回退根 `.env.local`（历史布局，本地开发前后端变量混放）；已存在的环境变量优先于文件。生产机继续用 `/home/lingoforge/.env.local`（rsync 排除不覆盖）。**给前端用的变量必须带 `VITE_` 前缀且不得是密钥**（`VITE_` 变量会被打进浏览器 bundle）。
-- 建库用 `server/sql/schema.sql`；`migrate_*.sql` 在后端启动时自动按序执行（`schema_migrations` 表记版本，失败不中止启动、下次自动重试）。
+- 建库用 `server/sql/schema.sql`；`migrate_*.sql` 在后端启动时自动按文件名序执行（`schema_migrations` 表记版本，失败文件多轮重试解决依赖倒挂、失败不中止启动、下次自动重试）。SQL 切分器在 `server/utils/splitSqlStatements.js`（纯函数，有测试）。
 
 ## 架构速览
 
-- `src/` React 前端：`pages/` 路由页（Typing / ReviewQuiz / Stats / WordBooks 等）；`modules/` 功能模块（corpus 语料视频、grammar、reading、learning-methods）；`hooks/`（useTyping / useQuiz 等）；`contexts/`（Auth / Word）；`lib/`（api 封装）；`utils/` 纯函数工具，多数有配套 `.test.js`
+- `src/` React 前端：`pages/` 路由页（Typing / ReviewQuiz / Stats / WordBooks 等）；`modules/` 功能模块（corpus 语料视频、grammar、reading、learning-methods）；`hooks/`（useTyping / useQuiz 等）；`contexts/`（Auth）；`lib/`（api 封装）；`utils/` 纯函数工具，多数有配套 `.test.js`
 - `server/` Express 后端：根 package.json 是 `type:module`，server 自带 `{"type":"commonjs"}`——后端代码用 require。`routes/`（auth / progress / review / wordbooks / settings / demo / clientError 等，均有测试）、`middleware/`（JWT auth、rateLimit）
-- `public/dictionaries/*.json` 词库数据（按需 fetch 不进 bundle）+ `src/dictionaries/meta.js` 元信息注册（含功能词本虚拟词库）；`standards/` 原始标准词表；`scripts/*.mjs` 词库维护与语料处理脚本
+- `public/dictionaries/*.json` 词库数据（按需 fetch 不进 bundle）+ `public/dictionaries/word-index.json` 全库去重合并索引（`npm run dict:index` 生成，语料/阅读/搜词的唯一数据源，加载失败回退逐册拉取）+ `src/dictionaries/meta.js` 元信息注册（含功能词本虚拟词库）；`standards/` 原始标准词表；`scripts/*.mjs` 词库维护与语料处理脚本
 - `deploy/` pm2 ecosystem（fork 单实例）、nginx.conf
 
 ## 功能地图
@@ -42,7 +42,7 @@
 
 - 本地双存储：localStorage + IndexedDB（库 `lingoforge` v2，7 个 store 见 `utils/idb.js`）；启动空闲时自动跑 localStorage → IDB 迁移。
 - **词本类 util 统一模式**：内存缓存为唯一数据源，2s debounce 落盘（localStorage 全量 + IDB 增量 put 合并刷盘）——照 `errorBook.js` / `reviewCards.js` / `localProgress.js` 的既有写法，别每词一次全量 stringify。
-- 登录后跨设备同步：`hooks/useProgressSync` + `server/routes/progress|favorites|review`。
+- 登录后跨设备同步：`hooks/useProgressSync` + `server/routes/progress|favorites|review`；登录/会话恢复成功时并行下拉五大功能词本（`syncWordBooksFromServer`，覆盖式）与用户设置。
 - 体验账号：isTrial 锁定 `/demo` 沙箱、语料仅 1–5 期（`TrialGuard` + `server/middleware/requireFullAccount`）；统计口径一律排除 `is_guest=1`。
 
 ## 测试约定
@@ -52,7 +52,7 @@
 
 ## 构建注意
 
-- 构建目标 es2020 + `@vitejs/plugin-legacy`（Safari 14–15.3 白屏修复的关键开关，modernPolyfills 勿关）。
+- 构建目标 es2020 + `@vitejs/plugin-legacy`（Safari 14–15.3 白屏修复的关键开关，modernPolyfills 勿关；现为显式 13 项 core-js 列表而非全量 true，新增现代 API 时同步补列表）。
 - 生产构建剥离 console.log/debug/info/trace、保留 warn/error；sourcemap 为 hidden，部署 rsync 排除 `*.map` 防源码泄漏。
 
 ## 部署（push main 即发布）
@@ -73,7 +73,8 @@
 
 - 语义：`NULL`=跟随全局默认（env `MAX_DEVICES_PER_USER`，默认 2）；`0`=不限台数；`>0`=该账号精确上限。全局 env 同样支持 `0`=不限。
 - **无管理界面，只能手工 SQL**：`UPDATE users SET max_devices = 3 WHERE username = 'xxx';`（设回 `NULL` 恢复全局默认）。
-- 调低上限不会立刻踢人：存量超额会话在下一次 token 轮换（约 30 分钟内）被逐台收敛到新上限，超出设备收到 403 `DEVICE_LIMIT_REACHED` 并自动登出。
+- 调低上限不会立刻踢人：每次 token 轮换时服务端按 `last_active_at` 驱逐**最旧的超额他台**（约 30 分钟内逐台收敛），被驱逐设备下次 refresh 收到 401「请先登录」+ 清 cookie（普通登出语义）；403 `DEVICE_LIMIT_REACHED` 只出现在登录路径拦新设备。
+- `TRUST_PROXY` env（默认 1）控制 `app.set('trust proxy')`；IP 限流的安全性依赖 nginx 前置，若 3001 端口直接暴露须设 0。
 - 相关迁移：`migrate_user_device_limit.sql`（加列）、`migrate_refresh_device_unique.sql`（(user_id, device_id) 唯一键 + 清理 device_id='' 历史行）。启动时自动执行；若登录报 `ER_BAD_FIELD_ERROR: max_devices` 说明迁移未跑成，查 `SELECT * FROM schema_migrations` 确认。
 
 ## 红线（必须遵守）
