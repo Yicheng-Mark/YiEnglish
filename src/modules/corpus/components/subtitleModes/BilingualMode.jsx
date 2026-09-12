@@ -1,36 +1,17 @@
-import { useMemo, useRef, useCallback } from 'react'
-import { useVirtualizer } from '@tanstack/react-virtual'
+import { useMemo } from 'react'
 import { useCorpusContext } from '../../context/CorpusPlayerContext.jsx'
-import { useAutoScrollList } from '../../hooks/useAutoScrollList.js'
 import { buildPhonetic } from '../../utils/buildPhonetic.js'
 import SubtitleCueCard from '../SubtitleCueCard.jsx'
+import { useSubtitleVirtualList } from './useSubtitleVirtualList.js'
 
 export default function BilingualMode() {
   const { subtitles, player, posMap, wordMap, settings, handleWordClick } = useCorpusContext()
 
-  // id -> index 查找表（虚拟化兜底滚动用）
-  const idToIndex = useMemo(() => {
-    const m = new Map()
-    subtitles?.forEach((s, i) => m.set(s.id, i))
-    return m
-  }, [subtitles])
-
-  const scrollParentRef = useRef(null)
-  const virtualizer = useVirtualizer({
-    count: subtitles?.length || 0,
-    getScrollElement: () => scrollParentRef.current,
-    estimateSize: () => 120,
-    overscan: 6,
-  })
-
-  const scrollToVirtualIndex = useCallback(
-    (idx, opts) => virtualizer.scrollToIndex(idx, opts),
-    [virtualizer]
-  )
-
-  const { setItemRef, containerProps } = useAutoScrollList(player.activeId, [subtitles], {
-    getVirtualIndex: (id) => (idToIndex.has(id) ? idToIndex.get(id) : null),
-    scrollToVirtualIndex,
+  // 虚拟化骨架：滚动容器 + 动态测量 + 自动滚动兜底（共享 hook）
+  const { scrollParentRef, virtualizer, setRowRef, containerProps } = useSubtitleVirtualList({
+    items: subtitles,
+    activeId: player.activeId,
+    deps: [subtitles],
   })
 
   const phoneticArr = useMemo(() => {
@@ -56,10 +37,7 @@ export default function BilingualMode() {
           const active = sub.id === player.activeId
           return (
             <div
-              ref={(el) => {
-                setItemRef(sub.id)(el)
-                virtualizer.measureElement(el)
-              }}
+              ref={setRowRef(sub.id)}
               key={sub.id}
               data-index={idx}
               style={{

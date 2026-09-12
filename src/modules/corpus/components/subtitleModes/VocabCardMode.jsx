@@ -4,6 +4,7 @@ import { useCorpusContext } from '../../context/CorpusPlayerContext.jsx'
 import WordBadge from '../WordBadge.jsx'
 import { VOCAB_FILTER_KEYS, VOCAB_FILTER_GROUPS } from '../../utils/wordColorMap.js'
 import { getWordRect } from '../../../../utils/wordTokenize.jsx'
+import { useSubtitleVirtualList } from './useSubtitleVirtualList.js'
 
 function getFirstMeaning(trans) {
   if (!trans) return ''
@@ -29,6 +30,17 @@ export default function VocabCardMode() {
       Array.from(item.dictIds || []).some((id) => allowedDicts.includes(id))
     )
   }, [extractedWords, filter])
+
+  // 词条列表与字幕列表共用同一虚拟化骨架（无活跃句，不需要自动滚动）
+  const { scrollParentRef, virtualizer, setRowRef, containerProps } = useSubtitleVirtualList({
+    items: filtered,
+    getId: (item) => item.word,
+    estimateSize: 60,
+    overscan: 8,
+  })
+
+  const virtualItems = virtualizer.getVirtualItems()
+  const totalSize = virtualizer.getTotalSize()
 
   return (
     <div className="h-full flex flex-col bg-surface dark:bg-white/[0.03] border border-gray-200/70 dark:border-white/[0.06] rounded-2xl shadow-sm overflow-hidden">
@@ -59,45 +71,70 @@ export default function VocabCardMode() {
           {extractedWords?.length === 0 ? '暂无可识别词汇' : `当前筛选下没有"${filter}"难度的词汇`}
         </div>
       ) : (
-        <div className="flex-1 min-h-0 overflow-y-auto py-2">
-          {filtered.map((item, idx) => {
-            const meaning = getFirstMeaning(item.wordData?.trans)
-            const phonetic = item.wordData?.usphone || item.wordData?.us || item.wordData?.ukphone || item.wordData?.uk || ''
-            return (
-              <button
-                key={item.word}
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleWordClick(item.word, getWordRect(e.currentTarget), e.currentTarget)
-                }}
-                className="w-full text-left flex items-center gap-3 px-3 md:px-4 py-2.5 hover:bg-gray-100/60 dark:hover:bg-white/[0.04] transition-colors border-b border-gray-100 dark:border-white/[0.04] last:border-b-0"
-              >
-                <span className="shrink-0 w-7 text-right text-xs text-content-tertiary dark:text-gray-500 tabular-nums">
-                  {idx + 1}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <span className="text-sm font-semibold text-content dark:text-gray-100 truncate">
-                      {item.word}
+        <div
+          ref={scrollParentRef}
+          {...containerProps}
+          className="flex-1 min-h-0 overflow-y-auto py-2"
+        >
+          <div style={{ height: `${totalSize}px`, width: '100%', position: 'relative' }}>
+            {virtualItems.map((virtualRow) => {
+              const idx = virtualRow.index
+              const item = filtered[idx]
+              const meaning = getFirstMeaning(item.wordData?.trans)
+              const phonetic =
+                item.wordData?.usphone ||
+                item.wordData?.us ||
+                item.wordData?.ukphone ||
+                item.wordData?.uk ||
+                ''
+              return (
+                <div
+                  key={item.word}
+                  ref={setRowRef(item.word)}
+                  data-index={idx}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleWordClick(item.word, getWordRect(e.currentTarget), e.currentTarget)
+                    }}
+                    className="w-full text-left flex items-center gap-3 px-3 md:px-4 py-2.5 hover:bg-gray-100/60 dark:hover:bg-white/[0.04] transition-colors border-b border-gray-100 dark:border-white/[0.04] last:border-b-0"
+                  >
+                    <span className="shrink-0 w-7 text-right text-xs text-content-tertiary dark:text-gray-500 tabular-nums">
+                      {idx + 1}
                     </span>
-                    {settings.showPhonetic && phonetic && (
-                      <span className="text-[11px] font-mono text-content-tertiary dark:text-gray-500 truncate">
-                        /{phonetic}/
-                      </span>
-                    )}
-                    <WordBadge dictId={item.primaryDictId} size="xs" />
-                  </div>
-                  {meaning && (
-                    <div className="text-xs text-content-tertiary dark:text-gray-400 truncate">
-                      {meaning}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="text-sm font-semibold text-content dark:text-gray-100 truncate">
+                          {item.word}
+                        </span>
+                        {settings.showPhonetic && phonetic && (
+                          <span className="text-[11px] font-mono text-content-tertiary dark:text-gray-500 truncate">
+                            /{phonetic}/
+                          </span>
+                        )}
+                        <WordBadge dictId={item.primaryDictId} size="xs" />
+                      </div>
+                      {meaning && (
+                        <div className="text-xs text-content-tertiary dark:text-gray-400 truncate">
+                          {meaning}
+                        </div>
+                      )}
                     </div>
-                  )}
+                    <Volume2 className="shrink-0 w-3.5 h-3.5 text-content-tertiary dark:text-gray-500" />
+                  </button>
                 </div>
-                <Volume2 className="shrink-0 w-3.5 h-3.5 text-content-tertiary dark:text-gray-500" />
-              </button>
-            )
-          })}
+              )
+            })}
+          </div>
         </div>
       )}
     </div>
