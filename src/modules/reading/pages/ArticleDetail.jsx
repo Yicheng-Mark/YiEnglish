@@ -4,6 +4,7 @@ import { ArrowLeft, Bookmark, ChevronDown, FileText, MapPin } from 'lucide-react
 import { useReadingStore } from '../hooks/useReadingStore'
 import useStudyTracker from '../hooks/useStudyTracker'
 import { loadDictionary } from '../../../utils/loadDictionary.js'
+import { loadWordIndex, indexEntryToWord } from '../../../utils/dictWordMap.js'
 import {
   addToReadingWordBook,
   isInReadingWordBook,
@@ -171,43 +172,62 @@ export default function ArticleDetail() {
   useStudyTracker(article ? id : null)
 
   // Load all dictionaries for word lookup
+  // 优先单请求合并索引（15 部词典 → 1 个文件）；失败回退旧全量路径。
+  // 注：旧实现是无 has 守护的 map.set（后含词词典覆盖先者），与共享词表
+  // dictWordMap 的 first-wins 语义不一致；统一走索引的主条目（首个含词词典
+  // 胜出，与语料/复习侧一致），查词展示的核心词典完整释义语义对齐。
   useEffect(() => {
     let cancelled = false
-    const loadAll = async () => {
-      const dictIds = [
-        'junior',
-        'zhongkao',
-        'senior',
-        'gaokao',
-        'cet4',
-        'cet4freq',
-        'cet6',
-        'cet6freq',
-        'tem4',
-        'tem8',
-        'ielts',
-        'toefl',
-        'sat',
-        'postgraduate',
-        'programmer',
-      ]
-      const results = await Promise.all(dictIds.map((id) => loadDictionary(id).catch(() => null)))
-      if (cancelled) return
-      const map = new Map()
-      results.forEach((dict) => {
-        if (!dict?.chapters) return
-        dict.chapters.forEach((ch) => {
-          if (!ch?.words) return
-          ch.words.forEach((w) => {
-            if (w?.name) {
-              map.set(w.name.toLowerCase(), w)
-            }
+    const dictIds = [
+      'junior',
+      'zhongkao',
+      'senior',
+      'gaokao',
+      'cet4',
+      'cet4freq',
+      'cet6',
+      'cet6freq',
+      'tem4',
+      'tem8',
+      'ielts',
+      'toefl',
+      'sat',
+      'postgraduate',
+      'programmer',
+    ]
+    ;(async () => {
+      try {
+        const index = await loadWordIndex()
+        const dictIdSet = new Set(dictIds)
+        const map = new Map()
+        for (const key in index) {
+          const entry = index[key]
+          if (!entry || typeof entry !== 'object' || !Array.isArray(entry.dictIds)) continue
+          if (!entry.dictIds.some((dictId) => dictIdSet.has(dictId))) continue
+          const winner = entry.alt || entry
+          map.set(key, indexEntryToWord(key, winner))
+        }
+        if (map.size === 0) throw new Error('word-index 为空')
+        if (!cancelled) setWordMap(map)
+      } catch {
+        // 回退：旧全量逐词典路径
+        const results = await Promise.all(dictIds.map((id) => loadDictionary(id).catch(() => null)))
+        if (cancelled) return
+        const map = new Map()
+        results.forEach((dict) => {
+          if (!dict?.chapters) return
+          dict.chapters.forEach((ch) => {
+            if (!ch?.words) return
+            ch.words.forEach((w) => {
+              if (w?.name) {
+                map.set(w.name.toLowerCase(), w)
+              }
+            })
           })
         })
-      })
-      setWordMap(map)
-    }
-    loadAll()
+        setWordMap(map)
+      }
+    })()
     return () => {
       cancelled = true
     }

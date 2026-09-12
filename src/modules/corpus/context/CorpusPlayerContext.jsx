@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { loadDictionary } from '../../../utils/loadDictionary.js'
+import { loadWordIndex, indexEntryToWord } from '../../../utils/dictWordMap.js'
 import {
   addToCorpusWordBook,
   isInCorpusWordBook,
@@ -31,42 +32,80 @@ const DICT_IDS = [
   'programmer',
 ]
 
-// 模块级缓存：避免页面切换时重复加载词典（约 17 个 JSON）
+// 模块级缓存：避免页面切换时重复加载词典（现为单个合并索引，旧实现约 17 个 JSON）
 let DICT_CACHE = null
 let DICT_LOADING = null
+
+// 优先路径：单请求拉取预生成的合并索引（scripts/gen-word-index.mjs 产物），
+// 按本播放器的 17 部词典过滤构建三张 Map。索引条目的主字段已是「首个含词词典胜出」
+//（迭代序与 DICT_IDS 一致）；仅当主胜出词典不在本列表而 alt（programmer 侧词条）
+// 在时取 alt——与旧全量路径的首个含词词典语义逐比特一致。
+function buildDictsFromIndex(index) {
+  const wordMap = new Map()
+  const posMap = new Map()
+  const dictSourcesMap = new Map()
+  const dictIdSet = new Set(DICT_IDS)
+  for (const key in index) {
+    const entry = index[key]
+    if (!entry || typeof entry !== 'object' || !Array.isArray(entry.dictIds)) continue
+    const sourceIds = entry.dictIds.filter((id) => dictIdSet.has(id))
+    if (sourceIds.length === 0) continue
+    const winner = entry.alt || entry
+    wordMap.set(key, indexEntryToWord(key, winner))
+    posMap.set(key, winner.pos || 'unknown')
+    dictSourcesMap.set(key, new Set(sourceIds))
+  }
+  return { wordMap, posMap, dictSourcesMap }
+}
+
+// 旧实现：全量拉 17 部词典主线程建三张 Map（保留作 word-index.json 不可用时的 fallback）
+async function ensureDictLoadedFromDicts() {
+  const dicts = await Promise.all(DICT_IDS.map((id) => loadDictionary(id).catch(() => null)))
+  const wordMap = new Map()
+  const posMap = new Map()
+  const dictSourcesMap = new Map()
+  dicts.forEach((dict, i) => {
+    const dictId = DICT_IDS[i]
+    if (!dict?.chapters) return
+    dict.chapters.forEach((ch) => {
+      if (!ch?.words) return
+      ch.words.forEach((w) => {
+        if (!w?.name) return
+        const key = w.name.toLowerCase()
+        if (!wordMap.has(key)) {
+          wordMap.set(key, w)
+          posMap.set(key, parsePosFromTrans(w.trans))
+        }
+        let set = dictSourcesMap.get(key)
+        if (!set) {
+          set = new Set()
+          dictSourcesMap.set(key, set)
+        }
+        set.add(dictId)
+      })
+    })
+  })
+  return { wordMap, posMap, dictSourcesMap }
+}
 
 async function ensureDictLoaded() {
   if (DICT_CACHE) return DICT_CACHE
   if (DICT_LOADING) return DICT_LOADING
   DICT_LOADING = (async () => {
-    const dicts = await Promise.all(DICT_IDS.map((id) => loadDictionary(id).catch(() => null)))
-    const wordMap = new Map()
-    const posMap = new Map()
-    const dictSourcesMap = new Map()
-    dicts.forEach((dict, i) => {
-      const dictId = DICT_IDS[i]
-      if (!dict?.chapters) return
-      dict.chapters.forEach((ch) => {
-        if (!ch?.words) return
-        ch.words.forEach((w) => {
-          if (!w?.name) return
-          const key = w.name.toLowerCase()
-          if (!wordMap.has(key)) {
-            wordMap.set(key, w)
-            posMap.set(key, parsePosFromTrans(w.trans))
-          }
-          let set = dictSourcesMap.get(key)
-          if (!set) {
-            set = new Set()
-            dictSourcesMap.set(key, set)
-          }
-          set.add(dictId)
-        })
-      })
-    })
-    DICT_CACHE = { wordMap, posMap, dictSourcesMap }
-    DICT_LOADING = null
-    return DICT_CACHE
+    try {
+      const index = await loadWordIndex()
+      const result = buildDictsFromIndex(index)
+      if (result.wordMap.size === 0) throw new Error('word-index 为空')
+      DICT_CACHE = result
+      DICT_LOADING = null
+      return result
+    } catch {
+      // 索引缺失/损坏 → 回退旧全量路径
+      const result = await ensureDictLoadedFromDicts()
+      DICT_CACHE = result
+      DICT_LOADING = null
+      return result
+    }
   })()
   // 虽然单个词典失败已被 .catch(() => null) 吸收，构造过程仍可能因其他异常 reject；
   // 失败时必须清掉 DICT_LOADING，否则 rejected promise 被永久缓存，之后再也进不了重试
