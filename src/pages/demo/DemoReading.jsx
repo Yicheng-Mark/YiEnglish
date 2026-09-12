@@ -1,11 +1,28 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { mockArticles } from '../../modules/reading/data/mockArticles'
 import ArticleCard from '../../modules/reading/components/ArticleCard'
-
-const demoArticle = mockArticles.find((a) => a.id === 'article2026_01')
 
 export default function DemoReading() {
   const navigate = useNavigate()
+
+  // 沙箱只展示这一篇 2026 文章：动态 import 其所在的数据分片（~60KB），
+  // 不再静态引入 ~424KB 的全量 mockArticles 聚合库（那会把整库打进 Demo 首屏 chunk）
+  const [demoArticle, setDemoArticle] = useState(null)
+
+  useEffect(() => {
+    let cancelled = false
+    import('../../modules/reading/data/mockArticles6')
+      .then((m) => {
+        if (cancelled) return
+        setDemoArticle((m.articles2026 || []).find((a) => a.id === 'article2026_01') || null)
+      })
+      .catch(() => {
+        if (!cancelled) setDemoArticle(null)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const handleClick = (id) => {
     navigate(`/reading/${id}`)

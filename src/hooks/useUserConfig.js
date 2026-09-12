@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { fetchSettings, updateSettings } from '../lib/api-settings'
 
 const DEFAULT_CONFIG = {
@@ -44,6 +44,9 @@ function syncSettingUpdate(partial) {
 
 export function useUserConfig() {
   const [config, setConfig] = useState(readConfigFromStorage)
+  // config 镜像 ref：让 updateConfig/toggleConfig 的引用在挂载后恒定（useCallback 空依赖），
+  // 不再因每次渲染新建函数而击穿 TypingToolbar 等子组件的 memo（打字每键全量重渲染工具栏）
+  const configRef = useRef(config)
 
   const [theme, setThemeState] = useState(loadInitialTheme)
 
@@ -58,7 +61,9 @@ export function useUserConfig() {
   // 登录/会话恢复后服务端设置写回 localStorage → 重读本地存档（见 syncSettingsFromServer）
   useEffect(() => {
     const onSettingsSynced = () => {
-      setConfig(readConfigFromStorage())
+      const next = readConfigFromStorage()
+      configRef.current = next
+      setConfig(next)
       setThemeState(loadInitialTheme())
     }
     window.addEventListener(SETTINGS_SYNCED_EVENT, onSettingsSynced)
@@ -71,18 +76,22 @@ export function useUserConfig() {
     syncSettingUpdate({ theme: next })
   }, [])
 
-  const updateConfig = (key, value) => {
+  const updateConfig = useCallback((key, value) => {
     setConfig((prev) => {
       const next = { ...prev, [key]: value }
+      configRef.current = next
       try {
         localStorage.setItem('typingword_config', JSON.stringify(next))
       } catch {}
       syncSettingUpdate({ [key]: value })
       return next
     })
-  }
+  }, [])
 
-  const toggleConfig = (key) => updateConfig(key, !config[key])
+  const toggleConfig = useCallback(
+    (key) => updateConfig(key, !configRef.current[key]),
+    [updateConfig]
+  )
 
   return { config, theme, setTheme, updateConfig, toggleConfig }
 }
