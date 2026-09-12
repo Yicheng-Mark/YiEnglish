@@ -168,6 +168,18 @@ describe('POST /api/migrate/local-to-server', () => {
     expect(errRow[11]).toBe('d'.repeat(100))
   })
 
+  it('lastWrongTime 超 TIMESTAMP 上限（2051）→ 钳到 2038-01-01 落库（回归：超范围值让整批 INSERT 500）', async () => {
+    const res = await post({
+      errorBook: [{ word: 'future', lastWrongTime: '2051-06-01T00:00:00Z' }],
+    })
+    expect(res.status).toBe(200)
+    const errRow = mockConnQuery.mock.calls
+      .filter(([sql]) => String(sql).includes('user_word_books'))
+      .flatMap(([, params]) => params[0])
+      .find((r) => r[2] === 'future')
+    expect(errRow[10].getTime()).toBe(new Date('2038-01-01T00:00:00.000Z').getTime())
+  })
+
   it('超长收藏词库 id（>50）被跳过（回归：修复前 ≤100 的 id 过滤后仍超 VARCHAR(50) 列宽）', async () => {
     const res = await post({ favoriteDicts: ['ok-dict', 'x'.repeat(51)] })
     expect(res.status).toBe(200)

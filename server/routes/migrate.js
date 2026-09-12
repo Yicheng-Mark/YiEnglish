@@ -1,7 +1,7 @@
 const { Router } = require('express')
 const pool = require('../db')
 const authMiddleware = require('../middleware/auth')
-const { clampStr, toValidDate, toTransJson } = require('../utils/sanitize')
+const { clampStr, toValidDate, clampTimestamp, toTransJson } = require('../utils/sanitize')
 const { VALID_THEMES } = require('../utils/themes')
 
 const router = Router()
@@ -64,7 +64,7 @@ router.post('/local-to-server', authMiddleware, async (req, res, next) => {
             clampStr(w.us, 255),
             clampStr(w.uk, 255),
             Math.min(65535, Math.max(1, Math.floor(Number(w.wrongCount) || 1))),
-            toValidDate(w.lastWrongTime) || new Date(),
+            clampTimestamp(toValidDate(w.lastWrongTime)) || new Date(),
             clampStr(w.dictName, 100),
           ])
         if (values.length > 0) {

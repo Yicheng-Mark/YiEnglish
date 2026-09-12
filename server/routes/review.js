@@ -1,7 +1,7 @@
 const { Router } = require('express')
 const pool = require('../db')
 const authMiddleware = require('../middleware/auth')
-const { clampNum } = require('../utils/sanitize')
+const { clampNum, clampTimestamp } = require('../utils/sanitize')
 
 const router = Router()
 
@@ -82,11 +82,11 @@ router.post('/upsert', authMiddleware, async (req, res, next) => {
         req.userId,
         c.wordName.trim(),
         typeof c.dictId === 'string' ? c.dictId.slice(0, 50) : '',
-        toValidDate(c.nextReview) || new Date(Date.now() + 86400000),
+        clampTimestamp(toValidDate(c.nextReview)) || new Date(Date.now() + 86400000),
         clampNum(c.interval, 1, 0, 9999.99),
         clampNum(c.easeFactor, 2.5, 0, 99.99),
         Math.round(clampNum(c.repetitions, 0, 0, 255)),
-        toValidDate(c.lastReviewAt),
+        clampTimestamp(toValidDate(c.lastReviewAt)),
         Math.round(clampNum(c.lastQuality, 0, 0, 255)),
       ])
     if (validCards.length > 0) {

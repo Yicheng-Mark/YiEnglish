@@ -134,6 +134,34 @@ describe('POST /api/review/upsert', () => {
     expect(rows[1][8]).toBe(255) // lastQuality 999 → TINYINT 上限
   })
 
+  it('TIMESTAMP 范围钳制：2051 年远期复习时间 → 2038-01-01；1970 前负值 → 1970-01-01（回归：超 TIMESTAMP 范围整批 INSERT 500 且客户端重发永久失败）', async () => {
+    const ts2051 = new Date('2051-06-01T00:00:00Z').getTime()
+    const res = await supertest(makeApp())
+      .post('/api/review/upsert')
+      .send({
+        cards: [
+          // SM-2 连续 q=5 约 10 次即可破 9000 天 → next_review 落 2051
+          { wordName: 'far', nextReview: ts2051, lastReviewAt: ts2051 },
+          { wordName: 'pre1970', nextReview: -1000, lastReviewAt: -1000 },
+          // NaN/垃圾 → 走既有 fallback：nextReview → 明天、lastReviewAt → null
+          { wordName: 'garbage', nextReview: 'not-a-number', lastReviewAt: 'garbage' },
+        ],
+      })
+    expect(res.status).toBe(200)
+
+    const rows = upsertRows()
+    const tsMax = new Date('2038-01-01T00:00:00.000Z').getTime()
+    expect(rows[0][3].getTime()).toBe(tsMax)
+    expect(rows[0][7].getTime()).toBe(tsMax)
+
+    const tsMin = new Date('1970-01-01T00:00:00.000Z').getTime()
+    expect(rows[1][3].getTime()).toBe(tsMin)
+    expect(rows[1][7].getTime()).toBe(tsMin)
+
+    expect(rows[2][3]).toBeInstanceOf(Date)
+    expect(rows[2][7]).toBeNull()
+  })
+
   it('cards 非数组/为空 → 400；超过 2000 张 → 400', async () => {
     const bad = await supertest(makeApp()).post('/api/review/upsert').send({ cards: 'nope' })
     expect(bad.status).toBe(400)

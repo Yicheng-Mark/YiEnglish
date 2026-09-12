@@ -208,6 +208,15 @@ describe('PUT /api/wordbooks/:bookType · 批量替换', () => {
     expect(rows[1][11]).toBe('d'.repeat(100)) // dictName 截断到列宽
   })
 
+  it('lastWrongTime 超 TIMESTAMP 上限（2051）→ 钳到 2038-01-01（回归：超范围值整批 INSERT 500 且客户端重发永久失败）', async () => {
+    const res = await supertest(makeApp())
+      .put('/api/wordbooks/error')
+      .send({ words: [{ name: 'future', lastWrongTime: '2051-06-01T00:00:00Z' }] })
+    expect(res.status).toBe(200)
+    const rows = putInsertCall()[1][0]
+    expect(rows[0][10].getTime()).toBe(new Date('2038-01-01T00:00:00.000Z').getTime())
+  })
+
   it('words 非数组或超过 2000 条 → 400', async () => {
     const bad = await supertest(makeApp()).put('/api/wordbooks/error').send({ words: 'nope' })
     expect(bad.status).toBe(400)

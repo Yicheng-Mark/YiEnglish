@@ -1,7 +1,7 @@
 const { Router } = require('express')
 const pool = require('../db')
 const authMiddleware = require('../middleware/auth')
-const { clampStr, toValidDate } = require('../utils/sanitize')
+const { clampStr, toValidDate, clampTimestamp } = require('../utils/sanitize')
 
 const router = Router()
 
@@ -244,7 +244,7 @@ router.put('/:bookType', authMiddleware, validateBookType, async (req, res, next
             clampStr(w.us, 255),
             clampStr(w.uk, 255),
             bookType === 'error' ? clampWrongCount(w.wrongCount) : 1,
-            bookType === 'error' ? toValidDate(w.lastWrongTime) || null : null,
+            bookType === 'error' ? clampTimestamp(toValidDate(w.lastWrongTime)) || null : null,
             bookType === 'error' ? clampStr(w.dictName, 100) : null,
           ]
         })
