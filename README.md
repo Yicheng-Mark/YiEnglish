@@ -64,7 +64,7 @@
 ## 🔁 学习闭环
 
 ```
-        输入（打字背词） · 23 本词库 · 93,644 词 · 25 词/章
+        输入（打字背词） · 25 本词库 · 96,644 词 · 25 词/章
                     │
                     ▼
         规则（语法体系） · 词性 · 时态 · 长难句
@@ -89,7 +89,7 @@
 ## 🚀 核心功能
 
 ### ⌨️ 打字背单词（核心引擎）
-- **23 本精准词库**：覆盖中学、大学、英专、留学、考研、船员考试、专业英语七大类，共 **93,644 词**
+- **25 本精准词库**：覆盖中学、大学、英专、留学、考研、船员考试、专业英语七大类，共 **96,644 词**
 - **25 词/章科学切分**：强制控制单次学习负荷，每章一个独立进度单元
 - **沉浸式逐字输入**：实时纠错高亮，肌肉记忆 + 视觉记忆双通道强化
 - **Web Audio 机械键盘音效**：纯代码合成真实机械键盘声 + 正确 / 错误 / 完成提示音，零音频文件依赖（见 [src/hooks/useTyping.js](src/hooks/useTyping.js) + [src/utils/audioContext.js](src/utils/audioContext.js)）
@@ -165,14 +165,14 @@
 
 ## 📚 词库数据
 
-23 本词库，共 **93,644 词**，全部按 **25 词/章** 强制切分。词库 JSON 以静态资源方式按需 `fetch`，不打入前端 bundle。
+25 本词库，共 **96,644 词**，全部按 **25 词/章** 强制切分。词库 JSON 以静态资源方式按需 `fetch`，不打入前端 bundle；另有全库去重合并索引 [public/dictionaries/word-index.json](public/dictionaries/word-index.json)（`npm run dict:index` 生成），是语料 / 阅读 / 搜词的唯一数据源，加载失败自动回退逐册拉取。
 
 | 分类 | 词库 | 词数 |
 |:---|:---|---:|
 | **中学英语** | 初中 · 中考核心 · 高中 · 高考核心 | 6,595 |
 | **大学英语** | CET-4 · CET-4 高频 · CET-6 · CET-6 高频 | 15,534 |
 | **英专生英语** | TEM-4 · TEM-8 | 18,976 |
-| **留学英语** | 雅思 · 托福 · SAT | 22,421 |
+| **留学英语** | 雅思 · 雅思高频 · 托福 · 托福高频 · SAT | 25,421 |
 | **考研英语** | 考研词汇 · 考研核心词汇 | 7,971 |
 | **船员考试** | 航海英语 | 1,565 |
 | **专业英语** | 程序员 · 轮机 · 商务 · 外贸 · 汽修 · 电工 · 厨师 | 20,582 |
@@ -202,7 +202,7 @@
 |:---|:---|
 | 框架 | React 18 + Vite 5（ESM） |
 | 样式 | Tailwind CSS 3 + CSS 变量主题系统（2 套主题，`darkMode: 'class'`） |
-| 路由 | React Router 6（懒加载 + 失败重试 `lazyRetry`） |
+| 路由 | React Router 7（懒加载 + 失败重试 `lazyRetry`） |
 | 虚拟列表 | @tanstack/react-virtual（[src/components/virtual/](src/components/virtual/)） |
 | 图表 | 纯 CSS/DOM 自绘（学习日历热力图 + 7 天趋势图，无第三方图表库） |
 | 图标 | lucide-react |
@@ -216,7 +216,6 @@
 | 框架 | Express 5（Node ≥ 20，ESM） |
 | 数据库 | MySQL 8.0（mysql2 连接池，utf8mb4_unicode_ci） |
 | 认证 | JWT（access 30m / refresh 7d）+ bcryptjs（12 轮）+ HttpOnly Cookie |
-| 邮件 | resend（验证码 / 找回密码） |
 | 日志 | pino（生产 JSON 单行 / 开发 pino-pretty 彩色，[server/utils/logger.js](server/utils/logger.js)） |
 | 迁移 | 服务启动时自动幂等执行 `server/sql/migrate_*.sql`，无需手动建表 |
 
@@ -267,7 +266,7 @@ typing-word/
 ├── standards/                    # 权威词表（dict:levels 分级校验对照源：CET / TEM / 考研 / SAT 等）
 ├── deploy/                       # nginx.conf / ecosystem.config.js / setup.sh / deploy.sh
 ├── public/
-│   ├── dictionaries/             # 23 本词库 JSON（fetch 加载，不进 bundle）
+│   ├── dictionaries/             # 25 本词库 JSON + word-index.json 合并索引（fetch 加载，不进 bundle）
 │   └── corpus/subtitles/         # 65 集字幕 JSON
 └── .github/workflows/            # CI/CD（push main 自动部署阿里云）
 ```
@@ -311,7 +310,7 @@ VITE_AUTH_ENABLED=true           # 置 false 即为免登录体验构建（Verce
 **词库维护脚本**：
 
 ```bash
-npm run dict:check        # 清理 + 校验 + 分级检查（对照权威词表）
+npm run dict:check        # 清理 + 校验 + 分级检查（对照权威词表）+ 重建合并索引
 npm run add:cntitle       # 批量补全中文标题
 npm run corpus:check-yt   # 语料 YouTube 去重
 ```
