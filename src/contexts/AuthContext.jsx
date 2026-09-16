@@ -17,7 +17,7 @@ import { syncCorpusWordBookFromServer } from '../utils/corpusWordBook'
 
 // 方案A：拆成两个 context。
 // - 稳定方法 context：login / register / logout / updateProfile / changePassword /
-//   redeemDemoCode / upgradeAccount / recoverLookup / recoverReset / setNavigator。
+//   redeemDemoCode / recoverLookup / recoverReset / setNavigator。
 //   全部 useCallback 稳定，挂载后引用不变。
 // - 身份状态 context：user / loading。登录、登出、资料更新、会话刷新时才会变。
 //
@@ -227,22 +227,10 @@ export function AuthProvider({ children }) {
     return data.user
   }, [])
 
-  const upgradeAccount = useCallback(async (username, password, nickname) => {
-    const body = { username, password }
-    if (nickname) body.nickname = nickname
-    const res = await apiFetch('/api/demo/upgrade', {
-      method: 'POST',
-      body: JSON.stringify(body),
-    })
-    const data = await res.json().catch(() => ({}))
-    if (!res.ok) throw new Error(data.error || '升级失败')
-    setUser(data.user)
-    return data.user
-  }, [])
-
   // 稳定方法 context：依赖全部是 useCallback 稳定引用，挂载后 value 永不重建。
   // 这意味着只读方法（如 Login/Register/Recover/Demo/PersonalCenter/DemoProfile/App=setNavigator）
   // 的消费者不再随 user/loading 变化重渲染。
+  // upgradeAccount 已随 /api/demo/upgrade 端点关闭（2026-09-16）一并移除。
   const actionsValue = useMemo(
     () => ({
       login,
@@ -251,7 +239,6 @@ export function AuthProvider({ children }) {
       updateProfile,
       changePassword,
       redeemDemoCode,
-      upgradeAccount,
       recoverLookup,
       recoverReset,
       setNavigator,
@@ -263,7 +250,6 @@ export function AuthProvider({ children }) {
       updateProfile,
       changePassword,
       redeemDemoCode,
-      upgradeAccount,
       recoverLookup,
       recoverReset,
       setNavigator,

@@ -11,8 +11,6 @@ const {
   parseDeviceName,
   resolveDeviceId,
   ensureDeviceCookie,
-  validateUsername,
-  validatePassword,
 } = require('../utils/tokens')
 
 const router = express.Router()
@@ -219,89 +217,15 @@ router.get('/status', authMiddleware, async (req, res, next) => {
   }
 })
 
-// --- 升级为正式账号（需认证） ---
-router.post('/upgrade', authMiddleware, async (req, res, next) => {
-  try {
-    const { username, password, nickname } = req.body
-
-    // 确认当前是访客用户
-    const [users] = await pool.execute('SELECT id, is_guest FROM users WHERE id = ?', [req.userId])
-    if (users.length === 0 || !users[0].is_guest) {
-      return res.status(400).json({ error: '当前账号无需升级' })
-    }
-
-    if (!validateUsername(username)) {
-      return res.status(400).json({ error: '用户名需 3-30 位，支持字母、数字、下划线、中文' })
-    }
-    if (!validatePassword(password)) {
-      return res.status(400).json({ error: '密码需 8-128 位，至少包含一个字母和一个数字' })
-    }
-
-    // 检查用户名唯一性
-    const [existing] = await pool.execute('SELECT id FROM users WHERE username = ? AND id != ?', [
-      username,
-      req.userId,
-    ])
-    if (existing.length > 0) {
-      return res.status(400).json({ error: '用户名已被占用' })
-    }
-
-    const hash = await bcrypt.hash(password, config.BCRYPT_ROUNDS)
-    const displayName =
-      typeof nickname === 'string' && nickname.trim() ? nickname.trim().slice(0, 50) : username
-
-    // 转正 UPDATE / 试用标记 / 清旧 token 包同一事务：中途失败整体回滚，不留
-    // 「已转正但试用记录未标记」的中间态
-    const conn = await pool.getConnection()
-    try {
-      await conn.beginTransaction()
-
-      // 更新为正式用户
-      await conn.execute(
-        'UPDATE users SET username = ?, nickname = ?, password_hash = ?, is_guest = 0 WHERE id = ?',
-        [username, displayName, hash, req.userId]
-      )
-
-      // 标记试用记录为已转换
-      await conn.execute(
-        'UPDATE trial_activations SET converted = 1, converted_at = NOW() WHERE user_id = ?',
-        [req.userId]
-      )
-
-      // 清除旧 refresh token，重新签发（去掉 isGuest 标记，写入设备信息）
-      await conn.execute('DELETE FROM refresh_tokens WHERE user_id = ?', [req.userId])
-
-      await conn.commit()
-    } catch (err) {
-      await conn.rollback().catch(() => {})
-      // 唯一索引兜底，防用户名 TOCTOU（与 auth.js recover-reset 同款）
-      if (err.code === 'ER_DUP_ENTRY') {
-        return res.status(400).json({ error: '用户名已被占用' })
-      }
-      throw err
-    } finally {
-      conn.release()
-    }
-
-    // cookie 签发放事务外：res.cookie 在 commit 前入队的话，回滚路径会连新 cookie
-    // 一起发给客户端，留下指向不存在会话行的 token
-    await issueTokens(res, req.userId, false, {
-      deviceId: ensureDeviceCookie(req, res, resolveDeviceId(req)),
-      deviceName: parseDeviceName(req.headers['user-agent']),
-      ip: getClientIp(req),
-    })
-
-    res.json({
-      user: {
-        id: req.userId,
-        username,
-        nickname: displayName,
-        isTrial: false,
-      },
-    })
-  } catch (err) {
-    next(err)
-  }
+// --- 升级为正式账号（已于 2026-09-16 关闭）---
+// 原实现把访客直接转成永久正式账号（is_guest=0 且不写 subscription_expires_at），
+// 在激活码档位体系（永久/月/季/年卡）上线后成为绕过付费的旁路：任何体验账号持有人
+// 直调 API 即可白嫖永久账号。前端升级按钮早在 2026-06（f9a29cc）已移除，无正常入口，
+// 故直接以 410 关闭。体验用户请走 /activate/<code> 注册链接开通对应档位账号。
+router.post('/upgrade', (req, res) => {
+  res
+    .status(410)
+    .json({ error: '升级入口已关闭，请通过注册链接开通账号', code: 'UPGRADE_DISABLED' })
 })
 
 module.exports = router

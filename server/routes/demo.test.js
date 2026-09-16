@@ -530,121 +530,18 @@ describe('GET /api/demo/status', () => {
 })
 
 // =====================================================================
-// POST /api/demo/upgrade — 升级为正式账号
+// POST /api/demo/upgrade — 已关闭（410）
 // =====================================================================
 describe('POST /api/demo/upgrade', () => {
-  it('非访客用户 → 400「当前账号无需升级」', async () => {
-    setExecuteHandlers([
-      { match: ['SELECT id, is_guest FROM users'], returns: [{ id: GUEST_USER_ID, is_guest: 0 }] },
-    ])
+  it('任何调用 → 410（端点已于 2026-09-16 关闭：原实现把访客转成永久正式账号，绕过激活码档位体系）', async () => {
     const res = await supertest(makeApp())
       .post('/api/demo/upgrade')
       .send({ username: 'newuser1', password: 'password1' })
-    expect(res.status).toBe(400)
-    expect(res.body.error).toMatch(/无需升级/)
-  })
-
-  it('用户名不合法 → 400', async () => {
-    setExecuteHandlers([
-      { match: ['SELECT id, is_guest FROM users'], returns: [{ id: GUEST_USER_ID, is_guest: 1 }] },
-    ])
-    const res = await supertest(makeApp())
-      .post('/api/demo/upgrade')
-      .send({ username: 'ab', password: 'password1' })
-    expect(res.status).toBe(400)
-    expect(res.body.error).toMatch(/用户名/)
-  })
-
-  it('密码不合法 → 400', async () => {
-    setExecuteHandlers([
-      { match: ['SELECT id, is_guest FROM users'], returns: [{ id: GUEST_USER_ID, is_guest: 1 }] },
-    ])
-    const res = await supertest(makeApp())
-      .post('/api/demo/upgrade')
-      .send({ username: 'newuser1', password: 'onlyletters' })
-    expect(res.status).toBe(400)
-    expect(res.body.error).toMatch(/密码/)
-  })
-
-  it('用户名已被占用 → 400', async () => {
-    setExecuteHandlers([
-      { match: ['SELECT id, is_guest FROM users'], returns: [{ id: GUEST_USER_ID, is_guest: 1 }] },
-      { match: ['SELECT id FROM users WHERE username'], returns: [{ id: 999 }] },
-    ])
-    const res = await supertest(makeApp())
-      .post('/api/demo/upgrade')
-      .send({ username: 'taken1', password: 'password1' })
-    expect(res.status).toBe(400)
-    expect(res.body.error).toMatch(/用户名已被占用/)
-  })
-
-  it('升级成功 → 200，事务内转正 UPDATE/试用标记/清旧 token 均执行，重新下发 cookie', async () => {
-    setExecuteHandlers([
-      { match: ['SELECT id, is_guest FROM users'], returns: [{ id: GUEST_USER_ID, is_guest: 1 }] },
-      { match: ['SELECT id FROM users WHERE username'], returns: [] },
-      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 2, affectedRows: 1 } },
-    ])
-    mockConnection.execute.mockImplementation(async () => [{ affectedRows: 1 }, []])
-
-    const res = await supertest(makeApp())
-      .post('/api/demo/upgrade')
-      .send({ username: 'newuser1', password: 'password1', nickname: '小明' })
-
-    expect(res.status).toBe(200)
-    expect(res.body.user).toEqual({
-      id: GUEST_USER_ID,
-      username: 'newuser1',
-      nickname: '小明',
-      isTrial: false,
-    })
-    expect(getCookie(res.headers['set-cookie'], 'lf_access_token')).toBeTruthy()
-
-    // 转正写入已收进事务连接
-    const sqls = mockConnection.execute.mock.calls.map(([sql]) => String(sql))
-    expect(sqls.some((s) => s.includes('UPDATE users SET username'))).toBe(true)
-    expect(sqls.some((s) => s.includes('UPDATE trial_activations SET converted'))).toBe(true)
-    expect(sqls.some((s) => s.includes('DELETE FROM refresh_tokens WHERE user_id'))).toBe(true)
-    expect(mockConnection.beginTransaction).toHaveBeenCalled()
-    expect(mockConnection.commit).toHaveBeenCalled()
-
-    // 新 access token 不再带 isGuest
-    const token = getCookie(res.headers['set-cookie'], 'lf_access_token')
-    const decoded = jwt.verify(token, FIXED_JWT_SECRET)
-    expect(decoded.isGuest).toBeUndefined()
-  })
-
-  it('用户名 TOCTOU：预检通过但并发占用致 UPDATE 撞唯一键（ER_DUP_ENTRY）→ 回滚并 400「用户名已被占用」（回归：修复前 500）', async () => {
-    setExecuteHandlers([
-      { match: ['SELECT id, is_guest FROM users'], returns: [{ id: GUEST_USER_ID, is_guest: 1 }] },
-      { match: ['SELECT id FROM users WHERE username'], returns: [] }, // 预检通过
-    ])
-    const dupErr = new Error("Duplicate entry 'taken1' for key 'username'")
-    dupErr.code = 'ER_DUP_ENTRY'
-    mockConnection.execute.mockImplementation(async (sql) => {
-      if (String(sql).includes('UPDATE users SET username')) throw dupErr
-      return [{ affectedRows: 1 }, []]
-    })
-
-    const res = await supertest(makeApp())
-      .post('/api/demo/upgrade')
-      .send({ username: 'taken1', password: 'password1' })
-    expect(res.status).toBe(400)
-    expect(res.body.error).toMatch(/用户名已被占用/)
-    expect(mockConnection.rollback).toHaveBeenCalled()
-    expect(mockConnection.commit).not.toHaveBeenCalled()
-  })
-
-  it('未提供 nickname 时用 username 兜底', async () => {
-    setExecuteHandlers([
-      { match: ['SELECT id, is_guest FROM users'], returns: [{ id: GUEST_USER_ID, is_guest: 1 }] },
-      { match: ['SELECT id FROM users WHERE username'], returns: [] },
-      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 2, affectedRows: 1 } },
-    ])
-    mockConnection.execute.mockImplementation(async () => [{ affectedRows: 1 }, []])
-    const res = await supertest(makeApp())
-      .post('/api/demo/upgrade')
-      .send({ username: 'newuser1', password: 'password1' })
-    expect(res.status).toBe(200)
-    expect(res.body.user.nickname).toBe('newuser1')
+    expect(res.status).toBe(410)
+    expect(res.body.code).toBe('UPGRADE_DISABLED')
+    expect(res.body.error).toMatch(/升级入口已关闭/)
+    // 不查库、不签发任何会话
+    expect(mockExecute).not.toHaveBeenCalled()
+    expect(getCookie(res.headers['set-cookie'], 'lf_access_token')).toBeNull()
   })
 })

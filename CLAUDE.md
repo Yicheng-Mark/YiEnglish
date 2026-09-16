@@ -83,6 +83,7 @@
 - 到期三道闸：middleware 每请求比对 access token 内嵌 `subExp`（零窗口，到期即 401 `SUBSCRIPTION_EXPIRED`）+ login 查库拒签发 + refresh 查库清 cookie；前端 `api.js` 收到该 code 会 toast「账号已到期」并登出。
 - **续期只能手工 SQL**：`UPDATE users SET subscription_expires_at = DATE_ADD(NOW(), INTERVAL 30 DAY) WHERE id = 用户id;`（设 `NULL` 即转永久）；续期后用户下次 refresh 拿到新 subExp 自动恢复，无需重启。
 - 2026-09-16 已生成并入库：月卡 200 / 季卡 100 / 年卡 100（链接按档位备份在用户桌面「账号链接-20260916」）。注册链接形态：`https://www.lingoforge.fun/activate/<code>`。
+- **`/api/demo/upgrade` 体验转正端点已于 2026-09-16 关闭（410）**：原实现把访客直接转成永久正式账号，绕过激活码档位体系；前端升级按钮 2026-06 已移除，无正常入口。体验用户走 `/activate/<code>` 开通。
 - 相关迁移：`migrate_subscription_expire.sql`。
 
 ## 红线（必须遵守）
