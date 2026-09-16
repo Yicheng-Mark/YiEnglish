@@ -17,6 +17,7 @@
 --   migrate_user_device_limit users.max_devices 用户级设备登录上限覆盖
 --   migrate_refresh_device_unique refresh_tokens.uk_user_device + 清理 device_id='' 历史行
 --   migrate_subscription_expire users.subscription_expires_at 订阅到期（月/季/年卡）
+--   migrate_activation_hours_default experience_codes.trial_hours 默认值 1→0（防漏写变 1 小时卡）
 --   migrate_theme_cleanup   user_settings.theme 存量 gray/star/dark 回落 light
 -- ============================================================
 
@@ -94,8 +95,8 @@ CREATE TABLE IF NOT EXISTS login_attempts (
 
 -- ------------------------------------------------------------
 -- experience_codes：激活码 / 体验码
--- 来源：migrate_demo_trial（建表）+ migrate_activation_code（type）
--- type='trial' 体验码（试用 N 小时）；type='activation' 激活码（注册来源）
+-- 来源：migrate_demo_trial（建表）+ migrate_activation_code（type）+ migrate_activation_hours_default（默认值）
+-- type='trial' 体验码（试用 N 小时）；type='activation' 激活码（注册来源，trial_hours 携带订阅时长，0=永久）
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS experience_codes (
   id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -104,7 +105,7 @@ CREATE TABLE IF NOT EXISTS experience_codes (
   type            ENUM('trial','activation') NOT NULL DEFAULT 'trial',
   max_uses        INT UNSIGNED   NOT NULL DEFAULT 0       COMMENT '0 = unlimited',
   current_uses    INT UNSIGNED   NOT NULL DEFAULT 0,
-  trial_hours     SMALLINT UNSIGNED NOT NULL DEFAULT 1    COMMENT 'trial duration in hours',
+  trial_hours     SMALLINT UNSIGNED NOT NULL DEFAULT 0    COMMENT '时长(小时)：trial 码=试用时长；activation 码 0=永久 720=月卡30天 2160=季卡90天 8760=年卡365天',
   is_active       TINYINT(1)     NOT NULL DEFAULT 1,
   created_at      TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP,
   expires_at      TIMESTAMP      NULL DEFAULT NULL         COMMENT 'NULL = never expires',

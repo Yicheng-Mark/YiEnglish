@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react'
+import { toast } from 'sonner'
 import { apiFetch } from '../lib/api'
 import { getDeviceId } from '../utils/getDeviceId'
 import { resetErrorBookCache } from '../utils/errorBook'
@@ -82,6 +83,14 @@ export function AuthProvider({ children }) {
             syncSettingsFromServer()
             syncWordBooksFromServer()
             return
+          }
+          // 会话恢复失败的真实原因提示：这里走的是裸 fetch，不经 api.js 的 toast 通道，
+          // 不读 body 的话到期用户回到页面只会被静默弹回登录页，没有任何解释
+          const failData = await refreshRes.json().catch(() => ({}))
+          if (failData.code === 'SUBSCRIPTION_EXPIRED') {
+            toast.error('账号已到期')
+          } else if (failData.code === 'TRIAL_EXPIRED') {
+            toast.error('体验时间已结束，欢迎注册继续使用')
           }
         } else if (res.ok) {
           const data = await res.json()

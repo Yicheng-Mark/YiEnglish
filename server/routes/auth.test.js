@@ -311,6 +311,10 @@ describe('POST /api/auth/register', () => {
     const decoded = jwt.verify(access, FIXED_JWT_SECRET)
     expect(decoded.subExp).toBeTruthy()
     expect(new Date(decoded.subExp).getTime()).toBeGreaterThan(Date.now() + 719 * 60 * 60 * 1000)
+    // 响应体带到期字段（与 login/refresh/me 契约一致），且与 token 内嵌值同源
+    expect(res.body.user.subscriptionExpiresAt).toBe(decoded.subExp)
+    // 整秒截断：与 TIMESTAMP(fsp=0) 存储值对齐，两道闸在边界上不漂移
+    expect(new Date(decoded.subExp).getMilliseconds()).toBe(0)
   })
 
   it('注册成功（trial_hours=0 存量永久码）→ subscription_expires_at 写 NULL，token 不带 subExp（永久兼容）', async () => {
@@ -1291,6 +1295,72 @@ describe('POST /api/auth/recover-reset', () => {
         String(sql).includes('DELETE FROM refresh_tokens WHERE user_id')
       )
     ).toBe(true)
+  })
+
+  it('订阅已到期 → 401 SUBSCRIPTION_EXPIRED，不重置不签发（堵住「到期→找回密码→拿无 subExp 会话」旁路）', async () => {
+    setExecuteHandlers([
+      {
+        match: ['JOIN experience_codes'],
+        returns: [
+          {
+            id: 5,
+            username: 'oldname1',
+            subscription_expires_at: new Date(Date.now() - 3600 * 1000),
+          },
+        ],
+      },
+    ])
+    const app = makeApp()
+    const res = await supertest(app).post('/api/auth/recover-reset').send(validBody)
+    expect(res.status).toBe(401)
+    expect(res.body.code).toBe('SUBSCRIPTION_EXPIRED')
+    expect(fakeRateLimit.logAttempt).toHaveBeenCalledWith(
+      'recover:CODE1',
+      expect.any(String),
+      false
+    )
+    // 到期账号不得重置用户名密码，也不得签发任何会话
+    expect(
+      mockExecute.mock.calls.some(([sql]) => String(sql).includes('UPDATE users SET username'))
+    ).toBe(false)
+    expect(
+      mockExecute.mock.calls.some(([sql]) => String(sql).includes('INSERT INTO refresh_tokens'))
+    ).toBe(false)
+  })
+
+  it('订阅未到期 → 200 且新 access token 内嵌 subExp、响应附 subscriptionExpiresAt', async () => {
+    const subExp = new Date(Date.now() + 720 * 60 * 60 * 1000)
+    setExecuteHandlers([
+      {
+        match: ['JOIN experience_codes'],
+        returns: [{ id: 5, username: 'oldname1', subscription_expires_at: subExp }],
+      },
+      { match: ['FROM users WHERE username'], returns: [] }, // 新用户名可用
+      { match: ['UPDATE users SET username'], returns: { affectedRows: 1 } },
+      { match: ['DELETE FROM refresh_tokens WHERE user_id'], returns: { affectedRows: 1 } },
+      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 1, affectedRows: 1 } },
+      {
+        match: ['SELECT id, username, nickname, avatar_url'],
+        returns: [
+          {
+            id: 5,
+            username: 'newname1',
+            nickname: null,
+            avatar_url: null,
+            daily_goal_minutes: 30,
+            signature: null,
+            subscription_expires_at: subExp,
+          },
+        ],
+      },
+    ])
+    const app = makeApp()
+    const res = await supertest(app).post('/api/auth/recover-reset').send(validBody)
+    expect(res.status).toBe(200)
+    expect(res.body.user.subscriptionExpiresAt).toBe(subExp.toISOString())
+    const access = getCookie(res.headers['set-cookie'], 'lf_access_token')
+    const decoded = jwt.verify(access, FIXED_JWT_SECRET)
+    expect(decoded.subExp).toBe(subExp.toISOString())
   })
 })
 

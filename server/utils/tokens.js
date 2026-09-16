@@ -47,15 +47,16 @@ const ACCESS_COOKIE_OPTS = cookieOptions('/api', REFRESH_MAX_AGE)
 const REFRESH_COOKIE_OPTS = cookieOptions('/api/auth', REFRESH_MAX_AGE)
 const LEGACY_REFRESH_COOKIE_PATH = '/api/auth/refresh'
 
-function signAccessToken(userId, isGuest = false, trialExp = null, subExp = null) {
+function signAccessToken(userId, isGuest = false, expireIso = null) {
   const payload = { userId }
   if (isGuest) {
     payload.isGuest = true
     // 内嵌试用截止时间（ISO）：中间件据此免查库判定试用是否到期，仅老 token 或格式异常时才回查 DB
-    if (trialExp) payload.trialExp = trialExp
-  } else if (subExp) {
-    // 正式账号订阅到期（月/季/年卡，ISO）：中间件每请求就地比对，到期即 401，零查库零窗口
-    payload.subExp = subExp
+    if (expireIso) payload.trialExp = expireIso
+  } else if (expireIso) {
+    // 正式账号订阅到期（月/季/年卡，ISO）：中间件每请求就地比对，到期即 401，零查库零窗口。
+    // guest/正式的 claim 名路由只在 signAccessToken 内做一次，调用方只传统一的到期时间
+    payload.subExp = expireIso
   }
   return jwt.sign(payload, config.JWT_SECRET, { expiresIn: config.JWT_ACCESS_EXPIRES })
 }
@@ -80,12 +81,7 @@ async function issueTokens(
   expireIso = null,
   conn = null
 ) {
-  const accessToken = signAccessToken(
-    userId,
-    isGuest,
-    isGuest ? expireIso : null,
-    isGuest ? null : expireIso
-  )
+  const accessToken = signAccessToken(userId, isGuest, expireIso)
   const refreshToken = signRefreshToken()
   const tokenHash = hashToken(refreshToken)
   const expiresAt = new Date(Date.now() + REFRESH_MAX_AGE)

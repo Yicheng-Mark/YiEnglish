@@ -20,12 +20,15 @@ async function silentRefresh() {
       method: 'POST',
       credentials: 'include',
     })
-    const ok = res.ok
-    onRefreshed(ok)
-    return ok
+    // 透传 refresh 自身的失败原因（如 SUBSCRIPTION_EXPIRED/TRIAL_EXPIRED）：
+    // 调用方据此用真实原因 toast，而不是沿用原 401 的「登录已过期」
+    const data = await res.json().catch(() => ({}))
+    const result = { ok: res.ok, code: data.code, error: data.error }
+    onRefreshed(result)
+    return result
   } catch {
-    onRefreshed(false)
-    return false
+    onRefreshed({ ok: false })
+    return { ok: false }
   } finally {
     isRefreshing = false
   }
@@ -55,9 +58,12 @@ export async function apiFetch(path, options = {}) {
 
   if (res.status === 401) {
     const data = await res.json().catch(() => ({}))
-    if (data.code === 'TOKEN_EXPIRED') {
+    // SUBSCRIPTION_EXPIRED 一并走静默刷新：middleware 只比对 token 内嵌的到期快照，
+    // 手工 SQL 续期过的账号要靠 refresh（查库权威）拿新 token 透明恢复；
+    // 真到期则 refresh 也 401 + 服务端清 cookie，走统一登出
+    if (data.code === 'TOKEN_EXPIRED' || data.code === 'SUBSCRIPTION_EXPIRED') {
       const refreshed = await silentRefresh()
-      if (refreshed) {
+      if (refreshed.ok) {
         const retried = await fetch(`${API_BASE}${path}`, {
           ...options,
           headers,
@@ -70,6 +76,10 @@ export async function apiFetch(path, options = {}) {
           throwUnauthorized(retryData)
         }
         return retried
+      }
+      // refresh 被拒的真实原因（账号已到期/体验结束）优先于原 401 的 code，保证 toast 文案正确
+      if (refreshed.code) {
+        throwUnauthorized({ code: refreshed.code, error: refreshed.error })
       }
     }
     throwUnauthorized(data)

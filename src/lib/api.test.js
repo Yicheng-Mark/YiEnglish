@@ -269,17 +269,57 @@ describe('apiFetch', () => {
     expect(toastMock).toHaveBeenCalledTimes(1) // TRIAL_EXPIRED 会 toast.error
   })
 
-  it('401 SUBSCRIPTION_EXPIRED（月/季/年卡到期）→ 不刷新，toast「账号已到期」并派发事件', async () => {
+  it('401 SUBSCRIPTION_EXPIRED（月/季/年卡到期）→ 尝试刷新也被拒 → toast「账号已到期」（refresh 的真实原因透传）', async () => {
     const { apiFetch } = await import('./api')
-    fetchMock.mockResolvedValueOnce(
-      makeResponse({ code: 'SUBSCRIPTION_EXPIRED', error: '账号已到期' }, 401)
-    )
+    fetchMock
+      .mockResolvedValueOnce(
+        makeResponse({ code: 'SUBSCRIPTION_EXPIRED', error: '账号已到期' }, 401)
+      )
+      .mockResolvedValueOnce(
+        makeResponse({ code: 'SUBSCRIPTION_EXPIRED', error: '账号已到期' }, 401)
+      )
 
     await expect(apiFetch('/api/x')).rejects.toThrow('账号已到期')
-    expect(fetchMock).toHaveBeenCalledTimes(1) // 没有 refresh
+    // 原请求 1 + refresh 1，无重试（refresh 被拒即终止）
+    expect(fetchMock).toHaveBeenCalledTimes(2)
     expect(dispatchEventSpy).toHaveBeenCalledTimes(1)
     expect(toastMock).toHaveBeenCalledTimes(1)
     expect(toastMock).toHaveBeenCalledWith('账号已到期')
+  })
+
+  it('401 SUBSCRIPTION_EXPIRED（token 内嵌快照过期）但 DB 已续期 → refresh 成功 → 透明恢复不登出', async () => {
+    const { apiFetch } = await import('./api')
+    const okBody = { data: 'recovered' }
+    fetchMock
+      .mockResolvedValueOnce(
+        makeResponse({ code: 'SUBSCRIPTION_EXPIRED', error: '账号已到期' }, 401)
+      )
+      .mockResolvedValueOnce(refreshOkResponse())
+      .mockResolvedValueOnce(makeResponse(okBody, 200))
+
+    const res = await apiFetch('/api/x')
+    const json = await res.json()
+    expect(res.status).toBe(200)
+    expect(json).toEqual(okBody)
+    expect(fetchMock).toHaveBeenCalledTimes(3)
+    expect(fetchMock.mock.calls[1][0]).toBe('/api/auth/refresh')
+    expect(dispatchEventSpy).not.toHaveBeenCalled()
+    expect(toastMock).not.toHaveBeenCalled()
+  })
+
+  it('401 TOKEN_EXPIRED + refresh 返回 SUBSCRIPTION_EXPIRED → toast 用真实原因「账号已到期」而非「登录已过期」', async () => {
+    const { apiFetch } = await import('./api')
+    fetchMock
+      .mockResolvedValueOnce(tokenExpiredResponse())
+      .mockResolvedValueOnce(
+        makeResponse({ code: 'SUBSCRIPTION_EXPIRED', error: '账号已到期' }, 401)
+      )
+
+    await expect(apiFetch('/api/x')).rejects.toThrow('账号已到期')
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect(toastMock).toHaveBeenCalledTimes(1)
+    expect(toastMock).toHaveBeenCalledWith('账号已到期')
+    expect(dispatchEventSpy).toHaveBeenCalledTimes(1)
   })
 
   it('fetch 抛出网络错误时透传（不吞异常、不 refresh）', async () => {

@@ -52,9 +52,9 @@ describe('signAccessToken', () => {
     expect(decoded.trialExp).toBeUndefined()
   })
 
-  it('正式账号传 subExp → 内嵌订阅到期，不带 isGuest/trialExp（月/季/年卡）', () => {
+  it('正式账号传 expireIso → 内嵌 subExp，不带 isGuest/trialExp（月/季/年卡）', () => {
     const iso = '2026-12-31T23:59:59.000Z'
-    const token = tokens.signAccessToken('sub-1', false, null, iso)
+    const token = tokens.signAccessToken('sub-1', false, iso)
     const decoded = jwt.verify(token, TEST_SECRET)
     expect(decoded.userId).toBe('sub-1')
     expect(decoded.subExp).toBe(iso)
@@ -62,8 +62,8 @@ describe('signAccessToken', () => {
     expect(decoded.trialExp).toBeUndefined()
   })
 
-  it('正式账号不传 subExp → 无该字段（永久账号）', () => {
-    const token = tokens.signAccessToken('sub-2', false, null, null)
+  it('正式账号不传 expireIso → 无该字段（永久账号）', () => {
+    const token = tokens.signAccessToken('sub-2', false)
     const decoded = jwt.verify(token, TEST_SECRET)
     expect(decoded.subExp).toBeUndefined()
   })
