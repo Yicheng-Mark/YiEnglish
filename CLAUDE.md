@@ -77,6 +77,14 @@
 - `TRUST_PROXY` env（默认 1）控制 `app.set('trust proxy')`；IP 限流的安全性依赖 nginx 前置，若 3001 端口直接暴露须设 0。
 - 相关迁移：`migrate_user_device_limit.sql`（加列）、`migrate_refresh_device_unique.sql`（(user_id, device_id) 唯一键 + 清理 device_id='' 历史行）。启动时自动执行；若登录报 `ER_BAD_FIELD_ERROR: max_devices` 说明迁移未跑成，查 `SELECT * FROM schema_migrations` 确认。
 
+### 账号订阅到期（users.subscription_expires_at，月/季/年卡）
+
+- activation 激活码用 `trial_hours` 携带时长：`0`/`NULL`=永久（存量 77 个旧码已统一归 0），`720`=月卡 30 天、`2160`=季卡 90 天、`8760`=年卡 365 天；注册时写入 `users.subscription_expires_at`（`NULL`=永久，存量账号全是 NULL 不受影响）。
+- 到期三道闸：middleware 每请求比对 access token 内嵌 `subExp`（零窗口，到期即 401 `SUBSCRIPTION_EXPIRED`）+ login 查库拒签发 + refresh 查库清 cookie；前端 `api.js` 收到该 code 会 toast「账号已到期」并登出。
+- **续期只能手工 SQL**：`UPDATE users SET subscription_expires_at = DATE_ADD(NOW(), INTERVAL 30 DAY) WHERE id = 用户id;`（设 `NULL` 即转永久）；续期后用户下次 refresh 拿到新 subExp 自动恢复，无需重启。
+- 2026-09-16 已生成并入库：月卡 200 / 季卡 100 / 年卡 100（链接按档位备份在用户桌面「账号链接-20260916」）。注册链接形态：`https://www.lingoforge.fun/activate/<code>`。
+- 相关迁移：`migrate_subscription_expire.sql`。
+
 ## 红线（必须遵守）
 
 - **打乱词库**：只能 shuffle `words` 数组的**顺序**，不得改动任何字段内容和 JSON 结构。
