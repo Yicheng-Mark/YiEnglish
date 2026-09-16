@@ -135,7 +135,7 @@ router.post('/register', async (req, res, next) => {
     // 验证激活码：失败按 code 维度计数，防止在线爆破有效码
     const registerCodeKey = 'register-code:' + activationCode.trim()
     const [codes] = await pool.execute(
-      `SELECT id, code, max_uses, current_uses, is_active, expires_at
+      `SELECT id, code, max_uses, current_uses, is_active, expires_at, trial_hours
        FROM experience_codes WHERE code = ? AND type = 'activation'`,
       [activationCode.trim()]
     )
@@ -170,6 +170,7 @@ router.post('/register', async (req, res, next) => {
     // 并发同用户名时 INSERT 抛 ER_DUP_ENTRY 由下方 catch 捕获返回 400，不再 500。
     const conn = await pool.getConnection()
     let userId
+    let subscriptionExpiresAt = null
     try {
       await conn.beginTransaction()
 
@@ -190,11 +191,14 @@ router.post('/register', async (req, res, next) => {
         return res.status(400).json({ error: '激活码已达使用上限' })
       }
 
-      // 记录激活码来源
-      await conn.execute('UPDATE users SET activation_code_id = ? WHERE id = ?', [
-        actCode.id,
-        userId,
-      ])
+      // 记录激活码来源；trial_hours>0（月/季/年卡）同时写入订阅到期（与 demo 体验码同款 JS 时间源，
+      // 保证 DB 值与后续 token 内嵌 subExp 一致）。trial_hours=0/NULL → 保持 NULL 即永久（存量码兼容）。
+      subscriptionExpiresAt =
+        actCode.trial_hours > 0 ? new Date(Date.now() + actCode.trial_hours * 60 * 60 * 1000) : null
+      await conn.execute(
+        'UPDATE users SET activation_code_id = ?, subscription_expires_at = ? WHERE id = ?',
+        [actCode.id, subscriptionExpiresAt, userId]
+      )
 
       // 注册即建默认 settings 行，后续 GET /api/settings 可省去每次 INSERT IGNORE
       await conn.execute('INSERT INTO user_settings (user_id) VALUES (?)', [userId])
@@ -211,11 +215,17 @@ router.post('/register', async (req, res, next) => {
       conn.release()
     }
 
-    await issueTokens(res, userId, false, {
-      deviceId: ensureDeviceCookie(req, res, resolveDeviceId(req)),
-      deviceName: parseDeviceName(req.headers['user-agent']),
-      ip,
-    })
+    await issueTokens(
+      res,
+      userId,
+      false,
+      {
+        deviceId: ensureDeviceCookie(req, res, resolveDeviceId(req)),
+        deviceName: parseDeviceName(req.headers['user-agent']),
+        ip,
+      },
+      subscriptionExpiresAt ? subscriptionExpiresAt.toISOString() : null
+    )
     await logAttempt(`register:${ip}`, ip, true)
 
     res.json({
@@ -249,7 +259,7 @@ router.post('/login', async (req, res, next) => {
     await checkLoginRateLimit(username, ip)
 
     const [rows] = await pool.execute(
-      'SELECT id, username, nickname, password_hash, avatar_url, daily_goal_minutes, signature FROM users WHERE username = ?',
+      'SELECT id, username, nickname, password_hash, avatar_url, daily_goal_minutes, signature, subscription_expires_at FROM users WHERE username = ?',
       [username]
     )
 
@@ -260,6 +270,13 @@ router.post('/login', async (req, res, next) => {
     if (!user || !match) {
       await logAttempt(username, ip, false)
       return res.status(401).json({ error: '用户名或密码错误' })
+    }
+
+    // 订阅到期（月/季/年卡）：到期账号拒绝登录，不签发任何 token。
+    // 密码校验之后才判，避免到期账号的用户名存在性被探测（同样是 401，无枚举差异）。
+    if (user.subscription_expires_at && new Date(user.subscription_expires_at) <= new Date()) {
+      await logAttempt(username, ip, false)
+      return res.status(401).json({ error: '账号已到期', code: 'SUBSCRIPTION_EXPIRED' })
     }
 
     await logAttempt(username, ip, true)
@@ -305,7 +322,14 @@ router.post('/login', async (req, res, next) => {
         user.id,
       ])
 
-      await issueTokens(res, user.id, false, device, null, conn)
+      await issueTokens(
+        res,
+        user.id,
+        false,
+        device,
+        user.subscription_expires_at ? new Date(user.subscription_expires_at).toISOString() : null,
+        conn
+      )
 
       await conn.commit()
     } catch (err) {
@@ -315,9 +339,11 @@ router.post('/login', async (req, res, next) => {
       conn.release()
     }
 
-    res.json({
-      user: toClientUser(user),
-    })
+    const loginObj = toClientUser(user)
+    if (user.subscription_expires_at) {
+      loginObj.subscriptionExpiresAt = new Date(user.subscription_expires_at).toISOString()
+    }
+    res.json({ user: loginObj })
   } catch (err) {
     next(err)
   }
@@ -363,7 +389,7 @@ router.post('/refresh', authActionLimiter, async (req, res, next) => {
     }
 
     const [userRows] = await pool.execute(
-      'SELECT id, username, nickname, avatar_url, daily_goal_minutes, signature, is_guest, max_devices FROM users WHERE id = ?',
+      'SELECT id, username, nickname, avatar_url, daily_goal_minutes, signature, is_guest, max_devices, subscription_expires_at FROM users WHERE id = ?',
       [stored.user_id]
     )
 
@@ -388,6 +414,17 @@ router.post('/refresh', authActionLimiter, async (req, res, next) => {
       }
     }
 
+    // 正式账号订阅到期（月/季/年卡）：到期即拒，清 cookie 强制下线——挂机页面的最后兜底闸
+    let subExpIso = null
+    if (!isGuest && userRows[0].subscription_expires_at) {
+      const subExpiresAt = new Date(userRows[0].subscription_expires_at)
+      if (subExpiresAt <= new Date()) {
+        clearCookies(res)
+        return res.status(401).json({ error: '账号已到期', code: 'SUBSCRIPTION_EXPIRED' })
+      }
+      subExpIso = subExpiresAt.toISOString()
+    }
+
     // rotation 时沿用原会话的设备标识/IP，刷新 last_active_at（返回本会话行 id，
     // 供下方设备上限驱逐排除自身）
     const sessionId = await issueTokens(
@@ -399,7 +436,7 @@ router.post('/refresh', authActionLimiter, async (req, res, next) => {
         deviceName: stored.device_name,
         ip: stored.ip,
       },
-      isGuest && trialExpiresAt ? new Date(trialExpiresAt).toISOString() : null
+      isGuest ? (trialExpiresAt ? new Date(trialExpiresAt).toISOString() : null) : subExpIso
     )
 
     // 设备上限复检（驱逐制）：上限只拦「新登录」的话，调低上限后存量超额会话仍可
@@ -440,6 +477,8 @@ router.post('/refresh', authActionLimiter, async (req, res, next) => {
     if (isGuest) {
       userObj.isTrial = true
       userObj.trialExpiresAt = trialExpiresAt ? new Date(trialExpiresAt).toISOString() : null
+    } else if (subExpIso) {
+      userObj.subscriptionExpiresAt = subExpIso
     }
 
     res.json({ user: userObj })
@@ -472,7 +511,7 @@ router.get('/me', authMiddleware, async (req, res, next) => {
   try {
     // 先只查 users（无 JOIN），拿到 is_guest 后再决定是否补充查 trial
     const [rows] = await pool.execute(
-      `SELECT id, username, nickname, avatar_url, daily_goal_minutes, signature, is_guest
+      `SELECT id, username, nickname, avatar_url, daily_goal_minutes, signature, is_guest, subscription_expires_at
        FROM users
        WHERE id = ?`,
       [req.userId]
@@ -491,6 +530,8 @@ router.get('/me', authMiddleware, async (req, res, next) => {
       const trialExpiresAt = trialRows[0]?.expires_at || null
       userObj.isTrial = true
       userObj.trialExpiresAt = trialExpiresAt ? new Date(trialExpiresAt).toISOString() : null
+    } else if (u.subscription_expires_at) {
+      userObj.subscriptionExpiresAt = new Date(u.subscription_expires_at).toISOString()
     }
     res.json({ user: userObj })
   } catch (err) {

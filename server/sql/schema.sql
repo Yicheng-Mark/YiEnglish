@@ -16,6 +16,7 @@
 --   migrate_ai_assistant     AI 助手：style_modes + user_style_settings + conversation_memory + chat_messages + ai_usage
 --   migrate_user_device_limit users.max_devices 用户级设备登录上限覆盖
 --   migrate_refresh_device_unique refresh_tokens.uk_user_device + 清理 device_id='' 历史行
+--   migrate_subscription_expire users.subscription_expires_at 订阅到期（月/季/年卡）
 --   migrate_theme_cleanup   user_settings.theme 存量 gray/star/dark 回落 light
 -- ============================================================
 
@@ -32,6 +33,7 @@ USE lingoforge;
 --   migrate_auth_v2 verify_code/code_expires_at/email_verified（已被 v3 删除，不在此出现）
 --   migrate_auth_v3 username/uk_username，email 改为可空并删除唯一键，signature，password_changed_at
 --   migrate_user_device_limit max_devices（NULL=全局默认，0=不限，>0=覆盖）
+--   migrate_subscription_expire subscription_expires_at（NULL=永久；月/季/年卡按激活码 trial_hours 写入）
 --   migrate_demo_trial is_guest
 --   migrate_activation_code activation_code_id
 -- ------------------------------------------------------------
@@ -48,6 +50,7 @@ CREATE TABLE IF NOT EXISTS users (
   signature              VARCHAR(200)  DEFAULT NULL,
   daily_goal_minutes     SMALLINT UNSIGNED NOT NULL DEFAULT 30,
   max_devices            SMALLINT UNSIGNED NULL DEFAULT NULL COMMENT '设备登录数上限：NULL=全局默认，0=不限，>0=覆盖值',
+  subscription_expires_at TIMESTAMP    NULL DEFAULT NULL COMMENT '订阅到期：NULL=永久',
   created_at             TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at             TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY uk_username (username)

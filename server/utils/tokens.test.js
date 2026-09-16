@@ -52,6 +52,22 @@ describe('signAccessToken', () => {
     expect(decoded.trialExp).toBeUndefined()
   })
 
+  it('正式账号传 subExp → 内嵌订阅到期，不带 isGuest/trialExp（月/季/年卡）', () => {
+    const iso = '2026-12-31T23:59:59.000Z'
+    const token = tokens.signAccessToken('sub-1', false, null, iso)
+    const decoded = jwt.verify(token, TEST_SECRET)
+    expect(decoded.userId).toBe('sub-1')
+    expect(decoded.subExp).toBe(iso)
+    expect(decoded.isGuest).toBeUndefined()
+    expect(decoded.trialExp).toBeUndefined()
+  })
+
+  it('正式账号不传 subExp → 无该字段（永久账号）', () => {
+    const token = tokens.signAccessToken('sub-2', false, null, null)
+    const decoded = jwt.verify(token, TEST_SECRET)
+    expect(decoded.subExp).toBeUndefined()
+  })
+
   it('包含有效的过期时间（iat/exp）', () => {
     const token = tokens.signAccessToken('user-456')
     const decoded = jwt.verify(token, TEST_SECRET)
@@ -187,6 +203,26 @@ describe('issueTokens cookie 下发', () => {
     const refreshCall = res.cookie.mock.calls.find(([name]) => name === tokens.REFRESH_COOKIE)
     expect(tokens.hashToken(refreshCall[1])).toBe(params[1])
     expect(params[3]).toBe('dev-1')
+  })
+
+  it('正式账号传 expireIso → access token 内嵌 subExp（订阅到期，月/季/年卡）', async () => {
+    const res = { cookie: vi.fn(), clearCookie: vi.fn() }
+    const iso = '2026-12-31T23:59:59.000Z'
+    await tokens.issueTokens(res, 1, false, {}, iso)
+    const accessCall = res.cookie.mock.calls.find(([name]) => name === tokens.ACCESS_COOKIE)
+    const decoded = jwt.verify(accessCall[1], TEST_SECRET)
+    expect(decoded.subExp).toBe(iso)
+    expect(decoded.trialExp).toBeUndefined()
+  })
+
+  it('访客传 expireIso → 内嵌 trialExp 而非 subExp（两类到期互不串道）', async () => {
+    const res = { cookie: vi.fn(), clearCookie: vi.fn() }
+    const iso = '2026-12-31T23:59:59.000Z'
+    await tokens.issueTokens(res, 1, true, {}, iso)
+    const accessCall = res.cookie.mock.calls.find(([name]) => name === tokens.ACCESS_COOKIE)
+    const decoded = jwt.verify(accessCall[1], TEST_SECRET)
+    expect(decoded.trialExp).toBe(iso)
+    expect(decoded.subExp).toBeUndefined()
   })
 })
 

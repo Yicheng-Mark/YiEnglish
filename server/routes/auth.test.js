@@ -261,6 +261,99 @@ describe('POST /api/auth/register', () => {
     expect(access).toBeTruthy()
     expect(refresh).toBeTruthy()
   })
+
+  it('注册成功（trial_hours=720 月卡）→ 事务内写入订阅到期，access token 内嵌 subExp', async () => {
+    const insertedUserId = 43
+    setExecuteHandlers([
+      {
+        match: ['experience_codes WHERE code'],
+        returns: [
+          {
+            id: 2,
+            code: 'MONTH1',
+            max_uses: 1,
+            current_uses: 0,
+            is_active: 1,
+            expires_at: null,
+            trial_hours: 720,
+          },
+        ],
+      },
+      { match: ['FROM users WHERE username'], returns: [] },
+      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 1, affectedRows: 1 } },
+    ])
+    mockConnection.execute.mockImplementation(async (sql) => {
+      if (sql.includes('INSERT INTO users')) {
+        return [{ insertId: insertedUserId, affectedRows: 1 }, []]
+      }
+      return [{ affectedRows: 1 }, []]
+    })
+
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/register')
+      .send({ username: VALID_USER, password: VALID_PASSWORD, activationCode: 'MONTH1' })
+
+    expect(res.status).toBe(200)
+    // 订阅到期与激活码来源同条 UPDATE 写入，值为 now+720h（月卡）
+    const updCall = mockConnection.execute.mock.calls.find(([sql]) =>
+      String(sql).includes('UPDATE users SET activation_code_id')
+    )
+    expect(updCall).toBeTruthy()
+    expect(String(updCall[0])).toContain('subscription_expires_at')
+    expect(updCall[1][0]).toBe(2)
+    expect(updCall[1][1]).toBeInstanceOf(Date)
+    const deltaHours = (updCall[1][1].getTime() - Date.now()) / 3600000
+    expect(deltaHours).toBeGreaterThan(719)
+    expect(deltaHours).toBeLessThan(721)
+    // access token 内嵌 subExp：middleware 每请求据此比对，到期即 401
+    const access = getCookie(res.headers['set-cookie'], 'lf_access_token')
+    const decoded = jwt.verify(access, FIXED_JWT_SECRET)
+    expect(decoded.subExp).toBeTruthy()
+    expect(new Date(decoded.subExp).getTime()).toBeGreaterThan(Date.now() + 719 * 60 * 60 * 1000)
+  })
+
+  it('注册成功（trial_hours=0 存量永久码）→ subscription_expires_at 写 NULL，token 不带 subExp（永久兼容）', async () => {
+    setExecuteHandlers([
+      {
+        match: ['experience_codes WHERE code'],
+        returns: [
+          {
+            id: 3,
+            code: 'FOREVER',
+            max_uses: 10,
+            current_uses: 0,
+            is_active: 1,
+            expires_at: null,
+            trial_hours: 0,
+          },
+        ],
+      },
+      { match: ['FROM users WHERE username'], returns: [] },
+      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 1, affectedRows: 1 } },
+    ])
+    mockConnection.execute.mockImplementation(async (sql) => {
+      if (sql.includes('INSERT INTO users')) {
+        return [{ insertId: 44, affectedRows: 1 }, []]
+      }
+      return [{ affectedRows: 1 }, []]
+    })
+
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/register')
+      .send({ username: VALID_USER, password: VALID_PASSWORD, activationCode: 'FOREVER' })
+
+    expect(res.status).toBe(200)
+    const updCall = mockConnection.execute.mock.calls.find(([sql]) =>
+      String(sql).includes('UPDATE users SET activation_code_id')
+    )
+    expect(updCall).toBeTruthy()
+    expect(updCall[1][1]).toBeNull()
+    const access = getCookie(res.headers['set-cookie'], 'lf_access_token')
+    const decoded = jwt.verify(access, FIXED_JWT_SECRET)
+    expect(decoded.subExp).toBeUndefined()
+  })
 })
 
 // =====================================================================
@@ -382,6 +475,71 @@ describe('POST /api/auth/login', () => {
     )
     expect(String(insertCall[0])).toContain('ON DUPLICATE KEY UPDATE')
     expect(mockConnection.commit).toHaveBeenCalled()
+  })
+
+  it('订阅到期账号登录 → 401 SUBSCRIPTION_EXPIRED，不签发 cookie', async () => {
+    setExecuteHandlers([
+      {
+        match: ['FROM users WHERE username'],
+        returns: [
+          {
+            id: 5,
+            username: VALID_USER,
+            nickname: 'Alice',
+            password_hash: VALID_HASH,
+            subscription_expires_at: new Date(Date.now() - 3600 * 1000),
+          },
+        ],
+      },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/login')
+      .send({ username: VALID_USER, password: VALID_PASSWORD })
+
+    expect(res.status).toBe(401)
+    expect(res.body.code).toBe('SUBSCRIPTION_EXPIRED')
+    expect(res.body.error).toMatch(/账号已到期/)
+    expect(getCookie(res.headers['set-cookie'], 'lf_access_token')).toBeNull()
+    // 到期登录也按失败计数，防到期账号无限试密码
+    expect(fakeRateLimit.logAttempt).toHaveBeenCalledWith(VALID_USER, expect.any(String), false)
+  })
+
+  it('订阅未到期账号登录 → 200 且 access 内嵌 subExp、响应附 subscriptionExpiresAt', async () => {
+    const subExp = new Date(Date.now() + 720 * 60 * 60 * 1000)
+    setExecuteHandlers([
+      {
+        match: ['FROM users WHERE username'],
+        returns: [
+          {
+            id: 5,
+            username: VALID_USER,
+            nickname: 'Alice',
+            password_hash: VALID_HASH,
+            avatar_url: null,
+            daily_goal_minutes: 30,
+            signature: null,
+            subscription_expires_at: subExp,
+          },
+        ],
+      },
+    ])
+    setConnectionHandlers([
+      { match: ['SELECT max_devices FROM users'], returns: [{ max_devices: null }] },
+      { match: ['SELECT COUNT(*) AS cnt FROM refresh_tokens'], returns: [{ cnt: 0 }] },
+      { match: ['DELETE FROM refresh_tokens WHERE user_id'], returns: { affectedRows: 0 } },
+      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 1, affectedRows: 1 } },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/login')
+      .send({ username: VALID_USER, password: VALID_PASSWORD })
+
+    expect(res.status).toBe(200)
+    expect(res.body.user.subscriptionExpiresAt).toBe(subExp.toISOString())
+    const access = getCookie(res.headers['set-cookie'], 'lf_access_token')
+    const decoded = jwt.verify(access, FIXED_JWT_SECRET)
+    expect(decoded.subExp).toBe(subExp.toISOString())
   })
 
   it('达设备上限 → 403 DEVICE_LIMIT_REACHED（真实计数文案；不写入新会话不提交事务）', async () => {
@@ -602,6 +760,36 @@ describe('GET /api/auth/me', () => {
     })
     // 正式用户不应带试用字段
     expect(res.body.user.isTrial).toBeUndefined()
+  })
+
+  it('正式用户带订阅 → 200 附 subscriptionExpiresAt（月/季/年卡）', async () => {
+    const userId = 7
+    const token = jwt.sign({ userId }, FIXED_JWT_SECRET, { expiresIn: '30m' })
+    const subExp = new Date(Date.now() + 720 * 60 * 60 * 1000)
+    setExecuteHandlers([
+      {
+        match: ['FROM users'],
+        returns: [
+          {
+            id: userId,
+            username: VALID_USER,
+            nickname: 'Alice',
+            avatar_url: null,
+            daily_goal_minutes: 30,
+            signature: 'hi',
+            is_guest: 0,
+            subscription_expires_at: subExp,
+          },
+        ],
+      },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .get('/api/auth/me')
+      .set('Cookie', 'lf_access_token=' + token)
+
+    expect(res.status).toBe(200)
+    expect(res.body.user.subscriptionExpiresAt).toBe(subExp.toISOString())
   })
 
   it('有效 token 但用户已被删 → 404', async () => {
@@ -911,6 +1099,72 @@ describe('POST /api/auth/refresh', () => {
     const arr = Array.isArray(sc) ? sc : [sc]
     expect(arr.some((c) => /lf_refresh_token=;/.test(c))).toBe(false)
     expect(arr.some((c) => /lf_access_token=;/.test(c))).toBe(false)
+  })
+
+  it('正式用户订阅到期 → 401 SUBSCRIPTION_EXPIRED 且清 cookie（挂机页面的最后兜底闸）', async () => {
+    setExecuteHandlers([
+      { match: ['SELECT id, user_id, device_id'], returns: [STORED_REFRESH_ROW] },
+      { match: ['DELETE FROM refresh_tokens WHERE token_hash'], returns: { affectedRows: 1 } },
+      {
+        match: ['FROM users WHERE id'],
+        returns: [
+          {
+            id: 5,
+            username: VALID_USER,
+            nickname: 'Alice',
+            is_guest: 0,
+            max_devices: null,
+            subscription_expires_at: new Date(Date.now() - 1000),
+          },
+        ],
+      },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/refresh')
+      .set('Cookie', 'lf_refresh_token=somevalidvalue')
+    expect(res.status).toBe(401)
+    expect(res.body.code).toBe('SUBSCRIPTION_EXPIRED')
+    // 清 cookie（与「token 不存在」分支同款强制下线语义）
+    const cleared = (res.headers['set-cookie'] || []).join(';')
+    expect(cleared).toContain('lf_access_token=;')
+    expect(cleared).toContain('lf_refresh_token=;')
+    // 到期后不得签发新会话
+    expect(
+      mockExecute.mock.calls.some(([sql]) => String(sql).includes('INSERT INTO refresh_tokens'))
+    ).toBe(false)
+  })
+
+  it('正式用户订阅未到期 → 200 且新 access 内嵌 subExp、user 附 subscriptionExpiresAt', async () => {
+    const subExp = new Date(Date.now() + 720 * 60 * 60 * 1000)
+    setExecuteHandlers([
+      { match: ['SELECT id, user_id, device_id'], returns: [STORED_REFRESH_ROW] },
+      { match: ['DELETE FROM refresh_tokens WHERE token_hash'], returns: { affectedRows: 1 } },
+      {
+        match: ['FROM users WHERE id'],
+        returns: [
+          {
+            id: 5,
+            username: VALID_USER,
+            nickname: 'Alice',
+            is_guest: 0,
+            max_devices: null,
+            subscription_expires_at: subExp,
+          },
+        ],
+      },
+      { match: ['COUNT(*) AS activeCnt'], returns: [{ activeCnt: 1 }] },
+      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 2, affectedRows: 1 } },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/refresh')
+      .set('Cookie', 'lf_refresh_token=somevalidvalue')
+    expect(res.status).toBe(200)
+    expect(res.body.user.subscriptionExpiresAt).toBe(subExp.toISOString())
+    const access = getCookie(res.headers['set-cookie'], 'lf_access_token')
+    const decoded = jwt.verify(access, FIXED_JWT_SECRET)
+    expect(decoded.subExp).toBe(subExp.toISOString())
   })
 })
 

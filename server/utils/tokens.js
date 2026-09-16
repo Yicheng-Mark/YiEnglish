@@ -47,12 +47,15 @@ const ACCESS_COOKIE_OPTS = cookieOptions('/api', REFRESH_MAX_AGE)
 const REFRESH_COOKIE_OPTS = cookieOptions('/api/auth', REFRESH_MAX_AGE)
 const LEGACY_REFRESH_COOKIE_PATH = '/api/auth/refresh'
 
-function signAccessToken(userId, isGuest = false, trialExp = null) {
+function signAccessToken(userId, isGuest = false, trialExp = null, subExp = null) {
   const payload = { userId }
   if (isGuest) {
     payload.isGuest = true
     // 内嵌试用截止时间（ISO）：中间件据此免查库判定试用是否到期，仅老 token 或格式异常时才回查 DB
     if (trialExp) payload.trialExp = trialExp
+  } else if (subExp) {
+    // 正式账号订阅到期（月/季/年卡，ISO）：中间件每请求就地比对，到期即 401，零查库零窗口
+    payload.subExp = subExp
   }
   return jwt.sign(payload, config.JWT_SECRET, { expiresIn: config.JWT_ACCESS_EXPIRES })
 }
@@ -67,15 +70,22 @@ function hashToken(token) {
 
 // 签发 access + refresh，写入 refresh_tokens（含设备信息用于设备管理/名额统计），并下发 cookie。
 // conn：调用方传入事务连接时，会话行写入挂到该事务内（登录的设备名额检查依赖此原子性）。
+// expireIso：账号到期时间（ISO）。访客内嵌为 trialExp，正式账号（月/季/年卡）内嵌为 subExp；
+// 永久账号传 null（token 不带到期字段，中间件照常放行）。
 async function issueTokens(
   res,
   userId,
   isGuest = false,
   device = {},
-  trialExp = null,
+  expireIso = null,
   conn = null
 ) {
-  const accessToken = signAccessToken(userId, isGuest, trialExp)
+  const accessToken = signAccessToken(
+    userId,
+    isGuest,
+    isGuest ? expireIso : null,
+    isGuest ? null : expireIso
+  )
   const refreshToken = signRefreshToken()
   const tokenHash = hashToken(refreshToken)
   const expiresAt = new Date(Date.now() + REFRESH_MAX_AGE)

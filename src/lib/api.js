@@ -34,6 +34,8 @@ async function silentRefresh() {
 function throwUnauthorized(data = {}) {
   if (data.code === 'TRIAL_EXPIRED') {
     toast.error('体验时间已结束，欢迎注册继续使用')
+  } else if (data.code === 'SUBSCRIPTION_EXPIRED') {
+    toast.error('账号已到期')
   }
   window.dispatchEvent(new CustomEvent('auth:unauthorized'))
   throw new Error(data.error || '请先登录')

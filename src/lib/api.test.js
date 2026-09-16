@@ -269,6 +269,19 @@ describe('apiFetch', () => {
     expect(toastMock).toHaveBeenCalledTimes(1) // TRIAL_EXPIRED 会 toast.error
   })
 
+  it('401 SUBSCRIPTION_EXPIRED（月/季/年卡到期）→ 不刷新，toast「账号已到期」并派发事件', async () => {
+    const { apiFetch } = await import('./api')
+    fetchMock.mockResolvedValueOnce(
+      makeResponse({ code: 'SUBSCRIPTION_EXPIRED', error: '账号已到期' }, 401)
+    )
+
+    await expect(apiFetch('/api/x')).rejects.toThrow('账号已到期')
+    expect(fetchMock).toHaveBeenCalledTimes(1) // 没有 refresh
+    expect(dispatchEventSpy).toHaveBeenCalledTimes(1)
+    expect(toastMock).toHaveBeenCalledTimes(1)
+    expect(toastMock).toHaveBeenCalledWith('账号已到期')
+  })
+
   it('fetch 抛出网络错误时透传（不吞异常、不 refresh）', async () => {
     const { apiFetch } = await import('./api')
     const netErr = new TypeError('Failed to fetch')

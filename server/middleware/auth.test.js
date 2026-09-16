@@ -82,6 +82,46 @@ describe('正式用户', () => {
   })
 })
 
+describe('正式用户（订阅到期 subExp，月/季/年卡）', () => {
+  it('subExp 未到期 → 放行且不查库', async () => {
+    const token = jwt.sign(
+      { userId: 9, subExp: new Date(Date.now() + 3600 * 1000).toISOString() },
+      FIXED_JWT_SECRET,
+      { expiresIn: '30m' }
+    )
+    const res = await supertest(makeApp())
+      .get('/ping')
+      .set('Cookie', 'lf_access_token=' + token)
+    expect(res.status).toBe(200)
+    expect(res.body).toEqual({ userId: 9, isGuest: false })
+    expect(mockExecute).not.toHaveBeenCalled()
+  })
+
+  it('subExp 已到期 → 401 且 code=SUBSCRIPTION_EXPIRED（到期即拒，零窗口）', async () => {
+    const token = jwt.sign(
+      { userId: 9, subExp: new Date(Date.now() - 1000).toISOString() },
+      FIXED_JWT_SECRET,
+      { expiresIn: '30m' }
+    )
+    const res = await supertest(makeApp())
+      .get('/ping')
+      .set('Cookie', 'lf_access_token=' + token)
+    expect(res.status).toBe(401)
+    expect(res.body.code).toBe('SUBSCRIPTION_EXPIRED')
+    expect(res.body.error).toMatch(/账号已到期/)
+  })
+
+  it('subExp 格式异常（无法解析）→ 放行（老 token 兼容，权威拦截在 login/refresh）', async () => {
+    const token = jwt.sign({ userId: 9, subExp: 'not-a-date' }, FIXED_JWT_SECRET, {
+      expiresIn: '30m',
+    })
+    const res = await supertest(makeApp())
+      .get('/ping')
+      .set('Cookie', 'lf_access_token=' + token)
+    expect(res.status).toBe(200)
+  })
+})
+
 describe('体验用户（trial 快照免查库路径）', () => {
   it('trialExp 未到期 → 放行且不查库', async () => {
     const token = jwt.sign(

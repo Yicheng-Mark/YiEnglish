@@ -21,6 +21,14 @@ async function authMiddleware(req, res, next) {
   req.userId = decoded.userId
   req.isGuest = decoded.isGuest || false
 
+  // 正式账号订阅到期（月/季/年卡）：token 内嵌 subExp，每请求就地比对，到期时刻一到
+  // 下一个请求立即 401，零窗口。无 subExp = 永久账号（存量）或部署前签发的老 token →
+  // 照常放行，保持正式用户零查库；权威拦截兜底在 login/refresh（查库，7 天 refresh 周期内强制下线）。
+  const subExpMs = decoded.subExp ? new Date(decoded.subExp).getTime() : NaN
+  if (!Number.isNaN(subExpMs) && subExpMs <= Date.now()) {
+    return res.status(401).json({ error: '账号已到期', code: 'SUBSCRIPTION_EXPIRED' })
+  }
+
   // 体验用户：试用到期则拒绝（强制下线，服务端兜底）
   if (req.isGuest) {
     // 优先用 access token 内嵌的 trialExp 免查库（新 token）；
