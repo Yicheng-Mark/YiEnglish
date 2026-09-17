@@ -1,4 +1,4 @@
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams, Navigate } from 'react-router-dom'
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { List } from 'lucide-react'
 import { loadDictionary } from '../utils/loadDictionary.js'
@@ -589,6 +589,19 @@ export default function Typing() {
     [config.showPhonetic, config.hideEnglish, currentWord?.name]
   )
   const showTranslation = useMemo(() => config.showTranslation, [config.showTranslation])
+
+  // 体验用户直链第 6+ 章（绕过章节列表的 URL 访问）→ 与语料 TrialPlayerGuard 同款 URL 级守卫。
+  // 章节列表只裁剪可见列表（visibleChapters），直链不经过列表；错题本/词本/复习等
+  // 虚拟词本模式沿用各自章节语义不设上限，与列表裁剪口径一致。
+  if (
+    isTrial &&
+    !isErrorBookMode &&
+    !isWordBookMode &&
+    !isReviewMode &&
+    Number(chapterId) > TRIAL_CHAPTER_COUNT
+  ) {
+    return <Navigate to="/demo/home" replace />
+  }
 
   if (loading)
     return (

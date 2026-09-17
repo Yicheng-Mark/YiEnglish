@@ -546,6 +546,84 @@ describe('POST /api/auth/login', () => {
     expect(decoded.subExp).toBe(subExp.toISOString())
   })
 
+  it('访客行经 /login 登录（防御性路径）→ 按访客身份签发：access 内嵌 isGuest+trialExp、不带 subExp，响应附 isTrial（回归：旧实现一律按正式账号签发）', async () => {
+    const trialExp = new Date(Date.now() + 24 * 3600 * 1000)
+    setExecuteHandlers([
+      {
+        match: ['FROM users WHERE username'],
+        returns: [
+          {
+            id: 9,
+            username: 'guest_abcd1234',
+            nickname: '体验用户',
+            password_hash: VALID_HASH,
+            avatar_url: null,
+            daily_goal_minutes: 30,
+            signature: null,
+            is_guest: 1,
+            subscription_expires_at: null,
+          },
+        ],
+      },
+      { match: ['FROM trial_activations WHERE user_id'], returns: [{ expires_at: trialExp }] },
+    ])
+    setConnectionHandlers([
+      { match: ['SELECT max_devices FROM users'], returns: [{ max_devices: null }] },
+      { match: ['SELECT COUNT(*) AS cnt FROM refresh_tokens'], returns: [{ cnt: 0 }] },
+      { match: ['DELETE FROM refresh_tokens WHERE user_id'], returns: { affectedRows: 0 } },
+      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 1, affectedRows: 1 } },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/login')
+      .send({ username: 'guest_abcd1234', password: VALID_PASSWORD })
+
+    expect(res.status).toBe(200)
+    expect(res.body.user.isTrial).toBe(true)
+    expect(res.body.user.trialExpiresAt).toBe(trialExp.toISOString())
+    const access = getCookie(res.headers['set-cookie'], 'lf_access_token')
+    const decoded = jwt.verify(access, FIXED_JWT_SECRET)
+    expect(decoded.isGuest).toBe(true)
+    expect(decoded.trialExp).toBe(trialExp.toISOString())
+    expect(decoded.subExp).toBeUndefined()
+  })
+
+  it('访客行经 /login 登录但试用已到期 → 401 TRIAL_EXPIRED，不签发 cookie', async () => {
+    setExecuteHandlers([
+      {
+        match: ['FROM users WHERE username'],
+        returns: [
+          {
+            id: 9,
+            username: 'guest_abcd1234',
+            nickname: '体验用户',
+            password_hash: VALID_HASH,
+            is_guest: 1,
+            subscription_expires_at: null,
+          },
+        ],
+      },
+      {
+        match: ['FROM trial_activations WHERE user_id'],
+        returns: [{ expires_at: new Date(Date.now() - 3600 * 1000) }],
+      },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/login')
+      .send({ username: 'guest_abcd1234', password: VALID_PASSWORD })
+
+    expect(res.status).toBe(401)
+    expect(res.body.code).toBe('TRIAL_EXPIRED')
+    expect(res.body.error).toMatch(/体验时间已结束/)
+    expect(getCookie(res.headers['set-cookie'], 'lf_access_token')).toBeNull()
+    expect(fakeRateLimit.logAttempt).toHaveBeenCalledWith(
+      'guest_abcd1234',
+      expect.any(String),
+      false
+    )
+  })
+
   it('达设备上限 → 403 DEVICE_LIMIT_REACHED（真实计数文案；不写入新会话不提交事务）', async () => {
     setExecuteHandlers([
       {

@@ -13,6 +13,7 @@
 --   migrate_device_sessions refresh_tokens 设备级字段
 --   migrate_device_trial    trial_activations.device_id
 --   migrate_auth_v4         refresh_tokens.uk_token_hash
+--   migrate_idx_v1          login_attempts.idx_login_attempts_limiter + experience_codes.idx_experience_codes_type_active
 --   migrate_ai_assistant     AI 助手：style_modes + user_style_settings + conversation_memory + chat_messages + ai_usage
 --   migrate_user_device_limit users.max_devices 用户级设备登录上限覆盖
 --   migrate_refresh_device_unique refresh_tokens.uk_user_device + 清理 device_id='' 历史行
@@ -81,7 +82,7 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
 
 -- ------------------------------------------------------------
 -- login_attempts：登录限流日志（替代已被 v3 删除的 login_logs）
--- 来源：migrate_auth_v3
+-- 来源：migrate_auth_v3 + migrate_idx_v1（限流 COUNT(*) 的覆盖索引）
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS login_attempts (
   id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -90,12 +91,14 @@ CREATE TABLE IF NOT EXISTS login_attempts (
   success      TINYINT(1)     NOT NULL DEFAULT 0,
   created_at   TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_identifier_time (identifier, created_at),
-  INDEX idx_ip_time (ip_address, created_at)
+  INDEX idx_ip_time (ip_address, created_at),
+  INDEX idx_login_attempts_limiter (identifier, success, created_at)
 ) ENGINE=InnoDB;
 
 -- ------------------------------------------------------------
 -- experience_codes：激活码 / 体验码
 -- 来源：migrate_demo_trial（建表）+ migrate_activation_code（type）+ migrate_activation_hours_default（默认值）
+--       + migrate_idx_v1（按 type 查询的复合索引）
 -- type='trial' 体验码（试用 N 小时）；type='activation' 激活码（注册来源，trial_hours 携带订阅时长，0=永久）
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS experience_codes (
@@ -110,7 +113,8 @@ CREATE TABLE IF NOT EXISTS experience_codes (
   created_at      TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP,
   expires_at      TIMESTAMP      NULL DEFAULT NULL         COMMENT 'NULL = never expires',
   UNIQUE KEY uk_code (code),
-  INDEX idx_active (is_active)
+  INDEX idx_active (is_active),
+  INDEX idx_experience_codes_type_active (type, is_active)
 ) ENGINE=InnoDB;
 
 -- ------------------------------------------------------------

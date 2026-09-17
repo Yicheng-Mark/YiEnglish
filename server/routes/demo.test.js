@@ -280,17 +280,25 @@ describe('POST /api/demo/redeem', () => {
     const delta = new Date(res.body.user.trialExpiresAt).getTime() - Date.now()
     expect(delta).toBeGreaterThan(23 * 3600 * 1000)
     expect(delta).toBeLessThan(25 * 3600 * 1000)
+    // 截断到整秒：响应时间与落库 expires_at（TIMESTAMP fsp=0）都无亚秒，
+    // 两道闸不因 MySQL 四舍五入产生 ±500ms 偏差（与 register 的订阅到期同款约束）
+    expect(new Date(res.body.user.trialExpiresAt).getMilliseconds()).toBe(0)
+    const insertTrial = mockConnection.execute.mock.calls.find(([sql]) =>
+      String(sql).includes('INSERT INTO trial_activations')
+    )
+    expect(insertTrial[1][3].getMilliseconds()).toBe(0)
 
     // cookie 三件套
     expect(getCookie(res.headers['set-cookie'], 'lf_access_token')).toBeTruthy()
     expect(getCookie(res.headers['set-cookie'], 'lf_refresh_token')).toBeTruthy()
     expect(getCookie(res.headers['set-cookie'], 'lf_device_id')).toBeTruthy()
 
-    // access token 内嵌 isGuest + trialExp（中间件免查库的依据）
+    // access token 内嵌 isGuest + trialExp（中间件免查库的依据）；trialExp 同样整秒
     const token = getCookie(res.headers['set-cookie'], 'lf_access_token')
     const decoded = jwt.verify(token, FIXED_JWT_SECRET)
     expect(decoded.isGuest).toBe(true)
     expect(decoded.trialExp).toBeTruthy()
+    expect(new Date(decoded.trialExp).getMilliseconds()).toBe(0)
 
     // 成功记次 + 事务提交
     expect(fakeLogAttempt).toHaveBeenCalledWith(expect.any(String), expect.any(String), true)

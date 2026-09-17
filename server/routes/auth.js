@@ -273,7 +273,7 @@ router.post('/login', async (req, res, next) => {
     await checkLoginRateLimit(username, ip)
 
     const [rows] = await pool.execute(
-      'SELECT id, username, nickname, password_hash, avatar_url, daily_goal_minutes, signature, subscription_expires_at FROM users WHERE username = ?',
+      'SELECT id, username, nickname, password_hash, avatar_url, daily_goal_minutes, signature, is_guest, subscription_expires_at FROM users WHERE username = ?',
       [username]
     )
 
@@ -295,6 +295,23 @@ router.post('/login', async (req, res, next) => {
     if (user.subscription_expires_at && user.subscription_expires_at <= new Date()) {
       await logAttempt(username, ip, false)
       return res.status(401).json({ error: '账号已到期', code: 'SUBSCRIPTION_EXPIRED' })
+    }
+
+    // 访客行经 /login 登录（正常路径不可达：访客密码为服务端随机值，仅防御性兜底）。
+    // 旧实现 issueTokens 一律按正式账号签发，访客行会拿到无 isGuest 标记的 token，
+    // 中间件/前端将其视为正式用户。此处对齐 refresh：按 DB 身份签发，试用到期则拒绝。
+    const isGuest = !!user.is_guest
+    let trialExpiresAt = null
+    if (isGuest) {
+      const [trialRows] = await pool.execute(
+        'SELECT expires_at FROM trial_activations WHERE user_id = ?',
+        [user.id]
+      )
+      trialExpiresAt = trialRows[0]?.expires_at || null
+      if (!trialExpiresAt || new Date(trialExpiresAt) <= new Date()) {
+        await logAttempt(username, ip, false)
+        return res.status(401).json({ error: '体验时间已结束', code: 'TRIAL_EXPIRED' })
+      }
     }
 
     await logAttempt(username, ip, true)
@@ -340,7 +357,14 @@ router.post('/login', async (req, res, next) => {
         user.id,
       ])
 
-      await issueTokens(res, user.id, false, device, subExpIso, conn)
+      await issueTokens(
+        res,
+        user.id,
+        isGuest,
+        device,
+        isGuest ? new Date(trialExpiresAt).toISOString() : subExpIso,
+        conn
+      )
 
       await conn.commit()
     } catch (err) {
@@ -350,7 +374,12 @@ router.post('/login', async (req, res, next) => {
       conn.release()
     }
 
-    res.json({ user: toClientUser(user) })
+    const userObj = toClientUser(user)
+    if (isGuest) {
+      userObj.isTrial = true
+      userObj.trialExpiresAt = new Date(trialExpiresAt).toISOString()
+    }
+    res.json({ user: userObj })
   } catch (err) {
     next(err)
   }

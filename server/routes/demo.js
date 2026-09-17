@@ -110,8 +110,11 @@ router.post('/redeem', async (req, res, next) => {
     const randomPassword = crypto.randomBytes(32).toString('hex')
     const hash = await bcrypt.hash(randomPassword, config.BCRYPT_ROUNDS)
 
-    // 计算试用到期时间
-    const trialExpiresAt = new Date(Date.now() + expCode.trial_hours * 60 * 60 * 1000)
+    // 计算试用到期时间（截断到整秒：expires_at 列是 TIMESTAMP(fsp=0)，MySQL 按四舍五入存亚秒，
+    // 不截断会让 token 内嵌的 trialExp 与 DB 权威值相差 ±500ms——与 register 的订阅到期同款处理）
+    const trialExpiresAt = new Date(
+      Math.floor((Date.now() + expCode.trial_hours * 60 * 60 * 1000) / 1000) * 1000
+    )
 
     // 创建访客用户 → 记录试用激活 → 原子消费体验码：整段包事务，
     // 避免中途失败留下无试用记录的访客用户，或并发下 current_uses 超发。

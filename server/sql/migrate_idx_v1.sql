@@ -9,9 +9,9 @@
 -- 幂等：参考 migrate_auth_v3.sql 的 INFORMATION_SCHEMA + PREPARE/EXECUTE 风格。
 -- 每条 SQL 以分号结尾；语句内不含分号字面量。注释行也不要含裸 ASCII 分号 ——
 -- runMigrations 只在「单引号外」的分号处切分，不识别 -- 注释，注释里的裸分号会被误当语句边界。
--- 注意：runMigrations 仅显式吞 ER_DUP_FIELDNAME，不吞 ER_DUP_KEYNAME，
---       故不用裸 ALTER TABLE ADD INDEX（重复执行会刷 error 日志），
---       而是先查 INFORMATION_SCHEMA.STATISTICS 判断索引是否存在，存在则跳过。
+-- 注意：runMigrations 会吞 ER_DUP_FIELDNAME / ER_DUP_KEYNAME（见 server/index.js applyMigrationFile），
+--       但重复执行裸 ALTER TABLE ADD INDEX 仍会刷 error 日志，故这里保持
+--       INFORMATION_SCHEMA.STATISTICS 先查后加的写法，重复执行零噪音。
 
 USE lingoforge;
 
