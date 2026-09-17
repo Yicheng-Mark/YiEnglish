@@ -1460,6 +1460,28 @@ describe('POST /api/auth/register · 激活码爆破防护', () => {
     )
   })
 
+  it('code 维度限流先于激活码查询（回归：修复前 register-code 计数只写不读，换码探测无上限）', async () => {
+    // checkLoginRateLimit 抛 429（同 code 5 次失败/15min 或同 IP 20 次失败/15min）→ 请求被拒且不查库
+    const rateErr = new Error('登录尝试过于频繁，请稍后再试')
+    rateErr.status = 429
+    fakeRateLimit.checkLoginRateLimit.mockRejectedValueOnce(rateErr)
+    mockExecute.mockClear()
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/register')
+      .send({ username: VALID_USER, password: VALID_PASSWORD, activationCode: 'GUESS2' })
+    expect(res.status).toBe(429)
+    // 限流检查确实以 code 维度 key 调用（而非仅 username 维度）
+    expect(fakeRateLimit.checkLoginRateLimit).toHaveBeenCalledWith(
+      'register-code:GUESS2',
+      expect.any(String)
+    )
+    // 被限流后不发起激活码查询
+    expect(mockExecute.mock.calls.some(([sql]) => String(sql).includes('experience_codes'))).toBe(
+      false
+    )
+  })
+
   it('IP 限流先于激活码查询（429 时不发起 code 查询）', async () => {
     const rateErr = new Error('注册尝试过于频繁，请稍后再试')
     rateErr.status = 429

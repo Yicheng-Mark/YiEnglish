@@ -68,6 +68,8 @@ function toClientUser(user) {
   if (user.subscription_expires_at) {
     obj.subscriptionExpiresAt = new Date(user.subscription_expires_at).toISOString()
   }
+  // SELECT 带出 is_admin 的调用方自动附管理员标识（前端据此显示管理后台入口）
+  if (user.is_admin) obj.isAdmin = true
   return obj
 }
 
@@ -137,8 +139,12 @@ router.post('/register', async (req, res, next) => {
     // 限流前移到激活码查询之前：code 探测本身就要被拦（checkRegisterRateLimit 只在注册段生效）
     await checkRegisterRateLimit(ip)
 
-    // 验证激活码：失败按 code 维度计数，防止在线爆破有效码
+    // 验证激活码：失败按 code 维度计数，防止在线爆破有效码。
+    // checkLoginRateLimit 同时在 code 维度（5 次失败/15min）与 IP 维度（20 次失败/15min，
+    // ip_address 不区分 identifier）拦截——此前失败只 logAttempt 计数却从不检查，
+    // 换不同假码打 /register 可无限探测激活码（validate 端点的内存限流拦不住直打 register）
     const registerCodeKey = 'register-code:' + activationCode.trim()
+    await checkLoginRateLimit(registerCodeKey, ip)
     const [codes] = await pool.execute(
       `SELECT id, code, max_uses, current_uses, is_active, expires_at, trial_hours
        FROM experience_codes WHERE code = ? AND type = 'activation'`,
@@ -273,7 +279,7 @@ router.post('/login', async (req, res, next) => {
     await checkLoginRateLimit(username, ip)
 
     const [rows] = await pool.execute(
-      'SELECT id, username, nickname, password_hash, avatar_url, daily_goal_minutes, signature, is_guest, subscription_expires_at FROM users WHERE username = ?',
+      'SELECT id, username, nickname, password_hash, avatar_url, daily_goal_minutes, signature, is_guest, is_admin, subscription_expires_at FROM users WHERE username = ?',
       [username]
     )
 
@@ -425,7 +431,7 @@ router.post('/refresh', authActionLimiter, async (req, res, next) => {
     }
 
     const [userRows] = await pool.execute(
-      'SELECT id, username, nickname, avatar_url, daily_goal_minutes, signature, is_guest, max_devices, subscription_expires_at FROM users WHERE id = ?',
+      'SELECT id, username, nickname, avatar_url, daily_goal_minutes, signature, is_guest, is_admin, max_devices, subscription_expires_at FROM users WHERE id = ?',
       [stored.user_id]
     )
 
@@ -545,7 +551,7 @@ router.get('/me', authMiddleware, async (req, res, next) => {
   try {
     // 先只查 users（无 JOIN），拿到 is_guest 后再决定是否补充查 trial
     const [rows] = await pool.execute(
-      `SELECT id, username, nickname, avatar_url, daily_goal_minutes, signature, is_guest, subscription_expires_at
+      `SELECT id, username, nickname, avatar_url, daily_goal_minutes, signature, is_guest, is_admin, subscription_expires_at
        FROM users
        WHERE id = ?`,
       [req.userId]

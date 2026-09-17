@@ -17,11 +17,10 @@ export default function Register() {
   const [nickname, setNickname] = useState('')
   const [loading, setLoading] = useState(false)
 
-  // 没有经过激活验证的激活码，重定向到激活页
-  if (!validatedCode) {
-    window.location.href = '/activate'
-    return null
-  }
+  // 空激活码的兜底重定向由 App.jsx 的 RegisterGuard 以声明式 <Navigate> 完成。
+  // 此处曾有一份命令式 window.location.href='/activate' 守卫：注册成功链
+  // removeItem(key) → navigate('/') 之间组件重渲染读到空 key 即整页硬跳转，
+  // 赢了正常导航的赛跑，把刚注册成功的用户甩回激活页（整页 reload），故移除。
 
   async function handleSubmit(e) {
     e.preventDefault()
