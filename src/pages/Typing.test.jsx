@@ -113,6 +113,10 @@ vi.mock('../components/EmptyState.jsx', () => ({
 
 import Typing from './Typing.jsx'
 
+// 打字推进链路（完成一词 → 下一词渲染）依赖多个 effect 链，CI 慢 runner +
+// coverage 插桩下单次推进可超 waitFor 默认 1s（实测 1027ms 偶发超时），放宽到 5s
+const WAIT_ADVANCE = { timeout: 5000 }
+
 function makeDict(chapters) {
   return { chapters }
 }
@@ -160,12 +164,15 @@ describe('Typing 页面 smoke', () => {
       ])
     )
     const { unmount } = renderAt('/typing/cet4/1')
-    await waitFor(() => expect(screen.getByText('WORD:cat')).toBeTruthy())
+    await waitFor(() => expect(screen.getByText('WORD:cat')).toBeTruthy(), WAIT_ADVANCE)
 
     typeKeys(['c', 'a', 't'])
     // 完成后（有下一章 → 不弹结算，头部显示已完成），缓冲的 1 个词由完成 effect
     // 兜底冲刷上报一次
-    await waitFor(() => expect(mocks.saveProgress).toHaveBeenCalledWith('cet4', 1, ['cat']))
+    await waitFor(
+      () => expect(mocks.saveProgress).toHaveBeenCalledWith('cet4', 1, ['cat']),
+      WAIT_ADVANCE
+    )
     // 卸载兜底 flush 时缓冲已空，不再二次上报
     unmount()
     expect(mocks.saveProgress).toHaveBeenCalledTimes(1)
@@ -184,13 +191,13 @@ describe('Typing 页面 smoke', () => {
       ])
     )
     renderAt('/typing/error-book/0')
-    await waitFor(() => expect(screen.getByText('WORD:cat')).toBeTruthy())
+    await waitFor(() => expect(screen.getByText('WORD:cat')).toBeTruthy(), WAIT_ADVANCE)
 
     typeKeys(['c', 'a', 't']) // 完成 cat → 推进到 dog
-    await waitFor(() => expect(screen.getByText('WORD:dog')).toBeTruthy())
+    await waitFor(() => expect(screen.getByText('WORD:dog')).toBeTruthy(), WAIT_ADVANCE)
 
     fireEvent.click(screen.getByText('delete-current')) // 删除当前词 dog
-    await waitFor(() => expect(screen.getByText('WORD:cat')).toBeTruthy())
+    await waitFor(() => expect(screen.getByText('WORD:cat')).toBeTruthy(), WAIT_ADVANCE)
     expect(mocks.removeFromErrorBook).toHaveBeenCalledWith('dog')
   })
 })
