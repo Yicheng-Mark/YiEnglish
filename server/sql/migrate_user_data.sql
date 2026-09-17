@@ -5,8 +5,8 @@
 --       lf_favorite_dicts, typingword_config, lingoforge-theme,
 --       lingoforge_profile (signature 部分)
 -- ============================================================
-
-USE lingoforge;
+-- 不写 USE lingoforge：迁移器连接已按 DB_NAME 指定默认库，且连接池上
+-- USE 的效果随机绑定到某条连接（DB_NAME 不同的环境会建错库），与 migrate_auth_v3 同款修复。
 
 -- 1. 统一词本表（收藏 / 错题 / 阅读词本 / 语料词本）
 CREATE TABLE IF NOT EXISTS user_word_books (

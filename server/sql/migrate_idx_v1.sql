@@ -12,18 +12,19 @@
 -- 注意：runMigrations 会吞 ER_DUP_FIELDNAME / ER_DUP_KEYNAME（见 server/index.js applyMigrationFile），
 --       但重复执行裸 ALTER TABLE ADD INDEX 仍会刷 error 日志，故这里保持
 --       INFORMATION_SCHEMA.STATISTICS 先查后加的写法，重复执行零噪音。
-
-USE lingoforge;
+-- 库名判断走 DATABASE()（迁移器连接已按 DB_NAME 指定默认库）：硬编码 'lingoforge'
+-- 在 DB_NAME 不同的环境会把条件检查打到错误的库（与 migrate_auth_v3 同款修复）。
+-- 不写 USE：连接池上 USE 的效果随机绑定到某条连接，行为不确定。
 
 -- 1) login_attempts: 复合索引 (identifier, success, created_at)
-SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = 'lingoforge' AND TABLE_NAME = 'login_attempts' AND INDEX_NAME = 'idx_login_attempts_limiter');
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'login_attempts' AND INDEX_NAME = 'idx_login_attempts_limiter');
 SET @sql = IF(@idx_exists = 0, 'ALTER TABLE login_attempts ADD INDEX idx_login_attempts_limiter (identifier, success, created_at)', 'SELECT "idx_login_attempts_limiter already exists" AS msg');
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
 -- 2) experience_codes: 复合索引 (type, is_active)
-SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = 'lingoforge' AND TABLE_NAME = 'experience_codes' AND INDEX_NAME = 'idx_experience_codes_type_active');
+SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'experience_codes' AND INDEX_NAME = 'idx_experience_codes_type_active');
 SET @sql = IF(@idx_exists = 0, 'ALTER TABLE experience_codes ADD INDEX idx_experience_codes_type_active (type, is_active)', 'SELECT "idx_experience_codes_type_active already exists" AS msg');
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
