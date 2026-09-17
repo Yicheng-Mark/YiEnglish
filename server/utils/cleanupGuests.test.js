@@ -45,10 +45,12 @@ describe('cleanupExpiredGuests', () => {
     expect(mockConnection.commit).toHaveBeenCalledTimes(1)
 
     const executedSql = mockConnectionExecute.mock.calls.map(([sql]) => String(sql))
-    // 第一步：归档——按 ip 分组 UPSERT 累加进 trial_ip_totals，ip 为 NULL 的行排除
+    // 第一步：归档——按 ip 分组 UPSERT 累加进 trial_ip_totals，ip 为 NULL 的行排除；
+    // 且限定 is_guest=1 用户（与 DELETE 口径一致：归档集 ⊆ 删除集，防终身闸双重计数）
     const archiveSql = executedSql.find((s) => s.includes('INSERT INTO trial_ip_totals'))
     expect(archiveSql).toBeDefined()
     expect(archiveSql).toMatch(/WHERE ip IS NOT NULL/)
+    expect(archiveSql).toMatch(/user_id IN \(SELECT id FROM users WHERE is_guest = 1\)/)
     expect(archiveSql).toMatch(/ON DUPLICATE KEY UPDATE total = total \+ VALUES\(total\)/)
     expect(archiveSql).toMatch(/GROUP BY ip/)
     expect(archiveSql).toMatch(new RegExp(`INTERVAL ${RETAIN_DAYS} DAY`))

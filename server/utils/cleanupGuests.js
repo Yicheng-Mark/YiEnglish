@@ -16,11 +16,14 @@ async function cleanupExpiredGuests() {
   try {
     await conn.beginTransaction()
 
-    // 归档待删行的 IP 计数（ip 为 NULL 的存量行不参与）
+    // 归档待删行的 IP 计数（ip 为 NULL 的存量行不参与）。
+    // 口径必须与下方 DELETE 一致（限定 is_guest=1 的用户）：终身闸按「原表存量 + 归档」
+    // 相加计数，归档了不删的行（如历史上已转正的访客残留 trial 行）会被两边各数一次
     await conn.execute(
       `INSERT INTO trial_ip_totals (ip, total)
        SELECT ip, COUNT(*) FROM trial_activations
        WHERE ip IS NOT NULL AND expires_at < DATE_SUB(NOW(), INTERVAL ${RETAIN_DAYS} DAY)
+         AND user_id IN (SELECT id FROM users WHERE is_guest = 1)
        GROUP BY ip
        ON DUPLICATE KEY UPDATE total = total + VALUES(total)`
     )
