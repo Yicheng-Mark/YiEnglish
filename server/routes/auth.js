@@ -734,7 +734,7 @@ router.post('/recover-reset', async (req, res, next) => {
     await checkLoginRateLimit(codeKey, ip)
 
     const [rows] = await pool.execute(
-      `SELECT u.id, u.username, u.subscription_expires_at FROM users u
+      `SELECT u.id, u.username, u.is_guest, u.subscription_expires_at FROM users u
        JOIN experience_codes ec ON u.activation_code_id = ec.id
        WHERE ec.code = ? AND ec.type = 'activation'`,
       [code.trim()]
@@ -747,6 +747,15 @@ router.post('/recover-reset', async (req, res, next) => {
       return res.status(409).json({ error: '该链接关联多个账号，请联系客服' })
     }
     const userId = rows[0].id
+
+    // 访客行兜底（防御性，与 login 的同类兜底对称）：正常路径访客不写 activation_code_id
+    // 而到不了这里，但手工 SQL 误操作或未来代码回归使访客行关联激活码时，必须拒绝——
+    // 下方 issueTokens 按 isGuest=false 签发，且访客行 subscription_expires_at 为 NULL
+    // （=永久语义），放行等于凭体验码白嫖一个永久正式账号
+    if (rows[0].is_guest) {
+      await logAttempt(codeKey, ip, false)
+      return res.status(400).json({ error: '该激活码未关联正式账号' })
+    }
 
     // 订阅到期（月/季/年卡）：到期账号不允许通过找回密码恢复访问——找回权利不随码失效，
     // 但账号本身的到期优先。不拦的话：到期 → 找回密码自动登录 → 拿到无 subExp 的会话，

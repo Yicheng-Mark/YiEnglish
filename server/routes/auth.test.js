@@ -1375,6 +1375,31 @@ describe('POST /api/auth/recover-reset', () => {
     ).toBe(true)
   })
 
+  it('关联账号是访客行（防御性：正常路径不可达）→ 400 拒绝，不重置不签发（堵住「访客行意外关联激活码 → 找回密码白嫖永久会话」旁路）', async () => {
+    setExecuteHandlers([
+      {
+        match: ['JOIN experience_codes'],
+        returns: [{ id: 5, username: 'guest_ab', is_guest: 1, subscription_expires_at: null }],
+      },
+    ])
+    const app = makeApp()
+    const res = await supertest(app).post('/api/auth/recover-reset').send(validBody)
+    expect(res.status).toBe(400)
+    expect(res.body.error).toMatch(/未关联正式账号/)
+    expect(fakeRateLimit.logAttempt).toHaveBeenCalledWith(
+      'recover:CODE1',
+      expect.any(String),
+      false
+    )
+    // 访客行不得被重置用户名密码，也不得签发任何 isGuest=false 会话
+    expect(
+      mockExecute.mock.calls.some(([sql]) => String(sql).includes('UPDATE users SET username'))
+    ).toBe(false)
+    expect(
+      mockExecute.mock.calls.some(([sql]) => String(sql).includes('INSERT INTO refresh_tokens'))
+    ).toBe(false)
+  })
+
   it('订阅已到期 → 401 SUBSCRIPTION_EXPIRED，不重置不签发（堵住「到期→找回密码→拿无 subExp 会话」旁路）', async () => {
     setExecuteHandlers([
       {
