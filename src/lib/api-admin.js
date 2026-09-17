@@ -1,4 +1,6 @@
-// 管理后台 API 封装：薄 apiFetch + parseJsonResponse（对齐 api-wordbooks.js 惯例）
+// 管理后台 API 封装：薄 apiFetch + parseJsonResponse（对齐 api-wordbooks.js 惯例——
+// 注意 await：apiFetch 返回 Promise<Response>，直接喂 parseJsonResponse 会得到
+// "e.json is not a function"）
 import { apiFetch, parseJsonResponse } from './api'
 
 function qs(params) {
@@ -9,13 +11,13 @@ function qs(params) {
   return '?' + new URLSearchParams(Object.fromEntries(entries)).toString()
 }
 
-export function fetchAdminUsers(params = {}) {
-  return parseJsonResponse(apiFetch(`/api/admin/users${qs(params)}`))
+export async function fetchAdminUsers(params = {}) {
+  return parseJsonResponse(await apiFetch(`/api/admin/users${qs(params)}`))
 }
 
-export function renewSubscription(userId, body) {
+export async function renewSubscription(userId, body) {
   return parseJsonResponse(
-    apiFetch(`/api/admin/users/${userId}/subscription`, {
+    await apiFetch(`/api/admin/users/${userId}/subscription`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -23,9 +25,9 @@ export function renewSubscription(userId, body) {
   )
 }
 
-export function setMaxDevices(userId, value) {
+export async function setMaxDevices(userId, value) {
   return parseJsonResponse(
-    apiFetch(`/api/admin/users/${userId}/max-devices`, {
+    await apiFetch(`/api/admin/users/${userId}/max-devices`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ value }),
@@ -33,13 +35,13 @@ export function setMaxDevices(userId, value) {
   )
 }
 
-export function fetchAdminCodes(params = {}) {
-  return parseJsonResponse(apiFetch(`/api/admin/codes${qs(params)}`))
+export async function fetchAdminCodes(params = {}) {
+  return parseJsonResponse(await apiFetch(`/api/admin/codes${qs(params)}`))
 }
 
-export function createCodes(body) {
+export async function createCodes(body) {
   return parseJsonResponse(
-    apiFetch('/api/admin/codes', {
+    await apiFetch('/api/admin/codes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -47,9 +49,9 @@ export function createCodes(body) {
   )
 }
 
-export function updateCode(codeId, body) {
+export async function updateCode(codeId, body) {
   return parseJsonResponse(
-    apiFetch(`/api/admin/codes/${codeId}`, {
+    await apiFetch(`/api/admin/codes/${codeId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -57,6 +59,6 @@ export function updateCode(codeId, body) {
   )
 }
 
-export function fetchAdminAudit(params = {}) {
-  return parseJsonResponse(apiFetch(`/api/admin/audit${qs(params)}`))
+export async function fetchAdminAudit(params = {}) {
+  return parseJsonResponse(await apiFetch(`/api/admin/audit${qs(params)}`))
 }
