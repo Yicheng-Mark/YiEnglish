@@ -308,15 +308,18 @@ function UsersTab() {
             </div>
             {!u.isGuest && !u.isAdmin && (
               <div className="flex items-center gap-2">
-                <button
-                  className="btn-ghost text-sm"
-                  onClick={() => {
-                    setRenewing(u)
-                    setRenewDays(30)
-                  }}
-                >
-                  续期
-                </button>
+                {/* 永久账号（subscriptionExpiresAt=null）无到期可续，接口侧同样拒绝 days 续期防降级 */}
+                {u.subscriptionExpiresAt !== null && (
+                  <button
+                    className="btn-ghost text-sm"
+                    onClick={() => {
+                      setRenewing(u)
+                      setRenewDays(30)
+                    }}
+                  >
+                    续期
+                  </button>
+                )}
                 <button
                   className="btn-ghost text-sm"
                   onClick={() => {

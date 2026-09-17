@@ -168,10 +168,21 @@ describe('GET /api/admin/users', () => {
 // =====================================================================
 // POST /api/admin/users/:id/subscription
 // =====================================================================
+// 目标用户预检 SELECT 的固定 handler：非访客、月卡到期时间在未来（days 续期的正常路径）
+function withTargetUser(overrides = {}) {
+  return {
+    match: ['SELECT is_guest, subscription_expires_at FROM users'],
+    returns: [
+      { is_guest: 0, subscription_expires_at: new Date(Date.now() + 5 * 86400000), ...overrides },
+    ],
+  }
+}
+
 describe('POST /api/admin/users/:id/subscription', () => {
   it('days=30 → GREATEST 基准续期 + 审计落库', async () => {
     setExecuteHandlers([
       { match: ['SELECT is_admin FROM users'], returns: [{ is_admin: 1 }] },
+      withTargetUser(),
       { match: ['UPDATE users SET subscription_expires_at'], returns: { affectedRows: 1 } },
       { match: ['INSERT INTO admin_audit_log'], returns: { affectedRows: 1 } },
     ])
@@ -198,6 +209,7 @@ describe('POST /api/admin/users/:id/subscription', () => {
   it('permanent=true → 置 NULL', async () => {
     setExecuteHandlers([
       { match: ['SELECT is_admin FROM users'], returns: [{ is_admin: 1 }] },
+      withTargetUser(),
       { match: ['UPDATE users SET subscription_expires_at'], returns: { affectedRows: 1 } },
       { match: ['INSERT INTO admin_audit_log'], returns: { affectedRows: 1 } },
     ])
@@ -212,7 +224,43 @@ describe('POST /api/admin/users/:id/subscription', () => {
     expect(String(renewCall[0])).not.toMatch(/GREATEST/)
   })
 
+  it('永久账号 days 续期 → 400 拒绝（防 NOW()+N 天覆盖 NULL 静默降级），不发 UPDATE', async () => {
+    setExecuteHandlers([
+      { match: ['SELECT is_admin FROM users'], returns: [{ is_admin: 1 }] },
+      withTargetUser({ subscription_expires_at: null }),
+      { match: ['UPDATE users SET subscription_expires_at'], returns: { affectedRows: 1 } },
+    ])
+    const res = await supertest(makeApp())
+      .post('/api/admin/users/42/subscription')
+      .send({ days: 30 })
+    expect(res.status).toBe(400)
+    expect(res.body.error).toContain('永久')
+    const renewCall = mockExecute.mock.calls.find(([sql]) =>
+      String(sql).includes('UPDATE users SET subscription_expires_at')
+    )
+    expect(renewCall).toBeUndefined()
+  })
+
+  it('访客账号 → 400 拒绝（days 与 permanent 均不支持）', async () => {
+    setExecuteHandlers([
+      { match: ['SELECT is_admin FROM users'], returns: [{ is_admin: 1 }] },
+      withTargetUser({ is_guest: 1 }),
+    ])
+    const daysRes = await supertest(makeApp())
+      .post('/api/admin/users/42/subscription')
+      .send({ days: 30 })
+    expect(daysRes.status).toBe(400)
+    const permRes = await supertest(makeApp())
+      .post('/api/admin/users/42/subscription')
+      .send({ permanent: true })
+    expect(permRes.status).toBe(400)
+  })
+
   it('days 越界（0 / 3651 / 非数字）→ 400', async () => {
+    setExecuteHandlers([
+      { match: ['SELECT is_admin FROM users'], returns: [{ is_admin: 1 }] },
+      withTargetUser(),
+    ])
     for (const days of [0, 3651, 'abc']) {
       const res = await supertest(makeApp()).post('/api/admin/users/42/subscription').send({ days })
       expect(res.status).toBe(400)

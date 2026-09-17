@@ -109,31 +109,44 @@ router.get('/users', authMiddleware, requireAdmin, async (req, res, next) => {
 // 续期/转永久：{ days: 30 } 在当前到期与现在中较晚者基础上加 N 天（未到期续期不吃亏）；
 // { permanent: true } 直接置 NULL（永久）。days 白名单 1-3650。
 // 与 CLAUDE.md 手工 SQL 语义对齐：用户下次 refresh 拿到新 subExp 自动恢复，无需重启。
+// 目标用户预检：访客走试用体系不支持订阅操作；永久账号（sub IS NULL）拒绝 days 续期——
+// GREATEST(NOW(), COALESCE(NULL, NOW())) 会以 NOW()+N 天覆盖 NULL，把永久静默降级为限时卡。
 router.post('/users/:id/subscription', authMiddleware, requireAdmin, async (req, res, next) => {
   try {
     const userId = toInt(req.params.id, 0)
     if (!userId || userId < 1) return res.status(400).json({ error: '无效的用户 ID' })
 
+    const [targetRows] = await pool.execute(
+      'SELECT is_guest, subscription_expires_at FROM users WHERE id = ?',
+      [userId]
+    )
+    if (targetRows.length === 0) return res.status(404).json({ error: '用户不存在' })
+    if (targetRows[0].is_guest) {
+      return res.status(400).json({ error: '访客账号走试用体系，不支持订阅续期' })
+    }
+
     const { days, permanent } = req.body || {}
     if (permanent === true) {
-      const [result] = await pool.execute(
+      // 存在性已由预检确认；置 NULL 幂等（重复转永久 affectedRows 可为 0，不算失败）
+      await pool.execute(
         'UPDATE users SET subscription_expires_at = NULL, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
         [userId]
       )
-      if (result.affectedRows === 0) return res.status(404).json({ error: '用户不存在' })
       await writeAudit(req, 'renew_subscription', 'user', userId, { permanent: true })
       return res.json({ ok: true })
     }
 
+    if (targetRows[0].subscription_expires_at === null) {
+      return res.status(400).json({ error: '该账号为永久账号，无需续期' })
+    }
     const d = toInt(days, 0)
     if (d < 1 || d > 3650) return res.status(400).json({ error: 'days 需为 1-3650 的整数' })
     // INTERVAL ? DAY 不支持占位符，整数校验后拼接
-    const [result] = await pool.execute(
+    await pool.execute(
       `UPDATE users SET subscription_expires_at = DATE_ADD(GREATEST(NOW(), COALESCE(subscription_expires_at, NOW())), INTERVAL ${d} DAY),
               updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
       [userId]
     )
-    if (result.affectedRows === 0) return res.status(404).json({ error: '用户不存在' })
     await writeAudit(req, 'renew_subscription', 'user', userId, { days: d })
     res.json({ ok: true })
   } catch (err) {
