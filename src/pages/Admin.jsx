@@ -407,7 +407,8 @@ function CodesTab() {
   const [page, setPage] = useState(1)
   const [status, setStatus] = useState('')
   const [loading, setLoading] = useState(true)
-  const [form, setForm] = useState({ trialHours: 720, count: 10, maxUses: 1, description: '' })
+  // maxUses 固定 1（一码一人），不在表单暴露——仅站长本人用后台，无人需要多用途码
+  const [form, setForm] = useState({ trialHours: 720, count: 10, description: '' })
   const [generated, setGenerated] = useState(null) // { codes: [...] }
   const [noteEditing, setNoteEditing] = useState(null) // 码行
   const [noteInput, setNoteInput] = useState('')
@@ -433,7 +434,7 @@ function CodesTab() {
   async function handleCreate() {
     setBusy(true)
     try {
-      const data = await createCodes(form)
+      const data = await createCodes({ ...form, maxUses: 1 })
       setGenerated(data)
       toast(`已生成 ${data.codes.length} 个${TIER_LABEL[form.trialHours]}码`)
       load()
@@ -495,15 +496,6 @@ function CodesTab() {
             onChange={(e) => setForm({ ...form, count: parseInt(e.target.value, 10) || 1 })}
             className="field text-sm w-24"
             placeholder="数量"
-          />
-          <input
-            type="number"
-            min="0"
-            max="1000"
-            value={form.maxUses}
-            onChange={(e) => setForm({ ...form, maxUses: parseInt(e.target.value, 10) || 0 })}
-            className="field text-sm w-28"
-            placeholder="每人可用次数"
           />
           <input
             value={form.description}
