@@ -15,8 +15,12 @@ const {
 
 const router = express.Router()
 
-// 同 IP 24 小时内最多领取体验码次数（宽松阈值，兼顾校园网/公司 NAT 共享出口）
-const DEMO_IP_DAILY_MAX = 5
+// 同 IP 24 小时内最多领取体验码次数（兼顾校园网/公司 NAT 共享出口）
+const DEMO_IP_DAILY_MAX = 3
+// 同 IP 历史成功领取总数上限：清 cookie/无痕可换 deviceId 绕过设备去重，日限之外的第二道 IP 硬闸。
+// 权威计数走 trial_activations.ip（login_attempts 24h 滚动清理，承担不了终身计数）。
+// NAT 共享出口的真实用户在日限 3 下约一周才可能积累到此量，持续刷量的 IP 永久出局。
+const DEMO_IP_LIFETIME_MAX = 20
 
 // --- 兑换体验码（无需认证） ---
 router.post('/redeem', async (req, res, next) => {
@@ -52,6 +56,16 @@ router.post('/redeem', async (req, res, next) => {
     if (ipDaily[0].cnt >= DEMO_IP_DAILY_MAX) {
       await logAttempt(`demo_redeem:${ip}`, ip, false)
       return res.status(429).json({ error: '该网络今日领取次数已达上限，请明日再试' })
+    }
+
+    // 同 IP 累计终身上限（预检不进事务：软闸，与上面设备预检同级；精确去重仍由 uk_device 兜底）
+    const [ipLifetime] = await pool.execute(
+      'SELECT COUNT(*) AS cnt FROM trial_activations WHERE ip = ?',
+      [ip]
+    )
+    if (ipLifetime[0].cnt >= DEMO_IP_LIFETIME_MAX) {
+      await logAttempt(`demo_redeem:${ip}`, ip, false)
+      return res.status(403).json({ error: '该网络累计体验次数已达上限' })
     }
 
     // 查找体验码
@@ -130,8 +144,8 @@ router.post('/redeem', async (req, res, next) => {
       userId = result.insertId
 
       await conn.execute(
-        'INSERT INTO trial_activations (user_id, code_id, device_id, expires_at) VALUES (?, ?, ?, ?)',
-        [userId, expCode.id, deviceId, trialExpiresAt]
+        'INSERT INTO trial_activations (user_id, code_id, device_id, ip, expires_at) VALUES (?, ?, ?, ?, ?)',
+        [userId, expCode.id, deviceId, ip, trialExpiresAt]
       )
 
       // 原子递增 + 守卫：current_uses < max_uses。affectedRows===0 说明并发下已被耗尽 → 整事务回滚

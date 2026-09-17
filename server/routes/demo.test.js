@@ -134,14 +134,40 @@ describe('POST /api/demo/redeem', () => {
     expect(res.body.error).toMatch(/请求过于频繁/)
   })
 
-  it('同 IP 24h 成功领取达上限 → 429 且按失败记次', async () => {
+  it('同 IP 24h 成功领取达上限（3 次）→ 429 且按失败记次', async () => {
     setExecuteHandlers([
       { match: ['INTERVAL 1 MINUTE'], returns: [{ cnt: 0 }] },
-      { match: ['INTERVAL 24 HOUR'], returns: [{ cnt: 5 }] },
+      { match: ['INTERVAL 24 HOUR'], returns: [{ cnt: 3 }] },
     ])
     const res = await supertest(makeApp()).post('/api/demo/redeem').send({ code: 'TRY1' })
     expect(res.status).toBe(429)
     expect(res.body.error).toMatch(/该网络今日领取次数已达上限/)
+    expect(fakeLogAttempt).toHaveBeenCalledWith(
+      expect.stringMatching(/^demo_redeem:/),
+      expect.any(String),
+      false
+    )
+  })
+
+  it('同 IP 24h 计数 2（低于日限 3）→ 不被日限拦截，继续后续校验', async () => {
+    setExecuteHandlers([
+      { match: ['INTERVAL 1 MINUTE'], returns: [{ cnt: 0 }] },
+      { match: ['INTERVAL 24 HOUR'], returns: [{ cnt: 2 }] },
+    ])
+    const res = await supertest(makeApp()).post('/api/demo/redeem').send({ code: 'TRY1' })
+    expect(res.status).toBe(400)
+    expect(res.body.error).toMatch(/体验码无效/)
+  })
+
+  it('同 IP 累计成功领取达终身上限 → 403 且按失败记次', async () => {
+    setExecuteHandlers([
+      { match: ['INTERVAL 1 MINUTE'], returns: [{ cnt: 0 }] },
+      { match: ['INTERVAL 24 HOUR'], returns: [{ cnt: 0 }] },
+      { match: ['FROM trial_activations WHERE ip'], returns: [{ cnt: 20 }] },
+    ])
+    const res = await supertest(makeApp()).post('/api/demo/redeem').send({ code: 'TRY1' })
+    expect(res.status).toBe(403)
+    expect(res.body.error).toMatch(/该网络累计体验次数已达上限/)
     expect(fakeLogAttempt).toHaveBeenCalledWith(
       expect.stringMatching(/^demo_redeem:/),
       expect.any(String),
@@ -286,7 +312,13 @@ describe('POST /api/demo/redeem', () => {
     const insertTrial = mockConnection.execute.mock.calls.find(([sql]) =>
       String(sql).includes('INSERT INTO trial_activations')
     )
-    expect(insertTrial[1][3].getMilliseconds()).toBe(0)
+    expect(insertTrial[1][4].getMilliseconds()).toBe(0)
+
+    // 落库 ip 与终身计数查询使用同一客户端 IP（trial_activations 第 4 个参数）
+    const ipCountQuery = mockExecute.mock.calls.find(([sql]) =>
+      String(sql).includes('FROM trial_activations WHERE ip')
+    )
+    expect(ipCountQuery[1][0]).toBe(insertTrial[1][3])
 
     // cookie 三件套
     expect(getCookie(res.headers['set-cookie'], 'lf_access_token')).toBeTruthy()
