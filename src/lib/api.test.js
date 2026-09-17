@@ -345,3 +345,67 @@ describe('apiFetch', () => {
     expect(dispatchEventSpy).toHaveBeenCalledTimes(1)
   })
 })
+
+describe('fetchWithAuth', () => {
+  it('200 成功时直接返回 Response（不触发 refresh）', async () => {
+    const { fetchWithAuth } = await import('./api')
+    fetchMock.mockResolvedValueOnce(makeResponse({ ok: 1 }, 200))
+
+    const res = await fetchWithAuth('/api/dictionaries/cet4.json')
+    expect(res.status).toBe(200)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('401 TOKEN_EXPIRED → refresh 成功 → 重试一次', async () => {
+    const { fetchWithAuth } = await import('./api')
+    fetchMock
+      .mockResolvedValueOnce(tokenExpiredResponse())
+      .mockResolvedValueOnce(refreshOkResponse())
+      .mockResolvedValueOnce(makeResponse({ dict: true }, 200))
+
+    const res = await fetchWithAuth('/api/dictionaries/cet4.json')
+    expect(res.status).toBe(200)
+    expect(fetchMock).toHaveBeenCalledTimes(3)
+    expect(fetchMock.mock.calls[1][0]).toBe('/api/auth/refresh')
+  })
+
+  it('401 SUBSCRIPTION_EXPIRED（token 快照过期但 DB 已续期）→ refresh 成功 → 透明恢复', async () => {
+    const { fetchWithAuth } = await import('./api')
+    fetchMock
+      .mockResolvedValueOnce(
+        makeResponse({ code: 'SUBSCRIPTION_EXPIRED', error: '账号已到期' }, 401)
+      )
+      .mockResolvedValueOnce(refreshOkResponse())
+      .mockResolvedValueOnce(makeResponse({ dict: true }, 200))
+
+    const res = await fetchWithAuth('/api/dictionaries/cet4.json')
+    expect(res.status).toBe(200)
+    expect(fetchMock).toHaveBeenCalledTimes(3)
+    // 内容路径契约：不登出、不 toast，失败交调用方按 !res.ok 处理
+    expect(dispatchEventSpy).not.toHaveBeenCalled()
+    expect(toastMock).not.toHaveBeenCalled()
+  })
+
+  it('401 SUBSCRIPTION_EXPIRED 且 refresh 也被拒 → 原样返回 401 Response（不抛错不登出）', async () => {
+    const { fetchWithAuth } = await import('./api')
+    fetchMock
+      .mockResolvedValueOnce(
+        makeResponse({ code: 'SUBSCRIPTION_EXPIRED', error: '账号已到期' }, 401)
+      )
+      .mockResolvedValueOnce(refreshFailResponse())
+
+    const res = await fetchWithAuth('/api/dictionaries/cet4.json')
+    expect(res.status).toBe(401)
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect(dispatchEventSpy).not.toHaveBeenCalled()
+  })
+
+  it('401 其他 code（TRIAL_EXPIRED）→ 不刷新，原样返回 Response', async () => {
+    const { fetchWithAuth } = await import('./api')
+    fetchMock.mockResolvedValueOnce(makeResponse({ code: 'TRIAL_EXPIRED' }, 401))
+
+    const res = await fetchWithAuth('/api/dictionaries/cet4.json')
+    expect(res.status).toBe(401)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+})

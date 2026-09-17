@@ -100,7 +100,10 @@ export async function fetchWithAuth(path, options = {}) {
   const res = await fetch(`${API_BASE}${path}`, { ...options, credentials: 'include' })
   if (res.status !== 401) return res
   const data = await res.json().catch(() => ({}))
-  if (data.code === 'TOKEN_EXPIRED') {
+  // SUBSCRIPTION_EXPIRED 与 apiFetch 同理：middleware 只比对 token 内嵌快照，
+  // 续期过的账号（快照已过期、DB 仍有效）要靠 refresh（查库权威）透明恢复，
+  // 否则词库加载会在这个窗口内把有效账号当成已到期报加载失败
+  if (data.code === 'TOKEN_EXPIRED' || data.code === 'SUBSCRIPTION_EXPIRED') {
     const refreshed = await silentRefresh()
     if (refreshed.ok) {
       return fetch(`${API_BASE}${path}`, { ...options, credentials: 'include' })
