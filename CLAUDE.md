@@ -65,7 +65,7 @@
 
 ## 生产数据库与线上排障
 
-- MySQL 凭证在服务器 `/home/lingoforge/.env.local`（dotenv 加载，**pm2 environ 查不到**）；连 mysql 前先 `source /home/lingoforge/.env.local`。
+- **应用连库走专用低权账号**（2026-09-17 起）：`lingoforge_app`@localhost/127.0.0.1，仅 `lingoforge` 库的 SELECT/INSERT/UPDATE/DELETE/CREATE/DROP/ALTER/INDEX/REFERENCES，凭证在服务器 `/home/lingoforge/.env.local`（dotenv 加载，**pm2 environ 查不到**）。**管理 SQL（提管理员/重置 TOTP 等）走 root**：凭证在 `/root/.my.cnf`（chmod 600），ssh 后直接 `mysql` 即可，不再 source `.env.local`。切换前的 root 凭证备份在服务器 `.env.local.bak-20260917`（含旧 JWT_SECRET，稳定运行数日后可删）。
 - SSH 走 `ssh root@47.115.147.221`（复用 `~/.ssh/lingoforge_key.pem`）。
 - 线上前端报错会 `POST /api/client-error`；排障在 `pm2 logs` 里 grep 接口/错误串。
 
@@ -73,7 +73,7 @@
 
 - 前端 `/admin` 四 Tab：用户（列表/筛选「7 天内到期·已到期」/搜索/续期/设备上限）、激活码（生成永久·月·季·年卡/停用/发放备注）、审计（`admin_audit_log` 全量操作记录）、安全（管理员 TOTP 两步验证开关）。入口在个人中心，仅 `user.isAdmin` 可见。
 - 鉴权：`users.is_admin` 字段（手工 SQL 提升：`UPDATE users SET is_admin = 1 WHERE username = 'xxx';`）+ `middleware/requireAdmin.js` 每请求查库（不嵌 JWT，收回即时生效）；非 admin 统一 404 防探测。
-- **管理员两步验证（TOTP，2026-09-17）**：`users.totp_secret`（AES-256-GCM 加密，key 由 JWT_SECRET 派生，NULL=未启用）；启用后 login 与 recover-reset 都需 6 位动态验证码（`server/utils/totp.js`，RFC 6238，零依赖）。后台「安全」Tab 自助开/关（关闭需出示当前验证码）。**验证器丢失的解锁方式**：`UPDATE users SET totp_secret = NULL WHERE username = 'xxx';`；**轮换 JWT_SECRET 会使存量密钥不可解密**（等同验证失败），同样用该 SQL 重置。相关迁移 `migrate_admin_totp.sql`。
+- **管理员两步验证（TOTP，2026-09-17）**：`users.totp_secret`（AES-256-GCM 加密，key 由 JWT_SECRET 派生，NULL=未启用）；启用后 login 与 recover-reset 都需 6 位动态验证码（`server/utils/totp.js`，RFC 6238，零依赖）。后台「安全」Tab 自助开/关（关闭需出示当前验证码）。**验证器丢失的解锁方式**：`UPDATE users SET totp_secret = NULL WHERE username = 'xxx';`；**轮换 JWT_SECRET 会使存量密钥不可解密**（等同验证失败），同样用该 SQL 重置。相关迁移 `migrate_admin_totp.sql`。2026-09-17 曾因 JWT_SECRET 轮换重置过一次（zyc 需在后台重新启用）。
 - **找回密码双要素（2026-09-17）**：`recover-lookup` 只回打码用户名（`usernameMasked`），`recover-reset` 需 激活码 + 当前用户名 匹配才能重置（可选改用户名）——仅凭激活码不再能接管关联账号。
 - 生成码形如 `lf-XXXXXXXXXXXX`（去易混淆字符）；激活码发放追踪靠 `experience_codes.issued_note`。
 - 过期访客自动清理：`utils/cleanupGuests.js`（试用到期超 30 天整行删，FK 全 CASCADE），随启动挂 24h 定时器。

@@ -51,7 +51,6 @@ CREATE TABLE IF NOT EXISTS users (
   username               VARCHAR(30)   NOT NULL DEFAULT '',
   is_guest               TINYINT(1)    NOT NULL DEFAULT 0,
   is_admin               TINYINT(1)    NOT NULL DEFAULT 0 COMMENT '管理员标识（手工 SQL 设置）',
-  totp_secret            VARCHAR(255)  NULL DEFAULT NULL COMMENT '管理员 TOTP 密钥（AES-256-GCM 加密，NULL=未启用）',
   activation_code_id     BIGINT UNSIGNED NULL DEFAULT NULL COMMENT '注册来源激活码（experience_codes.id）',
   nickname               VARCHAR(50)   NOT NULL DEFAULT '学习者',
   email                  VARCHAR(255)  DEFAULT NULL,
@@ -64,6 +63,7 @@ CREATE TABLE IF NOT EXISTS users (
   subscription_expires_at TIMESTAMP    NULL DEFAULT NULL COMMENT '订阅到期：NULL=永久',
   created_at             TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at             TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  totp_secret            VARCHAR(255)  NULL DEFAULT NULL COMMENT '管理员 TOTP 密钥（AES-256-GCM 加密，NULL=未启用）',
   UNIQUE KEY uk_username (username)
 ) ENGINE=InnoDB;
 
@@ -134,7 +134,7 @@ CREATE TABLE IF NOT EXISTS experience_codes (
   type            ENUM('trial','activation') NOT NULL DEFAULT 'trial',
   max_uses        INT UNSIGNED   NOT NULL DEFAULT 0       COMMENT '0 = unlimited',
   current_uses    INT UNSIGNED   NOT NULL DEFAULT 0,
-  trial_hours     SMALLINT UNSIGNED NOT NULL DEFAULT 0    COMMENT '时长(小时)：trial 码=试用时长；activation 码 0=永久 720=月卡30天 2160=季卡90天 8760=年卡365天',
+  trial_hours     SMALLINT UNSIGNED NOT NULL DEFAULT 0    COMMENT 'trial duration in hours',
   issued_note     VARCHAR(255)   NULL DEFAULT NULL COMMENT '发放备注（发给谁/渠道）',
   is_active       TINYINT(1)     NOT NULL DEFAULT 1,
   created_at      TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP,
