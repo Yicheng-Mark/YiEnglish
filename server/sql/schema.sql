@@ -20,6 +20,8 @@
 --   migrate_subscription_expire users.subscription_expires_at 订阅到期（月/季/年卡）
 --   migrate_activation_hours_default experience_codes.trial_hours 默认值 1→0（防漏写变 1 小时卡）
 --   migrate_theme_cleanup   user_settings.theme 存量 gray/star/dark 回落 light
+--   migrate_trial_activation_ip trial_activations.ip 同 IP 累计终身领取上限
+--   migrate_admin_backoffice users.is_admin + admin_audit_log 操作审计 + experience_codes.issued_note 发放备注
 -- ============================================================
 
 CREATE DATABASE IF NOT EXISTS lingoforge
@@ -43,6 +45,7 @@ CREATE TABLE IF NOT EXISTS users (
   id                     BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   username               VARCHAR(30)   NOT NULL DEFAULT '',
   is_guest               TINYINT(1)    NOT NULL DEFAULT 0,
+  is_admin               TINYINT(1)    NOT NULL DEFAULT 0 COMMENT '管理员标识（手工 SQL 设置）',
   activation_code_id     BIGINT UNSIGNED NULL DEFAULT NULL COMMENT '注册来源激活码（experience_codes.id）',
   nickname               VARCHAR(50)   NOT NULL DEFAULT '学习者',
   email                  VARCHAR(255)  DEFAULT NULL,
@@ -96,6 +99,23 @@ CREATE TABLE IF NOT EXISTS login_attempts (
 ) ENGINE=InnoDB;
 
 -- ------------------------------------------------------------
+-- admin_audit_log：管理后台操作审计
+-- 来源：migrate_admin_backoffice。所有管理写操作（续期/设备上限/生成码/改码）自动落一条
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS admin_audit_log (
+  id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  admin_user_id BIGINT UNSIGNED NOT NULL,
+  action        VARCHAR(50)    NOT NULL COMMENT 'renew_subscription / set_max_devices / create_codes / update_code',
+  target_type   VARCHAR(20)    NOT NULL COMMENT 'user / code',
+  target_id     BIGINT UNSIGNED NULL,
+  detail        VARCHAR(500)   NULL COMMENT '操作参数摘要(JSON)',
+  ip            VARCHAR(45)    NULL,
+  created_at    TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_admin_time (admin_user_id, created_at),
+  CONSTRAINT fk_audit_admin FOREIGN KEY (admin_user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- ------------------------------------------------------------
 -- experience_codes：激活码 / 体验码
 -- 来源：migrate_demo_trial（建表）+ migrate_activation_code（type）+ migrate_activation_hours_default（默认值）
 --       + migrate_idx_v1（按 type 查询的复合索引）
@@ -109,6 +129,7 @@ CREATE TABLE IF NOT EXISTS experience_codes (
   max_uses        INT UNSIGNED   NOT NULL DEFAULT 0       COMMENT '0 = unlimited',
   current_uses    INT UNSIGNED   NOT NULL DEFAULT 0,
   trial_hours     SMALLINT UNSIGNED NOT NULL DEFAULT 0    COMMENT '时长(小时)：trial 码=试用时长；activation 码 0=永久 720=月卡30天 2160=季卡90天 8760=年卡365天',
+  issued_note     VARCHAR(255)   NULL DEFAULT NULL COMMENT '发放备注（发给谁/渠道）',
   is_active       TINYINT(1)     NOT NULL DEFAULT 1,
   created_at      TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP,
   expires_at      TIMESTAMP      NULL DEFAULT NULL         COMMENT 'NULL = never expires',
@@ -127,6 +148,7 @@ CREATE TABLE IF NOT EXISTS trial_activations (
   user_id         BIGINT UNSIGNED NOT NULL,
   code_id         BIGINT UNSIGNED NOT NULL,
   device_id       VARCHAR(64)    DEFAULT NULL,
+  ip              VARCHAR(45)    NULL DEFAULT NULL        COMMENT '领取时客户端 IP（同 IP 累计终身上限）',
   expires_at      TIMESTAMP      NOT NULL,
   converted       TINYINT(1)     NOT NULL DEFAULT 0       COMMENT '1 = upgraded to real account',
   converted_at    TIMESTAMP      NULL DEFAULT NULL,
@@ -135,6 +157,7 @@ CREATE TABLE IF NOT EXISTS trial_activations (
   UNIQUE KEY uk_device (device_id),
   INDEX idx_expires (expires_at),
   INDEX idx_code (code_id),
+  INDEX idx_ip (ip),
   CONSTRAINT fk_trial_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   CONSTRAINT fk_trial_code FOREIGN KEY (code_id) REFERENCES experience_codes(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;

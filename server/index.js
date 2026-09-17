@@ -10,6 +10,7 @@ const logger = require('./utils/logger')
 const splitSqlStatements = require('./utils/splitSqlStatements')
 const errorHandler = require('./middleware/errorHandler')
 const { cleanupStaleAttempts } = require('./middleware/rateLimit')
+const { cleanupExpiredGuests } = require('./utils/cleanupGuests')
 const { createRateLimiter } = require('./utils/apiRateLimit')
 
 // 自动执行所有 migrate_*.sql。引入 schema_migrations 版本表：已执行的文件跳过，避免每次启动重复跑全部迁移。
@@ -94,6 +95,7 @@ const reviewRoutes = require('./routes/review')
 const authRoutes = require('./routes/auth')
 const demoRoutes = require('./routes/demo')
 const clientErrorRoutes = require('./routes/clientError')
+const adminRoutes = require('./routes/admin')
 // AI 助手下线（DeepSeek key 无额度），恢复时取消注释本块及下方 aiLimiter、三个 app.use 挂载
 // 2026-09-11 路由与 services 文件已整体归档至 D:\AI助手归档，恢复时先复制回仓库
 // const chatRoutes = require('./routes/chat')
@@ -135,6 +137,7 @@ const errorReportLimiter = createRateLimiter({ windowMs: 60 * 1000, max: 30 })
 // const aiLimiter = createRateLimiter({ windowMs: 60 * 1000, max: 30 })
 
 app.use('/api/auth', authRoutes) // auth 有自己的 DB 登录限流，不重复挂
+app.use('/api/admin', writeLimiter, adminRoutes) // 管理后台：路由内逐条 authMiddleware + requireAdmin（查库验 is_admin）
 app.use('/api/progress', writeLimiter, progressRoutes)
 app.use('/api/wordbooks', writeLimiter, wordbookRoutes)
 app.use('/api/favorites', writeLimiter, favoritesRoutes)
@@ -169,4 +172,6 @@ app.listen(config.PORT, () => {
 
   // cleanup stale login attempts every 6 hours
   setInterval(cleanupStaleAttempts, 6 * 60 * 60 * 1000)
+  // cleanup expired guest accounts every 24 hours (trial expired > 30 days, FK CASCADE)
+  setInterval(cleanupExpiredGuests, 24 * 60 * 60 * 1000)
 })

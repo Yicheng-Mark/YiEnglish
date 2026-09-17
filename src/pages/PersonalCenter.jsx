@@ -50,7 +50,7 @@ export default function PersonalCenter() {
   const store = useReadingStore()
   const { theme, setTheme } = useUserConfig()
   const profile = useProfileStore()
-  const { logout } = useAuth()
+  const { logout, user } = useAuth()
 
   const [editModal, setEditModal] = useState(false)
   const [goalModal, setGoalModal] = useState(false)
@@ -134,6 +134,8 @@ export default function PersonalCenter() {
     { label: '模式切换', emoji: '🎨', action: () => setThemeModal(true) },
     { label: '帮助与反馈', emoji: '💬', action: () => setHelpModal(true) },
     { label: '登录设备管理', emoji: '💻', action: () => navigate('/profile/devices') },
+    // 管理后台入口：仅 is_admin 用户的服务端响应带 isAdmin（toClientUser 条件附带）
+    user?.isAdmin && { label: '管理后台', emoji: '⚙️', action: () => navigate('/admin') },
   ].filter(Boolean)
 
   return (

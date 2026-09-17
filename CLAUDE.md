@@ -69,10 +69,19 @@
 - SSH 走 `ssh root@47.115.147.221`（复用 `~/.ssh/lingoforge_key.pem`）。
 - 线上前端报错会 `POST /api/client-error`；排障在 `pm2 logs` 里 grep 接口/错误串。
 
+### 管理后台（/admin，2026-09-17 上线）
+
+- 前端 `/admin` 三 Tab：用户（列表/筛选「7 天内到期·已到期」/搜索/续期/设备上限）、激活码（生成永久·月·季·年卡/停用/发放备注）、审计（`admin_audit_log` 全量操作记录）。入口在个人中心，仅 `user.isAdmin` 可见。
+- 鉴权：`users.is_admin` 字段（手工 SQL 提升：`UPDATE users SET is_admin = 1 WHERE username = 'xxx';`）+ `middleware/requireAdmin.js` 每请求查库（不嵌 JWT，收回即时生效）；非 admin 统一 404 防探测。
+- 生成码形如 `lf-XXXXXXXXXXXX`（去易混淆字符）；激活码发放追踪靠 `experience_codes.issued_note`。
+- 过期访客自动清理：`utils/cleanupGuests.js`（试用到期超 30 天整行删，FK 全 CASCADE），随启动挂 24h 定时器。
+- 计数对齐工具：`node scripts/align-code-usage.mjs`（dry-run / `--apply`），修 `current_uses` 与事实表漂移。
+- 相关迁移：`migrate_admin_backoffice.sql`。
+
 ### 用户级设备登录上限（users.max_devices）
 
 - 语义：`NULL`=跟随全局默认（env `MAX_DEVICES_PER_USER`，默认 2）；`0`=不限台数；`>0`=该账号精确上限。全局 env 同样支持 `0`=不限。
-- **无管理界面，只能手工 SQL**：`UPDATE users SET max_devices = 3 WHERE username = 'xxx';`（设回 `NULL` 恢复全局默认）。
+- 设置入口：管理后台 `/admin`（用户 Tab → 设备上限）或手工 SQL：`UPDATE users SET max_devices = 3 WHERE username = 'xxx';`（设回 `NULL` 恢复全局默认）。
 - 调低上限不会立刻踢人：每次 token 轮换时服务端按 `last_active_at` 驱逐**最旧的超额他台**（约 30 分钟内逐台收敛），被驱逐设备下次 refresh 收到 401「请先登录」+ 清 cookie（普通登出语义）；403 `DEVICE_LIMIT_REACHED` 只出现在登录路径拦新设备。
 - `TRUST_PROXY` env（默认 1）控制 `app.set('trust proxy')`；IP 限流的安全性依赖 nginx 前置，若 3001 端口直接暴露须设 0。
 - 相关迁移：`migrate_user_device_limit.sql`（加列）、`migrate_refresh_device_unique.sql`（(user_id, device_id) 唯一键 + 清理 device_id='' 历史行）。启动时自动执行；若登录报 `ER_BAD_FIELD_ERROR: max_devices` 说明迁移未跑成，查 `SELECT * FROM schema_migrations` 确认。
@@ -81,7 +90,7 @@
 
 - activation 激活码用 `trial_hours` 携带时长：`0`/`NULL`=永久（存量 77 个旧码已统一归 0），`720`=月卡 30 天、`2160`=季卡 90 天、`8760`=年卡 365 天；注册时写入 `users.subscription_expires_at`（`NULL`=永久，存量账号全是 NULL 不受影响）。
 - 到期三道闸：middleware 每请求比对 access token 内嵌 `subExp`（零窗口，到期即 401 `SUBSCRIPTION_EXPIRED`）+ login 查库拒签发 + refresh 查库清 cookie；前端 `api.js` 收到该 code 会 toast「账号已到期」并登出。
-- **续期只能手工 SQL**：`UPDATE users SET subscription_expires_at = DATE_ADD(NOW(), INTERVAL 30 DAY) WHERE id = 用户id;`（设 `NULL` 即转永久）；续期后用户下次 refresh 拿到新 subExp 自动恢复，无需重启。
+- **续期**：管理后台 `/admin`（用户 Tab → 续期，基准取 `GREATEST(NOW(), 当前到期)`，未到期续期不吃亏）或手工 SQL：`UPDATE users SET subscription_expires_at = DATE_ADD(NOW(), INTERVAL 30 DAY) WHERE id = 用户id;`（设 `NULL` 即转永久）；续期后用户下次 refresh 拿到新 subExp 自动恢复，无需重启。
 - 2026-09-16 已生成并入库：月卡 200 / 季卡 100 / 年卡 100（链接按档位备份在用户桌面「账号链接-20260916」）。注册链接形态：`https://www.lingoforge.fun/activate/<code>`。
 - **`/api/demo/upgrade` 体验转正端点已于 2026-09-16 关闭（410）**：原实现把访客直接转成永久正式账号，绕过激活码档位体系；前端升级按钮 2026-06 已移除，无正常入口。体验用户走 `/activate/<code>` 开通。
 - 相关迁移：`migrate_subscription_expire.sql`。

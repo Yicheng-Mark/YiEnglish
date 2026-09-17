@@ -35,6 +35,7 @@ const DemoWord = lazyRetry(() => import('./pages/demo/DemoWord'))
 const DemoReading = lazyRetry(() => import('./pages/demo/DemoReading'))
 const DemoCorpus = lazyRetry(() => import('./pages/demo/DemoCorpus'))
 const DemoProfile = lazyRetry(() => import('./pages/demo/DemoProfile'))
+const Admin = lazyRetry(() => import('./pages/Admin'))
 // AI 助手下线：页面与悬浮球 chunk 不再加载，恢复时取消注释
 // const AIChatPage = lazyRetry(() => import('./pages/AIChatPage'))
 // const AICircleFloat = lazyRetry(() => import('./components/AIAssistant/AICircleFloat'))
@@ -185,6 +186,8 @@ function App() {
               <Route path="/listening/*" element={<CorpusModule />} />
               <Route path="/profile" element={<PersonalCenter />} />
               <Route path="/profile/devices" element={<Devices />} />
+              {/* 管理后台：入口仅管理员可见（PersonalCenter）；接口侧 requireAdmin 兜底，非 admin 直链得到 404 */}
+              <Route path="/admin" element={<Admin />} />
               <Route path="/stats" element={<Stats />} />
               <Route path="/learning-methods/*" element={<LearningMethodsModule />} />
               {/* AI 助手下线：/ai-assistant 路由停用，恢复时取消注释 */}
