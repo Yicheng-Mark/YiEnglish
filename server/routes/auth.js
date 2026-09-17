@@ -622,13 +622,27 @@ router.patch('/profile', authMiddleware, async (req, res, next) => {
     values.push(req.userId)
     await pool.execute(`UPDATE users SET ${sets.join(', ')} WHERE id = ?`, values)
 
+    // 响应补齐 is_guest/is_admin/subscription_expires_at（对齐 /me 的口径）：
+    // 前端 setUser 直接整体替换 user 对象，若响应缺 isTrial，访客改一次昵称后
+    // 客户端 isTrial 标记即丢失 → TrialGuard 等沙箱闸全部失效（体验用户逃逸进主应用）；
+    // 同理缺 isAdmin 会让管理员改资料后丢失管理后台入口
     const [rows] = await pool.execute(
-      'SELECT id, username, nickname, avatar_url, daily_goal_minutes, signature FROM users WHERE id = ?',
+      'SELECT id, username, nickname, avatar_url, daily_goal_minutes, signature, is_guest, is_admin, subscription_expires_at FROM users WHERE id = ?',
       [req.userId]
     )
     const u = rows[0]
+    const userObj = toClientUser(u)
+    if (u.is_guest) {
+      const [trialRows] = await pool.execute(
+        'SELECT expires_at FROM trial_activations WHERE user_id = ? LIMIT 1',
+        [req.userId]
+      )
+      const trialExpiresAt = trialRows[0]?.expires_at || null
+      userObj.isTrial = true
+      userObj.trialExpiresAt = trialExpiresAt ? new Date(trialExpiresAt).toISOString() : null
+    }
     res.json({
-      user: toClientUser(u),
+      user: userObj,
     })
   } catch (err) {
     next(err)

@@ -975,6 +975,61 @@ describe('PATCH /api/auth/profile', () => {
     expect(res.body.error).toBe('头像格式无效')
     expect(mockExecute).not.toHaveBeenCalled()
   })
+
+  // 回归：前端 setUser 整体替换 user 对象。修复前响应 SELECT 不带 is_guest，
+  // 访客改一次昵称后客户端 isTrial 丢失 → TrialGuard 等沙箱闸全部失效（体验用户逃逸进主应用）
+  it('访客更新昵称 → 响应附 isTrial + trialExpiresAt（对齐 /me 口径，防客户端沙箱闸失效）', async () => {
+    const trialExp = new Date('2026-10-01T00:00:00Z')
+    setExecuteHandlers([
+      { match: ['UPDATE users SET nickname = ?'], returns: { affectedRows: 1 } },
+      {
+        match: ['is_guest, is_admin, subscription_expires_at'],
+        returns: [
+          {
+            ...profileRow(null),
+            nickname: '体验改名',
+            is_guest: 1,
+            is_admin: 0,
+            subscription_expires_at: null,
+          },
+        ],
+      },
+      { match: ['FROM trial_activations'], returns: [{ expires_at: trialExp }] },
+    ])
+
+    const res = await supertest(makeApp())
+      .patch('/api/auth/profile')
+      .set('Cookie', 'lf_access_token=' + token)
+      .send({ nickname: '体验改名' })
+
+    expect(res.status).toBe(200)
+    expect(res.body.user.nickname).toBe('体验改名')
+    expect(res.body.user.isTrial).toBe(true)
+    expect(res.body.user.trialExpiresAt).toBe(trialExp.toISOString())
+  })
+
+  it('管理员/订阅用户更新资料 → 响应保留 isAdmin / subscriptionExpiresAt（防入口与到期信息丢失）', async () => {
+    const subExp = new Date('2026-12-01T00:00:00Z')
+    setExecuteHandlers([
+      { match: ['UPDATE users SET signature = ?'], returns: { affectedRows: 1 } },
+      {
+        match: ['is_guest, is_admin, subscription_expires_at'],
+        returns: [
+          { ...profileRow(null), is_guest: 0, is_admin: 1, subscription_expires_at: subExp },
+        ],
+      },
+    ])
+
+    const res = await supertest(makeApp())
+      .patch('/api/auth/profile')
+      .set('Cookie', 'lf_access_token=' + token)
+      .send({ signature: 'hello' })
+
+    expect(res.status).toBe(200)
+    expect(res.body.user.isAdmin).toBe(true)
+    expect(res.body.user.subscriptionExpiresAt).toBe(subExp.toISOString())
+    expect(res.body.user.isTrial).toBeUndefined()
+  })
 })
 
 // =====================================================================
