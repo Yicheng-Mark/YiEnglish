@@ -174,7 +174,11 @@ html, body, #root {
   }
 
   .field {
-    @apply px-3 py-2 bg-surface border border-gray-200 dark:border-white/10 rounded-button text-sm text-content placeholder-gray-400 focus:outline-none focus:border-primary/60 transition;
+    @apply px-3 py-2 bg-surface border border-gray-200 dark:border-white/10 rounded-button text-sm text-content placeholder-gray-400 focus:outline-none transition;
+  }
+  /* primary 是 CSS 变量色，@apply 无法用 /60 透明度修饰，照 .input-field:focus 手写 */
+  .field:focus {
+    border-color: rgba(99, 102, 241, 0.6);
   }
 
   .badge-ok,
