@@ -21,6 +21,7 @@
 --   migrate_activation_hours_default experience_codes.trial_hours 默认值 1→0（防漏写变 1 小时卡）
 --   migrate_theme_cleanup   user_settings.theme 存量 gray/star/dark 回落 light
 --   migrate_trial_activation_ip trial_activations.ip 同 IP 累计终身领取上限
+--   migrate_trial_ip_totals   trial_ip_totals IP 终身计数归档（防访客清理级联删除导致计数回血）
 --   migrate_admin_backoffice users.is_admin + admin_audit_log 操作审计 + experience_codes.issued_note 发放备注
 -- ============================================================
 
@@ -160,6 +161,18 @@ CREATE TABLE IF NOT EXISTS trial_activations (
   INDEX idx_ip (ip),
   CONSTRAINT fk_trial_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   CONSTRAINT fk_trial_code FOREIGN KEY (code_id) REFERENCES experience_codes(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- ------------------------------------------------------------
+-- trial_ip_totals：体验 IP 终身计数归档
+-- 来源：migrate_trial_ip_totals。trial_activations 行随过期访客清理级联删除，
+-- 同 IP 终身上限若只按原表计数会「回血」；清理删除前 UPSERT 归档到这里，
+-- demo/redeem 的终身闸按「原表存量 + 本表归档」合并口径计数
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS trial_ip_totals (
+  ip         VARCHAR(45)   NOT NULL PRIMARY KEY,
+  total      INT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '该 IP 历史成功领取体验总数（含已清理访客）',
+  updated_at TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
 -- ------------------------------------------------------------

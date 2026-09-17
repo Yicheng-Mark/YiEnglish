@@ -58,10 +58,13 @@ router.post('/redeem', async (req, res, next) => {
       return res.status(429).json({ error: '该网络今日领取次数已达上限，请明日再试' })
     }
 
-    // 同 IP 累计终身上限（预检不进事务：软闸，与上面设备预检同级；精确去重仍由 uk_device 兜底）
+    // 同 IP 累计终身上限（预检不进事务：软闸，与上面设备预检同级；精确去重仍由 uk_device 兜底）。
+    // 两表合并：trial_activations 存量行 + trial_ip_totals 归档计数——过期访客清理会级联删掉
+    // trial_activations 行，归档表让终身计数不随清理回血（否则终身闸退化为滚动窗口）
     const [ipLifetime] = await pool.execute(
-      'SELECT COUNT(*) AS cnt FROM trial_activations WHERE ip = ?',
-      [ip]
+      `SELECT (SELECT COUNT(*) FROM trial_activations WHERE ip = ?)
+              + IFNULL((SELECT total FROM trial_ip_totals WHERE ip = ?), 0) AS cnt`,
+      [ip, ip]
     )
     if (ipLifetime[0].cnt >= DEMO_IP_LIFETIME_MAX) {
       await logAttempt(`demo_redeem:${ip}`, ip, false)

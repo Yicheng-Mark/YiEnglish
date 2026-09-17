@@ -159,11 +159,11 @@ describe('POST /api/demo/redeem', () => {
     expect(res.body.error).toMatch(/体验码无效/)
   })
 
-  it('同 IP 累计成功领取达终身上限 → 403 且按失败记次', async () => {
+  it('同 IP 累计成功领取达终身上限 → 403 且按失败记次；终身计数必须合并归档表（防清理级联删除导致计数回血）', async () => {
     setExecuteHandlers([
       { match: ['INTERVAL 1 MINUTE'], returns: [{ cnt: 0 }] },
       { match: ['INTERVAL 24 HOUR'], returns: [{ cnt: 0 }] },
-      { match: ['FROM trial_activations WHERE ip'], returns: [{ cnt: 20 }] },
+      { match: ['trial_ip_totals'], returns: [{ cnt: 20 }] },
     ])
     const res = await supertest(makeApp()).post('/api/demo/redeem').send({ code: 'TRY1' })
     expect(res.status).toBe(403)
@@ -173,6 +173,14 @@ describe('POST /api/demo/redeem', () => {
       expect.any(String),
       false
     )
+    // 计数 SQL 必须同时引用两张表：trial_activations（存量行）+ trial_ip_totals（清理归档），
+    // 缺任一都会让终身闸回血（访客清理级联删 trial_activations 行）
+    const lifetimeSql = mockExecute.mock.calls
+      .map(([sql]) => String(sql))
+      .find((s) => s.includes('trial_ip_totals'))
+    expect(lifetimeSql).toBeDefined()
+    expect(lifetimeSql).toMatch(/FROM trial_activations WHERE ip/)
+    expect(lifetimeSql).toMatch(/IFNULL/)
   })
 
   it('体验码不存在 → 400「体验码无效」并记失败', async () => {
