@@ -17,14 +17,14 @@
 - **MySQL80 必须先以管理员权限启动**（服务或手动提权），否则后端起不来。
 - 根目录 `.env.local`（不进 git）由后端 dotenv 加载：`DB_*`、`JWT_SECRET`、`DEEPSEEK_API_KEY` 等，完整清单见 `server/config.js`。
 - env 加载顺序（`server/config.js`）：优先 `server/.env`（服务端密钥独占，推荐新变量放这里），不存在则回退根 `.env.local`（历史布局，本地开发前后端变量混放）；已存在的环境变量优先于文件。生产机继续用 `/home/lingoforge/.env.local`（rsync 排除不覆盖）。**给前端用的变量必须带 `VITE_` 前缀且不得是密钥**（`VITE_` 变量会被打进浏览器 bundle）。
-- 建库用 `server/sql/schema.sql`；`migrate_*.sql` 在后端启动时自动按文件名序执行（`schema_migrations` 表记版本，失败文件多轮重试解决依赖倒挂、失败不中止启动、下次自动重试）。SQL 切分器在 `server/utils/splitSqlStatements.js`（纯函数，有测试）。
+- 建库用 `server/sql/schema.sql`；`migrate_*.sql` 在后端启动时自动按文件名序执行（`schema_migrations` 表记版本，失败文件多轮重试解决依赖倒挂、失败不中止启动、下次自动重试）。2026-09-17 起 `migrate_auth_v1.sql` 提供基础 users 表，迁移链可从全空库自举（建空库后直接起服务即可收敛），schema.sql 仍是文档化的标准建库路径。SQL 切分器在 `server/utils/splitSqlStatements.js`（纯函数，有测试）。
 
 ## 架构速览
 
 - `src/` React 前端：`pages/` 路由页（Typing / ReviewQuiz / Stats / WordBooks 等）；`modules/` 功能模块（corpus 语料视频、grammar、reading、learning-methods）；`hooks/`（useTyping / useQuiz 等）；`contexts/`（Auth）；`lib/`（api 封装）；`utils/` 纯函数工具，多数有配套 `.test.js`
 - `server/` Express 后端：根 package.json 是 `type:module`，server 自带 `{"type":"commonjs"}`——后端代码用 require。`routes/`（auth / progress / review / wordbooks / settings / demo / clientError 等，均有测试）、`middleware/`（JWT auth、rateLimit）
 - `public/dictionaries/*.json` 词库数据（按需 fetch 不进 bundle）+ `public/dictionaries/word-index.json` 全库去重合并索引（`npm run dict:index` 生成，语料/阅读/搜词的唯一数据源，加载失败回退逐册拉取）+ `src/dictionaries/meta.js` 元信息注册（含功能词本虚拟词库）；`standards/` 原始标准词表；`scripts/*.mjs` 词库维护与语料处理脚本
-- `deploy/` pm2 ecosystem（fork 单实例）、nginx.conf
+- `deploy/` pm2 ecosystem（cluster `instances: 1` 单进程）、nginx.conf
 
 ## 功能地图
 
@@ -71,12 +71,22 @@
 
 ### 管理后台（/admin，2026-09-17 上线）
 
-- 前端 `/admin` 三 Tab：用户（列表/筛选「7 天内到期·已到期」/搜索/续期/设备上限）、激活码（生成永久·月·季·年卡/停用/发放备注）、审计（`admin_audit_log` 全量操作记录）。入口在个人中心，仅 `user.isAdmin` 可见。
+- 前端 `/admin` 四 Tab：用户（列表/筛选「7 天内到期·已到期」/搜索/续期/设备上限）、激活码（生成永久·月·季·年卡/停用/发放备注）、审计（`admin_audit_log` 全量操作记录）、安全（管理员 TOTP 两步验证开关）。入口在个人中心，仅 `user.isAdmin` 可见。
 - 鉴权：`users.is_admin` 字段（手工 SQL 提升：`UPDATE users SET is_admin = 1 WHERE username = 'xxx';`）+ `middleware/requireAdmin.js` 每请求查库（不嵌 JWT，收回即时生效）；非 admin 统一 404 防探测。
+- **管理员两步验证（TOTP，2026-09-17）**：`users.totp_secret`（AES-256-GCM 加密，key 由 JWT_SECRET 派生，NULL=未启用）；启用后 login 与 recover-reset 都需 6 位动态验证码（`server/utils/totp.js`，RFC 6238，零依赖）。后台「安全」Tab 自助开/关（关闭需出示当前验证码）。**验证器丢失的解锁方式**：`UPDATE users SET totp_secret = NULL WHERE username = 'xxx';`；**轮换 JWT_SECRET 会使存量密钥不可解密**（等同验证失败），同样用该 SQL 重置。相关迁移 `migrate_admin_totp.sql`。
+- **找回密码双要素（2026-09-17）**：`recover-lookup` 只回打码用户名（`usernameMasked`），`recover-reset` 需 激活码 + 当前用户名 匹配才能重置（可选改用户名）——仅凭激活码不再能接管关联账号。
 - 生成码形如 `lf-XXXXXXXXXXXX`（去易混淆字符）；激活码发放追踪靠 `experience_codes.issued_note`。
 - 过期访客自动清理：`utils/cleanupGuests.js`（试用到期超 30 天整行删，FK 全 CASCADE），随启动挂 24h 定时器。
 - 计数对齐工具：`node scripts/align-code-usage.mjs`（dry-run / `--apply`），修 `current_uses` 与事实表漂移。
-- 相关迁移：`migrate_admin_backoffice.sql`。
+- 相关迁移：`migrate_admin_backoffice.sql`、`migrate_admin_totp.sql`。
+
+### 词库数据服务端门禁（2026-09-17）
+
+- 词库 JSON 与合并索引不再静态直出：前端统一走 `GET /api/dictionaries/:file`（`server/routes/content.js`，认证必需）——匿名 401、体验用户拿「前 5 章裁剪词典 + 体验版索引」、正式账号拿全量。取用点：`loadDictionary.js` / `dictWordMap.js`（经 `lib/api.js` 的 `fetchWithAuth`，自带 401 静默刷新重试）。
+- 体验版索引 `word-index-trial.json` 由 `scripts/gen-word-index.mjs` 与全量索引一并产出：前 5 章词汇 ∪ 体验期语料（1–5 期）字幕词汇 ∪ 体验阅读文章词汇——保证体验期取词弹窗不受裁剪影响。改词典/字幕后跑 `npm run dict:check` 同步两个索引。
+- 缓存策略：`Cache-Control: private, no-cache` + ETag 协商（304 免传输但不允许跨身份本地复用）。
+- **部署顺序（重要）**：先 push 部署前后端（前端已改从 `/api/dictionaries` 取数），再到生产 nginx 加 `location /dictionaries/ { return 404; }` 并 reload（deploy/nginx.conf 已含该段及说明）——先封 nginx 后部署会断掉线上词库加载。
+- 边界（未做，属 OSS 侧操作）：语料视频仍是 OSS 公网直链（元数据随前端 bundle 下发），彻底收紧需 OSS 私有读 + 服务端签名 URL；字幕与阅读文章同理为静态/打包资源。
 
 ### 用户级设备登录上限（users.max_devices）
 

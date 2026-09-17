@@ -18,10 +18,14 @@ export default function Recover() {
 
   const [step, setStep] = useState(1)
   const [code, setCode] = useState(urlCode || '')
-  const [foundUsername, setFoundUsername] = useState('')
-  const [username, setUsername] = useState('')
+  // lookup 只回打码用户名（如 z***g），仅供确认找对了账号
+  const [usernameMasked, setUsernameMasked] = useState('')
+  const [currentUsername, setCurrentUsername] = useState('')
+  const [newUsername, setNewUsername] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [totpCode, setTotpCode] = useState('')
+  const [needTotp, setNeedTotp] = useState(false)
   const [loading, setLoading] = useState(false)
 
   // Step 1：凭注册链接定位账号
@@ -35,8 +39,7 @@ export default function Recover() {
     setLoading(true)
     try {
       const data = await recoverLookup(trimmed)
-      setFoundUsername(data.username)
-      setUsername(data.username)
+      setUsernameMasked(data.usernameMasked || '')
       setCode(trimmed)
       setStep(2)
     } catch (err) {
@@ -46,15 +49,15 @@ export default function Recover() {
     }
   }
 
-  // Step 2：设置新用户名 + 新密码
+  // Step 2：输入当前用户名（第二要素）+ 新密码；可选改用户名
   async function handleReset(e) {
     e.preventDefault()
-    if (!username.trim()) {
-      toast.error('请输入用户名')
+    if (!currentUsername.trim()) {
+      toast.error('请输入该账号的当前用户名')
       return
     }
-    if (!/^[a-zA-Z0-9_一-鿿]{3,30}$/.test(username.trim())) {
-      toast.error('用户名需 3-30 位，支持字母、数字、下划线、中文')
+    if (newUsername.trim() && !/^[a-zA-Z0-9_一-鿿]{3,30}$/.test(newUsername.trim())) {
+      toast.error('新用户名需 3-30 位，支持字母、数字、下划线、中文')
       return
     }
     if (password.length < 8) {
@@ -72,10 +75,20 @@ export default function Recover() {
 
     setLoading(true)
     try {
-      await recoverReset(extractCode(code), username.trim(), password)
+      await recoverReset(
+        extractCode(code),
+        currentUsername.trim(),
+        password,
+        newUsername.trim() || undefined,
+        needTotp ? totpCode.trim() : undefined
+      )
       toast.success('重置成功')
       navigate('/', { replace: true })
     } catch (err) {
+      if (err.code === 'TOTP_REQUIRED' || err.code === 'TOTP_INVALID') {
+        setNeedTotp(true)
+        if (err.code === 'TOTP_INVALID') setTotpCode('')
+      }
       toast.error(err.message)
     } finally {
       setLoading(false)
@@ -119,19 +132,30 @@ export default function Recover() {
               <div>
                 <input
                   type="text"
-                  value={foundUsername}
+                  value={usernameMasked}
                   readOnly
-                  placeholder="当前用户名"
+                  placeholder="关联账号"
                   className="w-full bg-transparent border-b border-white/30 text-white placeholder-white/40 py-3 px-1 outline-none text-sm opacity-70 cursor-default"
                 />
               </div>
               <div>
                 <input
                   type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="新用户名（3-30 位，字母/数字/下划线/中文）"
+                  value={currentUsername}
+                  onChange={(e) => setCurrentUsername(e.target.value)}
+                  placeholder="当前用户名（凭此确认账号归属）"
                   autoComplete="username"
+                  autoFocus
+                  className="w-full bg-transparent border-b border-white/30 text-white placeholder-white/40 py-3 px-1 outline-none focus:border-white transition-colors text-sm"
+                />
+              </div>
+              <div>
+                <input
+                  type="text"
+                  value={newUsername}
+                  onChange={(e) => setNewUsername(e.target.value)}
+                  placeholder="新用户名（可选，3-30 位，字母/数字/下划线/中文）"
+                  autoComplete="off"
                   className="w-full bg-transparent border-b border-white/30 text-white placeholder-white/40 py-3 px-1 outline-none focus:border-white transition-colors text-sm"
                 />
               </div>
@@ -155,6 +179,20 @@ export default function Recover() {
                   className="w-full bg-transparent border-b border-white/30 text-white placeholder-white/40 py-3 px-1 outline-none focus:border-white transition-colors text-sm"
                 />
               </div>
+              {needTotp && (
+                <div>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={6}
+                    value={totpCode}
+                    onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ''))}
+                    placeholder="动态验证码（6 位）"
+                    autoComplete="one-time-code"
+                    className="w-full bg-transparent border-b border-white/30 text-white placeholder-white/40 py-3 px-1 outline-none focus:border-white transition-colors text-sm tracking-[0.3em]"
+                  />
+                </div>
+              )}
 
               <button
                 type="submit"

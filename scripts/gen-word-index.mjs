@@ -32,10 +32,17 @@ import path from 'node:path'
 import zlib from 'node:zlib'
 import { fileURLToPath } from 'node:url'
 import { parsePosFromTrans } from '../src/modules/corpus/utils/wordColorMap.js'
+import { mockArticles } from '../src/modules/reading/data/mockArticles.js'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const DICT_DIR = path.join(ROOT, 'public', 'dictionaries')
 const OUT_FILE = path.join(DICT_DIR, 'word-index.json')
+const TRIAL_OUT_FILE = path.join(DICT_DIR, 'word-index-trial.json')
+
+// 体验期语料集数：与 src/modules/corpus/data/mockCorpusVideos.js 导出的
+// TRIAL_EPISODE_COUNT 同值（该模块顶层用 import.meta.env，node 直跑不可 import，
+// 故此处内联；videoUrl 的 OSS 前缀与本脚本无关，只要 id 与 subtitleUrl 的配对）
+const TRIAL_EPISODE_COUNT = 5
 
 // 与运行时 loadDictionary.js 的 CHAPTER_SIZE 一致（25 词一章，locs 由此换算）
 const CHAPTER_SIZE = 25
@@ -181,6 +188,114 @@ function main() {
   console.log(
     `[gen-word-index] 源词典 ${kb(sourceBytes)}KB → 索引原始 ${kb(rawBytes)}KB / gzip ${kb(gzipBytes)}KB`
   )
+
+  // 体验版索引：与全量索引同一数据源裁剪产出，服务端 /api/dictionaries 对访客
+  // 换发此文件（server/routes/content.js），保证体验期语料/阅读的取词弹窗不受影响
+  const { index: trialIndex, stats: trialStats } = buildTrialWordIndex(index, dictsById)
+  const trialJson = JSON.stringify(trialIndex)
+  fs.writeFileSync(TRIAL_OUT_FILE, trialJson + '\n')
+  console.log(
+    `[gen-word-index] 体验索引 ${Object.keys(trialIndex).length} 条（全量 ${stats.uniqueWords} 条的 ${(
+      (Object.keys(trialIndex).length / Math.max(1, stats.uniqueWords)) *
+      100
+    ).toFixed(1)}%，字幕词 ${trialStats.subtitleWords} · 文章词 ${trialStats.articleWords}）` +
+      ` → ${TRIAL_OUT_FILE}`
+  )
+}
+
+// —— 体验版索引（纯函数区，供生成 CLI 与测试共用） ——
+
+// 与前端 Typing.jsx / ChapterSelect.jsx / server/routes/content.js 的同名常量同步
+const TRIAL_CHAPTER_COUNT = 5
+// 与 src/modules/reading/index.jsx 的 TRIAL_ARTICLE_IDS 同步（该值为 JSX 内联常量，无法 import）
+const TRIAL_ARTICLE_IDS = ['article2026_01']
+
+// 英文文本 → 小写词元集合（撇号断词：today's → today + s，s 不在索引中自然丢弃）
+export function extractEnglishWords(text) {
+  const words = new Set()
+  for (const token of String(text || '').match(/[a-zA-Z]+/g) ?? []) {
+    words.add(token.toLowerCase())
+  }
+  return words
+}
+
+// 体验期语料（id ≤ TRIAL_EPISODE_COUNT）的字幕文件路径列表。
+// mockCorpusVideos.js 顶层引用 import.meta.env（node 直跑不可 import），从源文本
+// 提取 (id, subtitleUrl) 对：每个视频对象内 id 字段先于 subtitleUrl 出现
+export function trialSubtitleFiles() {
+  const src = fs.readFileSync(
+    path.join(ROOT, 'src/modules/corpus/data/mockCorpusVideos.js'),
+    'utf8'
+  )
+  const files = []
+  const re = /id:\s*['"]?(\d+)['"]?[\s\S]*?subtitleUrl:\s*'([^']+)'/g
+  let m
+  while ((m = re.exec(src)) !== null) {
+    if (Number(m[1]) <= TRIAL_EPISODE_COUNT && m[2].startsWith('/')) files.push(m[2])
+  }
+  return files
+}
+
+// 体验内容边界内的全部词元：前 5 章词汇 ∪ 体验期语料字幕词汇 ∪ 体验阅读文章词汇
+export function buildTrialWordKeys(dictsById) {
+  const keys = new Set()
+  let subtitleWords = 0
+  let articleWords = 0
+
+  for (const dictId of INDEX_DICT_IDS) {
+    const dict = dictsById[dictId]
+    if (!dict) continue
+    for (const chapter of (dict.chapters ?? []).slice(0, TRIAL_CHAPTER_COUNT)) {
+      for (const word of chapter?.words ?? []) {
+        if (word?.name) keys.add(word.name.toLowerCase())
+      }
+    }
+  }
+
+  // 体验期语料的字幕英文——字幕在 public/ 下，按提取到的路径直接读文件
+  for (const subtitleUrl of trialSubtitleFiles()) {
+    const file = path.join(ROOT, 'public', subtitleUrl.replace(/^\//, ''))
+    if (!fs.existsSync(file)) continue
+    const cues = JSON.parse(fs.readFileSync(file, 'utf8'))
+    for (const cue of cues ?? []) {
+      for (const w of extractEnglishWords(cue.en)) {
+        if (!keys.has(w)) {
+          keys.add(w)
+          subtitleWords++
+        }
+      }
+    }
+  }
+
+  // 体验阅读文章正文（bundled 数据，直接 import）
+  for (const article of mockArticles) {
+    if (!TRIAL_ARTICLE_IDS.includes(article.id)) continue
+    const texts = [
+      article.enTitle,
+      article.description,
+      ...(article.paragraphs ?? []).flatMap((p) => [p.en]),
+    ]
+    for (const text of texts) {
+      for (const w of extractEnglishWords(text)) {
+        if (!keys.has(w)) {
+          keys.add(w)
+          articleWords++
+        }
+      }
+    }
+  }
+
+  return { keys, subtitleWords, articleWords }
+}
+
+// 全量索引 → 体验版：保留边界内词元的完整条目（含 trans/音标/alt 等字段）
+export function buildTrialWordIndex(fullIndex, dictsById) {
+  const { keys, subtitleWords, articleWords } = buildTrialWordKeys(dictsById)
+  const trialIndex = Object.create(null)
+  for (const key in fullIndex) {
+    if (keys.has(key)) trialIndex[key] = fullIndex[key]
+  }
+  return { index: trialIndex, stats: { subtitleWords, articleWords } }
 }
 
 // 被 import 时（等价性测试）不执行 CLI 写盘

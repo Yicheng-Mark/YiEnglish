@@ -9,6 +9,7 @@ import {
   Users,
   Ticket,
   ScrollText,
+  ShieldCheck,
   Loader2,
   Plus,
   Ban,
@@ -25,6 +26,10 @@ import {
   createCodes,
   updateCode,
   fetchAdminAudit,
+  fetchTotpStatus,
+  setupTotp,
+  enableTotp,
+  disableTotp,
 } from '../lib/api-admin'
 import { copyText } from '../utils/clipboard'
 
@@ -57,6 +62,8 @@ const ACTION_LABEL = {
   set_max_devices: '设备上限',
   create_codes: '生成码',
   update_code: '改码',
+  totp_enable: '开启两步验证',
+  totp_disable: '关闭两步验证',
 }
 
 function Modal({ open, onClose, title, children }) {
@@ -293,6 +300,7 @@ function UsersTab() {
                   <span className="text-sm text-content-tertiary">{u.nickname}</span>
                 )}
                 {u.isAdmin && <span className="badge-warn">管理员</span>}
+                {u.isAdmin && u.hasTotp && <span className="badge-ok">2FA</span>}
                 {u.isGuest && <span className="badge-muted">访客</span>}
                 {!u.isGuest && <ExpiryBadge sub={u.subscriptionExpiresAt} />}
               </div>
@@ -726,6 +734,187 @@ function AuditTab() {
   )
 }
 
+// ============ 安全 Tab（管理员两步验证） ============
+function SecurityTab() {
+  const [enabled, setEnabled] = useState(null) // null=加载中
+  // 开启流程：setup 拿到密钥 → 用户在验证器 App 添加 → 输入当前验证码 enable
+  const [setup, setSetup] = useState(null) // { secret, otpauthUrl }
+  const [code, setCode] = useState('')
+  const [disableCode, setDisableCode] = useState('')
+  const [busy, setBusy] = useState(false)
+
+  const load = useCallback(async () => {
+    try {
+      const data = await fetchTotpStatus()
+      setEnabled(!!data.enabled)
+    } catch (err) {
+      toast('加载失败', { description: err.message })
+    }
+  }, [])
+
+  useEffect(() => {
+    load()
+  }, [load])
+
+  async function handleSetup() {
+    setBusy(true)
+    try {
+      const data = await setupTotp()
+      setSetup(data)
+      setCode('')
+    } catch (err) {
+      toast('生成密钥失败', { description: err.message })
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleEnable() {
+    if (!/^\d{6}$/.test(code.trim())) {
+      toast.error('请输入 6 位动态验证码')
+      return
+    }
+    setBusy(true)
+    try {
+      await enableTotp(setup.secret, code.trim())
+      toast.success('两步验证已开启')
+      setSetup(null)
+      setCode('')
+      load()
+    } catch (err) {
+      toast('开启失败', { description: err.message })
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleDisable() {
+    if (!/^\d{6}$/.test(disableCode.trim())) {
+      toast.error('请输入 6 位动态验证码')
+      return
+    }
+    setBusy(true)
+    try {
+      await disableTotp(disableCode.trim())
+      toast.success('两步验证已关闭')
+      setDisableCode('')
+      load()
+    } catch (err) {
+      toast('关闭失败', { description: err.message })
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  if (enabled === null) {
+    return (
+      <div className="py-12 flex justify-center">
+        <Loader2 className="w-6 h-6 animate-spin text-content-tertiary" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="max-w-xl">
+      <div className="card p-5 mb-4">
+        <div className="flex items-center justify-between mb-2">
+          <span className="font-medium text-content dark:text-gray-100">登录两步验证（TOTP）</span>
+          <span className={enabled ? 'badge-ok' : 'badge-muted'}>
+            {enabled ? '已开启' : '未开启'}
+          </span>
+        </div>
+        <p className="text-sm text-content-tertiary mb-4">
+          开启后登录与找回密码在密码之外还需验证器 App 生成的 6 位动态验证码，
+          防止密码泄露后管理端被接管。停用同样需要出示当前验证码。
+        </p>
+
+        {!enabled && !setup && (
+          <button className="btn-primary" disabled={busy} onClick={handleSetup}>
+            {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : '开启两步验证'}
+          </button>
+        )}
+
+        {!enabled && setup && (
+          <div className="space-y-4">
+            <div className="p-3 rounded-xl bg-gray-100/60 dark:bg-white/[0.04]">
+              <p className="text-sm text-content-tertiary mb-2">
+                1. 在验证器 App（Google Authenticator / Microsoft Authenticator / 1Password 等）
+                中「手动输入密钥」添加以下账号：
+              </p>
+              <div className="flex items-center gap-2 mb-3">
+                <code className="font-mono text-sm tracking-wider break-all text-content dark:text-gray-200">
+                  {setup.secret}
+                </code>
+                <button
+                  className="btn-ghost text-xs flex items-center gap-1 flex-shrink-0"
+                  onClick={() => copyText(setup.secret).then(() => toast('密钥已复制'))}
+                >
+                  <Copy className="w-3.5 h-3.5" /> 复制
+                </button>
+              </div>
+              <p className="text-xs text-content-tertiary">
+                手机端也可直接点击
+                <a href={setup.otpauthUrl} className="text-primary hover:underline mx-1">
+                  otpauth 链接
+                </a>
+                唤起验证器添加。
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-content-tertiary mb-2">
+                2. 输入验证器当前显示的 6 位验证码完成开启：
+              </p>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+                  placeholder="6 位验证码"
+                  className="field text-sm w-32 tracking-[0.3em]"
+                />
+                <button className="btn-primary text-sm" disabled={busy} onClick={handleEnable}>
+                  {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : '确认开启'}
+                </button>
+                <button
+                  className="btn-ghost text-sm"
+                  disabled={busy}
+                  onClick={() => setSetup(null)}
+                >
+                  取消
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {enabled && (
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              inputMode="numeric"
+              maxLength={6}
+              value={disableCode}
+              onChange={(e) => setDisableCode(e.target.value.replace(/\D/g, ''))}
+              placeholder="当前验证码"
+              className="field text-sm w-32 tracking-[0.3em]"
+            />
+            <button className="btn-ghost text-sm" disabled={busy} onClick={handleDisable}>
+              {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : '关闭两步验证'}
+            </button>
+          </div>
+        )}
+      </div>
+
+      <p className="text-xs text-content-tertiary">
+        验证器丢失时无法登录：需在数据库执行 UPDATE users SET totp_secret = NULL WHERE username =
+        '你的用户名' 后重新开启。
+      </p>
+    </div>
+  )
+}
+
 // ============ 页面 ============
 export default function Admin() {
   const navigate = useNavigate()
@@ -735,6 +924,7 @@ export default function Admin() {
     { key: 'users', label: '用户', Icon: Users },
     { key: 'codes', label: '激活码', Icon: Ticket },
     { key: 'audit', label: '审计', Icon: ScrollText },
+    { key: 'security', label: '安全', Icon: ShieldCheck },
   ]
 
   return (
@@ -766,6 +956,7 @@ export default function Admin() {
       {tab === 'users' && <UsersTab />}
       {tab === 'codes' && <CodesTab />}
       {tab === 'audit' && <AuditTab />}
+      {tab === 'security' && <SecurityTab />}
     </div>
   )
 }

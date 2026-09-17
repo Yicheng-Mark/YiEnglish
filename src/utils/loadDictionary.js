@@ -3,12 +3,14 @@ import { loadReadingWordBookAsDictionary, enrichReadingWordBook } from './readin
 import { loadCorpusWordBookAsDictionary, enrichCorpusWordBook } from './corpusWordBook.js'
 import { loadFavoriteWordsAsDictionary } from './favoriteWords.js'
 import { loadReviewAsDictionary } from './reviewCards.js'
+import { fetchWithAuth } from '../lib/api'
 
-// 字典 JSON 已移至 public/dictionaries/，按需 fetch（不再打进 JS bundle）：
-// 既缩小构建产物（省去 legacy 双份），又能被浏览器/CDN 长缓存、单独缓存。
-// BASE_URL 适配非根路径部署。
+// 词库 JSON 经 /api/dictionaries 认证下发（server/routes/content.js）：
+// 不打进 JS bundle 的初衷不变（按需加载 + 单独缓存），同时未登录访客无法
+// 整包拉走词库数据，体验用户只拿到前 5 章的裁剪版。fetchWithAuth 自带
+// access token 过期时的静默刷新重试，页面加载早期不会误报加载失败。
 async function fetchDictionary(id) {
-  const res = await fetch(`${import.meta.env.BASE_URL}dictionaries/${id}.json`)
+  const res = await fetchWithAuth(`${import.meta.env.BASE_URL}api/dictionaries/${id}.json`)
   if (!res.ok) throw new Error(`Failed to load dictionary ${id}: ${res.status}`)
   return { default: await res.json() }
 }

@@ -89,6 +89,27 @@ export async function apiFetch(path, options = {}) {
 }
 
 /**
+ * 带 401 静默续期的内容类 GET：词库 JSON / 合并索引等服务端下发数据用。
+ *
+ * 与 apiFetch 的差异：401 不触发登出——内容请求多发生在页面加载早期
+ * （会话恢复完成前或 access token 刚过期的窗口），这里只做一次
+ * TOKEN_EXPIRED → 静默刷新 → 重试；仍 401 则原样返回 Response，
+ * 由调用方按 !res.ok 抛错（loadDictionary / loadWordIndex 既有语义）。
+ */
+export async function fetchWithAuth(path, options = {}) {
+  const res = await fetch(`${API_BASE}${path}`, { ...options, credentials: 'include' })
+  if (res.status !== 401) return res
+  const data = await res.json().catch(() => ({}))
+  if (data.code === 'TOKEN_EXPIRED') {
+    const refreshed = await silentRefresh()
+    if (refreshed.ok) {
+      return fetch(`${API_BASE}${path}`, { ...options, credentials: 'include' })
+    }
+  }
+  return res
+}
+
+/**
  * Parse a JSON API response and reject unsuccessful HTTP responses.
  *
  * apiFetch intentionally returns non-401 Response objects so callers that need

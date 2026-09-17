@@ -22,6 +22,18 @@ const {
   DEVICE_COOKIE,
 } = require('../utils/tokens')
 const { createRateLimiter } = require('../utils/apiRateLimit')
+const { verifyTotp, decryptTotpSecret } = require('../utils/totp')
+
+// 找回密码 lookup 响应里的用户名打码：激活码本身即可定位账号，若再回显完整用户名，
+// 拿到码的任何人就凑齐了 recover-reset 所需的两要素（码 + 用户名）。打码显示仅供
+// 真实用户确认找对了账号，完整用户名必须由用户自己提供。
+function maskUsername(username) {
+  if (typeof username !== 'string' || username.length === 0) return ''
+  if (username.length <= 2) return username[0] + '*'
+  if (username.length <= 5) return username[0] + '***' + username[username.length - 1]
+  const keep = Math.max(1, Math.floor(username.length / 4))
+  return username.slice(0, keep) + '***' + username.slice(-keep)
+}
 
 const router = express.Router()
 
@@ -279,7 +291,7 @@ router.post('/login', async (req, res, next) => {
     await checkLoginRateLimit(username, ip)
 
     const [rows] = await pool.execute(
-      'SELECT id, username, nickname, password_hash, avatar_url, daily_goal_minutes, signature, is_guest, is_admin, subscription_expires_at FROM users WHERE username = ?',
+      'SELECT id, username, nickname, password_hash, avatar_url, daily_goal_minutes, signature, is_guest, is_admin, subscription_expires_at, totp_secret FROM users WHERE username = ?',
       [username]
     )
 
@@ -317,6 +329,23 @@ router.post('/login', async (req, res, next) => {
       if (!trialExpiresAt || new Date(trialExpiresAt) <= new Date()) {
         await logAttempt(username, ip, false)
         return res.status(401).json({ error: '体验时间已结束', code: 'TRIAL_EXPIRED' })
+      }
+    }
+
+    // 管理员两步验证（TOTP）：密码之外还需 6 位动态验证码，防密码泄露后管理端被接管。
+    // 缺验证码返回 TOTP_REQUIRED（前端展示输入框重试），错误验证码返回 TOTP_INVALID；
+    // 两种失败都计入 login 限流（5 次/15min/用户名），10^6 码空间下爆破不可行。
+    // 密钥解密失败（JWT_SECRET 轮换后）等同验证失败——解锁走手工 SQL 置 NULL，见迁移说明。
+    if (user.is_admin && user.totp_secret) {
+      const totpCode = typeof req.body?.totpCode === 'string' ? req.body.totpCode.trim() : ''
+      if (!/^\d{6}$/.test(totpCode)) {
+        await logAttempt(username, ip, false)
+        return res.status(401).json({ error: '请输入动态验证码', code: 'TOTP_REQUIRED' })
+      }
+      const secret = decryptTotpSecret(user.totp_secret)
+      if (!secret || !verifyTotp(secret, totpCode)) {
+        await logAttempt(username, ip, false)
+        return res.status(401).json({ error: '动态验证码错误', code: 'TOTP_INVALID' })
       }
     }
 
@@ -718,23 +747,33 @@ router.post('/recover-lookup', async (req, res, next) => {
     }
 
     await logAttempt(codeKey, ip, true)
-    res.json({ found: true, username: rows[0].username })
+    // 用户名打码返回：完整用户名是 recover-reset 的第二因子，不能凭码直接拿到
+    res.json({ found: true, usernameMasked: maskUsername(rows[0].username) })
   } catch (err) {
     next(err)
   }
 })
 
-// --- 找回密码：重置用户名与密码，并自动登录 ---
+// --- 找回密码：验证当前用户名 + 重置密码（可选改用户名），并自动登录 ---
 router.post('/recover-reset', async (req, res, next) => {
   try {
-    const { code, username, password } = req.body
+    const { code, currentUsername, password, newUsername, totpCode } = req.body
     const ip = getClientIp(req)
 
     if (!code || typeof code !== 'string' || !code.trim()) {
       return res.status(400).json({ error: '请输入激活码' })
     }
-    if (!validateUsername(username)) {
-      return res.status(400).json({ error: '用户名需 3-30 位，支持字母、数字、下划线、中文' })
+    // 双要素：激活码（注册链接）+ 当前用户名。仅凭码不再能重置任意关联账号——
+    // 码可能经转售/截图外泄，用户名必须由账号本人提供
+    if (
+      typeof currentUsername !== 'string' ||
+      !currentUsername.trim() ||
+      currentUsername.trim().length > 30
+    ) {
+      return res.status(400).json({ error: '请输入该账号的当前用户名' })
+    }
+    if (!validatePassword(password)) {
+      return res.status(400).json({ error: '密码需 8-128 位，至少包含一个字母和一个数字' })
     }
     if (!validatePassword(password)) {
       return res.status(400).json({ error: '密码需 8-128 位，至少包含一个字母和一个数字' })
@@ -748,7 +787,7 @@ router.post('/recover-reset', async (req, res, next) => {
     await checkLoginRateLimit(codeKey, ip)
 
     const [rows] = await pool.execute(
-      `SELECT u.id, u.username, u.is_guest, u.subscription_expires_at FROM users u
+      `SELECT u.id, u.username, u.is_guest, u.is_admin, u.totp_secret, u.subscription_expires_at FROM users u
        JOIN experience_codes ec ON u.activation_code_id = ec.id
        WHERE ec.code = ? AND ec.type = 'activation'`,
       [code.trim()]
@@ -761,6 +800,23 @@ router.post('/recover-reset', async (req, res, next) => {
       return res.status(409).json({ error: '该链接关联多个账号，请联系客服' })
     }
     const userId = rows[0].id
+
+    // 第二要素校验：当前用户名须与关联账号一致。
+    // 与 login 同口径按不区分大小写比对（users 表 utf8mb4_unicode_ci 排序规则下
+    // WHERE username = ? 本就不区分大小写），避免凭码枚举出大小写变体差异
+    if (rows[0].username.toLowerCase() !== currentUsername.trim().toLowerCase()) {
+      await logAttempt(codeKey, ip, false)
+      return res.status(400).json({ error: '当前用户名与该激活码关联的账号不符' })
+    }
+
+    // 可选改名：提供且不同于当前用户名时校验合法性；缺省/相同则保持不变
+    const wantRename =
+      typeof newUsername === 'string' &&
+      newUsername.trim() &&
+      newUsername.trim() !== rows[0].username
+    if (wantRename && !validateUsername(newUsername.trim())) {
+      return res.status(400).json({ error: '用户名需 3-30 位，支持字母、数字、下划线、中文' })
+    }
 
     // 访客行兜底（防御性，与 login 的同类兜底对称）：正常路径访客不写 activation_code_id
     // 而到不了这里，但手工 SQL 误操作或未来代码回归使访客行关联激活码时，必须拒绝——
@@ -785,21 +841,40 @@ router.post('/recover-reset', async (req, res, next) => {
       return res.status(401).json({ error: '账号已到期', code: 'SUBSCRIPTION_EXPIRED' })
     }
 
-    // 唯一性预检（排除自身）
-    const [existing] = await pool.execute('SELECT id FROM users WHERE username = ? AND id != ?', [
-      username,
-      userId,
-    ])
-    if (existing.length > 0) {
-      return res.status(409).json({ error: '用户名已被占用' })
+    // 管理员两步验证（与 login 同款）：管理员账号经找回路径重置也必须出示动态验证码，
+    // 否则「码 + 用户名」两要素对启用 2FA 的管理员仍不构成完整接管，规则出现豁口
+    if (rows[0].is_admin && rows[0].totp_secret) {
+      const code6 = typeof totpCode === 'string' ? totpCode.trim() : ''
+      if (!/^\d{6}$/.test(code6)) {
+        await logAttempt(codeKey, ip, false)
+        return res.status(401).json({ error: '请输入动态验证码', code: 'TOTP_REQUIRED' })
+      }
+      const secret = decryptTotpSecret(rows[0].totp_secret)
+      if (!secret || !verifyTotp(secret, code6)) {
+        await logAttempt(codeKey, ip, false)
+        return res.status(401).json({ error: '动态验证码错误', code: 'TOTP_INVALID' })
+      }
+    }
+
+    // 唯一性预检（排除自身，仅在要求改名时）
+    if (wantRename) {
+      const [existing] = await pool.execute('SELECT id FROM users WHERE username = ? AND id != ?', [
+        newUsername.trim(),
+        userId,
+      ])
+      if (existing.length > 0) {
+        return res.status(409).json({ error: '用户名已被占用' })
+      }
     }
 
     const hash = await bcrypt.hash(password, config.BCRYPT_ROUNDS)
 
     try {
       await pool.execute(
-        'UPDATE users SET username = ?, password_hash = ?, password_changed_at = NOW() WHERE id = ?',
-        [username, hash, userId]
+        wantRename
+          ? 'UPDATE users SET username = ?, password_hash = ?, password_changed_at = NOW() WHERE id = ?'
+          : 'UPDATE users SET password_hash = ?, password_changed_at = NOW() WHERE id = ?',
+        wantRename ? [newUsername.trim(), hash, userId] : [hash, userId]
       )
     } catch (err) {
       // 唯一索引兜底，防 TOCTOU

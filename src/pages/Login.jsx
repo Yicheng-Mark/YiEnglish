@@ -10,6 +10,9 @@ export default function Login() {
   const location = useLocation()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [totpCode, setTotpCode] = useState('')
+  // 管理员两步验证：密码正确但缺/错动态验证码时展示输入框（TOTP_REQUIRED/TOTP_INVALID）
+  const [needTotp, setNeedTotp] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const from = location.state?.from?.pathname || '/'
@@ -22,9 +25,13 @@ export default function Login() {
     }
     setLoading(true)
     try {
-      await login(username.trim(), password)
+      await login(username.trim(), password, needTotp ? totpCode.trim() : undefined)
       navigate(from, { replace: true })
     } catch (err) {
+      if (err.code === 'TOTP_REQUIRED' || err.code === 'TOTP_INVALID') {
+        setNeedTotp(true)
+        if (err.code === 'TOTP_INVALID') setTotpCode('')
+      }
       toast.error(err.message)
     } finally {
       setLoading(false)
@@ -78,6 +85,22 @@ export default function Login() {
                 style={{ backgroundColor: 'transparent', color: 'white' }}
               />
             </div>
+            {needTotp && (
+              <div>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={totpCode}
+                  onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ''))}
+                  placeholder="动态验证码（6 位）"
+                  autoComplete="one-time-code"
+                  autoFocus
+                  className="w-full border-b border-white/30 py-3 px-1 outline-none focus:border-white transition-colors text-sm tracking-[0.3em]"
+                  style={{ backgroundColor: 'transparent', color: 'white' }}
+                />
+              </div>
+            )}
 
             <button
               type="submit"

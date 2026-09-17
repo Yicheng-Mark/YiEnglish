@@ -424,3 +424,128 @@ describe('GET /api/admin/audit', () => {
     expect(res.body.logs[0]).toMatchObject({ adminUsername: 'zyc', action: 'renew_subscription' })
   })
 })
+
+// =====================================================================
+// TOTP 两步验证（GET status / POST setup / POST enable / POST disable）
+// =====================================================================
+describe('管理员 TOTP 端点', () => {
+  const { generateTotpSecret, encryptTotpSecret, hotp, base32Decode } = require('../utils/totp')
+
+  function currentCode(secret) {
+    return hotp(base32Decode(secret), Math.floor(Date.now() / 1000 / 30))
+  }
+
+  it('status：按当前管理员 totp_secret 有无返回 enabled', async () => {
+    setExecuteHandlers([
+      { match: ['SELECT is_admin FROM users'], returns: [{ is_admin: 1 }] },
+      { match: ['SELECT totp_secret FROM users'], returns: [{ totp_secret: 'enc' }] },
+    ])
+    const res = await supertest(makeApp()).get('/api/admin/totp/status')
+    expect(res.status).toBe(200)
+    expect(res.body.enabled).toBe(true)
+  })
+
+  it('setup：返回 32 位 base32 密钥与 otpauth URL，且不写库', async () => {
+    setExecuteHandlers([
+      { match: ['SELECT is_admin FROM users'], returns: [{ is_admin: 1 }] },
+      { match: ['SELECT username FROM users'], returns: [{ username: 'zyc' }] },
+    ])
+    const res = await supertest(makeApp()).post('/api/admin/totp/setup')
+    expect(res.status).toBe(200)
+    expect(res.body.secret).toMatch(/^[A-Z2-7]{32}$/)
+    expect(res.body.otpauthUrl).toMatch(/^otpauth:\/\/totp\/LingoForge:zyc\?secret=/)
+    expect(
+      mockExecute.mock.calls.some(([sql]) => String(sql).includes('UPDATE users SET totp_secret'))
+    ).toBe(false)
+  })
+
+  it('enable：验证码与密钥匹配 → 加密落库 + 审计', async () => {
+    const secret = generateTotpSecret()
+    setExecuteHandlers([
+      { match: ['SELECT is_admin FROM users'], returns: [{ is_admin: 1 }] },
+      { match: ['UPDATE users SET totp_secret'], returns: { affectedRows: 1 } },
+    ])
+    const res = await supertest(makeApp())
+      .post('/api/admin/totp/enable')
+      .send({ secret, code: currentCode(secret) })
+    expect(res.status).toBe(200)
+    const call = mockExecute.mock.calls.find(([sql]) =>
+      String(sql).includes('UPDATE users SET totp_secret')
+    )
+    // 落库的是密文，不得包含明文密钥
+    expect(String(call[1][0])).not.toContain(secret)
+    expect(String(call[1][0])).toMatch(/^[A-Za-z0-9+/=]+\.[A-Za-z0-9+/=]+\.[A-Za-z0-9+/=]+$/)
+  })
+
+  it('enable：验证码错误 / 密钥非法 → 400 不落库', async () => {
+    const secret = generateTotpSecret()
+    setExecuteHandlers([{ match: ['SELECT is_admin FROM users'], returns: [{ is_admin: 1 }] }])
+    const wrongCode = await supertest(makeApp())
+      .post('/api/admin/totp/enable')
+      .send({ secret, code: '000000' })
+    expect(wrongCode.status).toBe(400)
+    // 000000 恰为当期正确值的极小概率由重试规避：再打一个非法形状
+    const badShape = await supertest(makeApp())
+      .post('/api/admin/totp/enable')
+      .send({ secret, code: '12345' })
+    expect(badShape.status).toBe(400)
+    const badSecret = await supertest(makeApp())
+      .post('/api/admin/totp/enable')
+      .send({ secret: 'SHORT', code: '123456' })
+    expect(badSecret.status).toBe(400)
+    expect(
+      mockExecute.mock.calls.some(([sql]) => String(sql).includes('UPDATE users SET totp_secret'))
+    ).toBe(false)
+  })
+
+  it('disable：未启用 → 400；验证码正确 → 置 NULL + 审计', async () => {
+    setExecuteHandlers([
+      { match: ['SELECT is_admin FROM users'], returns: [{ is_admin: 1 }] },
+      { match: ['SELECT totp_secret FROM users'], returns: [{ totp_secret: null }] },
+    ])
+    const notEnabled = await supertest(makeApp())
+      .post('/api/admin/totp/disable')
+      .send({ code: '123456' })
+    expect(notEnabled.status).toBe(400)
+
+    const secret = generateTotpSecret()
+    setExecuteHandlers([
+      { match: ['SELECT is_admin FROM users'], returns: [{ is_admin: 1 }] },
+      {
+        match: ['SELECT totp_secret FROM users'],
+        returns: [{ totp_secret: encryptTotpSecret(secret) }],
+      },
+      { match: ['UPDATE users SET totp_secret'], returns: { affectedRows: 1 } },
+    ])
+    const ok = await supertest(makeApp())
+      .post('/api/admin/totp/disable')
+      .send({ code: currentCode(secret) })
+    expect(ok.status).toBe(200)
+    const call = mockExecute.mock.calls
+      .filter(([sql]) => String(sql).includes('UPDATE users SET totp_secret'))
+      .pop()
+    expect(String(call[0])).toMatch(/totp_secret = NULL/)
+  })
+
+  it('disable：验证码错误 → 400 不动库', async () => {
+    const secret = generateTotpSecret()
+    setExecuteHandlers([
+      { match: ['SELECT is_admin FROM users'], returns: [{ is_admin: 1 }] },
+      {
+        match: ['SELECT totp_secret FROM users'],
+        returns: [{ totp_secret: encryptTotpSecret(secret) }],
+      },
+    ])
+    const res = await supertest(makeApp()).post('/api/admin/totp/disable').send({ code: '000000' })
+    expect(res.status).toBe(400)
+    expect(
+      mockExecute.mock.calls.some(([sql]) => String(sql).includes('UPDATE users SET totp_secret'))
+    ).toBe(false)
+  })
+
+  it('非管理员 → 404（防探测，与其余管理端点一致）', async () => {
+    setExecuteHandlers([{ match: ['SELECT is_admin FROM users'], returns: [{ is_admin: 0 }] }])
+    const res = await supertest(makeApp()).get('/api/admin/totp/status')
+    expect(res.status).toBe(404)
+  })
+})

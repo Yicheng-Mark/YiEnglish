@@ -8,6 +8,13 @@ const pool = require('../db')
 const authMiddleware = require('../middleware/auth')
 const requireAdmin = require('../middleware/requireAdmin')
 const { getClientIp } = require('../utils/tokens')
+const {
+  generateTotpSecret,
+  isValidTotpSecret,
+  verifyTotp,
+  encryptTotpSecret,
+  decryptTotpSecret,
+} = require('../utils/totp')
 
 const router = Router()
 
@@ -72,6 +79,7 @@ router.get('/users', authMiddleware, requireAdmin, async (req, res, next) => {
 
     const [rows] = await pool.execute(
       `SELECT u.id, u.username, u.nickname, u.is_guest, u.is_admin, u.subscription_expires_at, u.max_devices, u.created_at,
+              (u.totp_secret IS NOT NULL) AS has_totp,
               (SELECT MAX(rt.last_active_at) FROM refresh_tokens rt WHERE rt.user_id = u.id) AS last_active_at,
               (SELECT COUNT(*) FROM refresh_tokens rt2 WHERE rt2.user_id = u.id) AS device_count
        FROM users u ${whereSql} ORDER BY u.id DESC LIMIT ${pageSize} OFFSET ${offset}`,
@@ -89,6 +97,7 @@ router.get('/users', authMiddleware, requireAdmin, async (req, res, next) => {
         nickname: u.nickname,
         isGuest: !!u.is_guest,
         isAdmin: !!u.is_admin,
+        hasTotp: !!u.has_totp,
         subscriptionExpiresAt: u.subscription_expires_at
           ? new Date(u.subscription_expires_at).toISOString()
           : null,
@@ -331,6 +340,84 @@ router.patch('/codes/:id', authMiddleware, requireAdmin, async (req, res, next) 
     )
     if (result.affectedRows === 0) return res.status(404).json({ error: '码不存在' })
     await writeAudit(req, 'update_code', 'code', codeId, { isActive, issuedNote, description })
+    res.json({ ok: true })
+  } catch (err) {
+    next(err)
+  }
+})
+
+// --- 两步验证（TOTP）管理：仅作用于当前管理员本人 ---
+// 流程：setup 生成密钥（不入库）→ 用户在验证器 App 添加 → enable 携带密钥+当前验证码落库；
+// disable 需出示当前验证码（防止会话被劫持后直接关掉第二因子）。
+
+// 当前管理员的 2FA 状态
+router.get('/totp/status', authMiddleware, requireAdmin, async (req, res, next) => {
+  try {
+    const [rows] = await pool.execute('SELECT totp_secret FROM users WHERE id = ?', [req.userId])
+    if (rows.length === 0) return res.status(404).json({ error: '用户不存在' })
+    res.json({ enabled: !!rows[0].totp_secret })
+  } catch (err) {
+    next(err)
+  }
+})
+
+// 生成新密钥（仅返回，不落库；enable 时才持久化）
+router.post('/totp/setup', authMiddleware, requireAdmin, async (req, res, next) => {
+  try {
+    const secret = generateTotpSecret()
+    const [rows] = await pool.execute('SELECT username FROM users WHERE id = ?', [req.userId])
+    const otpauthUrl = `otpauth://totp/LingoForge:${encodeURIComponent(
+      rows[0]?.username || ''
+    )}?secret=${secret}&issuer=LingoForge&algorithm=SHA1&digits=6&period=30`
+    res.json({ secret, otpauthUrl })
+  } catch (err) {
+    next(err)
+  }
+})
+
+// 启用：校验验证码与密钥匹配后加密落库
+router.post('/totp/enable', authMiddleware, requireAdmin, async (req, res, next) => {
+  try {
+    const { secret, code } = req.body || {}
+    if (!isValidTotpSecret(secret)) {
+      return res.status(400).json({ error: '密钥格式无效' })
+    }
+    if (typeof code !== 'string' || !/^\d{6}$/.test(code.trim())) {
+      return res.status(400).json({ error: '请输入 6 位动态验证码' })
+    }
+    if (!verifyTotp(secret, code.trim())) {
+      return res.status(400).json({ error: '动态验证码错误，请确认验证器时间与密钥一致' })
+    }
+    await pool.execute(
+      'UPDATE users SET totp_secret = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      [encryptTotpSecret(secret), req.userId]
+    )
+    await writeAudit(req, 'totp_enable', 'user', req.userId, null)
+    res.json({ ok: true })
+  } catch (err) {
+    next(err)
+  }
+})
+
+// 停用：需出示当前验证码
+router.post('/totp/disable', authMiddleware, requireAdmin, async (req, res, next) => {
+  try {
+    const { code } = req.body || {}
+    const [rows] = await pool.execute('SELECT totp_secret FROM users WHERE id = ?', [req.userId])
+    if (rows.length === 0 || !rows[0].totp_secret) {
+      return res.status(400).json({ error: '两步验证未启用' })
+    }
+    if (
+      typeof code !== 'string' ||
+      !verifyTotp(decryptTotpSecret(rows[0].totp_secret) || '', code.trim())
+    ) {
+      return res.status(400).json({ error: '动态验证码错误' })
+    }
+    await pool.execute(
+      'UPDATE users SET totp_secret = NULL, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      [req.userId]
+    )
+    await writeAudit(req, 'totp_disable', 'user', req.userId, null)
     res.json({ ok: true })
   } catch (err) {
     next(err)

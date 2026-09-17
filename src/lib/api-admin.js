@@ -62,3 +62,34 @@ export async function updateCode(codeId, body) {
 export async function fetchAdminAudit(params = {}) {
   return parseJsonResponse(await apiFetch(`/api/admin/audit${qs(params)}`))
 }
+
+// ---- 两步验证（TOTP，作用于当前管理员本人） ----
+
+export async function fetchTotpStatus() {
+  return parseJsonResponse(await apiFetch('/api/admin/totp/status'))
+}
+
+// 生成新密钥（不落库；enable 时才持久化）
+export async function setupTotp() {
+  return parseJsonResponse(await apiFetch('/api/admin/totp/setup', { method: 'POST' }))
+}
+
+export async function enableTotp(secret, code) {
+  return parseJsonResponse(
+    await apiFetch('/api/admin/totp/enable', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret, code }),
+    })
+  )
+}
+
+export async function disableTotp(code) {
+  return parseJsonResponse(
+    await apiFetch('/api/admin/totp/disable', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code }),
+    })
+  )
+}

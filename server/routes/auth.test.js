@@ -1367,10 +1367,15 @@ describe('GET /api/auth/devices', () => {
 })
 
 // =====================================================================
-// 找回密码：POST /api/auth/recover-reset（凭激活码重置用户名与密码）
+// 找回密码：POST /api/auth/recover-reset（激活码 + 当前用户名双要素，可选改名）
 // =====================================================================
 describe('POST /api/auth/recover-reset', () => {
-  const validBody = { code: 'CODE1', username: 'newname1', password: VALID_PASSWORD }
+  const validBody = {
+    code: 'CODE1',
+    currentUsername: 'oldname1',
+    password: VALID_PASSWORD,
+    newUsername: 'newname1',
+  }
 
   it('入口先过 code 维度限流（回归：修复前 recover-reset 失败不计次，可无限爆破激活码接管账号）', async () => {
     const rateErr = new Error('登录尝试过于频繁，请稍后再试')
@@ -1382,6 +1387,33 @@ describe('POST /api/auth/recover-reset', () => {
     expect(fakeRateLimit.checkLoginRateLimit).toHaveBeenCalledWith(
       'recover:CODE1',
       expect.any(String)
+    )
+  })
+
+  it('缺当前用户名 → 400（激活码不再是唯一要素）', async () => {
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/recover-reset')
+      .send({ code: 'CODE1', password: VALID_PASSWORD })
+    expect(res.status).toBe(400)
+    expect(res.body.error).toMatch(/当前用户名/)
+  })
+
+  it('当前用户名与关联账号不符 → 400 且按 code 维度记失败（堵住「仅凭码接管任意关联账号」旁路）', async () => {
+    setExecuteHandlers([
+      { match: ['JOIN experience_codes'], returns: [{ id: 5, username: 'realowner' }] },
+    ])
+    const app = makeApp()
+    const res = await supertest(app).post('/api/auth/recover-reset').send(validBody)
+    expect(res.status).toBe(400)
+    expect(res.body.error).toMatch(/不符/)
+    expect(fakeRateLimit.logAttempt).toHaveBeenCalledWith(
+      'recover:CODE1',
+      expect.any(String),
+      false
+    )
+    expect(mockExecute.mock.calls.some(([sql]) => String(sql).includes('UPDATE users SET'))).toBe(
+      false
     )
   })
 
@@ -1397,7 +1429,7 @@ describe('POST /api/auth/recover-reset', () => {
     )
   })
 
-  it('重置成功 → 200，按 code 维度记成功并踢掉所有旧登录态', async () => {
+  it('重置成功（含改名）→ 200，按 code 维度记成功并踢掉所有旧登录态', async () => {
     setExecuteHandlers([
       { match: ['JOIN experience_codes'], returns: [{ id: 5, username: 'oldname1' }] },
       { match: ['FROM users WHERE username'], returns: [] }, // 新用户名可用
@@ -1430,6 +1462,37 @@ describe('POST /api/auth/recover-reset', () => {
     ).toBe(true)
   })
 
+  it('不提供 newUsername → 只改密码不改用户名', async () => {
+    setExecuteHandlers([
+      { match: ['JOIN experience_codes'], returns: [{ id: 5, username: 'oldname1' }] },
+      { match: ['UPDATE users SET password_hash'], returns: { affectedRows: 1 } },
+      { match: ['DELETE FROM refresh_tokens WHERE user_id'], returns: { affectedRows: 1 } },
+      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 1, affectedRows: 1 } },
+      {
+        match: ['SELECT id, username, nickname, avatar_url'],
+        returns: [
+          {
+            id: 5,
+            username: 'oldname1',
+            nickname: null,
+            avatar_url: null,
+            daily_goal_minutes: 30,
+            signature: null,
+          },
+        ],
+      },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/recover-reset')
+      .send({ code: 'CODE1', currentUsername: 'oldname1', password: VALID_PASSWORD })
+    expect(res.status).toBe(200)
+    expect(res.body.user).toMatchObject({ username: 'oldname1' })
+    expect(
+      mockExecute.mock.calls.some(([sql]) => String(sql).includes('UPDATE users SET username'))
+    ).toBe(false)
+  })
+
   it('关联账号是访客行（防御性：正常路径不可达）→ 400 拒绝，不重置不签发（堵住「访客行意外关联激活码 → 找回密码白嫖永久会话」旁路）', async () => {
     setExecuteHandlers([
       {
@@ -1438,7 +1501,9 @@ describe('POST /api/auth/recover-reset', () => {
       },
     ])
     const app = makeApp()
-    const res = await supertest(app).post('/api/auth/recover-reset').send(validBody)
+    const res = await supertest(app)
+      .post('/api/auth/recover-reset')
+      .send({ ...validBody, currentUsername: 'guest_ab' })
     expect(res.status).toBe(400)
     expect(res.body.error).toMatch(/未关联正式账号/)
     expect(fakeRateLimit.logAttempt).toHaveBeenCalledWith(
@@ -1519,6 +1584,214 @@ describe('POST /api/auth/recover-reset', () => {
     const access = getCookie(res.headers['set-cookie'], 'lf_access_token')
     const decoded = jwt.verify(access, FIXED_JWT_SECRET)
     expect(decoded.subExp).toBe(subExp.toISOString())
+  })
+})
+
+// =====================================================================
+// 找回密码：POST /api/auth/recover-lookup（用户名打码返回）
+// =====================================================================
+describe('POST /api/auth/recover-lookup', () => {
+  it('命中 → 只回打码用户名，不回完整用户名（完整用户名是 reset 的第二要素）', async () => {
+    setExecuteHandlers([
+      { match: ['JOIN experience_codes'], returns: [{ id: 5, username: 'zhangsan2026' }] },
+    ])
+    const app = makeApp()
+    const res = await supertest(app).post('/api/auth/recover-lookup').send({ code: 'CODE1' })
+    expect(res.status).toBe(200)
+    expect(res.body.found).toBe(true)
+    expect(res.body.usernameMasked).toBeTruthy()
+    expect(res.body.usernameMasked).not.toBe('zhangsan2026')
+    expect(JSON.stringify(res.body)).not.toContain('zhangsan2026')
+  })
+
+  it('未命中 → 404 且按 code 维度记失败', async () => {
+    setExecuteHandlers([{ match: ['JOIN experience_codes'], returns: [] }])
+    const app = makeApp()
+    const res = await supertest(app).post('/api/auth/recover-lookup').send({ code: 'CODE1' })
+    expect(res.status).toBe(404)
+    expect(fakeRateLimit.logAttempt).toHaveBeenCalledWith(
+      'recover:CODE1',
+      expect.any(String),
+      false
+    )
+  })
+})
+
+// =====================================================================
+// 管理员两步验证（TOTP）：login 与 recover-reset 双入口
+// =====================================================================
+describe('管理员 TOTP 两步验证', () => {
+  const { generateTotpSecret, encryptTotpSecret, hotp, base32Decode } = require('../utils/totp')
+
+  function currentCode(secret) {
+    return hotp(base32Decode(secret), Math.floor(Date.now() / 1000 / 30))
+  }
+
+  const adminRow = (totpSecret) => ({
+    id: 9,
+    username: 'theadmin',
+    nickname: 'admin',
+    password_hash: bcrypt.hashSync(VALID_PASSWORD, 4),
+    avatar_url: null,
+    daily_goal_minutes: 30,
+    signature: null,
+    is_guest: 0,
+    is_admin: 1,
+    subscription_expires_at: null,
+    totp_secret: totpSecret ?? null,
+  })
+
+  it('login：管理员已启用但缺验证码 → 401 TOTP_REQUIRED（密码已验证）', async () => {
+    const secret = generateTotpSecret()
+    setExecuteHandlers([
+      {
+        match: ['FROM users WHERE username = ?'],
+        returns: [adminRow(encryptTotpSecret(secret))],
+      },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/login')
+      .send({ username: 'theadmin', password: VALID_PASSWORD })
+    expect(res.status).toBe(401)
+    expect(res.body.code).toBe('TOTP_REQUIRED')
+    expect(
+      mockExecute.mock.calls.some(([sql]) => String(sql).includes('INSERT INTO refresh_tokens'))
+    ).toBe(false)
+  })
+
+  it('login：验证码错误 → 401 TOTP_INVALID 且计入限流计数', async () => {
+    const secret = generateTotpSecret()
+    setExecuteHandlers([
+      {
+        match: ['FROM users WHERE username = ?'],
+        returns: [adminRow(encryptTotpSecret(secret))],
+      },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/login')
+      .send({ username: 'theadmin', password: VALID_PASSWORD, totpCode: '000000' })
+    expect(res.status).toBe(401)
+    expect(res.body.code).toBe('TOTP_INVALID')
+    expect(fakeRateLimit.logAttempt).toHaveBeenCalledWith('theadmin', expect.any(String), false)
+  })
+
+  it('login：正确验证码 → 200 正常签发', async () => {
+    const secret = generateTotpSecret()
+    setExecuteHandlers([
+      {
+        match: ['FROM users WHERE username = ?'],
+        returns: [adminRow(encryptTotpSecret(secret))],
+      },
+    ])
+    setConnectionHandlers([
+      { match: ['SELECT max_devices FROM users'], returns: [{ max_devices: null }] },
+      { match: ['SELECT COUNT(*) AS cnt'], returns: [{ cnt: 0 }] },
+      { match: ['DELETE FROM refresh_tokens WHERE user_id'], returns: { affectedRows: 0 } },
+      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 1, affectedRows: 1 } },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/login')
+      .send({ username: 'theadmin', password: VALID_PASSWORD, totpCode: currentCode(secret) })
+    expect(res.status).toBe(200)
+    expect(res.body.user.isAdmin).toBe(true)
+  })
+
+  it('login：非管理员带 totpCode 不受影响（多传忽略）', async () => {
+    setExecuteHandlers([
+      {
+        match: ['FROM users WHERE username = ?'],
+        returns: [{ ...adminRow(null), is_admin: 0, username: 'normaluser' }],
+      },
+    ])
+    setConnectionHandlers([
+      { match: ['SELECT max_devices FROM users'], returns: [{ max_devices: null }] },
+      { match: ['SELECT COUNT(*) AS cnt'], returns: [{ cnt: 0 }] },
+      { match: ['DELETE FROM refresh_tokens WHERE user_id'], returns: { affectedRows: 0 } },
+      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 1, affectedRows: 1 } },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/login')
+      .send({ username: 'normaluser', password: VALID_PASSWORD, totpCode: '123456' })
+    expect(res.status).toBe(200)
+  })
+
+  it('recover-reset：启用 TOTP 的管理员缺验证码 → 401 TOTP_REQUIRED（码+用户名对管理员仍不够）', async () => {
+    const secret = generateTotpSecret()
+    setExecuteHandlers([
+      {
+        match: ['JOIN experience_codes'],
+        returns: [
+          {
+            id: 9,
+            username: 'theadmin',
+            is_guest: 0,
+            is_admin: 1,
+            totp_secret: encryptTotpSecret(secret),
+            subscription_expires_at: null,
+          },
+        ],
+      },
+    ])
+    const app = makeApp()
+    const res = await supertest(app).post('/api/auth/recover-reset').send({
+      code: 'CODE1',
+      currentUsername: 'theadmin',
+      password: VALID_PASSWORD,
+    })
+    expect(res.status).toBe(401)
+    expect(res.body.code).toBe('TOTP_REQUIRED')
+    expect(
+      mockExecute.mock.calls.some(([sql]) => String(sql).includes('UPDATE users SET password_hash'))
+    ).toBe(false)
+  })
+
+  it('recover-reset：正确验证码 → 200', async () => {
+    const secret = generateTotpSecret()
+    setExecuteHandlers([
+      {
+        match: ['JOIN experience_codes'],
+        returns: [
+          {
+            id: 9,
+            username: 'theadmin',
+            is_guest: 0,
+            is_admin: 1,
+            totp_secret: encryptTotpSecret(secret),
+            subscription_expires_at: null,
+          },
+        ],
+      },
+      { match: ['UPDATE users SET password_hash'], returns: { affectedRows: 1 } },
+      { match: ['DELETE FROM refresh_tokens WHERE user_id'], returns: { affectedRows: 1 } },
+      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 1, affectedRows: 1 } },
+      {
+        match: ['SELECT id, username, nickname, avatar_url'],
+        returns: [
+          {
+            id: 9,
+            username: 'theadmin',
+            nickname: null,
+            avatar_url: null,
+            daily_goal_minutes: 30,
+            signature: null,
+          },
+        ],
+      },
+    ])
+    const app = makeApp()
+    const res = await supertest(app)
+      .post('/api/auth/recover-reset')
+      .send({
+        code: 'CODE1',
+        currentUsername: 'theadmin',
+        password: VALID_PASSWORD,
+        totpCode: currentCode(secret),
+      })
+    expect(res.status).toBe(200)
   })
 })
 

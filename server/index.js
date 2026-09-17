@@ -96,6 +96,7 @@ const authRoutes = require('./routes/auth')
 const demoRoutes = require('./routes/demo')
 const clientErrorRoutes = require('./routes/clientError')
 const adminRoutes = require('./routes/admin')
+const contentRoutes = require('./routes/content')
 // AI 助手下线（DeepSeek key 无额度），恢复时取消注释本块及下方 aiLimiter、三个 app.use 挂载
 // 2026-09-11 路由与 services 文件已整体归档至 D:\AI助手归档，恢复时先复制回仓库
 // const chatRoutes = require('./routes/chat')
@@ -146,6 +147,8 @@ app.use('/api/migrate', writeLimiter, migrateRoutes)
 app.use('/api/review', writeLimiter, reviewRoutes)
 app.use('/api/demo', demoRoutes) // demo 有自己的体验码限流，不重复挂
 app.use('/api/client-error', errorReportLimiter, clientErrorRoutes)
+// 词库数据下发（认证 + 体验裁剪）：读路径，共享写接口的 120/min/IP 限流
+app.use('/api/dictionaries', writeLimiter, contentRoutes)
 // AI 助手下线：/api/chat|style|memory 不再挂载，请求落到下方 /api 404 兜底
 // app.use('/api/chat', aiLimiter, chatRoutes) // chat 另有账号级每日 10 次限额
 // app.use('/api/style', aiLimiter, styleRoutes)

@@ -3,6 +3,7 @@
 -- 本文件汇总 server/sql/migrate_*.sql 按文件名顺序执行后的最终态，
 -- 仅作为文档参考。新建库时可直接跑本文件；已建库走 migrate_*.sql。
 -- 迁移来源：
+--   migrate_auth_v1         users 基表（让迁移链可从全空库自举，2026-09-17 补）
 --   migrate_auth_v2         email 验证字段 + login_logs（已被 v3 删除）
 --   migrate_auth_v3         username/password 体系 + refresh_tokens + login_attempts
 --   migrate_demo_trial      experience_codes + trial_activations + users.is_guest
@@ -23,6 +24,7 @@
 --   migrate_trial_activation_ip trial_activations.ip 同 IP 累计终身领取上限
 --   migrate_trial_ip_totals   trial_ip_totals IP 终身计数归档（防访客清理级联删除导致计数回血）
 --   migrate_admin_backoffice users.is_admin + admin_audit_log 操作审计 + experience_codes.issued_note 发放备注
+--   migrate_admin_totp      users.totp_secret 管理员两步验证（AES-256-GCM 加密，NULL=未启用）
 -- ============================================================
 
 CREATE DATABASE IF NOT EXISTS lingoforge
@@ -41,12 +43,15 @@ USE lingoforge;
 --   migrate_subscription_expire subscription_expires_at（NULL=永久；月/季/年卡按激活码 trial_hours 写入）
 --   migrate_demo_trial is_guest
 --   migrate_activation_code activation_code_id
+--   migrate_admin_backoffice is_admin
+--   migrate_admin_totp totp_secret（管理员两步验证密钥，AES-256-GCM 加密，NULL=未启用）
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS users (
   id                     BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   username               VARCHAR(30)   NOT NULL DEFAULT '',
   is_guest               TINYINT(1)    NOT NULL DEFAULT 0,
   is_admin               TINYINT(1)    NOT NULL DEFAULT 0 COMMENT '管理员标识（手工 SQL 设置）',
+  totp_secret            VARCHAR(255)  NULL DEFAULT NULL COMMENT '管理员 TOTP 密钥（AES-256-GCM 加密，NULL=未启用）',
   activation_code_id     BIGINT UNSIGNED NULL DEFAULT NULL COMMENT '注册来源激活码（experience_codes.id）',
   nickname               VARCHAR(50)   NOT NULL DEFAULT '学习者',
   email                  VARCHAR(255)  DEFAULT NULL,

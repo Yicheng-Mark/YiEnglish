@@ -119,16 +119,24 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener('auth:unauthorized', onUnauthorized)
   }, [])
 
-  const login = useCallback(async (username, password) => {
+  // totpCode：管理员开启两步验证后的第二因子；非管理员/未开启时省略
+  const login = useCallback(async (username, password, totpCode) => {
+    const body = { username, password, deviceId: getDeviceId() }
+    if (totpCode) body.totpCode = totpCode
     const res = await fetch(`${API_BASE}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ username, password, deviceId: getDeviceId() }),
+      body: JSON.stringify(body),
     })
     // 网关 502 等场景返回 HTML，json() 会抛 SyntaxError：兜底为空对象走下方 !res.ok 文案
     const data = await res.json().catch(() => ({}))
-    if (!res.ok) throw new Error(data.error || '登录失败')
+    if (!res.ok) {
+      const err = new Error(data.error || '登录失败')
+      // TOTP_REQUIRED/TOTP_INVALID 供登录页展示动态验证码输入框（管理员两步验证）
+      if (data.code) err.code = data.code
+      throw err
+    }
     setUser(data.user)
     // 登录后拉一次服务端设置（跨设备同步设置/主题），并拉取五个词本的服务端
     // 权威数据，均不阻塞登录流程
@@ -153,6 +161,8 @@ export function AuthProvider({ children }) {
     return data.user
   }, [])
 
+  // lookup 只回打码用户名（usernameMasked）：完整用户名是 reset 的第二要素，
+  // 不能凭激活码直接拿到
   const recoverLookup = useCallback(async (code) => {
     const res = await fetch(`${API_BASE}/api/auth/recover-lookup`, {
       method: 'POST',
@@ -165,18 +175,29 @@ export function AuthProvider({ children }) {
     return data
   }, [])
 
-  const recoverReset = useCallback(async (code, username, password) => {
-    const res = await fetch(`${API_BASE}/api/auth/recover-reset`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ code, username, password, deviceId: getDeviceId() }),
-    })
-    const data = await res.json().catch(() => ({}))
-    if (!res.ok) throw new Error(data.error || '重置失败')
-    setUser(data.user)
-    return data.user
-  }, [])
+  // 双要素找回：激活码 + 当前用户名（newUsername 可选改名；totpCode 为管理员两步验证）
+  const recoverReset = useCallback(
+    async (code, currentUsername, password, newUsername, totpCode) => {
+      const body = { code, currentUsername, password, deviceId: getDeviceId() }
+      if (newUsername) body.newUsername = newUsername
+      if (totpCode) body.totpCode = totpCode
+      const res = await fetch(`${API_BASE}/api/auth/recover-reset`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(body),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        const err = new Error(data.error || '重置失败')
+        if (data.code) err.code = data.code
+        throw err
+      }
+      setUser(data.user)
+      return data.user
+    },
+    []
+  )
 
   const logout = useCallback(async () => {
     try {

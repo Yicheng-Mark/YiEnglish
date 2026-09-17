@@ -6,6 +6,7 @@
 //（单请求替代 18 部词典的全量下载与主线程解析，去重后体积约为源词典的 1/3）。
 // 索引缺失/损坏时回退旧全量路径，保证与词典 JSON 的部署节奏不同步时功能不受影响。
 import { loadDictionary } from './loadDictionary.js'
+import { fetchWithAuth } from '../lib/api'
 
 const DICT_IDS = [
   'junior',
@@ -37,11 +38,13 @@ let wordIndexCache = null
 let wordIndexPending = null
 
 // 拉取预生成索引。模块级缓存：语料播放器/共享词表/首页搜索/阅读页共享同一次 fetch + parse。
+// 经 /api/dictionaries 认证下发：正式账号拿全量 word-index.json，体验用户由服务端
+// 换发体验版 word-index-trial.json（对前端透明，路径不变）。
 export function loadWordIndex() {
   if (wordIndexCache) return Promise.resolve(wordIndexCache)
   if (wordIndexPending) return wordIndexPending
   wordIndexPending = (async () => {
-    const res = await fetch(`${import.meta.env.BASE_URL}dictionaries/word-index.json`)
+    const res = await fetchWithAuth(`${import.meta.env.BASE_URL}api/dictionaries/word-index.json`)
     if (!res.ok) throw new Error(`Failed to load word-index: ${res.status}`)
     const data = await res.json()
     // 形状校验：必须是普通对象。404 页面 HTML / 意外 JSON / 空数组都在这里失败 → 走 fallback
