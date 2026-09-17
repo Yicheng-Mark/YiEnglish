@@ -1,17 +1,17 @@
 -- Auth v3: username+password, no email verification
 -- Compatible with MySQL 8.0
-
-USE lingoforge;
+-- 库名判断走 DATABASE()（迁移器连接已按 DB_NAME 指定默认库）：原硬编码 'lingoforge'
+-- 在 DB_NAME 不同的环境（staging 等）会把条件检查与 ALTER 打到错误的库。
 
 -- Add username column if not exists
-SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'lingoforge' AND TABLE_NAME = 'users' AND COLUMN_NAME = 'username');
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'username');
 SET @sql = IF(@col_exists = 0, 'ALTER TABLE users ADD COLUMN username VARCHAR(30) NOT NULL DEFAULT "" AFTER id', 'SELECT "username column already exists" AS msg');
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
 -- Drop email unique key if exists
-SET @uk_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = 'lingoforge' AND TABLE_NAME = 'users' AND INDEX_NAME = 'uk_email');
+SET @uk_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND INDEX_NAME = 'uk_email');
 SET @sql = IF(@uk_exists > 0, 'ALTER TABLE users DROP INDEX uk_email', 'SELECT "uk_email already dropped" AS msg');
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
@@ -21,19 +21,19 @@ DEALLOCATE PREPARE stmt;
 ALTER TABLE users MODIFY COLUMN email VARCHAR(255) DEFAULT NULL;
 
 -- Remove dormant email verification columns
-SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'lingoforge' AND TABLE_NAME = 'users' AND COLUMN_NAME = 'verify_code');
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'verify_code');
 SET @sql = IF(@col_exists > 0, 'ALTER TABLE users DROP COLUMN verify_code', 'SELECT "verify_code already dropped" AS msg');
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
-SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'lingoforge' AND TABLE_NAME = 'users' AND COLUMN_NAME = 'code_expires_at');
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'code_expires_at');
 SET @sql = IF(@col_exists > 0, 'ALTER TABLE users DROP COLUMN code_expires_at', 'SELECT "code_expires_at already dropped" AS msg');
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
-SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'lingoforge' AND TABLE_NAME = 'users' AND COLUMN_NAME = 'email_verified');
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'email_verified');
 SET @sql = IF(@col_exists > 0, 'ALTER TABLE users DROP COLUMN email_verified', 'SELECT "email_verified already dropped" AS msg');
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
@@ -43,21 +43,21 @@ DEALLOCATE PREPARE stmt;
 UPDATE users SET username = CONCAT('user_', id) WHERE username = '';
 
 -- Add unique constraint on username if not exists
-SET @uk_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = 'lingoforge' AND TABLE_NAME = 'users' AND INDEX_NAME = 'uk_username');
+SET @uk_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND INDEX_NAME = 'uk_username');
 SET @sql = IF(@uk_exists = 0, 'ALTER TABLE users ADD UNIQUE KEY uk_username (username)', 'SELECT "uk_username already exists" AS msg');
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
 -- Add signature column if not exists
-SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'lingoforge' AND TABLE_NAME = 'users' AND COLUMN_NAME = 'signature');
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'signature');
 SET @sql = IF(@col_exists = 0, 'ALTER TABLE users ADD COLUMN signature VARCHAR(200) DEFAULT NULL AFTER avatar_url', 'SELECT "signature column already exists" AS msg');
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
 -- Add password_changed_at column if not exists
-SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'lingoforge' AND TABLE_NAME = 'users' AND COLUMN_NAME = 'password_changed_at');
+SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'password_changed_at');
 SET @sql = IF(@col_exists = 0, 'ALTER TABLE users ADD COLUMN password_changed_at TIMESTAMP NULL DEFAULT NULL AFTER password_hash', 'SELECT "password_changed_at column already exists" AS msg');
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
