@@ -64,7 +64,7 @@
 ## 🔁 学习闭环
 
 ```
-        输入（打字背词） · 25 本词库 · 96,644 词 · 25 词/章
+        输入（打字背词） · 25 本词库 · 95,352 词 · 25 词/章
                     │
                     ▼
         规则（语法体系） · 词性 · 时态 · 长难句
@@ -89,7 +89,7 @@
 ## 🚀 核心功能
 
 ### ⌨️ 打字背单词（核心引擎）
-- **25 本精准词库**：覆盖中学、大学、英专、留学、考研、船员考试、专业英语七大类，共 **96,644 词**
+- **25 本精准词库**：覆盖中学、大学、英专、留学、考研、船员考试、专业英语七大类，共 **95,352 词**
 - **25 词/章科学切分**：强制控制单次学习负荷，每章一个独立进度单元
 - **沉浸式逐字输入**：实时纠错高亮，肌肉记忆 + 视觉记忆双通道强化
 - **Web Audio 机械键盘音效**：纯代码合成真实机械键盘声 + 正确 / 错误 / 完成提示音，零音频文件依赖（见 [src/hooks/useTyping.js](src/hooks/useTyping.js) + [src/utils/audioContext.js](src/utils/audioContext.js)）
@@ -103,7 +103,7 @@
 - **错题本**：打字练习中出错的词，专项重练
 - **阅读词本**：分级阅读里点查收藏的生词
 - **语料词本**：视频字幕里点查收藏的生词
-- **复习计划**：SM-2 间隔重复调度，在「将要遗忘前」精准召回（实现见 [src/utils/reviewCards.js](src/utils/reviewCards.js)）
+- **复习计划**：SM-2 间隔重复调度，在「将要遗忘前」精准召回（实现见 [src/utils/reviewCards.js](src/utils/reviewCards.js)）；配套**复习测验**支持打字 + 三种选择题型（英译中 / 中译英 / 听力题），选择题答题结果与打字复习同口径推进 SM-2
 - **收藏词本**：练习中随手收藏的词，随时专项练习
 
 ### 📖 分级阅读
@@ -134,10 +134,17 @@
 - **设备登录限制**：默认每账号 2 台设备在线（env 全局可配，支持按账号覆盖：`0`=不限 / `N`=精确上限）；同一设备重复登录不占新名额；调低上限后超额设备在 token 轮换时（约 30 分钟内）自动下线；设备管理支持查看 / 踢出
 - **激活码注册**：`/activate/<code>` 链接直达，粘贴完整链接自动提取码段；时长分**永久 / 月卡（30 天）/ 季卡（90 天）/ 年卡（365 天）**，自注册时刻起算
 - **订阅到期强制下线**：月 / 季 / 年卡到期时间内嵌 JWT，使用中（每请求比对，零窗口）· 重新登录 · 会话刷新三道闸拦截，到期即无法使用；永久账号与存量账号不受影响
-- **体验码试用**：1 小时试用、设备级限流（一设备一码）、试用条引导升级；试用到期时间内嵌 JWT，服务端 + 前端双重强制下线
-- **找回密码**：凭激活码反查账号并重置用户名 / 密码
+- **体验码试用**：1 小时试用、设备级限流（一设备一码）、试用条引导走 `/activate/<code>` 开通；试用到期时间内嵌 JWT，服务端 + 前端双重强制下线
+- **找回密码（双要素）**：激活码 lookup 仅回打码用户名；重置须**激活码 + 当前用户名**双重匹配，仅凭激活码无法接管账号
 - **跨设备进度同步**：词库进度、词本、收藏状态服务端持久化
 - **个人资料**：昵称、签名、头像、每日学习目标
+
+### 🛡️ 管理后台（/admin）
+仅 `is_admin` 账号可见（非 admin 统一 404 防探测），四 Tab：
+- **用户**：列表 / 到期筛选 / 搜索 / 续期（月 / 季 / 年，`GREATEST(NOW(), 当前到期)` 不吃亏）/ 设备上限调整
+- **激活码**：生成永久 / 月 / 季 / 年卡、停用、发放备注追踪（`lf-` 前缀去易混淆字符）
+- **审计**：`admin_audit_log` 全量后台操作留痕
+- **安全**：管理员 TOTP 两步验证自助开 / 关（RFC 6238 零依赖实现 [server/utils/totp.js](server/utils/totp.js)，密钥 AES-256-GCM 加密存储；每请求查库验权限，收回即时生效）
 
 ### 📊 数据统计
 - **模块化计时**：打字 / 阅读 / 语料独立计时
@@ -156,7 +163,8 @@
 | ⌨️ Web Audio 合成音效 | 机械键盘声、正确 / 错误 / 完成提示音，纯代码合成零依赖 |
 | 🔍 词形还原查词 | 不规则动词、复数、时态、比较级等形态还原，查词无死角 |
 | 🎬 65 集真实语料 | 8 种字幕模式 + 字幕点词即查，OSS 自定义域名解决 iOS 内嵌播放 |
-| 🔐 完整账号体系 | 默认 2 台设备上限（可按账号覆盖）+ 激活码（永久 / 月 / 季 / 年卡）+ 体验码 + 找回密码，到期三道闸强制下线 |
+| 🔐 完整账号体系 | 默认 2 台设备上限（可按账号覆盖）+ 激活码（永久 / 月 / 季 / 年卡）+ 体验码 + 找回密码双要素，到期三道闸强制下线 |
+| 🛡️ 管理后台 + 词库门禁 | /admin 用户 / 激活码 / 审计 / TOTP 四 Tab；词库 JSON 走认证接口下发（匿名 401、体验账号前 5 章裁剪） |
 | 🎨 2 套主题 | 明亮 / 暖色，CSS 变量驱动全局换肤 |
 | 📱 深度移动端适配 | UA + 触控 + 屏幕尺寸 + 指针类型多维检测，平板横竖屏自动切换（运行时分流，单构建产物） |
 | 💾 离线可用 + 服务端同步 | IndexedDB + localStorage 双存储，登录后跨设备同步 |
@@ -166,15 +174,15 @@
 
 ## 📚 词库数据
 
-25 本词库，共 **96,644 词**，全部按 **25 词/章** 强制切分。词库 JSON 以静态资源方式按需 `fetch`，不打入前端 bundle；另有全库去重合并索引 [public/dictionaries/word-index.json](public/dictionaries/word-index.json)（`npm run dict:index` 生成），是语料 / 阅读 / 搜词的唯一数据源，加载失败自动回退逐册拉取。
+25 本词库，共 **95,352 词**（全库去重后 30,709 个唯一词），全部按 **25 词/章** 强制切分。词库 JSON 不打入前端 bundle，也**不再静态直出**：统一走认证接口 `GET /api/dictionaries/:file` 下发——匿名 401、体验账号拿前 5 章裁剪词典、正式账号拿全量（`Cache-Control: private` + ETag 协商缓存）。全库去重合并索引 [public/dictionaries/word-index.json](public/dictionaries/word-index.json)（`npm run dict:index` 生成）是语料 / 阅读 / 搜词的唯一数据源，同样经该接口认证下发，体验用户由服务端透明换发体验版 `word-index-trial.json`，加载失败自动回退逐册拉取。
 
 | 分类 | 词库 | 词数 |
 |:---|:---|---:|
 | **中学英语** | 初中 · 中考核心 · 高中 · 高考核心 | 6,595 |
 | **大学英语** | CET-4 · CET-4 高频 · CET-6 · CET-6 高频 | 15,534 |
 | **英专生英语** | TEM-4 · TEM-8 | 18,976 |
-| **留学英语** | 雅思 · 雅思高频 · 托福 · 托福高频 · SAT | 25,421 |
-| **考研英语** | 考研词汇 · 考研核心词汇 | 7,971 |
+| **留学英语** | 雅思 · 雅思高频 · 托福 · 托福高频 · SAT | 24,267 |
+| **考研英语** | 考研词汇 · 考研核心词汇 | 7,833 |
 | **船员考试** | 航海英语 | 1,565 |
 | **专业英语** | 程序员 · 轮机 · 商务 · 外贸 · 汽修 · 电工 · 厨师 | 20,582 |
 
@@ -214,7 +222,7 @@
 
 | 层级 | 技术选型 |
 |:---|:---|
-| 框架 | Express 5（Node ≥ 20，ESM） |
+| 框架 | Express 5（Node ≥ 20；根 package.json 为 ESM，`server/` 自带 `type: commonjs`） |
 | 数据库 | MySQL 8.0（mysql2 连接池，utf8mb4_unicode_ci） |
 | 认证 | JWT（access 30m / refresh 7d）+ bcryptjs（12 轮）+ HttpOnly Cookie |
 | 日志 | pino（生产 JSON 单行 / 开发 pino-pretty 彩色，[server/utils/logger.js](server/utils/logger.js)） |
@@ -224,8 +232,10 @@
 
 | 模块 | 路由 | 能力 |
 |:---|:---|:---|
-| 账号 | `/api/auth` | 注册 · 登录 · 刷新 · 登出 · 改密 · 设备管理 · 激活码校验 · 找回密码 |
-| 体验 | `/api/demo` | 体验码兑换 · 试用状态 · 升级 |
+| 账号 | `/api/auth` | 注册 · 登录 · 刷新 · 登出 · 改密 · 设备管理 · 激活码校验 · 找回密码（双要素） |
+| 体验 | `/api/demo` | 体验码兑换 · 试用状态 |
+| 管理 | `/api/admin` | 用户管理 / 续期 · 激活码生成 / 停用 · 审计日志 · TOTP 两步验证 |
+| 词库 | `/api/dictionaries` | 词库 JSON 与合并索引认证下发（匿名 401 · 体验裁剪 · ETag） |
 | 打字 | `/api/progress` | 词库 / 章节进度同步 |
 | 词本 | `/api/wordbooks` | 收藏 / 错题 / 阅读 / 语料 **四类词本**读写 |
 | 收藏 | `/api/favorites` | 词汇收藏 / 词库收藏 |
@@ -248,7 +258,7 @@ typing-word/
 │   │   ├── reading/              # 分级阅读
 │   │   ├── grammar/              # 语法体系
 │   │   └── learning-methods/     # 科学学习方法
-│   ├── pages/                    # 顶层页面（打字 / 词本 / 统计 / 登录 / 设备 …）
+│   ├── pages/                    # 顶层页面（打字 / 词本 / 统计 / 登录 / 设备 / 管理 …）
 │   ├── components/               # 通用组件 + virtual/（VirtualList / VirtualGrid）
 │   ├── contexts/                 # Auth / Word 全局状态
 │   ├── data/                     # grammar / learning-methods 静态数据 JSON
@@ -257,17 +267,17 @@ typing-word/
 │   ├── utils/                    # reviewCards(SM-2) / wordLookup(词形还原) / audioContext / idb …
 │   └── lib/                      # API 客户端
 ├── server/
-│   ├── routes/                   # 9 个 REST 路由模块
-│   ├── middleware/               # auth / rateLimit / errorHandler
-│   ├── sql/                      # schema.sql + 幂等 migrate_*.sql
+│   ├── routes/                   # 11 个 REST 路由模块（auth / admin / content / demo … 均有配套测试）
+│   ├── middleware/               # auth / rateLimit / errorHandler / requireAdmin / requireFullAccount
+│   ├── sql/                      # schema.sql + 幂等 migrate_*.sql（迁移链可从空库自举）
 │   ├── config.js  db.js
-│   ├── utils/logger.js           # pino 日志
+│   ├── utils/logger.js           # pino 日志 · totp.js（RFC 6238）
 │   └── index.js                  # 入口 + 启动时自动迁移
 ├── scripts/                      # 词库校验 / 语料 YouTube 去重 / OSS 编码与转码工具
 ├── standards/                    # 权威词表（dict:levels 分级校验对照源：CET / TEM / 考研 / SAT 等）
-├── deploy/                       # nginx.conf / ecosystem.config.js / setup.sh / deploy.sh
+├── deploy/                       # nginx.conf（含 /dictionaries/ 静态路径封堵）/ ecosystem.config.cjs / setup.sh / deploy.sh
 ├── public/
-│   ├── dictionaries/             # 25 本词库 JSON + word-index.json 合并索引（fetch 加载，不进 bundle）
+│   ├── dictionaries/             # 25 本词库 JSON + word-index.json 合并索引（经 /api/dictionaries 认证下发，不进 bundle）
 │   └── corpus/subtitles/         # 65 集字幕 JSON
 └── .github/workflows/            # CI/CD（push main 自动部署阿里云）
 ```
@@ -351,7 +361,7 @@ npm run format            # prettier 格式化
    体验/演示 ──►  Vercel（VITE_AUTH_ENABLED=false 的免登录构建）
 ```
 
-- **主站（阿里云）**：Express(:3001) + PM2 单实例守护 + Nginx 反代 + MySQL，承载完整账号体系。代码目录 `/home/lingoforge`，**非 git 仓库**，部署靠推送同步（见下 CI/CD），不在服务器上 `git pull`。
+- **主站（阿里云）**：Express(:3001) + PM2 单实例守护 + Nginx 反代 + MySQL，承载完整账号体系与管理后台。代码目录 `/home/lingoforge`，**非 git 仓库**，部署靠推送同步（见下 CI/CD），不在服务器上 `git pull`；Nginx 已封堵 `/dictionaries/` 静态直出路径（词库仅经认证接口下发）。
 - **媒体源（OSS）**：65 集视频与封面，自定义域名规避 iOS Safari `attachment` 头；片源统一 H.264 + faststart。
 - **体验站（Vercel）**：`VITE_AUTH_ENABLED=false` 免登录演示构建，[App.jsx](src/App.jsx) 据此裁剪鉴权路由，独立于主站。
 - **数据迁移**：服务启动时自动幂等执行 `server/sql/migrate_*.sql`，无需手动建表。
