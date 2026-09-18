@@ -110,6 +110,9 @@ export function getLocalProgress(dictId) {
 // 登出时断开当前会话内存态：清空内存缓存与待落盘队列（不删 localStorage/IDB
 // 数据本身，仅取消尚未落盘的防抖定时器，避免旧会话的内存进度推进新会话）
 export function resetLocalProgressCache() {
+  // 先 flush 本地把 2s 防抖窗口内未落盘的进度写完（写的仍是本账号自己的 key），
+  // 再断开内存态（服务端进度另有 completedBuffer 合批，由 useProgressSync 自行处理）
+  if (_cache !== null) persistNow()
   _cache = null
   if (persistTimer) {
     clearTimeout(persistTimer)

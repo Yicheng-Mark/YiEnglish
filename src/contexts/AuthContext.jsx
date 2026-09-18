@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { toast } from 'sonner'
-import { apiFetch } from '../lib/api'
+import { apiFetch, silentRefresh } from '../lib/api'
 import { getDeviceId } from '../utils/getDeviceId'
 import { resetErrorBookCache } from '../utils/errorBook'
 import { resetReviewCardsCache } from '../utils/reviewCards'
@@ -72,24 +72,22 @@ export function AuthProvider({ children }) {
       try {
         let res = await fetch(`${API_BASE}/api/auth/me`, { credentials: 'include' })
         if (res.status === 401) {
-          const refreshRes = await fetch(`${API_BASE}/api/auth/refresh`, {
-            method: 'POST',
-            credentials: 'include',
-          })
-          if (refreshRes.ok) {
-            const data = await refreshRes.json()
-            setUser(data.user)
+          // 走 api.js 的单飞 refresh：闲置后回到页面时，这里与首屏组件的 apiFetch
+          // 几乎同时收到 401，各自裸打 refresh 会因 token 一次性轮换把刚恢复的
+          // 用户误登出；共享单飞后两路只会触发同一次刷新
+          const refreshed = await silentRefresh()
+          if (refreshed.ok) {
+            setUser(refreshed.user)
             // 恢复会话后拉一次服务端设置（跨设备同步设置/主题），失败静默
             syncSettingsFromServer()
             syncWordBooksFromServer()
             return
           }
-          // 会话恢复失败的真实原因提示：这里走的是裸 fetch，不经 api.js 的 toast 通道，
-          // 不读 body 的话到期用户回到页面只会被静默弹回登录页，没有任何解释
-          const failData = await refreshRes.json().catch(() => ({}))
-          if (failData.code === 'SUBSCRIPTION_EXPIRED') {
+          // 会话恢复失败的真实原因提示：不读 code 的话到期用户回到页面
+          // 只会被静默弹回登录页，没有任何解释
+          if (refreshed.code === 'SUBSCRIPTION_EXPIRED') {
             toast.error('账号已到期')
-          } else if (failData.code === 'TRIAL_EXPIRED') {
+          } else if (refreshed.code === 'TRIAL_EXPIRED') {
             toast.error('体验时间已结束，欢迎注册继续使用')
           }
         } else if (res.ok) {
@@ -158,6 +156,11 @@ export function AuthProvider({ children }) {
     const data = await res.json().catch(() => ({}))
     if (!res.ok) throw new Error(data.error || '注册失败')
     setUser(data.user)
+    // 与 login/checkSession 对齐：新账号建立会话后拉服务端设置并用权威数据覆盖
+    // 本地词本缓存——否则同浏览器上一个账号留在 localStorage 的错题本/词本/进度
+    // 会被 ensureCache 直接 bootstrap 给新账号（词本 key 不分账号）
+    syncSettingsFromServer()
+    syncWordBooksFromServer()
     return data.user
   }, [])
 
@@ -194,6 +197,9 @@ export function AuthProvider({ children }) {
         throw err
       }
       setUser(data.user)
+      // 重置成功即建立新会话：与 login 同步拉服务端设置与词本，覆盖本地残留
+      syncSettingsFromServer()
+      syncWordBooksFromServer()
       return data.user
     },
     []
@@ -245,6 +251,10 @@ export function AuthProvider({ children }) {
     const data = await res.json().catch(() => ({}))
     if (!res.ok) throw new Error(data.error || '体验码无效')
     setUser(data.user)
+    // 兑换体验码即建立访客会话：同样用服务端（空）词本覆盖本地残留，
+    // 防止上一个账号的词本数据 bootstrap 进访客沙箱
+    syncSettingsFromServer()
+    syncWordBooksFromServer()
     return data.user
   }, [])
 

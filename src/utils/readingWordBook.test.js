@@ -44,7 +44,14 @@ function seed(words) {
   localStorage.setItem(KEY, JSON.stringify({ words }))
 }
 
+// 落盘是 2s debounce：推进虚拟时钟让待写批次立刻 flush。
+// async 版会同时放空微任务队列（服务端写队列是 .then 链，同步 advance 看不到）
+async function flushPersist() {
+  await vi.advanceTimersByTimeAsync(2000)
+}
+
 beforeEach(() => {
+  vi.useFakeTimers()
   localStorage.clear()
   Object.values(mocks).forEach((fn) => fn.mockClear())
   mocks.addWordToBook.mockResolvedValue()
@@ -59,9 +66,15 @@ afterEach(() => {
 })
 
 describe('本地 CRUD（非 migrated）', () => {
-  it('添加新词 → 本地入库并上报服务端（bookType=reading）', async () => {
+  it('添加新词 → 2s 防抖后本地入库，服务端即时上报（bookType=reading）', async () => {
     const m = await loadModule()
     m.addToReadingWordBook({ name: 'apple', trans: ['[n] 苹果'] })
+
+    // 内存缓存即时反映（唯一数据源），localStorage 走 2s 防抖
+    expect(m.isInReadingWordBook('apple')).toBe(true)
+    expect(m.getReadingWordBookCount()).toBe(1)
+    expect(localStorage.getItem(KEY)).toBeNull()
+    await flushPersist()
 
     const saved = JSON.parse(localStorage.getItem(KEY))
     expect(saved.words).toHaveLength(1)
@@ -70,15 +83,13 @@ describe('本地 CRUD（非 migrated）', () => {
       name: 'apple',
       trans: ['[n] 苹果'],
     })
-
-    expect(m.isInReadingWordBook('apple')).toBe(true)
-    expect(m.getReadingWordBookCount()).toBe(1)
   })
 
   it('重复添加同名词 → 合并而非重复', async () => {
     const m = await loadModule()
     m.addToReadingWordBook({ name: 'apple', trans: ['[n] 苹果'] })
     m.addToReadingWordBook({ name: 'apple', ukphone: 'ˈæpl' })
+    await flushPersist()
 
     const saved = JSON.parse(localStorage.getItem(KEY))
     expect(saved.words).toHaveLength(1)
@@ -89,6 +100,7 @@ describe('本地 CRUD（非 migrated）', () => {
     const m = await loadModule()
     m.addToReadingWordBook({ name: 'apple' })
     m.removeFromReadingWordBook('apple')
+    await flushPersist()
 
     expect(JSON.parse(localStorage.getItem(KEY)).words).toHaveLength(0)
     expect(mocks.removeWordFromBook).toHaveBeenCalledWith('reading', 'apple')
@@ -107,8 +119,10 @@ describe('loadReadingWordBookAsDictionary · 分章视图', () => {
     const m = await loadModule()
     expect(m.loadReadingWordBookAsDictionary().chapters).toEqual([])
 
+    // 内存缓存是唯一数据源：seed 后需重新取干净模块（bootstrap 自 localStorage）
     seed(Array.from({ length: 26 }, (_, i) => ({ name: `w${i}`, trans: ['x'] })))
-    const dict = m.loadReadingWordBookAsDictionary()
+    const m2 = await loadModule()
+    const dict = m2.loadReadingWordBookAsDictionary()
     expect(dict.name).toBe('阅读词本')
     expect(dict.chapters).toHaveLength(2)
     expect(dict.chapters[0].words).toHaveLength(25)
@@ -155,14 +169,14 @@ describe('enrichReadingWordBook · 词典补全', () => {
 })
 
 describe('migrated 模式', () => {
-  it('添加/删除镜像写 IDB', async () => {
+  it('添加合批镜像写 IDB、删除即时镜像', async () => {
     localStorage.setItem(MIGRATED_KEY, '1')
     const m = await loadModule()
     m.addToReadingWordBook({ name: 'apple' })
-    expect(mocks.idbPut).toHaveBeenCalledWith(
-      'readingWords',
-      expect.objectContaining({ name: 'apple' })
-    )
+    await flushPersist()
+    expect(mocks.idbBulkPut).toHaveBeenCalledWith('readingWords', [
+      expect.objectContaining({ name: 'apple' }),
+    ])
 
     m.removeFromReadingWordBook('apple')
     expect(mocks.idbDelete).toHaveBeenCalledWith('readingWords', 'apple')

@@ -10,7 +10,10 @@ function onRefreshed(success) {
   refreshSubscribers = []
 }
 
-async function silentRefresh() {
+// 导出供 AuthContext.checkSession 复用同一单飞：会话恢复若走裸 fetch 打 refresh，
+// 会与首屏组件 apiFetch 的静默刷新各发一次（refresh token 一次性轮换，后到的一方
+// 必被 401 打成登出），共享单飞后任意时刻只有一路真正打到 refresh 端点
+export async function silentRefresh() {
   if (isRefreshing) {
     return new Promise((resolve) => refreshSubscribers.push(resolve))
   }
@@ -23,7 +26,7 @@ async function silentRefresh() {
     // 透传 refresh 自身的失败原因（如 SUBSCRIPTION_EXPIRED/TRIAL_EXPIRED）：
     // 调用方据此用真实原因 toast，而不是沿用原 401 的「登录已过期」
     const data = await res.json().catch(() => ({}))
-    const result = { ok: res.ok, code: data.code, error: data.error }
+    const result = { ok: res.ok, code: data.code, error: data.error, user: data.user }
     onRefreshed(result)
     return result
   } catch {
@@ -34,11 +37,19 @@ async function silentRefresh() {
   }
 }
 
+// 并发多请求同时 401 时 throwUnauthorized 会被逐个走到：toast 加 3s 时间窗去重，
+// 避免同一次登录态失效弹出 N 条相同提示（auth:unauthorized 事件本身幂等，无需去重）
+let lastUnauthorizedToastAt = 0
+
 function throwUnauthorized(data = {}) {
-  if (data.code === 'TRIAL_EXPIRED') {
-    toast.error('体验时间已结束，欢迎注册继续使用')
-  } else if (data.code === 'SUBSCRIPTION_EXPIRED') {
-    toast.error('账号已到期')
+  const now = Date.now()
+  if (now - lastUnauthorizedToastAt > 3000) {
+    lastUnauthorizedToastAt = now
+    if (data.code === 'TRIAL_EXPIRED') {
+      toast.error('体验时间已结束，欢迎注册继续使用')
+    } else if (data.code === 'SUBSCRIPTION_EXPIRED') {
+      toast.error('账号已到期')
+    }
   }
   window.dispatchEvent(new CustomEvent('auth:unauthorized'))
   throw new Error(data.error || '请先登录')

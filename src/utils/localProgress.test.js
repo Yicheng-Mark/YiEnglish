@@ -140,7 +140,7 @@ describe('损坏数据兜底', () => {
 })
 
 describe('resetLocalProgressCache（登出断开内存态）', () => {
-  it('清空内存缓存并取消待落盘定时器，但不删除 localStorage 数据', async () => {
+  it('登出前先 flush 防抖窗口内未落盘的变更，再断开内存态', async () => {
     localStorage.setItem(KEY, JSON.stringify({ 'cet4:0': ['apple'] }))
     const { saveLocalProgress, getLocalProgress, resetLocalProgressCache } =
       await import('./localProgress.js')
@@ -150,11 +150,12 @@ describe('resetLocalProgressCache（登出断开内存态）', () => {
 
     resetLocalProgressCache()
 
-    // localStorage 数据保持不动，防抖定时器被取消：旧会话内存态不再落盘
-    expect(JSON.parse(localStorage.getItem(KEY))['cet4:0']).toEqual(['apple'])
+    // 先 flush 把本账号 2s 窗口内的变更写完（写的仍是本账号自己的 key），
+    // 旧会话进度不再丢失；内存态随后断开，定时器取消不会重复落盘
+    expect(JSON.parse(localStorage.getItem(KEY))['cet4:0']).toEqual(['apple', 'dog'])
     await flushDebounce()
-    expect(JSON.parse(localStorage.getItem(KEY))['cet4:0']).toEqual(['apple'])
+    expect(JSON.parse(localStorage.getItem(KEY))['cet4:0']).toEqual(['apple', 'dog'])
     // 内存缓存已断开：下次读取重新从 localStorage bootstrap
-    expect(getLocalProgress('cet4')).toEqual({ 0: 1 })
+    expect(getLocalProgress('cet4')).toEqual({ 0: 2 })
   })
 })

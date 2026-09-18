@@ -281,6 +281,9 @@ export function getErrorBookCount() {
 // 避免旧账号的合批写入被推进下一个登录的账号）。
 // 不删除 localStorage/IDB 里的用户数据本身，仅取消尚未落盘的防抖定时器。
 export function resetErrorBookCache() {
+  // 先 flush 本地把 2s 防抖窗口内未落盘的错题写完（写的仍是本账号自己的 key），
+  // 再断开内存态；服务端增量维持丢弃（登出请求已清 cookie，推了也只会 401）
+  if (_cache !== null) persistNow()
   _cache = null
   if (persistTimer) {
     clearTimeout(persistTimer)

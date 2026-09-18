@@ -7,8 +7,12 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, waitFor, act } from '@testing-library/react'
 import React from 'react'
 
-const mocks = vi.hoisted(() => ({ apiFetch: vi.fn(), getDeviceId: vi.fn() }))
-vi.mock('../lib/api', () => ({ apiFetch: mocks.apiFetch }))
+const mocks = vi.hoisted(() => ({
+  apiFetch: vi.fn(),
+  silentRefresh: vi.fn(),
+  getDeviceId: vi.fn(),
+}))
+vi.mock('../lib/api', () => ({ apiFetch: mocks.apiFetch, silentRefresh: mocks.silentRefresh }))
 vi.mock('../utils/getDeviceId', () => ({ getDeviceId: mocks.getDeviceId }))
 
 // 登出必须断开各本地缓存的内存态（跨账号串数据防护）：六个 reset 全 mock，只验证接线
@@ -110,6 +114,9 @@ function getState() {
 beforeEach(() => {
   vi.clearAllMocks()
   mocks.getDeviceId.mockReturnValue('test-device')
+  // checkSession 的 /me 401 分支走 api.js 单飞 silentRefresh（防双 refresh 竞态），
+  // 默认返回失败（未登录态）；需要恢复会话的用例单独 mockResolvedValueOnce 覆盖
+  mocks.silentRefresh.mockResolvedValue({ ok: false })
   sync.syncSettingsFromServer.mockResolvedValue()
   for (const key of [
     'syncErrorBookFromServer',
@@ -133,28 +140,23 @@ describe('会话自检（挂载即拉 /api/auth/me）', () => {
     await waitFor(() => expect(sync.syncSettingsFromServer).toHaveBeenCalledTimes(1))
   })
 
-  it('access 过期（401）→ 自动 refresh 成功 → 恢复会话并触发设置同步', async () => {
-    globalThis.fetch = vi
-      .fn()
-      .mockResolvedValueOnce(jsonResponse({ error: 'expired' }, false, 401))
-      .mockResolvedValueOnce(jsonResponse({ user: USER }))
+  it('access 过期（401）→ 走单飞 silentRefresh 成功 → 恢复会话并触发设置同步', async () => {
+    globalThis.fetch = vi.fn().mockResolvedValueOnce(jsonResponse({ error: 'expired' }, false, 401))
+    // 复用 api.js 的单飞：与首屏 apiFetch 的静默刷新共享同一次请求（refresh token
+    // 一次性轮换，裸 fetch 双打会把刚恢复的用户误登出）
+    mocks.silentRefresh.mockResolvedValueOnce({ ok: true, user: USER })
     renderProvider()
     await waitFor(() => expect(getState().user).toEqual(USER))
-    expect(globalThis.fetch).toHaveBeenNthCalledWith(2, '/api/auth/refresh', {
-      method: 'POST',
-      credentials: 'include',
-    })
+    expect(mocks.silentRefresh).toHaveBeenCalledTimes(1)
     await waitFor(() => expect(sync.syncSettingsFromServer).toHaveBeenCalledTimes(1))
   })
 
   it('refresh 也失败 → 未登录态（user=null）', async () => {
-    globalThis.fetch = vi
-      .fn()
-      .mockResolvedValueOnce(jsonResponse({ error: 'expired' }, false, 401))
-      .mockResolvedValueOnce(jsonResponse({ error: 'no' }, false, 401))
+    globalThis.fetch = vi.fn().mockResolvedValueOnce(jsonResponse({ error: 'expired' }, false, 401))
     renderProvider()
     await waitFor(() => expect(getState().loading).toBe(false))
     expect(getState().user).toBeNull()
+    expect(mocks.silentRefresh).toHaveBeenCalledTimes(1)
   })
 
   it('网络异常 → 不抛错，结束 loading', async () => {
@@ -181,11 +183,11 @@ describe('login / logout', () => {
   })
 
   it('login 成功 → 触发服务端设置同步（跨设备设置/主题跟随）', async () => {
-    // 挂载会话检查全程 401（未登录），保证 sync 计数只来自 login
+    // 挂载会话检查 401（未登录；refresh 走 silentRefresh mock 已默认失败），
+    // 保证 sync 计数只来自 login
     globalThis.fetch = vi
       .fn()
       .mockResolvedValueOnce(jsonResponse({ error: 'no' }, false, 401)) // 挂载 /me
-      .mockResolvedValueOnce(jsonResponse({ error: 'no' }, false, 401)) // 挂载 /refresh
       .mockResolvedValue(jsonResponse({ user: USER })) // login
     renderProvider()
     await waitFor(() => expect(getState().loading).toBe(false))
@@ -304,11 +306,11 @@ describe('auth:unauthorized 全局广播', () => {
 
 describe('词本服务端同步接线（A4）', () => {
   it('login 成功 → 五个词本 sync 各触发一次', async () => {
-    // 挂载会话检查全程 401（未登录），保证 sync 计数只来自 login
+    // 挂载会话检查 401（未登录；refresh 走 silentRefresh mock 已默认失败），
+    // 保证 sync 计数只来自 login
     globalThis.fetch = vi
       .fn()
       .mockResolvedValueOnce(jsonResponse({ error: 'no' }, false, 401)) // 挂载 /me
-      .mockResolvedValueOnce(jsonResponse({ error: 'no' }, false, 401)) // 挂载 /refresh
       .mockResolvedValue(jsonResponse({ user: USER })) // login
     renderProvider()
     await waitFor(() => expect(getState().loading).toBe(false))
@@ -339,7 +341,6 @@ describe('词本服务端同步接线（A4）', () => {
     globalThis.fetch = vi
       .fn()
       .mockResolvedValueOnce(jsonResponse({ error: 'no' }, false, 401))
-      .mockResolvedValueOnce(jsonResponse({ error: 'no' }, false, 401))
       .mockResolvedValue(jsonResponse({ user: USER }))
     for (const key of [
       'syncErrorBookFromServer',
@@ -365,7 +366,6 @@ describe('词本服务端同步接线（A4）', () => {
     globalThis.fetch = vi
       .fn()
       .mockResolvedValueOnce(jsonResponse({ error: 'no' }, false, 401))
-      .mockResolvedValueOnce(jsonResponse({ error: 'no' }, false, 401))
       .mockResolvedValue(jsonResponse({ error: '用户名或密码错误' }, false, 401))
     renderProvider()
     await waitFor(() => expect(getState().loading).toBe(false))
@@ -375,6 +375,55 @@ describe('词本服务端同步接线（A4）', () => {
     })
     expect(getState().user).toBeNull()
     expect(resets.syncErrorBookFromServer).not.toHaveBeenCalled()
+  })
+
+  // 以下三条路径建立会话的方式与 login 相同（setUser + 发 cookie），此前漏了
+  // 词本 sync：词本 localStorage key 不分账号，同浏览器上一个账号的残留会被
+  // ensureCache bootstrap 给新账号（新账号看到旧账号的错题本/进度）
+  it('register 成功 → 词本 sync 触发（覆盖上一个账号的本地残留）', async () => {
+    globalThis.fetch = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ error: 'no' }, false, 401))
+      .mockResolvedValue(jsonResponse({ user: USER }))
+    renderProvider()
+    await waitFor(() => expect(getState().loading).toBe(false))
+
+    await act(async () => {
+      await captured.register('alice', 'password1', null, 'lf-XXXXXXXXXXXX')
+    })
+    await waitFor(() => expect(getState().user).toEqual(USER))
+    expect(resets.syncErrorBookFromServer).toHaveBeenCalledTimes(1)
+    expect(resets.syncReviewCardsFromServer).toHaveBeenCalledTimes(1)
+  })
+
+  it('recoverReset 成功 → 词本 sync 触发', async () => {
+    globalThis.fetch = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ error: 'no' }, false, 401))
+      .mockResolvedValue(jsonResponse({ user: USER }))
+    renderProvider()
+    await waitFor(() => expect(getState().loading).toBe(false))
+
+    await act(async () => {
+      await captured.recoverReset('lf-XXXXXXXXXXXX', 'alice', 'newpassword1')
+    })
+    await waitFor(() => expect(getState().user).toEqual(USER))
+    expect(resets.syncErrorBookFromServer).toHaveBeenCalledTimes(1)
+  })
+
+  it('redeemDemoCode 成功 → 词本 sync 触发（访客会话同样覆盖本地残留）', async () => {
+    globalThis.fetch = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ error: 'no' }, false, 401))
+      .mockResolvedValue(jsonResponse({ user: USER }))
+    renderProvider()
+    await waitFor(() => expect(getState().loading).toBe(false))
+
+    await act(async () => {
+      await captured.redeemDemoCode('trial-code')
+    })
+    await waitFor(() => expect(getState().user).toEqual(USER))
+    expect(resets.syncErrorBookFromServer).toHaveBeenCalledTimes(1)
   })
 })
 

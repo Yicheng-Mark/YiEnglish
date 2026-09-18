@@ -44,7 +44,14 @@ function seed(words) {
   localStorage.setItem(KEY, JSON.stringify({ words }))
 }
 
+// 落盘是 2s debounce：推进虚拟时钟让待写批次立刻 flush。
+// async 版会同时放空微任务队列（服务端写队列是 .then 链，同步 advance 看不到）
+async function flushPersist() {
+  await vi.advanceTimersByTimeAsync(2000)
+}
+
 beforeEach(() => {
+  vi.useFakeTimers()
   localStorage.clear()
   Object.values(mocks).forEach((fn) => fn.mockClear())
   // 保留 mockResolvedValue 行为（mockClear 不清实现）
@@ -60,9 +67,15 @@ afterEach(() => {
 })
 
 describe('本地 CRUD（非 migrated）', () => {
-  it('添加新词 → 本地入库并上报服务端', async () => {
+  it('添加新词 → 2s 防抖后本地入库，服务端即时上报', async () => {
     const m = await loadModule()
     m.addToCorpusWordBook({ name: 'apple', trans: ['[n] 苹果'] })
+
+    // 内存缓存即时反映（唯一数据源），localStorage 走 2s 防抖
+    expect(m.isInCorpusWordBook('apple')).toBe(true)
+    expect(m.getCorpusWordBookCount()).toBe(1)
+    expect(localStorage.getItem(KEY)).toBeNull()
+    await flushPersist()
 
     const saved = JSON.parse(localStorage.getItem(KEY))
     expect(saved.words).toHaveLength(1)
@@ -72,15 +85,13 @@ describe('本地 CRUD（非 migrated）', () => {
       name: 'apple',
       trans: ['[n] 苹果'],
     })
-
-    expect(m.isInCorpusWordBook('apple')).toBe(true)
-    expect(m.getCorpusWordBookCount()).toBe(1)
   })
 
   it('重复添加同名词 → 合并而非重复，保留首次 addTime', async () => {
     const m = await loadModule()
     m.addToCorpusWordBook({ name: 'apple', trans: ['[n] 苹果'] })
     m.addToCorpusWordBook({ name: 'apple', usphone: 'ˈæpl' })
+    await flushPersist()
 
     const saved = JSON.parse(localStorage.getItem(KEY))
     expect(saved.words).toHaveLength(1)
@@ -91,6 +102,7 @@ describe('本地 CRUD（非 migrated）', () => {
     const m = await loadModule()
     m.addToCorpusWordBook({ name: 'apple' })
     m.removeFromCorpusWordBook('apple')
+    await flushPersist()
 
     expect(JSON.parse(localStorage.getItem(KEY)).words).toHaveLength(0)
     expect(m.isInCorpusWordBook('apple')).toBe(false)
@@ -193,14 +205,14 @@ describe('enrichCorpusWordBook · 词典补全', () => {
 })
 
 describe('migrated 模式', () => {
-  it('添加/删除镜像写 IDB', async () => {
+  it('添加合批镜像写 IDB、删除即时镜像', async () => {
     localStorage.setItem(MIGRATED_KEY, '1')
     const m = await loadModule()
     m.addToCorpusWordBook({ name: 'apple' })
-    expect(mocks.idbPut).toHaveBeenCalledWith(
-      'corpusWords',
-      expect.objectContaining({ name: 'apple' })
-    )
+    await flushPersist()
+    expect(mocks.idbBulkPut).toHaveBeenCalledWith('corpusWords', [
+      expect.objectContaining({ name: 'apple' }),
+    ])
 
     m.removeFromCorpusWordBook('apple')
     expect(mocks.idbDelete).toHaveBeenCalledWith('corpusWords', 'apple')

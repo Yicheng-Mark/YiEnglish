@@ -2,7 +2,7 @@
 // 收藏词本测试：未迁移/已迁移双路径 CRUD、重复添加合并（保留 addTime）、
 // 损坏数据兜底、词书视图分章（字段白名单）、服务端同步镜像。
 // 模块内有 _cache 单例，用 vi.resetModules + 每用例动态 import 取干净实例。
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
   addWordToBook: vi.fn(),
@@ -38,7 +38,13 @@ function seed(words) {
   localStorage.setItem(KEY, JSON.stringify({ words }))
 }
 
+// 落盘是 2s debounce：推进虚拟时钟让待写批次立刻 flush
+function flushPersist() {
+  vi.advanceTimersByTime(2000)
+}
+
 beforeEach(() => {
+  vi.useFakeTimers()
   localStorage.clear()
   Object.values(mocks).forEach((fn) => fn.mockReset())
   mocks.addWordToBook.mockResolvedValue()
@@ -50,10 +56,17 @@ beforeEach(() => {
   mocks.idbBulkPut.mockResolvedValue()
 })
 
+afterEach(() => {
+  vi.useRealTimers()
+})
+
 describe('未迁移路径（纯 localStorage）', () => {
-  it('add → 写入 localStorage 且异步同步服务端', async () => {
+  it('add → 2s 防抖后写入 localStorage，服务端即时同步', async () => {
     const m = await loadModule()
     m.addToFavoriteWords({ name: 'apple', trans: ['[n] 苹果'] })
+    // 防抖窗口内不落盘
+    expect(localStorage.getItem(KEY)).toBeNull()
+    flushPersist()
     const saved = JSON.parse(localStorage.getItem(KEY))
     expect(saved.words).toHaveLength(1)
     expect(saved.words[0]).toMatchObject({ name: 'apple' })
@@ -64,10 +77,11 @@ describe('未迁移路径（纯 localStorage）', () => {
     })
   })
 
-  it('remove → 过滤 + 服务端同步', async () => {
+  it('remove → 防抖后过滤落盘 + 服务端同步', async () => {
     seed([{ name: 'apple' }, { name: 'bee' }])
     const m = await loadModule()
     m.removeFromFavoriteWords('apple')
+    flushPersist()
     const saved = JSON.parse(localStorage.getItem(KEY))
     expect(saved.words).toEqual([{ name: 'bee' }])
     expect(mocks.removeWordFromBook).toHaveBeenCalledWith('favorite', 'apple')
@@ -86,16 +100,18 @@ describe('已迁移路径（内存缓存 + IDB 镜像）', () => {
     localStorage.setItem(MIGRATED_KEY, '1')
   })
 
-  it('add 新词 → unshift 到队首 + idbPut 镜像', async () => {
+  it('add 新词 → unshift 到队首 + IDB 合批镜像', async () => {
     seed([{ name: 'bee' }])
     const m = await loadModule()
     m.addToFavoriteWords({ name: 'apple' })
+    // 内存缓存即时反映（唯一数据源）
+    expect(m.getFavoriteWords().words.map((w) => w.name)).toEqual(['apple', 'bee'])
+    flushPersist()
     const saved = JSON.parse(localStorage.getItem(KEY))
     expect(saved.words.map((w) => w.name)).toEqual(['apple', 'bee'])
-    expect(mocks.idbPut).toHaveBeenCalledWith(
-      'favoriteWords',
-      expect.objectContaining({ name: 'apple' })
-    )
+    expect(mocks.idbBulkPut).toHaveBeenCalledWith('favoriteWords', [
+      expect.objectContaining({ name: 'apple' }),
+    ])
   })
 
   it('add 已存在词 → 合并字段且保留原 addTime（回归：不得重置收藏时间）', async () => {
@@ -103,6 +119,7 @@ describe('已迁移路径（内存缓存 + IDB 镜像）', () => {
     seed([{ name: 'apple', addTime: originalAddTime, trans: ['旧释义'] }])
     const m = await loadModule()
     m.addToFavoriteWords({ name: 'apple', trans: ['[n] 新释义'] })
+    flushPersist()
     const saved = JSON.parse(localStorage.getItem(KEY))
     expect(saved.words).toHaveLength(1)
     expect(saved.words[0].addTime).toBe(originalAddTime)
@@ -113,6 +130,7 @@ describe('已迁移路径（内存缓存 + IDB 镜像）', () => {
     seed([{ name: 'apple' }, { name: 'bee' }])
     const m = await loadModule()
     m.removeFromFavoriteWords('bee')
+    flushPersist()
     const saved = JSON.parse(localStorage.getItem(KEY))
     expect(saved.words.map((w) => w.name)).toEqual(['apple'])
     expect(mocks.idbDelete).toHaveBeenCalledWith('favoriteWords', 'bee')
@@ -187,5 +205,22 @@ describe('syncFavoriteWordsFromServer', () => {
     mocks.fetchWordBook.mockRejectedValue(new Error('network'))
     const m = await loadModule()
     await expect(m.syncFavoriteWordsFromServer()).resolves.toBeUndefined()
+  })
+})
+
+describe('登出断开后的兜底 flush 安全（数据擦除回归）', () => {
+  it('reset 后触发 pagehide 兜底：null 缓存不得把 {"words":null} 写进 localStorage', async () => {
+    seed([{ name: 'apple' }])
+    const m = await loadModule()
+    // 先触碰一次让模块注册 pagehide 兜底监听并 bootstrap 缓存
+    expect(m.getFavoriteWordsCount()).toBe(1)
+
+    m.resetFavoriteWordsCache() // 登出：断开内存态，存量数据保留
+
+    // 模拟页面隐藏/关闭触发的兜底 flush（模块监听器里对 persistNow 的调用路径）
+    window.dispatchEvent(new Event('pagehide'))
+
+    // 关键回归：存量数据不得被 {"words":null} 覆盖清空
+    expect(JSON.parse(localStorage.getItem(KEY)).words).toEqual([{ name: 'apple' }])
   })
 })
