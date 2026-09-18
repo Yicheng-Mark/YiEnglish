@@ -25,6 +25,7 @@
 --   migrate_trial_ip_totals   trial_ip_totals IP 终身计数归档（防访客清理级联删除导致计数回血）
 --   migrate_admin_backoffice users.is_admin + admin_audit_log 操作审计 + experience_codes.issued_note 发放备注
 --   migrate_admin_totp      users.totp_secret 管理员两步验证（AES-256-GCM 加密，NULL=未启用）
+--   migrate_admin_totp_replay users.totp_last_counter TOTP 防重放（RFC 6238 §5.2）
 -- ============================================================
 
 CREATE DATABASE IF NOT EXISTS lingoforge
@@ -64,6 +65,7 @@ CREATE TABLE IF NOT EXISTS users (
   created_at             TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at             TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   totp_secret            VARCHAR(255)  NULL DEFAULT NULL COMMENT '管理员 TOTP 密钥（AES-256-GCM 加密，NULL=未启用）',
+  totp_last_counter      BIGINT UNSIGNED NULL DEFAULT NULL COMMENT 'TOTP 防重放：最近一次接受的计数器（Unix 秒/30）',
   UNIQUE KEY uk_username (username)
 ) ENGINE=InnoDB;
 

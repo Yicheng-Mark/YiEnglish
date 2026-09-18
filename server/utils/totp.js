@@ -67,18 +67,25 @@ function totpAt(secretBase32, counter) {
   return hotp(secretBuf, counter)
 }
 
-// 校验 6 位验证码：±1 个 30s 窗口容忍时钟偏移；逐字节恒时比较防时序侧信道
-function verifyTotp(secretBase32, code, { window = 1, now = Date.now() } = {}) {
-  if (typeof code !== 'string' || !/^\d{6}$/.test(code)) return false
+// 校验 6 位验证码并返回命中的计数器（Unix 秒/30），未命中返回 null：
+// 调用方据返回值做 RFC 6238 §5.2 防重放持久化（同计数器只接受一次）。
+// ±1 个 30s 窗口容忍时钟偏移；逐字节恒时比较防时序侧信道
+function verifyTotpCounter(secretBase32, code, { window = 1, now = Date.now() } = {}) {
+  if (typeof code !== 'string' || !/^\d{6}$/.test(code)) return null
   const secretBuf = base32Decode(secretBase32)
-  if (!secretBuf || secretBuf.length === 0) return false
+  if (!secretBuf || secretBuf.length === 0) return null
   const counter = Math.floor(now / 1000 / 30)
   const a = Buffer.from(code, 'ascii')
   for (let i = -window; i <= window; i++) {
     const expected = hotp(secretBuf, counter + i)
-    if (crypto.timingSafeEqual(a, Buffer.from(expected, 'ascii'))) return true
+    if (crypto.timingSafeEqual(a, Buffer.from(expected, 'ascii'))) return counter + i
   }
-  return false
+  return null
+}
+
+// 布尔语义的便捷封装（无需防重放的调用方用这个）
+function verifyTotp(secretBase32, code, opts) {
+  return verifyTotpCounter(secretBase32, code, opts) !== null
 }
 
 function generateTotpSecret() {
@@ -127,6 +134,7 @@ module.exports = {
   base32Decode,
   hotp,
   totpAt,
+  verifyTotpCounter,
   verifyTotp,
   generateTotpSecret,
   isValidTotpSecret,

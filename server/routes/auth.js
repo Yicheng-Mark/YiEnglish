@@ -22,7 +22,18 @@ const {
   DEVICE_COOKIE,
 } = require('../utils/tokens')
 const { createRateLimiter } = require('../utils/apiRateLimit')
-const { verifyTotp, decryptTotpSecret } = require('../utils/totp')
+const { verifyTotpCounter, decryptTotpSecret } = require('../utils/totp')
+
+// TOTP 防重放认领（RFC 6238 §5.2：验证成功的验证码不得被第二次接受）：
+// 「计数器严格递增」的原子 UPDATE——并发两个请求携同一码时只放行先到者。
+// affectedRows=0 表示该计数器已被消费（同窗重放）或时钟回拨，按验证失败拒绝。
+async function claimTotpCounter(userId, counter) {
+  const [claim] = await pool.execute(
+    'UPDATE users SET totp_last_counter = ? WHERE id = ? AND (totp_last_counter IS NULL OR totp_last_counter < ?)',
+    [counter, userId, counter]
+  )
+  return claim.affectedRows !== 0
+}
 
 // 找回密码 lookup 响应里的用户名打码：激活码本身即可定位账号，若再回显完整用户名，
 // 拿到码的任何人就凑齐了 recover-reset 所需的两要素（码 + 用户名）。打码显示仅供
@@ -335,6 +346,8 @@ router.post('/login', async (req, res, next) => {
     // 管理员两步验证（TOTP）：密码之外还需 6 位动态验证码，防密码泄露后管理端被接管。
     // 缺验证码返回 TOTP_REQUIRED（前端展示输入框重试），错误验证码返回 TOTP_INVALID；
     // 两种失败都计入 login 限流（5 次/15min/用户名），10^6 码空间下爆破不可行。
+    // 防重放：验证命中后按计数器原子认领，同窗内同一码二次使用（肩窥/截屏）按失败拒绝
+    //（RFC 6238 §5.2）；代价是同一 30s 窗口内不能两台设备先后登录，管理员场景可接受。
     // 密钥解密失败（JWT_SECRET 轮换后）等同验证失败——解锁走手工 SQL 置 NULL，见迁移说明。
     if (user.is_admin && user.totp_secret) {
       const totpCode = typeof req.body?.totpCode === 'string' ? req.body.totpCode.trim() : ''
@@ -343,7 +356,8 @@ router.post('/login', async (req, res, next) => {
         return res.status(401).json({ error: '请输入动态验证码', code: 'TOTP_REQUIRED' })
       }
       const secret = decryptTotpSecret(user.totp_secret)
-      if (!secret || !verifyTotp(secret, totpCode)) {
+      const matchedCounter = secret ? verifyTotpCounter(secret, totpCode) : null
+      if (matchedCounter === null || !(await claimTotpCounter(user.id, matchedCounter))) {
         await logAttempt(username, ip, false)
         return res.status(401).json({ error: '动态验证码错误', code: 'TOTP_INVALID' })
       }
@@ -775,9 +789,6 @@ router.post('/recover-reset', async (req, res, next) => {
     if (!validatePassword(password)) {
       return res.status(400).json({ error: '密码需 8-128 位，至少包含一个字母和一个数字' })
     }
-    if (!validatePassword(password)) {
-      return res.status(400).json({ error: '密码需 8-128 位，至少包含一个字母和一个数字' })
-    }
 
     await checkRegisterRateLimit(ip)
 
@@ -841,8 +852,9 @@ router.post('/recover-reset', async (req, res, next) => {
       return res.status(401).json({ error: '账号已到期', code: 'SUBSCRIPTION_EXPIRED' })
     }
 
-    // 管理员两步验证（与 login 同款）：管理员账号经找回路径重置也必须出示动态验证码，
-    // 否则「码 + 用户名」两要素对启用 2FA 的管理员仍不构成完整接管，规则出现豁口
+    // 管理员两步验证（与 login 同款，含防重放认领）：管理员账号经找回路径重置也必须
+    // 出示动态验证码，否则「码 + 用户名」两要素对启用 2FA 的管理员仍不构成完整接管，
+    // 规则出现豁口。重放（已用过的验证码）同样拒绝——找回是接管入口，要求最严
     if (rows[0].is_admin && rows[0].totp_secret) {
       const code6 = typeof totpCode === 'string' ? totpCode.trim() : ''
       if (!/^\d{6}$/.test(code6)) {
@@ -850,7 +862,8 @@ router.post('/recover-reset', async (req, res, next) => {
         return res.status(401).json({ error: '请输入动态验证码', code: 'TOTP_REQUIRED' })
       }
       const secret = decryptTotpSecret(rows[0].totp_secret)
-      if (!secret || !verifyTotp(secret, code6)) {
+      const matchedCounter = secret ? verifyTotpCounter(secret, code6) : null
+      if (matchedCounter === null || !(await claimTotpCounter(userId, matchedCounter))) {
         await logAttempt(codeKey, ip, false)
         return res.status(401).json({ error: '动态验证码错误', code: 'TOTP_INVALID' })
       }

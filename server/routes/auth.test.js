@@ -1793,6 +1793,110 @@ describe('管理员 TOTP 两步验证', () => {
       })
     expect(res.status).toBe(200)
   })
+
+  it('login：同一验证码同窗重放 → 第二次 401 TOTP_INVALID（RFC 6238 §5.2 防重放）', async () => {
+    const secret = generateTotpSecret()
+    const code = currentCode(secret)
+    // 认领状态机：第一次 UPDATE totp_last_counter affectedRows=1（认领成功），
+    // 第二次 0（计数器已被消费 → 重放）
+    let claimed = false
+    setExecuteHandlers([
+      {
+        match: ['FROM users WHERE username = ?'],
+        returns: [adminRow(encryptTotpSecret(secret))],
+      },
+      {
+        match: ['totp_last_counter'],
+        returns: () => {
+          if (claimed) return { affectedRows: 0 }
+          claimed = true
+          return { affectedRows: 1 }
+        },
+      },
+    ])
+    setConnectionHandlers([
+      { match: ['SELECT max_devices FROM users'], returns: [{ max_devices: null }] },
+      { match: ['SELECT COUNT(*) AS cnt'], returns: [{ cnt: 0 }] },
+      { match: ['DELETE FROM refresh_tokens WHERE user_id'], returns: { affectedRows: 0 } },
+      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 1, affectedRows: 1 } },
+    ])
+    const app = makeApp()
+    const first = await supertest(app)
+      .post('/api/auth/login')
+      .send({ username: 'theadmin', password: VALID_PASSWORD, totpCode: code })
+    expect(first.status).toBe(200)
+    const second = await supertest(app)
+      .post('/api/auth/login')
+      .send({ username: 'theadmin', password: VALID_PASSWORD, totpCode: code })
+    expect(second.status).toBe(401)
+    expect(second.body.code).toBe('TOTP_INVALID')
+  })
+
+  it('recover-reset：同一验证码同窗重放 → 第二次 401 TOTP_INVALID（不写新密码）', async () => {
+    const secret = generateTotpSecret()
+    const code = currentCode(secret)
+    let claimed = false
+    setExecuteHandlers([
+      {
+        match: ['JOIN experience_codes'],
+        returns: [
+          {
+            id: 9,
+            username: 'theadmin',
+            is_guest: 0,
+            is_admin: 1,
+            totp_secret: encryptTotpSecret(secret),
+            subscription_expires_at: null,
+          },
+        ],
+      },
+      {
+        match: ['totp_last_counter'],
+        returns: () => {
+          if (claimed) return { affectedRows: 0 }
+          claimed = true
+          return { affectedRows: 1 }
+        },
+      },
+      { match: ['UPDATE users SET password_hash'], returns: { affectedRows: 1 } },
+      { match: ['DELETE FROM refresh_tokens WHERE user_id'], returns: { affectedRows: 1 } },
+      { match: ['INSERT INTO refresh_tokens'], returns: { insertId: 1, affectedRows: 1 } },
+      {
+        match: ['SELECT id, username, nickname, avatar_url'],
+        returns: [
+          {
+            id: 9,
+            username: 'theadmin',
+            nickname: null,
+            avatar_url: null,
+            daily_goal_minutes: 30,
+            signature: null,
+          },
+        ],
+      },
+    ])
+    const app = makeApp()
+    const first = await supertest(app).post('/api/auth/recover-reset').send({
+      code: 'CODE1',
+      currentUsername: 'theadmin',
+      password: VALID_PASSWORD,
+      totpCode: code,
+    })
+    expect(first.status).toBe(200)
+    mockExecute.mockClear()
+    const second = await supertest(app).post('/api/auth/recover-reset').send({
+      code: 'CODE1',
+      currentUsername: 'theadmin',
+      password: VALID_PASSWORD,
+      totpCode: code,
+    })
+    expect(second.status).toBe(401)
+    expect(second.body.code).toBe('TOTP_INVALID')
+    // 重放被拒时不得触发密码重置
+    expect(
+      mockExecute.mock.calls.some(([sql]) => String(sql).includes('UPDATE users SET password_hash'))
+    ).toBe(false)
+  })
 })
 
 // =====================================================================

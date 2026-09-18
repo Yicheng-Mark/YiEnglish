@@ -5,6 +5,7 @@ import {
   base32Decode,
   hotp,
   verifyTotp,
+  verifyTotpCounter,
   generateTotpSecret,
   isValidTotpSecret,
   encryptTotpSecret,
@@ -78,6 +79,26 @@ describe('verifyTotp', () => {
   it('非法密钥拒绝', () => {
     expect(verifyTotp('NOT_A_SECRET!!', '123456', { now })).toBe(false)
     expect(verifyTotp('', '123456', { now })).toBe(false)
+  })
+})
+
+describe('verifyTotpCounter（防重放计数器）', () => {
+  const now = 59_000
+  const counterNow = Math.floor(59 / 30)
+  it('当期命中 → 返回该计数器', () => {
+    const code = hotp(base32Decode(RFC_SECRET_B32), counterNow)
+    expect(verifyTotpCounter(RFC_SECRET_B32, code, { now })).toBe(counterNow)
+  })
+  it('±1 窗口命中 → 返回实际命中的偏移计数器（非当前）', () => {
+    const next = hotp(base32Decode(RFC_SECRET_B32), counterNow + 1)
+    expect(verifyTotpCounter(RFC_SECRET_B32, next, { now })).toBe(counterNow + 1)
+    const prev = hotp(base32Decode(RFC_SECRET_B32), counterNow - 1)
+    expect(verifyTotpCounter(RFC_SECRET_B32, prev, { now })).toBe(counterNow - 1)
+  })
+  it('未命中/非法输入 → null（与 verifyTotp 布尔语义一致）', () => {
+    expect(verifyTotpCounter(RFC_SECRET_B32, '000000', { now })).toBeNull()
+    expect(verifyTotpCounter(RFC_SECRET_B32, '12345', { now })).toBeNull()
+    expect(verifyTotpCounter('NOT_A_SECRET!!', '123456', { now })).toBeNull()
   })
 })
 

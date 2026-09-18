@@ -543,6 +543,37 @@ describe('管理员 TOTP 端点', () => {
     ).toBe(false)
   })
 
+  it('disable：同一验证码同窗重放 → 第二次 400（RFC 6238 §5.2 防重放，不关掉第二因子）', async () => {
+    const secret = generateTotpSecret()
+    const code = currentCode(secret)
+    let claimed = false
+    setExecuteHandlers([
+      { match: ['SELECT is_admin FROM users'], returns: [{ is_admin: 1 }] },
+      {
+        match: ['SELECT totp_secret FROM users'],
+        returns: [{ totp_secret: encryptTotpSecret(secret) }],
+      },
+      {
+        match: ['totp_last_counter'],
+        returns: () => {
+          if (claimed) return { affectedRows: 0 }
+          claimed = true
+          return { affectedRows: 1 }
+        },
+      },
+      { match: ['UPDATE users SET totp_secret'], returns: { affectedRows: 1 } },
+    ])
+    const first = await supertest(makeApp()).post('/api/admin/totp/disable').send({ code })
+    expect(first.status).toBe(200)
+    mockExecute.mockClear()
+    const second = await supertest(makeApp()).post('/api/admin/totp/disable').send({ code })
+    expect(second.status).toBe(400)
+    // 重放被拒时不得清空 totp_secret
+    expect(
+      mockExecute.mock.calls.some(([sql]) => String(sql).includes('UPDATE users SET totp_secret'))
+    ).toBe(false)
+  })
+
   it('非管理员 → 404（防探测，与其余管理端点一致）', async () => {
     setExecuteHandlers([{ match: ['SELECT is_admin FROM users'], returns: [{ is_admin: 0 }] }])
     const res = await supertest(makeApp()).get('/api/admin/totp/status')

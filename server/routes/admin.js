@@ -12,6 +12,7 @@ const {
   generateTotpSecret,
   isValidTotpSecret,
   verifyTotp,
+  verifyTotpCounter,
   encryptTotpSecret,
   decryptTotpSecret,
 } = require('../utils/totp')
@@ -399,7 +400,7 @@ router.post('/totp/enable', authMiddleware, requireAdmin, async (req, res, next)
   }
 })
 
-// 停用：需出示当前验证码
+// 停用：需出示当前验证码（含防重放认领——重放旧码关掉第二因子是接管链的一环）
 router.post('/totp/disable', authMiddleware, requireAdmin, async (req, res, next) => {
   try {
     const { code } = req.body || {}
@@ -407,10 +408,18 @@ router.post('/totp/disable', authMiddleware, requireAdmin, async (req, res, next
     if (rows.length === 0 || !rows[0].totp_secret) {
       return res.status(400).json({ error: '两步验证未启用' })
     }
-    if (
-      typeof code !== 'string' ||
-      !verifyTotp(decryptTotpSecret(rows[0].totp_secret) || '', code.trim())
-    ) {
+    const trimmed = typeof code === 'string' ? code.trim() : ''
+    const secret = decryptTotpSecret(rows[0].totp_secret)
+    const matchedCounter = secret ? verifyTotpCounter(secret, trimmed) : null
+    if (matchedCounter === null) {
+      return res.status(400).json({ error: '动态验证码错误' })
+    }
+    // RFC 6238 §5.2 防重放：计数器严格递增的原子认领，同窗重放按失败拒绝
+    const [claim] = await pool.execute(
+      'UPDATE users SET totp_last_counter = ? WHERE id = ? AND (totp_last_counter IS NULL OR totp_last_counter < ?)',
+      [matchedCounter, req.userId, matchedCounter]
+    )
+    if (claim.affectedRows === 0) {
       return res.status(400).json({ error: '动态验证码错误' })
     }
     await pool.execute(
