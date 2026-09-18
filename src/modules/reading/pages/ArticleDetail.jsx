@@ -4,7 +4,7 @@ import { ArrowLeft, Bookmark, ChevronDown, FileText, MapPin } from 'lucide-react
 import { useReadingStore } from '../hooks/useReadingStore'
 import useStudyTracker from '../hooks/useStudyTracker'
 import { loadDictionary } from '../../../utils/loadDictionary.js'
-import { loadWordIndex, indexEntryToWord } from '../../../utils/dictWordMap.js'
+import { loadWordIndex, indexEntryToWord, DICT_IDS } from '../../../utils/dictWordMap.js'
 
 // 阅读页查词 Map 的模块级缓存：构建一次约 3 万词条（主线程数十毫秒），
 // 会话内往返文章页复用；数据本身随页面刷新重新拉取，不存在跨会话过期问题
@@ -182,23 +182,9 @@ export default function ArticleDetail() {
   // 胜出，与语料/复习侧一致），查词展示的核心词典完整释义语义对齐。
   useEffect(() => {
     let cancelled = false
-    const dictIds = [
-      'junior',
-      'zhongkao',
-      'senior',
-      'gaokao',
-      'cet4',
-      'cet4freq',
-      'cet6',
-      'cet6freq',
-      'tem4',
-      'tem8',
-      'ielts',
-      'toefl',
-      'sat',
-      'postgraduate',
-      'programmer',
-    ]
+    // 词库白名单复用 dictWordMap.js 的共享导出：此前本地手抄 15 部（缺 postgraduateCore
+    // 与 7 部专业词典），专业词在阅读页查词拿到空释义弹窗——与选择题空白卡片同类问题
+    const dictIds = DICT_IDS
     ;(async () => {
       // 命中模块级缓存直接复用：每次进入文章页同步遍历 3 万词条建 Map，
       // 列表↔文章往返的首帧卡顿源头（word-index.json 本身已有 fetch 缓存）

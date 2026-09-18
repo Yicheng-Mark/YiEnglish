@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { loadDictionary } from '../../../utils/loadDictionary.js'
-import { loadWordIndex, indexEntryToWord } from '../../../utils/dictWordMap.js'
+import { loadWordIndex, indexEntryToWord, DICT_IDS } from '../../../utils/dictWordMap.js'
 import {
   addToCorpusWordBook,
   isInCorpusWordBook,
@@ -12,32 +12,13 @@ import { useCorpusSettings } from '../hooks/useCorpusSettings.js'
 import { useWordExtractor } from '../hooks/useWordExtractor.js'
 import { parsePosFromTrans } from '../utils/wordColorMap.js'
 
-const DICT_IDS = [
-  'junior',
-  'zhongkao',
-  'senior',
-  'gaokao',
-  'cet4',
-  'cet4freq',
-  'cet6',
-  'cet6freq',
-  'tem4',
-  'tem8',
-  'ielts',
-  'ieltsfreq',
-  'toefl',
-  'toeflfreq',
-  'sat',
-  'postgraduate',
-  'programmer',
-]
-
 // 模块级缓存：避免页面切换时重复加载词典（现为单个合并索引，旧实现约 17 个 JSON）
 let DICT_CACHE = null
 let DICT_LOADING = null
 
 // 优先路径：单请求拉取预生成的合并索引（scripts/gen-word-index.mjs 产物），
-// 按本播放器的 17 部词典过滤构建三张 Map。索引条目的主字段已是「首个含词词典胜出」
+// 按 DICT_IDS 白名单（dictWordMap.js 共享导出，此前本地手抄 17 部漏掉 7 部专业词典，
+// 专业词查词弹窗空释义）过滤构建三张 Map。索引条目的主字段已是「首个含词词典胜出」
 //（迭代序与 DICT_IDS 一致）；仅当主胜出词典不在本列表而 alt（programmer 侧词条）
 // 在时取 alt——与旧全量路径的首个含词词典语义逐比特一致。
 function buildDictsFromIndex(index) {
@@ -58,7 +39,7 @@ function buildDictsFromIndex(index) {
   return { wordMap, posMap, dictSourcesMap }
 }
 
-// 旧实现：全量拉 17 部词典主线程建三张 Map（保留作 word-index.json 不可用时的 fallback）
+// 旧实现：全量拉白名单词典主线程建三张 Map（保留作 word-index.json 不可用时的 fallback）
 async function ensureDictLoadedFromDicts() {
   const dicts = await Promise.all(DICT_IDS.map((id) => loadDictionary(id).catch(() => null)))
   const wordMap = new Map()

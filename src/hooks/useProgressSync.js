@@ -30,7 +30,9 @@ export default function useProgressSync({ flushServerProgress, isFinished, curre
     if (isFinished) flushServerProgress()
   }, [isFinished, flushServerProgress])
 
-  // 组件卸载时刷新进度
+  // 卸载/切章时兜底 flush：<5 词的缓冲若不冲掉，普通返回导航会静默丢失这段服务端
+  // 进度。cleanup 捕获的是旧版 flushServerProgress（含旧 dictId/chapterId），
+  // 切章时恰好按旧章冲刷（Typing.jsx 不再另挂同款 effect，避免双份清理）
   useEffect(() => {
     return () => flushServerProgress()
   }, [flushServerProgress])

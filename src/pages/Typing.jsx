@@ -48,6 +48,8 @@ export default function Typing() {
   const hiddenInputRef = useRef(null)
   const hasJumpedRef = useRef(false)
   const completedBufferRef = useRef([])
+  // 服务端进度上报的失败重试队列（条目带原 dictId/chapterId，见 flushServerProgress）
+  const progressRetryRef = useRef([])
   const [keyboardActive, setKeyboardActive] = useState(true)
   const keyboardActiveRef = useRef(true)
   const blurTimerRef = useRef(null)
@@ -112,18 +114,20 @@ export default function Typing() {
 
   const flushServerProgress = useCallback(() => {
     if (isErrorBookMode || isWordBookMode || isReviewMode) return
+    // 失败重试队列：各条带原章上下文。不能推回共享缓冲——切章后会被下一次
+    // flush 用「当时」的 dictId/chapterId 上报（张冠李戴），词本模式下则永远滞留
+    const retries = progressRetryRef.current.splice(0)
+    for (const r of retries) {
+      saveProgress(r.dictId, r.chapterId, r.words).catch(() => {
+        progressRetryRef.current.push(r)
+      })
+    }
     const buffered = completedBufferRef.current.splice(0)
     if (buffered.length === 0) return
     saveProgress(dictId, Number(chapterId), buffered).catch(() => {
-      completedBufferRef.current.push(...buffered)
+      progressRetryRef.current.push({ dictId, chapterId: Number(chapterId), words: buffered })
     })
   }, [isErrorBookMode, isWordBookMode, isReviewMode, dictId, chapterId])
-
-  // 卸载/切章时兜底 flush：<5 词的缓冲若不冲掉，普通返回导航会静默丢失这段服务端进度。
-  // cleanup 捕获的是旧版 flushServerProgress（含旧 dictId/chapterId），切章时恰好按旧章冲刷
-  useEffect(() => {
-    return () => flushServerProgress()
-  }, [flushServerProgress])
 
   // pagehide/beforeunload 兜底 flush：直接关闭标签页/刷新不触发 React 卸载清理，
   // 缓冲里的服务端进度会丢（仿 errorBook.js 的页面隐藏兜底模式；

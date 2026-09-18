@@ -246,13 +246,16 @@ router.put('/:bookType', authMiddleware, validateBookType, async (req, res, next
             bookType === 'error' ? clampWrongCount(w.wrongCount) : 1,
             bookType === 'error' ? clampTimestamp(toValidDate(w.lastWrongTime)) || null : null,
             bookType === 'error' ? clampStr(w.dictName, 100) : null,
+            // 保留客户端的收录时间：GET 按 created_at DESC 排序，批量替换若统一写 NOW()，
+            // 所有行时间戳相同 → 词序退化为索引序，词本章节分组随 enrich 同步被洗牌
+            clampTimestamp(toValidDate(w.addTime)) || new Date(),
           ]
         })
 
         // query()（非 execute）支持 VALUES ? 嵌套数组展开：SQL 为静态字符串，全部数据走参数；
         // INSERT IGNORE 兜底并发/迁移路径已存在的行
         await conn.query(
-          'INSERT IGNORE INTO user_word_books (user_id, book_type, word_name, trans, notation, usphone, ukphone, us_audio, uk_audio, wrong_count, last_wrong_at, dict_name) VALUES ?',
+          'INSERT IGNORE INTO user_word_books (user_id, book_type, word_name, trans, notation, usphone, ukphone, us_audio, uk_audio, wrong_count, last_wrong_at, dict_name, created_at) VALUES ?',
           [values]
         )
       }

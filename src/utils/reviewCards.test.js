@@ -14,8 +14,11 @@ const { apiUpsertReviewCards, apiAddReviewCard, apiFetchReviewCards, apiDeleteRe
     apiDeleteReviewCard: vi.fn().mockResolvedValue(),
   }))
 
+// 词表同步缓存的状态：getDueReviewCount 徽标口径用例按需注入
+const dictMapState = vi.hoisted(() => ({ syncMap: null }))
 vi.mock('./dictWordMap.js', () => ({
   buildDictWordMap: vi.fn().mockResolvedValue(new Map()),
+  getDictWordMapSync: vi.fn(() => dictMapState.syncMap),
 }))
 vi.mock('../lib/api-review', () => ({
   apiUpsertReviewCards,
@@ -57,6 +60,7 @@ beforeEach(() => {
   apiAddReviewCard.mockClear()
   apiFetchReviewCards.mockClear().mockResolvedValue({ cards: [] })
   apiDeleteReviewCard.mockClear().mockResolvedValue()
+  dictMapState.syncMap = null
 })
 
 afterEach(() => {
@@ -344,5 +348,37 @@ describe('getDueReviewWords（出题数据源）', () => {
     seedCard('unknown', { wordName: 'unknown', dictId: 'chef', nextReview: Date.now() - 1000 })
     const { getDueReviewWords } = await import('./reviewCards.js')
     expect(await getDueReviewWords()).toEqual([])
+  })
+})
+
+describe('getDueReviewCount（到期徽标口径）', () => {
+  // seedCard 是整键覆盖，多卡一次写入
+  function seedDueCards(cards) {
+    localStorage.setItem(KEY, JSON.stringify({ cards }))
+  }
+
+  it('词表缓存未构建 → 不排除任何到期卡（历史行为）', async () => {
+    seedDueCards({
+      known: { wordName: 'known', dictId: 'cet4', nextReview: Date.now() - 1000 },
+      unknown: { wordName: 'unknown', dictId: 'chef', nextReview: Date.now() - 2000 },
+    })
+    const { getDueReviewCount } = await import('./reviewCards.js')
+    expect(getDueReviewCount()).toBe(2)
+  })
+
+  it('词表缓存就位 → 与 getDueReviewWords 同口径，查不到释义的卡不计入徽标', async () => {
+    seedDueCards({
+      known: { wordName: 'known', dictId: 'cet4', nextReview: Date.now() - 1000 },
+      unknown: { wordName: 'unknown', dictId: 'chef', nextReview: Date.now() - 2000 },
+      emptytrans: { wordName: 'emptytrans', dictId: 'cet4', nextReview: Date.now() - 500 },
+    })
+    // 模拟「词表已在别处构建完成」：徽标走同一覆盖判断，被过滤的卡永远无法作答、
+    // SM-2 永不推进，计入只会让徽标残留虚数（点进去却无词可复习）
+    dictMapState.syncMap = new Map([
+      ['known', { name: 'known', trans: ['[n] 已知'] }],
+      ['emptytrans', { name: 'emptytrans', trans: [] }],
+    ])
+    const { getDueReviewCount } = await import('./reviewCards.js')
+    expect(getDueReviewCount()).toBe(1)
   })
 })

@@ -49,6 +49,15 @@ export function playWordTTS(word) {
 
   let stopped = false
   const isStopped = () => stopped
+  // 降级只允许发生一次：超时路径里 pause() 会让未出帧的 play() promise 以
+  // AbortError 拒绝，catch 分支晚于超时分支执行——不设标志会 cancel+restart
+  // 语音两遍（听感为开头被掐断重启）
+  let fallbackStarted = false
+  const startFallback = () => {
+    if (fallbackStarted || isStopped()) return
+    fallbackStarted = true
+    fallbackSpeak(trimmed, isStopped)
+  }
 
   try {
     const audio = new Audio(
@@ -68,9 +77,14 @@ export function playWordTTS(word) {
       audio.oncanplaythrough = null
     }
 
+    // stalled/abort 等瞬断事件触发降级时必须同时停掉 audio：网络恢复后
+    // 有道音频与 speechSynthesis 会叠音
     const onFail = () => {
       cleanup()
-      if (!isStopped()) fallbackSpeak(trimmed, isStopped)
+      try {
+        audio.pause()
+      } catch {}
+      startFallback()
     }
 
     audio.onerror = onFail
@@ -82,16 +96,18 @@ export function playWordTTS(word) {
 
     timeoutId = setTimeout(() => {
       cleanup()
-      audio.pause()
-      audio.src = ''
-      if (!isStopped()) fallbackSpeak(trimmed, isStopped)
+      try {
+        audio.pause()
+        audio.src = ''
+      } catch {}
+      startFallback()
     }, 3000)
 
     const result = audio.play()
     if (result && typeof result.catch === 'function') {
       result.catch(() => {
         cleanup()
-        if (!isStopped()) fallbackSpeak(trimmed, isStopped)
+        startFallback()
       })
     }
 

@@ -234,8 +234,19 @@ describe('PUT /api/wordbooks/:bookType · 批量替换', () => {
       .send({ words: [{ name: 'apple' }] })
     const call = putInsertCall()
     expect(call[0]).toBe(
-      'INSERT IGNORE INTO user_word_books (user_id, book_type, word_name, trans, notation, usphone, ukphone, us_audio, uk_audio, wrong_count, last_wrong_at, dict_name) VALUES ?'
+      'INSERT IGNORE INTO user_word_books (user_id, book_type, word_name, trans, notation, usphone, ukphone, us_audio, uk_audio, wrong_count, last_wrong_at, dict_name, created_at) VALUES ?'
     )
     expect(call[1][0][0][2]).toBe('apple')
+  })
+
+  it('created_at 保留客户端 addTime（批量替换不把全部行洗成同一时间戳，词序按收录时间保序）', async () => {
+    const addTime = new Date('2026-06-01T08:00:00Z')
+    const res = await supertest(makeApp())
+      .put('/api/wordbooks/reading')
+      .send({ words: [{ name: 'apple', addTime: addTime.getTime() }, { name: 'dog' }] })
+    expect(res.status).toBe(200)
+    const rows = putInsertCall()[1][0]
+    expect(rows[0][12].getTime()).toBe(addTime.getTime()) // addTime 有效 → 原样保留
+    expect(rows[1][12]).toBeInstanceOf(Date) // 缺 addTime → 回退 NOW()
   })
 })

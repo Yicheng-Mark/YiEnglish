@@ -132,11 +132,14 @@ if (typeof window !== 'undefined') {
 }
 
 export async function enrichCorpusWordBook() {
-  const data = getCorpusWordBook()
-  const words = data.words || []
-  if (words.length === 0) return
+  // 空本早退（免得为空词本白拉一次合并索引）
+  if ((getCorpusWordBook().words || []).length === 0) return
 
   const map = await buildDictWordMap()
+  // await 之后重读缓存：期间可能有新增词（用 await 前的快照回写会把它们覆盖掉），
+  // 也可能已登出断开（_cache === null 时回写会让旧账号内存态复活）
+  if (_cache === null) return
+  const words = _cache
   let changed = false
 
   const enriched = words.map((w) => {

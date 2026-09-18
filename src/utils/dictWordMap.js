@@ -8,10 +8,12 @@
 import { loadDictionary } from './loadDictionary.js'
 import { fetchWithAuth } from '../lib/api'
 
-// 25 部词典全量白名单。此前只列 18 部主词典，漏了 7 部专业词典：索引里约 39%
-// 的词条只存在于专业词典，复习计划词本（存词名+dictId，出题时反查释义）取不到
-// trans → 选择题出现空白题干/空白选项。追加在尾部：18 部主词典仍 first-wins 优先。
-const DICT_IDS = [
+// 25 部词典全量白名单（= meta.js 注册的全部词库，顺序同注册序）。此前只列 18 部主
+// 词典，漏了 7 部专业词典：索引里约 39% 的词条只存在于专业词典，复习计划词本
+// （存词名+dictId，出题时反查释义）取不到 trans → 选择题出现空白题干/空白选项。
+// 导出共享：阅读页（ArticleDetail）与语料播放器（CorpusPlayerContext）曾各自手抄
+// 一份更短的白名单，专业词在这两处查词拿到空释义——修一处漏两次的根源。
+export const DICT_IDS = [
   'junior',
   'zhongkao',
   'senior',
@@ -140,4 +142,12 @@ export function buildDictWordMap() {
   })
 
   return loadingPromise
+}
+
+// 同步读取已构建的词表缓存：构建未发生/失败时返回 null。
+// 供同步代码（如 reviewCards.getDueReviewCount 的到期徽标）在缓存就位后
+// 与异步路径（getDueReviewWords）共用同一套「词典覆盖」判断，保持口径一致；
+// 未就位时调用方按无缓存口径处理（等同历史行为）。
+export function getDictWordMapSync() {
+  return dictWordMap
 }

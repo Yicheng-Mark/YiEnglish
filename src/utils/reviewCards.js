@@ -5,7 +5,7 @@ import {
   apiDeleteReviewCard,
 } from '../lib/api-review'
 import { idbPut, idbClear, idbBulkPut, idbDelete } from './idb.js'
-import { buildDictWordMap } from './dictWordMap.js'
+import { buildDictWordMap, getDictWordMapSync } from './dictWordMap.js'
 
 const STORAGE_KEY = 'lingoforge_review_cards'
 const DAY_MS = 24 * 60 * 60 * 1000
@@ -228,10 +228,21 @@ export function removeFromReviewCards(wordName) {
   }
 }
 
+// 到期卡是否有出题资格：词典里查得到非空释义（与 getDueReviewWords 的过滤同一条
+// 件）。徽标（Home/WordBooks/ReviewSetup）与实际出题共用此口径，否则查不到释义的
+// 卡永远无法作答、SM-2 永不推进，徽标残留虚数且点进去「无词可复习」。
+function isCardCovered(card, map) {
+  if (!map) return true // 词表缓存未构建（会话早期）：按历史行为不排除
+  const lookup = map.get(card.wordName.toLowerCase())
+  return !!(lookup && Array.isArray(lookup.trans) && lookup.trans.length > 0)
+}
+
 export function getDueReviewCount() {
   const data = getCards()
   const now = Date.now()
-  return Object.values(data.cards).filter((c) => c.nextReview <= now).length
+  const map = getDictWordMapSync()
+  return Object.values(data.cards).filter((c) => c.nextReview <= now && isCardCovered(c, map))
+    .length
 }
 
 export function getTotalReviewCount() {
@@ -265,12 +276,13 @@ export async function getDueReviewWords() {
   if (dueCards.length === 0) return []
 
   const map = await buildDictWordMap()
-  // 词典覆盖缺口防御：查不到释义（或 trans 为空）的词不出题——选择题会渲染出
-  // 空白题干/空白选项。卡片保留：将来词典/索引重新覆盖到该词后仍会正常到期出题
+  // 词典覆盖缺口防御（条件与 getDueReviewCount 的 isCardCovered 同源）：查不到
+  // 释义（或 trans 为空）的词不出题——选择题会渲染出空白题干/空白选项。
+  // 卡片保留：将来词典/索引重新覆盖到该词后仍会正常到期出题
   return dueCards
+    .filter((card) => isCardCovered(card, map))
     .map((card) => {
       const lookup = map.get(card.wordName.toLowerCase())
-      if (!lookup || !Array.isArray(lookup.trans) || lookup.trans.length === 0) return null
       return {
         name: card.wordName,
         trans: lookup.trans,
@@ -281,7 +293,6 @@ export async function getDueReviewWords() {
         uk: lookup.uk || '',
       }
     })
-    .filter(Boolean)
 }
 
 export async function loadReviewAsDictionary() {

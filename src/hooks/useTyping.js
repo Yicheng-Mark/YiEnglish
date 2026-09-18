@@ -201,7 +201,8 @@ export default function useTyping(
     let audio = cache.get(word)
     if (!audio) {
       // 跨章连打时缓存只增不减（React Router 下跳章是同组件 param 变化，
-      // 不触发 unmount 清理），超限逐出最旧条目（Map 迭代序即插入序），
+      // 不触发 unmount 清理），超限按插入序逐出最旧条目（FIFO；命中不重排，
+      // 一章 25 词 + 预载余量下「正在播的必是较新条目」，不会被逐出），
       // 防止连打多章累积数百个已预载音频的 Audio 元素
       if (cache.size >= AUDIO_CACHE_MAX) {
         const oldestKey = cache.keys().next().value

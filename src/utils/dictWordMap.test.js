@@ -168,3 +168,51 @@ describe('buildDictWordMap（共享构建器）', () => {
     expect(map.get('fallback')).toMatchObject({ name: 'fallback' })
   })
 })
+
+describe('DICT_IDS（共享白名单）', () => {
+  it('覆盖全部 25 部词典：freq 变体 + 7 部专业词典在内，且无重复', async () => {
+    const { DICT_IDS } = await import('./dictWordMap.js')
+    // 曾经三处手抄白名单各自漂移（dictWordMap 25 / 语料 17 / 阅读 15），专业词在
+    // 语料与阅读页查词拿到空释义——钉住共享导出的完整性，消费方一律 import 本表
+    expect(new Set(DICT_IDS).size).toBe(DICT_IDS.length)
+    for (const id of [
+      'cet4freq',
+      'cet6freq',
+      'ieltsfreq',
+      'toeflfreq',
+      'postgraduateCore',
+      'nautical',
+      'marine_engineering',
+      'automotive',
+      'electrician',
+      'business',
+      'foreign_trade',
+      'chef',
+    ]) {
+      expect(DICT_IDS).toContain(id)
+    }
+    expect(DICT_IDS).toHaveLength(25)
+  })
+})
+
+describe('getDictWordMapSync（同步读缓存）', () => {
+  it('构建前为 null；构建成功后返回同一实例', async () => {
+    const { buildDictWordMap, getDictWordMapSync } = await import('./dictWordMap.js')
+    expect(getDictWordMapSync()).toBeNull()
+
+    mockFetch.mockImplementation((url) =>
+      String(url).includes('/cet4.json')
+        ? okResponse(dictJson([{ name: 'apple', trans: ['[n] 苹果'] }]))
+        : Promise.resolve({ ok: false })
+    )
+    const map = await buildDictWordMap()
+    expect(getDictWordMapSync()).toBe(map)
+  })
+
+  it('全部加载失败不缓存 → 同步读仍为 null（调用方按无缓存口径处理）', async () => {
+    const { buildDictWordMap, getDictWordMapSync } = await import('./dictWordMap.js')
+    mockFetch.mockRejectedValue(new Error('offline'))
+    await buildDictWordMap()
+    expect(getDictWordMapSync()).toBeNull()
+  })
+})
