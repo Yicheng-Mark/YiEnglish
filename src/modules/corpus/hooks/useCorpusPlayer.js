@@ -41,9 +41,25 @@ export function useCorpusPlayer({ videoRef, subtitles, videoEl }) {
   useEffect(() => {
     intervalGapRef.current = intervalGap
   }, [intervalGap])
+  // 定义需先于下方 subtitles effect 的依赖求值（否则 TDZ）
+  const clearIntervalTimer = useCallback(() => {
+    if (intervalTimerRef.current) {
+      clearTimeout(intervalTimerRef.current)
+      intervalTimerRef.current = null
+    }
+  }, [])
   useEffect(() => {
     subtitlesRef.current = subtitles
-  }, [subtitles])
+    // 切期清理：intervalGap 等待中的定时器闭包持有旧期 cue.id，而每期字幕 id 都
+    // 从 1 开始——放任其到期会在新字幕里 findIndex 命中旧 id，把新视频从中间某句
+    // 突然开播。相关防抖标记与循环计数一并复位（属于上一期的播放状态）
+    clearIntervalTimer()
+    lastPausedCueRef.current = null
+    lastIntervalCueRef.current = null
+    activeIdRef.current = null
+    setActiveId(null)
+    loopsRemainingRef.current = 0
+  }, [subtitles, clearIntervalTimer])
   useEffect(() => {
     hideSubtitleRightRef.current = hideSubtitleRight
   }, [hideSubtitleRight])
@@ -58,13 +74,6 @@ export function useCorpusPlayer({ videoRef, subtitles, videoEl }) {
     }
     document.addEventListener('fullscreenchange', onFsChange)
     return () => document.removeEventListener('fullscreenchange', onFsChange)
-  }, [])
-
-  const clearIntervalTimer = useCallback(() => {
-    if (intervalTimerRef.current) {
-      clearTimeout(intervalTimerRef.current)
-      intervalTimerRef.current = null
-    }
   }, [])
 
   useEffect(() => {

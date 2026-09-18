@@ -285,34 +285,32 @@ function MobileSentenceCardsInner({ focusMode }) {
     scrollToVirtualIndex: subScrollToIndex,
   })
 
-  // Swipe gesture state
-  const [touchState, setTouchState] = useState({ startX: 0, tracking: false, delta: 0 })
+  // Swipe gesture state：纯手势内部通信（delta 不参与渲染），全 ref 化——
+  // 此前每个 touchmove 帧（~60Hz）一次 setState，整个虚拟化列表跟着每帧 reconcile，低端机横滑掉帧
+  const touchRef = useRef({ startX: 0, tracking: false, delta: 0 })
   const SWIPE_THRESHOLD = 60
 
   const handleTouchStart = useCallback((e) => {
     const t = e.touches[0]
-    setTouchState({ startX: t.clientX, tracking: true, delta: 0 })
+    touchRef.current = { startX: t.clientX, tracking: true, delta: 0 }
   }, [])
 
-  const handleTouchMove = useCallback(
-    (e) => {
-      if (!touchState.tracking) return
-      const delta = e.touches[0].clientX - touchState.startX
-      setTouchState((s) => ({ ...s, delta }))
-    },
-    [touchState.tracking, touchState.startX]
-  )
+  const handleTouchMove = useCallback((e) => {
+    const s = touchRef.current
+    if (!s.tracking) return
+    s.delta = e.touches[0].clientX - s.startX
+  }, [])
 
   const handleTouchEnd = useCallback(() => {
-    if (!touchState.tracking) return
-    const { delta } = touchState
-    if (delta > SWIPE_THRESHOLD) {
+    const s = touchRef.current
+    if (!s.tracking) return
+    if (s.delta > SWIPE_THRESHOLD) {
       player.prevCue()
-    } else if (delta < -SWIPE_THRESHOLD) {
+    } else if (s.delta < -SWIPE_THRESHOLD) {
       player.nextCue()
     }
-    setTouchState({ startX: 0, tracking: false, delta: 0 })
-  }, [touchState, player])
+    touchRef.current = { startX: 0, tracking: false, delta: 0 }
+  }, [player])
 
   // For dictation mode: show single card with current subtitle
   const currentSub = useMemo(() => {

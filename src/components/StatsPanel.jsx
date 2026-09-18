@@ -1,5 +1,30 @@
 import { memo } from 'react'
 
+// 提出到模块级：定义在组件函数体内时，每次渲染的新函数引用都会被 React 视为
+// 新组件类型走卸载重挂——打字计时器每秒 setStats 一次，等于每秒 remount 全部 StatItem
+const StatItem = ({ item, compact }) => (
+  <div className={`flex flex-col items-center ${compact ? 'flex-1 min-w-0' : 'w-[26%] md:w-auto'}`}>
+    <div
+      className={`
+        font-extrabold text-primary dark:text-primary-dark tabular-nums tracking-tight
+        dark:drop-shadow-[0_0_8px_rgba(99,102,241,0.35)]
+        ${compact ? 'text-[clamp(1.2rem,5vw,1.8rem)] leading-[1.1]' : 'text-xl md:text-4xl leading-none'}
+      `}
+    >
+      {item.value}
+    </div>
+    <div
+      className={`
+        text-content-tertiary dark:text-gray-500 flex items-center
+        ${compact ? 'text-[10px] mt-0 gap-0.5 leading-[1.1]' : 'text-[10px] md:text-base mt-0.5 md:mt-1 gap-0.5 md:gap-1'}
+      `}
+    >
+      {item.icon}
+      <span>{item.label}</span>
+    </div>
+  </div>
+)
+
 function StatsPanel({ stats, keyboardHeight = 0 }) {
   const isCompact = keyboardHeight > 0
   const formatTime = (seconds) => {
@@ -111,31 +136,6 @@ function StatsPanel({ stats, keyboardHeight = 0 }) {
       ),
     },
   ]
-
-  const StatItem = ({ item, compact }) => (
-    <div
-      className={`flex flex-col items-center ${compact ? 'flex-1 min-w-0' : 'w-[26%] md:w-auto'}`}
-    >
-      <div
-        className={`
-        font-extrabold text-primary dark:text-primary-dark tabular-nums tracking-tight
-        dark:drop-shadow-[0_0_8px_rgba(99,102,241,0.35)]
-        ${compact ? 'text-[clamp(1.2rem,5vw,1.8rem)] leading-[1.1]' : 'text-xl md:text-4xl leading-none'}
-      `}
-      >
-        {item.value}
-      </div>
-      <div
-        className={`
-        text-content-tertiary dark:text-gray-500 flex items-center
-        ${compact ? 'text-[10px] mt-0 gap-0.5 leading-[1.1]' : 'text-[10px] md:text-base mt-0.5 md:mt-1 gap-0.5 md:gap-1'}
-      `}
-      >
-        {item.icon}
-        <span>{item.label}</span>
-      </div>
-    </div>
-  )
 
   return (
     <div

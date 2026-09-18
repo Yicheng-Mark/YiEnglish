@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react'
 import useIsMobile from '../hooks/useIsMobile.js'
-import { playMediaSafe } from '../utils/playMediaSafe.js'
+import { playWordTTS } from '../utils/wordAudio.js'
 
 const ABCD = ['A', 'B', 'C', 'D']
 
@@ -15,21 +15,25 @@ function getOptionStyle(index, selected, isCorrect, correctIndex) {
 }
 
 function QuizCard({ question, onAnswer, selectedOption, isCorrect }) {
-  const audioRef = useRef(null)
+  const stopAudioRef = useRef(null)
   const isMobile = useIsMobile()
 
+  // 有道音频失败（被墙/离线）自动降级 speechSynthesis，与 WordPopup 共用同一条链
   const playAudio = useCallback(() => {
     if (!question?.stem?.name) return
-    if (audioRef.current) {
-      audioRef.current.pause()
-      audioRef.current = null
-    }
-    const audio = new Audio(
-      `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(question.stem.name)}&type=2`
-    )
-    audioRef.current = audio
-    playMediaSafe(audio)
+    if (stopAudioRef.current) stopAudioRef.current()
+    stopAudioRef.current = playWordTTS(question.stem.name)
   }, [question?.stem?.name])
+
+  // 切题/卸载时停止在播发音（自动推进 1.2s 切下一题、退出测验都不该残留声音）
+  useEffect(() => {
+    return () => {
+      if (stopAudioRef.current) {
+        stopAudioRef.current()
+        stopAudioRef.current = null
+      }
+    }
+  }, [playAudio])
 
   // listening 题型进入时自动播放（移动端/平板跳过，需用户手动点击播放）
   useEffect(() => {

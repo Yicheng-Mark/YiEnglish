@@ -1,95 +1,6 @@
 import { useEffect, useRef, useCallback, useLayoutEffect, useState } from 'react'
+import { playWordTTS } from '../utils/wordAudio.js'
 import { X, Volume2, Check, BookOpen } from 'lucide-react'
-
-function playWordTTS(word) {
-  if (!word) return
-  const trimmed = String(word).trim()
-  if (!trimmed) return
-
-  try {
-    const audio = new Audio(
-      `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(trimmed)}&type=2`
-    )
-
-    let timeoutId = null
-    const cleanup = () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId)
-        timeoutId = null
-      }
-      audio.onplay = null
-      audio.onerror = null
-      audio.onstalled = null
-      audio.onabort = null
-      audio.oncanplaythrough = null
-    }
-
-    const onFail = () => {
-      cleanup()
-      fallbackSpeak(trimmed)
-    }
-
-    audio.onerror = onFail
-    audio.onstalled = onFail
-    audio.onabort = onFail
-
-    audio.onplay = cleanup
-    audio.oncanplaythrough = cleanup
-
-    timeoutId = setTimeout(() => {
-      cleanup()
-      audio.pause()
-      audio.src = ''
-      fallbackSpeak(trimmed)
-    }, 3000)
-
-    const result = audio.play()
-    if (result && typeof result.catch === 'function') {
-      result.catch(() => {
-        cleanup()
-        fallbackSpeak(trimmed)
-      })
-    }
-  } catch {
-    fallbackSpeak(trimmed)
-  }
-}
-
-function fallbackSpeak(text) {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
-
-  const doSpeak = () => {
-    try {
-      window.speechSynthesis.cancel()
-      const utterance = new SpeechSynthesisUtterance(text)
-      utterance.lang = 'en-US'
-      utterance.rate = 0.9
-
-      const voices = window.speechSynthesis.getVoices()
-      const enVoice = voices.find((v) => v.lang.startsWith('en'))
-      if (enVoice) utterance.voice = enVoice
-
-      utterance.onerror = () => {}
-      window.speechSynthesis.speak(utterance)
-    } catch {
-      // 静默失败
-    }
-  }
-
-  const voices = window.speechSynthesis.getVoices()
-  if (voices.length > 0) {
-    doSpeak()
-  } else {
-    window.speechSynthesis.onvoiceschanged = () => {
-      window.speechSynthesis.onvoiceschanged = null
-      doSpeak()
-    }
-    setTimeout(() => {
-      window.speechSynthesis.onvoiceschanged = null
-      doSpeak()
-    }, 1000)
-  }
-}
 
 function parseTrans(trans) {
   if (!trans) return []
@@ -142,6 +53,23 @@ export default function WordPopup({
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [handleClickOutside])
+
+  // 内部滚动容器（如语料字幕列表）滚动时关闭弹窗：定位基于挂载时的视口 rect 快照，
+  // 不会跟随内部滚动，留着只会停在高亮词已滚走的位置。
+  // 排除弹窗自身内容的滚动（多义词的释义列表可滚）；文档级滚动
+  // （window.scrollY 变化，阅读页场景）不关闭——absolute 定位自然跟随
+  const handleScroll = useCallback(
+    (e) => {
+      if (e.target instanceof Node && popupRef.current?.contains(e.target)) return
+      if (window.scrollY === scrollYAtMount) onClose()
+    },
+    [onClose, scrollYAtMount]
+  )
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll, { capture: true, passive: true })
+    return () => window.removeEventListener('scroll', handleScroll, { capture: true })
+  }, [handleScroll])
 
   // 定位常量提前到 early return 之前，供下面的 useLayoutEffect 使用
   const gap = 12

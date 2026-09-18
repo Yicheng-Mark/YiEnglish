@@ -4,7 +4,10 @@ import { formatTime } from '../../../utils/formatTime.js'
 import { handleVideoPlaybackError } from '../utils/videoError.js'
 
 export default function VideoPlayer({ src, poster }) {
-  const { videoRef, player, settings, toggleSetting } = useCorpusContext()
+  // videoCallbackRef 而非裸 videoRef：平板旋转（移动布局 ↔ 桌面布局）时组件树
+  // 换挂载点，callback ref 才会驱动 setVideoEl 重绑 video 事件监听；裸 ref 对象
+  // 恒定不变，旋转后 videoEl 停留 null，播放器 UI 整体冻结（有声无控）
+  const { videoCallbackRef, player, settings, toggleSetting } = useCorpusContext()
   const { duration, seek } = player
   // currentTime 高频变化（timeupdate ~4Hz），单独订阅避免整个组件树跟着重渲染
   const currentTime = useCorpusTime()
@@ -14,7 +17,7 @@ export default function VideoPlayer({ src, poster }) {
   return (
     <div className="rounded-2xl overflow-hidden bg-black w-full aspect-video shrink-0 relative border border-gray-200/60 dark:border-white/[0.06] shadow-lg dark:shadow-2xl dark:shadow-black/40">
       <video
-        ref={videoRef}
+        ref={videoCallbackRef}
         src={src}
         poster={poster || undefined}
         controls={false}

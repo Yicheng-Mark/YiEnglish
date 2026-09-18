@@ -136,6 +136,9 @@ export default function useTyping(
   const [isWrong, setIsWrong] = useState(false)
   const [isFinished, setIsFinished] = useState(false)
   const [startTime, setStartTime] = useState(null)
+  // 同事件闭包内完成整章时 state 尚未更新（读到的还是 null，elapsed 会算成
+  // Unix 纪元秒数），ref 同步真实开始时间供完成统计读取
+  const startTimeRef = useRef(null)
   const [stats, setStats] = useState({
     time: 0,
     inputCount: 0,
@@ -190,10 +193,27 @@ export default function useTyping(
 
   const audioCacheRef = useRef(new Map())
 
+  // 发音缓存上限：一章 25 词 + 预载余量，跨章连打时足够大又不会无限增长
+  const AUDIO_CACHE_MAX = 100
+
   const getOrCreateAudio = useCallback((word) => {
     const cache = audioCacheRef.current
     let audio = cache.get(word)
     if (!audio) {
+      // 跨章连打时缓存只增不减（React Router 下跳章是同组件 param 变化，
+      // 不触发 unmount 清理），超限逐出最旧条目（Map 迭代序即插入序），
+      // 防止连打多章累积数百个已预载音频的 Audio 元素
+      if (cache.size >= AUDIO_CACHE_MAX) {
+        const oldestKey = cache.keys().next().value
+        if (oldestKey !== undefined) {
+          const oldest = cache.get(oldestKey)
+          cache.delete(oldestKey)
+          try {
+            oldest.pause()
+            oldest.src = ''
+          } catch {}
+        }
+      }
       audio = new Audio(
         `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(word)}&type=2`
       )
@@ -274,6 +294,7 @@ export default function useTyping(
       setIsWrong(false)
       setIsFinished(false)
       setStartTime(null)
+      startTimeRef.current = null
       setStats({ time: 0, inputCount: 0, correctCount: 0, wpm: 0, accuracy: 0 })
       inputCountRef.current = 0
       correctCountRef.current = 0
@@ -356,7 +377,11 @@ export default function useTyping(
       // 任何新输入（含退格）都使先前错字触发的 300ms 自动清空作废，
       // 连错时也避免定时器堆叠
       clearWrongResetTimer()
-      if (!startTime) setStartTime(Date.now())
+      if (!startTime) {
+        const now = Date.now()
+        setStartTime(now)
+        startTimeRef.current = now
+      }
       if (key === 'Backspace') {
         setCurrentInput((prev) => {
           const next = prev.slice(0, -1)
@@ -393,7 +418,9 @@ export default function useTyping(
             if (wordIndex >= words.length - 1) {
               if (soundEnabled) playSound('finish')
               setIsFinished(true)
-              const elapsed = Math.floor((Date.now() - startTime) / 1000) || 1
+              // 用 ref 而非闭包里的 state：跳词直达章尾时本闭包里的 startTime
+              // 还是 null（首键 setStartTime 尚未重渲染），elapsed 会算成 Unix 纪元秒数
+              const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000) || 1
               setStats({
                 time: elapsed,
                 inputCount: inputCountRef.current,
@@ -499,6 +526,7 @@ export default function useTyping(
     setIsWrong(false)
     setIsFinished(false)
     setStartTime(null)
+    startTimeRef.current = null
     setStats({ time: 0, inputCount: 0, correctCount: 0, wpm: 0, accuracy: 0 })
     inputCountRef.current = 0
     correctCountRef.current = 0

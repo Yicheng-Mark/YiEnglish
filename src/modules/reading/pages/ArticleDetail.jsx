@@ -5,6 +5,10 @@ import { useReadingStore } from '../hooks/useReadingStore'
 import useStudyTracker from '../hooks/useStudyTracker'
 import { loadDictionary } from '../../../utils/loadDictionary.js'
 import { loadWordIndex, indexEntryToWord } from '../../../utils/dictWordMap.js'
+
+// 阅读页查词 Map 的模块级缓存：构建一次约 3 万词条（主线程数十毫秒），
+// 会话内往返文章页复用；数据本身随页面刷新重新拉取，不存在跨会话过期问题
+let articleWordMapCache = null
 import {
   addToReadingWordBook,
   isInReadingWordBook,
@@ -196,6 +200,12 @@ export default function ArticleDetail() {
       'programmer',
     ]
     ;(async () => {
+      // 命中模块级缓存直接复用：每次进入文章页同步遍历 3 万词条建 Map，
+      // 列表↔文章往返的首帧卡顿源头（word-index.json 本身已有 fetch 缓存）
+      if (articleWordMapCache) {
+        if (!cancelled) setWordMap(articleWordMapCache)
+        return
+      }
       try {
         const index = await loadWordIndex()
         const dictIdSet = new Set(dictIds)
@@ -208,6 +218,7 @@ export default function ArticleDetail() {
           map.set(key, indexEntryToWord(key, winner))
         }
         if (map.size === 0) throw new Error('word-index 为空')
+        articleWordMapCache = map
         if (!cancelled) setWordMap(map)
       } catch {
         // 回退：旧全量逐词典路径
@@ -225,6 +236,7 @@ export default function ArticleDetail() {
             })
           })
         })
+        articleWordMapCache = map
         setWordMap(map)
       }
     })()
