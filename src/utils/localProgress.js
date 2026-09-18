@@ -25,12 +25,17 @@ function ensureCache() {
 // --- 落盘 debounce：localStorage 全量写 + IDB 增量 put 合并为同一次刷盘 ---
 const PERSIST_DEBOUNCE_MS = 2000
 let persistTimer = null
+// 有未落盘变更才写：pagehide/visibilitychange 兜底在无变更时跳过，避免白做一次全量 stringify
+let persistDirty = false
 const pendingIdbKeys = new Set()
 
 function writeStorageNow() {
+  // _cache === null（登出断开/本会话从未触碰）时不得落盘（照 errorBook 的守卫口径）：
+  // 修复前 ensureCache 会把已断开的内存态重新 bootstrap 回来再原样写盘
+  if (_cache === null) return
   try {
-    ensureCache()
     localStorage.setItem(PROGRESS_KEY, JSON.stringify(_cache))
+    persistDirty = false
   } catch (e) {
     console.warn('[localProgress] persist error', e)
   }
@@ -48,6 +53,7 @@ function flushIdbPuts() {
 }
 
 function schedulePersist(idbKey) {
+  persistDirty = true
   if (idbKey) pendingIdbKeys.add(idbKey)
   if (persistTimer) return
   persistTimer = setTimeout(() => {
@@ -68,7 +74,9 @@ function persistNow() {
 
 // 页面隐藏/关闭时兜底 flush，避免丢最近 2s 的进度
 if (typeof window !== 'undefined') {
-  const flushAll = () => persistNow()
+  const flushAll = () => {
+    if (persistDirty) persistNow()
+  }
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') flushAll()
   })
@@ -113,6 +121,7 @@ export function resetLocalProgressCache() {
   // 先 flush 本地把 2s 防抖窗口内未落盘的进度写完（写的仍是本账号自己的 key），
   // 再断开内存态（服务端进度另有 completedBuffer 合批，由 useProgressSync 自行处理）
   if (_cache !== null) persistNow()
+  persistDirty = false
   _cache = null
   if (persistTimer) {
     clearTimeout(persistTimer)

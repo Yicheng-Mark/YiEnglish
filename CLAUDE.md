@@ -41,7 +41,7 @@
 ## 数据与同步
 
 - 本地双存储：localStorage + IndexedDB（库 `lingoforge` v2，7 个 store 见 `utils/idb.js`）；启动空闲时自动跑 localStorage → IDB 迁移。
-- **词本类 util 统一模式**：内存缓存为唯一数据源，2s debounce 落盘（localStorage 全量 + IDB 增量 put 合并刷盘）——照 `errorBook.js` / `reviewCards.js` / `localProgress.js` 的既有写法，别每词一次全量 stringify。
+- **词本类 util 统一模式**：内存缓存为唯一数据源，2s debounce 落盘（localStorage 全量 + IDB 增量 put 合并刷盘）；`writeStorageNow` 必须带 `_cache === null` 守卫（登出断开后 pagehide 兜底不得把 null 写回——否则 localStorage 是唯一 bootstrap 源，等于清空用户数据）+ `persistDirty` 脏标记（无变更时 pagehide 跳过写）。2026-09-18 起六个词本 util 已全部对齐，照任一文件写法即可，别每词一次全量 stringify。数据量涨到单键 stringify 明显卡顿（>1MB 量级）再考虑按词库分 key，当前规模不值得迁移成本。
 - 登录后跨设备同步：`hooks/useProgressSync` + `server/routes/progress|favorites|review`；登录/会话恢复成功时并行下拉五大功能词本（`syncWordBooksFromServer`，覆盖式）与用户设置。
 - 体验账号：isTrial 锁定 `/demo` 沙箱、语料仅 1–5 期（`TrialGuard` + `server/middleware/requireFullAccount`）；统计口径一律排除 `is_guest=1`。
 
@@ -49,6 +49,7 @@
 
 - Vitest 默认 node 环境；`vitest.config.js` 故意独立于 `vite.config.js`，DOM 测试在文件顶部加 `// @vitest-environment jsdom`；esbuild jsx automatic 已配，.jsx 测试无需 import React。
 - 改 `src/utils/` 或 `server/` 逻辑时同步维护对应 `.test.js`。
+- 链路回归测试：把已修 bug 编码为用例时，用 `git show <fix-commit>^:<file>` 对照旧代码推演「旧逻辑下该断言必失败」，关键修复在旧代码 worktree 里实跑验证；计时/日期类用例的时钟每用例只取一次或 `vi.setSystemTime` 钉死（二次取真实时钟会引进跨天窗口，见 useReadingStore 教训）。
 
 ## 构建注意
 

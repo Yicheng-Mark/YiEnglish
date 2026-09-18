@@ -82,15 +82,21 @@ function ensureCache() {
 // 复习卡积累后会明显卡顿（见 errorBook.js 同类优化）。IDB 单卡 put 开销小，保持即时。
 const PERSIST_DEBOUNCE_MS = 2000
 let persistTimer = null
+// 有未落盘变更才写：pagehide/visibilitychange 兜底在无变更时跳过，避免白做一次全量 stringify
+let persistDirty = false
 
 function writeStorageNow() {
+  // _cache === null（登出断开）时不得落盘（照 errorBook 的守卫口径）：
+  // 修复前 ensureCache 会把已断开的内存态重新 bootstrap 回来再原样写盘
+  if (_cache === null) return
   try {
-    ensureCache()
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ cards: _cache }))
+    persistDirty = false
   } catch {}
 }
 
 function schedulePersist() {
+  persistDirty = true
   if (persistTimer) return
   persistTimer = setTimeout(() => {
     persistTimer = null
@@ -108,10 +114,13 @@ function persistNow() {
 
 // 页面隐藏/关闭时兜底 flush，避免丢最近 2s 的复习卡
 if (typeof window !== 'undefined') {
+  const flushIfDirty = () => {
+    if (persistDirty) persistNow()
+  }
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') persistNow()
+    if (document.visibilityState === 'hidden') flushIfDirty()
   })
-  window.addEventListener('pagehide', persistNow)
+  window.addEventListener('pagehide', flushIfDirty)
 }
 
 function getCards() {
@@ -257,6 +266,7 @@ export function resetReviewCardsCache() {
   // 先 flush 本地把 2s 防抖窗口内未落盘的卡片写完（写的仍是本账号自己的 key），
   // 再断开内存态；服务端增量维持丢弃（登出请求已清 cookie，推了也只会 401）
   if (_cache !== null) persistNow()
+  persistDirty = false
   _cache = null
   serverMutationEpoch++
   serverMutationQueue.clear()

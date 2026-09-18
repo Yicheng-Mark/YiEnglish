@@ -382,3 +382,39 @@ describe('getDueReviewCount（到期徽标口径）', () => {
     expect(getDueReviewCount()).toBe(1)
   })
 })
+
+describe('落盘守卫（回归：登出断开后 pagehide 重新 bootstrap 内存态并原样写盘）', () => {
+  it('reset 后触发 pagehide 不再重新 bootstrap 落盘', async () => {
+    seedCard('guardcard', matureCard())
+    const { resetReviewCardsCache } = await import('./reviewCards.js')
+    resetReviewCardsCache()
+
+    const setItemSpy = vi.spyOn(Storage.prototype, 'setItem')
+    window.dispatchEvent(new Event('pagehide'))
+    // 只看本用例词的写：更早用例的模块实例监听仍在（有的还残留 dirty），
+    // 会把各自的旧数据整键写回，因此不能对 storage 终值断言——
+    // 回归检测点是「没有任何包含本用例词的写」：修复前 reset 后的 pagehide
+    // 会重新 bootstrap 并把含 guardcard 的整份数据原样写回
+    const writes = setItemSpy.mock.calls.filter(
+      (c) => c[0] === KEY && String(c[1]).includes('guardcard')
+    )
+    expect(writes).toHaveLength(0)
+    setItemSpy.mockRestore()
+  })
+
+  it('落盘完成后无新变更，pagehide 兜底跳过重复全量写', async () => {
+    const setItemSpy = vi.spyOn(Storage.prototype, 'setItem')
+    const { addWordToReview } = await import('./reviewCards.js')
+    addWordToReview('guardnoop', 'cet4')
+    await flushDebounce()
+    setItemSpy.mockClear()
+
+    window.dispatchEvent(new Event('pagehide'))
+
+    const writes = setItemSpy.mock.calls.filter(
+      (c) => c[0] === KEY && String(c[1]).includes('guardnoop')
+    )
+    expect(writes).toHaveLength(0)
+    setItemSpy.mockRestore()
+  })
+})

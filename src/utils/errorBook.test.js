@@ -46,6 +46,7 @@ afterEach(() => {
 })
 
 const WORD = { word: 'apple', trans: ['[n] 苹果'], notation: 'ˈæpl', dictName: 'CET4' }
+const KEY = 'typingword_wrong'
 
 describe('errorBook 服务端同步', () => {
   it('同步失败后定时重试，成功后停止（回归：修复前失败后不再有任何重试）', async () => {
@@ -171,5 +172,38 @@ describe('resetErrorBookCache（登出断开内存态）', () => {
     resetErrorBookCache() // 登出：清空队列并递增 epoch
     await vi.advanceTimersByTimeAsync(60 * 1000) // 旧会话的重试被丢弃
     expect(addWordToBook).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('落盘守卫（回归：登出断开后 pagehide 把 {"words":null} 写进 storage，下次启动错题本被清空）', () => {
+  it('reset 后触发 pagehide 不再落盘，存量错题保留', async () => {
+    const { addToErrorBook, resetErrorBookCache } = await import('./errorBook')
+    addToErrorBook({ ...WORD, word: 'guardreset' })
+    await vi.advanceTimersByTimeAsync(2000) // 完成一次正常落盘
+    expect(JSON.parse(localStorage.getItem(KEY)).words).toHaveLength(1)
+
+    resetErrorBookCache() // 登出断开内存态
+    window.dispatchEvent(new Event('pagehide')) // 修复前这里写 {"words":null}
+
+    const saved = JSON.parse(localStorage.getItem(KEY))
+    expect(saved.words).toHaveLength(1)
+    expect(saved.words[0]).toMatchObject({ name: 'guardreset' })
+  })
+
+  it('落盘完成后无新变更，pagehide 兜底跳过重复全量写', async () => {
+    const setItemSpy = vi.spyOn(Storage.prototype, 'setItem')
+    const { addToErrorBook } = await import('./errorBook')
+    addToErrorBook({ ...WORD, word: 'guardnoop' })
+    await vi.advanceTimersByTimeAsync(2000)
+    setItemSpy.mockClear()
+
+    window.dispatchEvent(new Event('pagehide'))
+
+    // 只看本用例词的写：更早用例的模块实例监听仍在，与本用例无关
+    const writes = setItemSpy.mock.calls.filter(
+      (c) => c[0] === KEY && String(c[1]).includes('guardnoop')
+    )
+    expect(writes).toHaveLength(0)
+    setItemSpy.mockRestore()
   })
 })

@@ -159,3 +159,38 @@ describe('resetLocalProgressCache（登出断开内存态）', () => {
     expect(getLocalProgress('cet4')).toEqual({ 0: 2 })
   })
 })
+
+describe('落盘守卫（与 errorBook/favoriteWords 的 null 守卫 + 脏标记对齐）', () => {
+  it('reset 后触发 pagehide 不重新 bootstrap 落盘，数据保持断开前最后快照', async () => {
+    localStorage.setItem(KEY, JSON.stringify({ 'guard-reset:0': ['apple'] }))
+    const { saveLocalProgress, resetLocalProgressCache } = await import('./localProgress.js')
+    saveLocalProgress('guard-reset', 0, ['dog'])
+    resetLocalProgressCache() // 先 flush（['apple','dog']）再断开
+
+    const setItemSpy = vi.spyOn(Storage.prototype, 'setItem')
+    window.dispatchEvent(new Event('pagehide'))
+    // 只看本用例 key 段的写：更早用例的模块实例监听仍在，与本用例无关
+    const writes = setItemSpy.mock.calls.filter(
+      (c) => c[0] === KEY && String(c[1]).includes('guard-reset')
+    )
+    expect(writes).toHaveLength(0)
+    setItemSpy.mockRestore()
+    expect(JSON.parse(localStorage.getItem(KEY))['guard-reset:0']).toEqual(['apple', 'dog'])
+  })
+
+  it('落盘完成后无新变更，pagehide 兜底跳过重复全量写', async () => {
+    const setItemSpy = vi.spyOn(Storage.prototype, 'setItem')
+    const { saveLocalProgress } = await import('./localProgress.js')
+    saveLocalProgress('guard-noop', 0, ['zebra'])
+    await flushDebounce()
+    setItemSpy.mockClear()
+
+    window.dispatchEvent(new Event('pagehide'))
+
+    const writes = setItemSpy.mock.calls.filter(
+      (c) => c[0] === KEY && String(c[1]).includes('guard-noop')
+    )
+    expect(writes).toHaveLength(0)
+    setItemSpy.mockRestore()
+  })
+})

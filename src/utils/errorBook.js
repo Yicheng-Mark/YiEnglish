@@ -31,6 +31,8 @@ function ensureCache() {
 // --- 落盘 debounce ---
 const PERSIST_DEBOUNCE_MS = 2000
 let persistTimer = null
+// 有未落盘变更才写：pagehide/visibilitychange 兜底在无变更时跳过，避免白做一次全量 stringify
+let persistDirty = false
 
 // errorBook 的 IDB 写入合批：同一词连续打错只需最终落盘一条（entry 引用被后续
 // wrongCount 递增原地修改，flush 时天然是最新的）；逐键 idbPut 会排队
@@ -45,8 +47,12 @@ function flushIdbPuts() {
 }
 
 function writeStorageNow() {
+  // _cache === null（登出断开/本会话从未触碰）时不得落盘：
+  // 写 {"words":null} 会覆盖存量错题本，ensureCache 读回即被清空
+  if (_cache === null) return
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ words: _cache }))
+    persistDirty = false
   } catch (e) {
     console.error('Failed to persist error book:', e)
   }
@@ -55,6 +61,7 @@ function writeStorageNow() {
 }
 
 function schedulePersist() {
+  persistDirty = true
   if (persistTimer) return
   persistTimer = setTimeout(() => {
     persistTimer = null
@@ -184,7 +191,8 @@ function flushServerSync({ keepalive = false } = {}) {
 // 页面隐藏/关闭时兜底 flush，避免丢最近 2s 的错题
 if (typeof window !== 'undefined') {
   const flushAll = () => {
-    persistNow()
+    // 无未落盘变更时跳过本地写；服务端增量是否要发由 flushServerSync 自行判断
+    if (persistDirty) persistNow()
     // 卸载阶段普通 fetch 会被浏览器随时终止，keepalive 请求允许在页面关闭后继续完成
     flushServerSync({ keepalive: true })
   }
@@ -298,6 +306,9 @@ export function resetErrorBookCache() {
   syncEpoch++
   // 排队中尚未执行的旧会话 mutation 直接丢弃（epoch 守卫兜底在途链）
   serverMutationQueue.clear()
+  // 待写 IDB 批次同样属于旧会话，丢弃避免迟到的 bulk put 写回新会话
+  pendingIdbPuts.clear()
+  persistDirty = false
 }
 
 const CHAPTER_SIZE = 25
