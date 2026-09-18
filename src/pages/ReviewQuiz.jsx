@@ -6,7 +6,7 @@ import { removeFromErrorBook } from '../utils/errorBook'
 import { removeFromFavoriteWords } from '../utils/favoriteWords'
 import { removeFromReadingWordBook } from '../utils/readingWordBook'
 import { removeFromCorpusWordBook } from '../utils/corpusWordBook'
-import { removeFromReviewCards } from '../utils/reviewCards'
+import { removeFromReviewCards, updateReviewCard } from '../utils/reviewCards'
 import useQuiz from '../hooks/useQuiz'
 import QuizCard from '../components/QuizCard'
 
@@ -66,6 +66,25 @@ function ReviewQuiz() {
   const removeFn = REMOVABLE_BOOKS[bookId]
   const isRemovable = !!removeFn
 
+  // 复习计划词本的选择题也推进 SM-2（与打字复习同口径：答对 q=5、答错 q=3）。
+  // 此前选择题答完到期数不消、待复习徽标不减，只有打字路径推进记忆曲线。
+  // 守卫条件与 useQuiz.handleAnswer 的早退条件一致，防重复点击双重推进。
+  const handleAnswer = useCallback(
+    (index) => {
+      if (
+        bookId === 'review' &&
+        quiz.selectedOption === null &&
+        !quiz.isFinished &&
+        quiz.currentQuestion
+      ) {
+        const correct = quiz.currentQuestion.options[index]?.isCorrect ?? false
+        updateReviewCard(quiz.currentQuestion.stem.name, correct ? 5 : 3)
+      }
+      quiz.handleAnswer(index)
+    },
+    [bookId, quiz.selectedOption, quiz.isFinished, quiz.currentQuestion, quiz.handleAnswer]
+  )
+
   const handleRemove = useCallback(() => {
     if (!removeFn || !quiz.currentQuestion) return
     const wordName = quiz.currentQuestion.stem.name
@@ -77,8 +96,21 @@ function ReviewQuiz() {
   const accuracy =
     quiz.totalQuestions > 0 ? Math.round((quiz.score / quiz.totalQuestions) * 100) : 0
 
+  // 加载中：词本数据（大词典/合并索引数 MB）就位前给出占位，
+  // 避免渲染出「第 1/0 题」的空卡片盒子
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background dark:bg-transparent flex items-center justify-center transition-colors duration-500 animate-page-fade-in">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-3 border-violet-200 dark:border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
+          <p className="text-sm text-content-tertiary dark:text-gray-400">正在加载词汇…</p>
+        </div>
+      </div>
+    )
+  }
+
   // 空状态：加载完成但无词汇
-  if (!loading && allWords.length === 0) {
+  if (allWords.length === 0) {
     return (
       <div className="min-h-screen bg-background dark:bg-transparent flex items-center justify-center p-6 transition-colors duration-500 animate-page-fade-in">
         <div className="max-w-md w-full text-center">
@@ -231,7 +263,7 @@ function ReviewQuiz() {
         <div className="bg-surface dark:bg-white/[0.04] rounded-2xl border border-gray-200/80 dark:border-white/[0.06] p-6 shadow-sm">
           <QuizCard
             question={quiz.currentQuestion}
-            onAnswer={quiz.handleAnswer}
+            onAnswer={handleAnswer}
             selectedOption={quiz.selectedOption}
             isCorrect={quiz.isCorrect}
           />

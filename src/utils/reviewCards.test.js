@@ -14,6 +14,9 @@ const { apiUpsertReviewCards, apiAddReviewCard, apiFetchReviewCards, apiDeleteRe
     apiDeleteReviewCard: vi.fn().mockResolvedValue(),
   }))
 
+vi.mock('./dictWordMap.js', () => ({
+  buildDictWordMap: vi.fn().mockResolvedValue(new Map()),
+}))
 vi.mock('../lib/api-review', () => ({
   apiUpsertReviewCards,
   apiAddReviewCard,
@@ -304,5 +307,42 @@ describe('resetReviewCardsCache（登出断开内存态）', () => {
 
     expect(JSON.parse(localStorage.getItem(KEY)).cards.apple).toBeTruthy()
     expect(getTotalReviewCount()).toBe(1) // 重新 bootstrap 后计数恢复
+  })
+})
+
+describe('getDueReviewWords（出题数据源）', () => {
+  it('到期卡反查词典：查不到释义或 trans 为空的词被过滤，不出空白题', async () => {
+    // seedCard 是整键覆盖，多卡一次写入
+    localStorage.setItem(
+      KEY,
+      JSON.stringify({
+        cards: {
+          known: { wordName: 'known', dictId: 'cet4', nextReview: Date.now() - 1000 },
+          unknown: { wordName: 'unknown', dictId: 'chef', nextReview: Date.now() - 2000 },
+          emptytrans: { wordName: 'emptytrans', dictId: 'cet4', nextReview: Date.now() - 500 },
+        },
+      })
+    )
+    const { buildDictWordMap } = await import('./dictWordMap.js')
+    const mocked = vi.mocked(buildDictWordMap)
+    mocked.mockResolvedValue(
+      new Map([
+        ['known', { name: 'known', trans: ['[n] 已知'] }],
+        ['emptytrans', { name: 'emptytrans', trans: [] }],
+      ])
+    )
+
+    const { getDueReviewWords } = await import('./reviewCards.js')
+    const words = await getDueReviewWords()
+
+    // unknown（词典查不到）与 emptytrans（trans 空）都不出题，known 按到期序输出
+    expect(words.map((w) => w.name)).toEqual(['known'])
+    expect(words[0].trans).toEqual(['[n] 已知'])
+  })
+
+  it('全部查不到 → 返回空数组（页面走空状态而非空白卡片）', async () => {
+    seedCard('unknown', { wordName: 'unknown', dictId: 'chef', nextReview: Date.now() - 1000 })
+    const { getDueReviewWords } = await import('./reviewCards.js')
+    expect(await getDueReviewWords()).toEqual([])
   })
 })

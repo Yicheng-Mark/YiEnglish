@@ -3,11 +3,14 @@
 // 抽出为单一模块；并发调用共享同一次加载，全部词典加载失败时不缓存（下次调用可重试）。
 //
 // 数据源：优先拉取 scripts/gen-word-index.mjs 预生成的合并索引 word-index.json
-//（单请求替代 18 部词典的全量下载与主线程解析，去重后体积约为源词典的 1/3）。
+//（单请求替代词典的全量下载与主线程解析，去重后体积约为源词典的 1/3）。
 // 索引缺失/损坏时回退旧全量路径，保证与词典 JSON 的部署节奏不同步时功能不受影响。
 import { loadDictionary } from './loadDictionary.js'
 import { fetchWithAuth } from '../lib/api'
 
+// 25 部词典全量白名单。此前只列 18 部主词典，漏了 7 部专业词典：索引里约 39%
+// 的词条只存在于专业词典，复习计划词本（存词名+dictId，出题时反查释义）取不到
+// trans → 选择题出现空白题干/空白选项。追加在尾部：18 部主词典仍 first-wins 优先。
 const DICT_IDS = [
   'junior',
   'zhongkao',
@@ -27,6 +30,13 @@ const DICT_IDS = [
   'postgraduate',
   'postgraduateCore',
   'programmer',
+  'nautical',
+  'marine_engineering',
+  'automotive',
+  'electrician',
+  'business',
+  'foreign_trade',
+  'chef',
 ]
 
 let dictWordMap = null
@@ -78,7 +88,7 @@ function entryCoversDict(entry, dictIdSet) {
   return Array.isArray(entry.dictIds) && entry.dictIds.some((id) => dictIdSet.has(id))
 }
 
-// 从合并索引构建词表 Map：只收录本模块 18 部词典中的词，条目字段即索引主条目
+// 从合并索引构建词表 Map：只收录 DICT_IDS 白名单词典中的词，条目字段即索引主条目
 //（首个含词词典胜出，与旧路径 first-wins 语义一致）
 export function buildDictWordMapFromIndex(index) {
   const dictIdSet = new Set(DICT_IDS)

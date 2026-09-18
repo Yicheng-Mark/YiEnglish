@@ -243,6 +243,9 @@ export function getTotalReviewCount() {
 // 旧会话 mutation（epoch 变化后直接跳过），避免旧账号的写入推进新账号。
 // 不删除 localStorage/IDB 里的用户数据本身，仅取消尚未落盘的防抖定时器。
 export function resetReviewCardsCache() {
+  // 先 flush 本地把 2s 防抖窗口内未落盘的卡片写完（写的仍是本账号自己的 key），
+  // 再断开内存态；服务端增量维持丢弃（登出请求已清 cookie，推了也只会 401）
+  if (_cache !== null) persistNow()
   _cache = null
   serverMutationEpoch++
   serverMutationQueue.clear()
@@ -262,18 +265,23 @@ export async function getDueReviewWords() {
   if (dueCards.length === 0) return []
 
   const map = await buildDictWordMap()
-  return dueCards.map((card) => {
-    const lookup = map.get(card.wordName.toLowerCase())
-    return {
-      name: card.wordName,
-      trans: lookup?.trans || [],
-      notation: lookup?.notation || '',
-      usphone: lookup?.usphone || '',
-      ukphone: lookup?.ukphone || '',
-      us: lookup?.us || '',
-      uk: lookup?.uk || '',
-    }
-  })
+  // 词典覆盖缺口防御：查不到释义（或 trans 为空）的词不出题——选择题会渲染出
+  // 空白题干/空白选项。卡片保留：将来词典/索引重新覆盖到该词后仍会正常到期出题
+  return dueCards
+    .map((card) => {
+      const lookup = map.get(card.wordName.toLowerCase())
+      if (!lookup || !Array.isArray(lookup.trans) || lookup.trans.length === 0) return null
+      return {
+        name: card.wordName,
+        trans: lookup.trans,
+        notation: lookup.notation || '',
+        usphone: lookup.usphone || '',
+        ukphone: lookup.ukphone || '',
+        us: lookup.us || '',
+        uk: lookup.uk || '',
+      }
+    })
+    .filter(Boolean)
 }
 
 export async function loadReviewAsDictionary() {
