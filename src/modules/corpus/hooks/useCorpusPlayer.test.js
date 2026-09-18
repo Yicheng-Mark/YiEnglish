@@ -134,3 +134,108 @@ describe('useCorpusPlayer — intervalGap 切期清理', () => {
     expect(rendered.result.current.player.activeId).toBe(2) // 期 B 的句 2（start=42）
   })
 })
+
+// 切期清理的第二组回归：防抖标记（lastPausedCue/lastIntervalCue）与循环计数
+// （loopsRemaining）同样属于上一期的播放状态。旧代码只更新 subtitlesRef 不复位，
+// 残留标记会让「已对该句触发过」的判断在新期同号句上误命中，功能静默失效。
+describe('useCorpusPlayer — 切期后功能不残留（防抖标记/循环计数复位）', () => {
+  it('切期后：intervalGap 在新期句末重新生效（残留 lastIntervalCue 会跳过暂停）', async () => {
+    const rendered = await arriveAtIntervalWait(EPISODE_A) // 期 A 句 1 末：已暂停 + lastIntervalCue=1
+    rendered.rerender({ subs: EPISODE_B })
+
+    // 用户恢复播放，新期句 1 进行中
+    video.paused = false
+    video.currentTime = 1
+    act(() => {
+      video.emit('timeupdate')
+    })
+    expect(rendered.result.current.player.activeId).toBe(1)
+
+    // 新期句 1 末尾：应再次暂停进入间隔（旧代码 lastIntervalCue 残留 1 → 视为已触发过，放行不暂停）
+    video.pause.mockClear()
+    video.currentTime = 4.97
+    act(() => {
+      video.emit('timeupdate')
+    })
+    expect(video.pause).toHaveBeenCalledTimes(1)
+
+    // 间隔到点：跳新期句 2（start=42）
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(2000)
+    })
+    expect(video.currentTime).toBe(42)
+    expect(video.play).toHaveBeenCalled()
+  })
+
+  it('切期后：pauseAfterCue 在新期句末仍会暂停（残留 lastPausedCue 会放行不暂停）', async () => {
+    const rendered = renderHook(
+      ({ subs }) => useCorpusPlayer({ videoRef, subtitles: subs, videoEl: null }),
+      { initialProps: { subs: EPISODE_A } }
+    )
+    act(() => {
+      rendered.result.current.player.togglePauseAfterCue()
+    })
+
+    video.currentTime = 1
+    act(() => {
+      video.emit('timeupdate')
+    })
+    expect(rendered.result.current.player.activeId).toBe(1)
+
+    // 期 A 句 1 末：自动暂停，lastPausedCue=1
+    video.currentTime = 4.97
+    act(() => {
+      video.emit('timeupdate')
+    })
+    expect(video.pause).toHaveBeenCalledTimes(1)
+
+    rendered.rerender({ subs: EPISODE_B })
+    // 用户恢复播放，新期句 1 播完
+    video.paused = false
+    video.currentTime = 1
+    act(() => {
+      video.emit('timeupdate')
+    })
+    video.pause.mockClear()
+    video.currentTime = 4.97
+    act(() => {
+      video.emit('timeupdate')
+    })
+    // 旧代码 lastPausedCue 残留 1 → 新期同号句末被误判「已暂停过」直接放行
+    expect(video.pause).toHaveBeenCalledTimes(1)
+  })
+
+  it('切期后：单句循环计数复位，新期第一句仍按 loopCount 循环', async () => {
+    const rendered = renderHook(
+      ({ subs }) => useCorpusPlayer({ videoRef, subtitles: subs, videoEl: null }),
+      { initialProps: { subs: EPISODE_A } }
+    )
+    act(() => {
+      rendered.result.current.player.setLoopCount(2) // 每句播 2 遍
+    })
+
+    video.currentTime = 1
+    act(() => {
+      video.emit('timeupdate')
+    })
+    // 第一遍播完 → 回跳句首（loopsRemaining 1 → 0）
+    video.currentTime = 4.98
+    act(() => {
+      video.emit('timeupdate')
+    })
+    expect(video.currentTime).toBe(0)
+
+    // 第二遍播放中途切期（此刻 loopsRemaining 已耗尽、activeId 仍指向句 1）
+    rendered.rerender({ subs: EPISODE_B })
+    video.currentTime = 1
+    act(() => {
+      video.emit('timeupdate')
+    })
+    video.currentTime = 4.98
+    act(() => {
+      video.emit('timeupdate')
+    })
+    // 旧代码 activeIdRef/loopsRemaining 残留（1/0）→ 不回跳，新期句 1 只播一遍就过
+    expect(video.currentTime).toBe(0)
+  })
+})

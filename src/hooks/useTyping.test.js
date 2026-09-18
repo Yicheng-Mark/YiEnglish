@@ -510,3 +510,130 @@ describe('useTyping — 音频分支', () => {
     unmount()
   })
 })
+
+describe('useTyping — 完成统计的时间口径（回归 2025392）', () => {
+  beforeEach(() => {
+    // 显式把 Date 一并 fake（vitest 2 默认 toFake 不含 Date）：
+    // 固定系统时钟后 advanceTimersByTime 才能推进 Date.now()，断言值可精确推导
+    vi.useFakeTimers({
+      toFake: [
+        'setTimeout',
+        'clearTimeout',
+        'setInterval',
+        'clearInterval',
+        'setImmediate',
+        'clearImmediate',
+        'Date',
+      ],
+    })
+    vi.setSystemTime(new Date('2026-01-01T00:00:00Z'))
+  })
+
+  it('跳词直达章尾后单键完成整章：stats.time 走 startTimeRef（0s 兜底为 1），不再算成 Unix 纪元秒数（修复前闭包 startTime 为 null，Date.now()-null ≈ 17.6 亿秒）', () => {
+    const long = [
+      ...Array.from({ length: 7 }, (_, i) => ({ name: `w${i}`, trans: [], notation: '' })),
+      { name: 'x', trans: [], notation: '' }, // 末词单字符：首键即完成整章
+    ]
+    const { result } = renderTyping({ words: long, resetKey: 'd:9:0' })
+
+    act(() => {
+      result.current.jumpTo(7)
+    })
+    // 唯一的一键：首键 setStartTime 尚未重渲染，完成分支读到的闭包 startTime
+    // 还是 null——恰是线上触发「单键完成整章统计天文数字」的序列。
+    // 时钟钉死在 2026-01-01，修复前 elapsed = floor(Date.now()/1000) = 1767225600
+    act(() => {
+      result.current.handleInput('x')
+    })
+    expect(result.current.isFinished).toBe(true)
+    expect(result.current.stats.time).toBe(1) // 修复前：1767225600
+    expect(result.current.stats.wpm).toBe(60) // 1 字符 / 1s；修复前：0
+  })
+
+  it('单章单词在同一 act 内打完：完成统计读 startTimeRef，不读闭包旧 null（回归）', () => {
+    const words = [{ name: 'hi', trans: [], notation: '' }]
+    const { result } = renderTyping({ words })
+
+    act(() => {
+      result.current.handleInput('h')
+      result.current.handleInput('i') // 同一批更新内完成整章，闭包 startTime 仍为 null
+    })
+    expect(result.current.isFinished).toBe(true)
+    // 整章 0s 完成 → 兜底 1；修复前同样是闭包旧 null → 1767225600
+    expect(result.current.stats.time).toBe(1)
+    expect(result.current.stats.wpm).toBe(120) // 2 字符 / 1s；修复前：0
+  })
+})
+
+describe('useTyping — 发音缓存上限逐出（回归 2025392）', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('跨章连打缓存达上限后按插入序逐出最旧条目：被逐条目 pause 且 src 置空，缓存内条目不被动（修复前缓存只增不减）', () => {
+    // 用桩 Audio 记录每个实例：hook 内部缓存不导出，只能从实例行为观察逐出
+    const created = []
+    class FakeAudio {
+      constructor(src) {
+        this.src = src
+        this.readyState = 0
+        this.pauseCount = 0
+        created.push(this)
+      }
+      load() {}
+      pause() {
+        this.pauseCount += 1
+      }
+      play() {
+        return Promise.resolve()
+      }
+    }
+    vi.stubGlobal('Audio', FakeAudio)
+
+    // 每章 2 个新词：切章后朗读 words[0] + 预载 words[1]，各入缓存一条
+    const chapterWords = (i) => [
+      { name: `a${i}`, trans: [], notation: '' },
+      { name: `b${i}`, trans: [], notation: '' },
+    ]
+    const { rerender, unmount, callbacks } = renderTyping({
+      words: chapterWords(0),
+      soundEnabled: true,
+      resetKey: 'd:0:0',
+    })
+    for (let i = 1; i <= 50; i++) {
+      act(() => {
+        rerender({
+          words: chapterWords(i),
+          soundEnabled: true,
+          wordRepeatCount: 1,
+          isErrorBookMode: true,
+          onWordComplete: callbacks.onWordComplete,
+          onAutoRemove: callbacks.onAutoRemove,
+          onError: callbacks.onError,
+          resetKey: `d:${i}:0`,
+        })
+      })
+    }
+
+    // 挂载 2 条 + 50 次切章 × 2 条 = 102 个 Audio；上限 100 → 第 1 章的
+    // 两条（最旧）在第 50 次切章时被逐出：pause 一次且 src 清空
+    expect(created.length).toBe(102)
+    expect(created[0].pauseCount).toBe(1)
+    expect(created[0].src).toBe('')
+    expect(created[1].pauseCount).toBe(1)
+    expect(created[1].src).toBe('')
+    // 其余 100 条仍在缓存内：卸载前不被逐出
+    for (let i = 2; i < created.length; i++) {
+      expect(created[i].pauseCount).toBe(0)
+      expect(created[i].src).not.toBe('')
+    }
+
+    unmount()
+    // 卸载才统一清理：缓存内剩余 100 条全部 pause 一次（被逐出的两条不重复清理）
+    for (let i = 2; i < created.length; i++) {
+      expect(created[i].pauseCount).toBe(1)
+    }
+    expect(created[0].pauseCount).toBe(1)
+    expect(created[1].pauseCount).toBe(1)
+  })
+})
