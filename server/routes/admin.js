@@ -201,16 +201,22 @@ const CODE_STATUS_SQL = {
   disabled: '(ec.is_active = 0)',
 }
 
-// 激活码列表：type=trial|activation（默认 activation）；status=available|exhausted|disabled（默认全部）
+// 激活码列表：type=trial|activation（默认 activation）；status=available|exhausted|disabled（默认全部）；
+// tier=0|720|2160|8760（档位筛选，默认全部）
 router.get('/codes', authMiddleware, requireAdmin, async (req, res, next) => {
   try {
     const { page, pageSize, offset } = parsePaging(req.query)
     const type = req.query.type === 'trial' ? 'trial' : 'activation'
     const statusSql = CODE_STATUS_SQL[req.query.status] || ''
+    const tier = toInt(req.query.tier, NaN)
 
     const where = ['ec.type = ?']
     const params = [type]
     if (statusSql) where.push(statusSql)
+    if ([0, 720, 2160, 8760].includes(tier)) {
+      where.push('ec.trial_hours = ?')
+      params.push(tier)
+    }
     const whereSql = 'WHERE ' + where.join(' AND ')
 
     const [rows] = await pool.execute(

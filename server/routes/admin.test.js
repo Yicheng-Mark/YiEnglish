@@ -313,6 +313,74 @@ describe('POST /api/admin/users/:id/max-devices', () => {
 })
 
 // =====================================================================
+// GET /api/admin/codes（列表：档位/状态筛选）
+// =====================================================================
+describe('GET /api/admin/codes', () => {
+  const CODE_ROW = {
+    id: 618,
+    code: 'lf-M7AHNQ7T98GU',
+    description: '9.18',
+    type: 'activation',
+    trial_hours: 8760,
+    max_uses: 1,
+    current_uses: 0,
+    is_active: 1,
+    issued_note: null,
+    expires_at: null,
+    created_at: '2026-09-18 08:45:15',
+    registered_users: 0,
+  }
+
+  it('默认列表：字段映射驼峰 + type 固定 activation', async () => {
+    setExecuteHandlers([
+      { match: ['SELECT is_admin FROM users'], returns: [{ is_admin: 1 }] },
+      { match: ['FROM experience_codes', 'ORDER BY'], returns: [CODE_ROW] },
+      { match: ['COUNT(*) AS total FROM experience_codes'], returns: [{ total: 1 }] },
+    ])
+    const res = await supertest(makeApp()).get('/api/admin/codes')
+    expect(res.status).toBe(200)
+    expect(res.body.total).toBe(1)
+    expect(res.body.codes[0]).toMatchObject({
+      code: 'lf-M7AHNQ7T98GU',
+      trialHours: 8760,
+      isActive: true,
+      registeredUsers: 0,
+    })
+    const listCall = mockExecute.mock.calls.find(([sql]) =>
+      String(sql).includes('FROM experience_codes')
+    )
+    // 默认无档位筛选：WHERE 只有 type，SELECT 列名之外不出现 trial_hours 条件
+    expect(String(listCall[0])).not.toContain('ec.trial_hours = ?')
+    expect(listCall[1]).toEqual(['activation'])
+  })
+
+  it('tier=0/720/2160/8760 → WHERE 带 trial_hours 参数；非法值忽略', async () => {
+    setExecuteHandlers([
+      { match: ['SELECT is_admin FROM users'], returns: [{ is_admin: 1 }] },
+      { match: ['FROM experience_codes'], returns: [[], { total: 0 }] },
+    ])
+    for (const tier of [0, 720, 2160, 8760]) {
+      mockExecute.mockClear()
+      const res = await supertest(makeApp()).get(`/api/admin/codes?tier=${tier}`)
+      expect(res.status).toBe(200)
+      const listCall = mockExecute.mock.calls.find(([sql]) =>
+        String(sql).includes('FROM experience_codes')
+      )
+      expect(String(listCall[0])).toContain('ec.trial_hours = ?')
+      expect(listCall[1]).toEqual(['activation', tier])
+    }
+    mockExecute.mockClear()
+    const resBad = await supertest(makeApp()).get('/api/admin/codes?tier=999')
+    expect(resBad.status).toBe(200)
+    const listCall = mockExecute.mock.calls.find(([sql]) =>
+      String(sql).includes('FROM experience_codes')
+    )
+    expect(String(listCall[0])).not.toContain('ec.trial_hours = ?')
+    expect(listCall[1]).toEqual(['activation'])
+  })
+})
+
+// =====================================================================
 // POST /api/admin/codes（生成）
 // =====================================================================
 describe('POST /api/admin/codes', () => {

@@ -417,6 +417,7 @@ function CodesTab() {
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
   const [status, setStatus] = useState('')
+  const [tier, setTier] = useState('') // ''=全部档位
   const [loading, setLoading] = useState(true)
   // maxUses 固定 1（一码一人），不在表单暴露——仅站长本人用后台，无人需要多用途码
   const [form, setForm] = useState({ trialHours: 720, count: 10, description: '' })
@@ -428,7 +429,7 @@ function CodesTab() {
   const load = useCallback(async () => {
     setLoading(true)
     try {
-      const data = await fetchAdminCodes({ status, page, pageSize: PAGE_SIZE })
+      const data = await fetchAdminCodes({ status, tier, page, pageSize: PAGE_SIZE })
       setCodes(data.codes)
       setTotal(data.total)
     } catch (err) {
@@ -436,7 +437,7 @@ function CodesTab() {
     } finally {
       setLoading(false)
     }
-  }, [status, page])
+  }, [status, tier, page])
 
   useEffect(() => {
     load()
@@ -552,7 +553,7 @@ function CodesTab() {
         )}
       </div>
 
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex flex-wrap items-center gap-2 mb-4">
         <Chip
           active={status === ''}
           onClick={() => {
@@ -560,7 +561,7 @@ function CodesTab() {
             setPage(1)
           }}
         >
-          全部
+          全部状态
         </Chip>
         <Chip
           active={status === 'available'}
@@ -589,6 +590,28 @@ function CodesTab() {
         >
           已停用
         </Chip>
+        <span className="w-px h-5 bg-gray-200 dark:bg-white/10 mx-1" />
+        <Chip
+          active={tier === ''}
+          onClick={() => {
+            setTier('')
+            setPage(1)
+          }}
+        >
+          全部档位
+        </Chip>
+        {[0, 720, 2160, 8760].map((h) => (
+          <Chip
+            key={h}
+            active={tier === h}
+            onClick={() => {
+              setTier(h)
+              setPage(1)
+            }}
+          >
+            {TIER_LABEL[h]}
+          </Chip>
+        ))}
       </div>
 
       {loading ? (
