@@ -81,8 +81,8 @@ router.get('/users', authMiddleware, requireAdmin, async (req, res, next) => {
     const [rows] = await pool.execute(
       `SELECT u.id, u.username, u.nickname, u.is_guest, u.is_admin, u.subscription_expires_at, u.max_devices, u.created_at,
               (u.totp_secret IS NOT NULL) AS has_totp,
-              (SELECT MAX(rt.last_active_at) FROM refresh_tokens rt WHERE rt.user_id = u.id) AS last_active_at,
-              (SELECT COUNT(*) FROM refresh_tokens rt2 WHERE rt2.user_id = u.id) AS device_count
+              (SELECT MAX(rt.last_active_at) FROM refresh_tokens rt WHERE rt.user_id = u.id AND rt.expires_at > NOW()) AS last_active_at,
+              (SELECT COUNT(*) FROM refresh_tokens rt2 WHERE rt2.user_id = u.id AND rt2.expires_at > NOW()) AS device_count
        FROM users u ${whereSql} ORDER BY u.id DESC LIMIT ${pageSize} OFFSET ${offset}`,
       params
     )
@@ -172,10 +172,11 @@ router.post('/users/:id/max-devices', authMiddleware, requireAdmin, async (req, 
 
     const { value } = req.body || {}
     if (value === null || value === 'null') {
-      await pool.execute(
+      const [nullResult] = await pool.execute(
         'UPDATE users SET max_devices = NULL, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
         [userId]
       )
+      if (nullResult.affectedRows === 0) return res.status(404).json({ error: '用户不存在' })
       await writeAudit(req, 'set_max_devices', 'user', userId, { value: null })
       return res.json({ ok: true })
     }
@@ -383,6 +384,9 @@ router.post('/totp/setup', authMiddleware, requireAdmin, async (req, res, next) 
 })
 
 // 启用：校验验证码与密钥匹配后加密落库
+// 已启用状态下拒绝覆盖：enable 校验的是请求体里的新密钥，若放任覆盖，劫持 access cookie 即可
+// setup 新密钥 → enable 换掉受害者的第二因子，效果等同绕过 disable 的「出示当前验证码」加固。
+// 更换密钥需先 disable（旧码）再 enable（新码）。
 router.post('/totp/enable', authMiddleware, requireAdmin, async (req, res, next) => {
   try {
     const { secret, code } = req.body || {}
@@ -394,6 +398,11 @@ router.post('/totp/enable', authMiddleware, requireAdmin, async (req, res, next)
     }
     if (!verifyTotp(secret, code.trim())) {
       return res.status(400).json({ error: '动态验证码错误，请确认验证器时间与密钥一致' })
+    }
+    // 查无行时放行：requireAdmin 刚查过用户存在，0 行只可能是极端并发删除，UPDATE 自然写 0 行
+    const [rows] = await pool.execute('SELECT totp_secret FROM users WHERE id = ?', [req.userId])
+    if (rows.length > 0 && rows[0].totp_secret) {
+      return res.status(400).json({ error: '两步验证已启用，更换密钥请先停用' })
     }
     await pool.execute(
       'UPDATE users SET totp_secret = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',

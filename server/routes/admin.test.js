@@ -297,6 +297,20 @@ describe('POST /api/admin/users/:id/max-devices', () => {
     expect(call[1]).toEqual([42])
   })
 
+  it('value=null 用户不存在（affectedRows=0）→ 404 不落审计', async () => {
+    setExecuteHandlers([
+      { match: ['SELECT is_admin FROM users'], returns: [{ is_admin: 1 }] },
+      { match: ['max_devices = NULL'], returns: { affectedRows: 0 } },
+    ])
+    const res = await supertest(makeApp())
+      .post('/api/admin/users/999999/max-devices')
+      .send({ value: null })
+    expect(res.status).toBe(404)
+    expect(
+      mockExecute.mock.calls.some(([sql]) => String(sql).includes('INSERT INTO admin_audit_log'))
+    ).toBe(false)
+  })
+
   it('value=11 越界 → 400；value=3 正常', async () => {
     setExecuteHandlers([
       { match: ['SELECT is_admin FROM users'], returns: [{ is_admin: 1 }] },
@@ -543,6 +557,28 @@ describe('管理员 TOTP 端点', () => {
     // 落库的是密文，不得包含明文密钥
     expect(String(call[1][0])).not.toContain(secret)
     expect(String(call[1][0])).toMatch(/^[A-Za-z0-9+/=]+\.[A-Za-z0-9+/=]+\.[A-Za-z0-9+/=]+$/)
+  })
+
+  it('enable：已启用（totp_secret 非空）→ 400 拒绝覆盖，需先停用', async () => {
+    const secret = generateTotpSecret()
+    const oldSecret = generateTotpSecret()
+    setExecuteHandlers([
+      { match: ['SELECT is_admin FROM users'], returns: [{ is_admin: 1 }] },
+      {
+        match: ['SELECT totp_secret FROM users WHERE id'],
+        // 已启用：存量密文非空（内容不参与此用例，长度足够示意即可）
+        returns: [{ totp_secret: 'ENCRYPTED::' + oldSecret }],
+      },
+      { match: ['UPDATE users SET totp_secret'], returns: { affectedRows: 1 } },
+    ])
+    const res = await supertest(makeApp())
+      .post('/api/admin/totp/enable')
+      .send({ secret, code: currentCode(secret) })
+    expect(res.status).toBe(400)
+    expect(res.body.error).toContain('先停用')
+    expect(
+      mockExecute.mock.calls.some(([sql]) => String(sql).includes('UPDATE users SET totp_secret'))
+    ).toBe(false)
   })
 
   it('enable：验证码错误 / 密钥非法 → 400 不落库', async () => {

@@ -156,6 +156,12 @@ app.use('/api/dictionaries', writeLimiter, contentRoutes)
 
 // Serve static frontend in production
 const distPath = path.resolve(__dirname, '../dist')
+// 词库文件统一走认证接口 /api/dictionaries/:file（裁剪 + ETag）；静态路径一律 404。
+// 与 deploy/nginx.conf 的 location /dictionaries/ 对称：当前门禁完全依赖那一条 nginx 规则，
+// 规则失效或 3001 直连时这里兜底，避免全量词库被无认证直出。
+app.use('/dictionaries', (req, res) => {
+  res.status(404).json({ error: 'Not found' })
+})
 app.use(express.static(distPath))
 // 未知 API 路径直接 404：不落进下面的 SPA 通配（通配会返回 index.html + 200，掩盖前端调用错误）
 app.use('/api', (req, res) => {
@@ -176,5 +182,13 @@ app.listen(config.PORT, () => {
   // cleanup stale login attempts every 6 hours
   setInterval(cleanupStaleAttempts, 6 * 60 * 60 * 1000)
   // cleanup expired guest accounts every 24 hours (trial expired > 30 days, FK CASCADE)
-  setInterval(cleanupExpiredGuests, 24 * 60 * 60 * 1000)
+  // async 任务必须自带 catch：未捕获的 rejection 会让 Node ≥15 直接退出进程（DB 瞬断即全站重启）
+  setInterval(
+    () => {
+      cleanupExpiredGuests().catch((err) =>
+        logger.error({ err: err.message }, '[Cleanup] expired guests failed')
+      )
+    },
+    24 * 60 * 60 * 1000
+  )
 })

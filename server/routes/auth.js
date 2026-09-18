@@ -191,12 +191,16 @@ router.post('/register', async (req, res, next) => {
       return res.status(400).json({ error: '激活码已达使用上限' })
     }
 
-    const [existing] = await pool.execute('SELECT id FROM users WHERE username = ?', [username])
+    // hash 与查重并行：同名若提前返回不跑 hash，响应耗时差会暴露用户名是否已注册
+    // （login 用 DUMMY_HASH 恒时比较防枚举，这里同理让两条路径都含 BCRYPT_ROUNDS 的成本）
+    // 注意双层解构：Promise.all 的第一项是 mysql2 的 [rows, fields]
+    const [[existing], hash] = await Promise.all([
+      pool.execute('SELECT id FROM users WHERE username = ?', [username]),
+      bcrypt.hash(password, config.BCRYPT_ROUNDS),
+    ])
     if (existing.length > 0) {
       return res.status(400).json({ error: '注册失败，请稍后重试' })
     }
-
-    const hash = await bcrypt.hash(password, config.BCRYPT_ROUNDS)
     const displayName =
       typeof nickname === 'string' && nickname.trim() ? nickname.trim().slice(0, 50) : username
 
